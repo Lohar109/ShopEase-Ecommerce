@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
 /* CSS Variables for Minimalist Theme */
 :root {
     --bg-color: #f3f4f6;
@@ -8,7 +10,6 @@
     --card-border: rgba(255, 255, 255, 0.6);
 }
 
-/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -20,7 +21,6 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
-    /* A subtle background gradient to make the glassmorphism pop */
     background-image: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
     min-height: 100vh;
 }
@@ -86,7 +86,7 @@ nav {
 }
 
 .btn-search:hover {
-    transform: none; /* Prevents the button from lifting away from the input field */
+    transform: none;
     box-shadow: none;
 }
 
@@ -194,7 +194,7 @@ button:hover {
 }
 
 .category-link:hover .category-card {
-    transform: translateY(-8px); /* Smooth lift-up effect */
+    transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -230,7 +230,7 @@ button:hover {
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 1.5rem;
-    background-color: #e5e7eb; /* Placeholder background */
+    background-color: #e5e7eb;
 }
 
 .product-title {
@@ -249,7 +249,7 @@ button:hover {
 }
 
 .btn-buy-now {
-    width: 100%; /* Make the button take full width of the card */
+    width: 100%;
 }
 
 /* Customer Reviews Section */
@@ -301,7 +301,7 @@ button:hover {
 }
 
 /* Newsletter Section */
-.newsletter {
+ .newsletter {
     background-color: #e5e7eb;
     padding: 4rem 2rem;
     border-radius: 16px;
@@ -309,62 +309,7 @@ button:hover {
     margin-top: 4rem;
 }
 
-.newsletter h3 {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.newsletter-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    max-width: 500px;
-    margin: 1.5rem auto 0;
-}
-
-/* Screen reader only class for accessibility */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-.newsletter-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.newsletter-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 2rem;
-    color: #6b7280;
-    margin-top: 4rem;
-}
-
-/* Media Queries for Mobile Responsiveness */
 @media (max-width: 768px) {
-    /* Center Navigation Links & Logo */
     nav {
         flex-direction: column;
         gap: 1rem;
@@ -377,18 +322,15 @@ footer {
         gap: 1.5rem;
     }
 
-    /* Adjust Search Bar for Mobile */
     .search-form {
         width: 100%;
         margin: 0.5rem 0;
     }
 
-    /* Scale down Hero text for smaller screens */
     .hero h1 {
         font-size: 2.25rem;
     }
 
-    /* Adjust Categories for Mobile */
     .categories-container {
         gap: 1rem;
     }
@@ -399,19 +341,16 @@ footer {
         font-size: 0.95rem;
     }
 
-    /* Stack the Product Grid into a single column */
     .featured-products-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 
-    /* Stack the Reviews Grid into a single column */
     .reviews-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 
-    /* Adjust Newsletter Form for Mobile */
     .newsletter-form {
         flex-direction: column;
         width: 100%;
@@ -421,3 +360,142 @@ footer {
         width: 100%;
     }
 }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1.25rem;
+        border: 3px solid #f3f4f6;
+    }
+
+    .review-name {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .review-text {
+        font-size: 1rem;
+        color: #4b5563;
+        font-style: italic;
+    }
+
+    /* Newsletter Section */
+    .newsletter {
+        background-color: #e5e7eb;
+        padding: 4rem 2rem;
+        border-radius: 16px;
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+    .newsletter h3 {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .newsletter-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        max-width: 500px;
+        margin: 1.5rem auto 0;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .newsletter-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+    }
+
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: #6b7280;
+        margin-top: 4rem;
+    }
+
+    @media (max-width: 768px) {
+        nav {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .nav-links {
+            justify-content: center;
+            width: 100%;
+            gap: 1.5rem;
+        }
+
+        .search-form {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+        }
+
+        .categories-container {
+            gap: 1rem;
+        }
+
+        .category-card {
+            width: 100px;
+            height: 50px;
+            font-size: 0.95rem;
+        }
+
+        .featured-products-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .reviews-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .newsletter-input, .btn-subscribe {
+            width: 100%;
+        }
+    }
