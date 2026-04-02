@@ -169,7 +169,7 @@ button:hover {
 .categories-container {
     display: flex;
     justify-content: center;
-    gap: 2.5rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
@@ -178,8 +178,8 @@ button:hover {
 }
 
 .category-card {
-    width: 120px;
-    height: 60px;
+    width: 130px;
+    height: 40px;
     border-radius: 12px;
     background-color: #ffffff;
     border: 1px solid #eee;

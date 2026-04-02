@@ -82,6 +82,9 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+const productsRoute = require('./routes/products');
+app.use('/api/products', productsRoute);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

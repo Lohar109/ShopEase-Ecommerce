@@ -18,6 +18,7 @@ const Header = () => (
         <li><a href="/">Home</a></li>
         <li><a href="/shop">Shop</a></li>
         <li><a href="/cart">Cart</a></li>
+        <li><a href="/login">Login</a></li>
       </ul>
     </nav>
   </header>
