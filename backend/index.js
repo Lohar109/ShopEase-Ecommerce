@@ -36,8 +36,13 @@ app.get('/api/db-test', async (req, res) => {
 const usersRoute = require('./routes/users');
 app.use('/api', usersRoute);
 
+
 const productsRoute = require('./routes/products');
 app.use('/api/products', productsRoute);
+
+// Admin route
+const adminRoute = require('./routes/admin');
+app.use('/api/admin', adminRoute);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

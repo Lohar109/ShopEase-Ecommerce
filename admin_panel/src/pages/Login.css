@@ -1,0 +1,96 @@
+.logo-e {
+  color: #ff4c60;
+  font-family: inherit;
+  font-size: 2.1rem;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+.admin-bg {
+  min-height: 100vh;
+  background: #f5f6fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  padding: 40px 32px 32px 32px;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #111;
+  margin-bottom: 32px;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-form label {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.login-form input {
+  border-radius: 24px;
+  border: 1.5px solid #d1d5db;
+  padding: 12px 18px;
+  font-size: 16px;
+  background: #fafbfc;
+  outline: none;
+  transition: border 0.2s;
+  text-align: center;
+  margin-bottom: 0;
+}
+.login-form input:focus {
+  border-color: #111;
+}
+.center-placeholder::placeholder {
+  text-align: center;
+  color: #888;
+  font-size: 15.5px;
+  opacity: 1;
+}
+
+.login-form .error {
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.login-form button {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 0;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+.login-form button:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.login-form button:hover:not(:disabled) {
+  background: #222;
+}

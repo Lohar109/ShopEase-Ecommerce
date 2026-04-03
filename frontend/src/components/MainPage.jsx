@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import "./MainPage.css";
 
@@ -10,6 +9,9 @@ const MainPage = () => {
       .then((data) => setProducts(data))
       .catch(() => setProducts([]));
   }, []);
+
+  const safeProducts = Array.isArray(products) ? products : [];
+  safeProducts.slice(0, 10); // instead of products.slice(0, 10)
 
   return (
     <>
@@ -36,7 +38,7 @@ const MainPage = () => {
 
       {/* Featured Products */}
       <div className="featured-products-grid">
-        {products.slice(0, 3).map((product) => (
+        {safeProducts.slice(0, 3).map((product) => (
           <div className="product-card" key={product.id}>
             <img src={product.image_url} alt={product.description} className="product-image" />
             <h3 className="product-title">{product.name}</h3>
