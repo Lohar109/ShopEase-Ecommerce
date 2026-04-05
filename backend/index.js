@@ -37,8 +37,13 @@ const usersRoute = require('./routes/users');
 app.use('/api', usersRoute);
 
 
+
 const productsRoute = require('./routes/products');
 app.use('/api/products', productsRoute);
+
+// Categories route
+const categoriesRoute = require('./routes/categories');
+app.use('/api/categories', categoriesRoute);
 
 // Admin route
 const adminRoute = require('./routes/admin');

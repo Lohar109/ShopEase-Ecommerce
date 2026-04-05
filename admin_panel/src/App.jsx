@@ -2,13 +2,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
+import ProductList from './pages/ProductList';
+import ProductForm from './pages/ProductForm';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        {/* Add more admin routes here later */}
+        <Route path="/products" element={<ProductList />} />
+        <Route path="/products/new" element={<ProductForm />} />
       </Routes>
     </Router>
   );

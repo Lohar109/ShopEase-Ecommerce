@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../services/authService';
 import './Login.css';
 
@@ -7,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +21,7 @@ const Login = () => {
     try {
       const data = await loginAdmin(email, password);
       // Save token or admin info as needed (e.g., localStorage)
-      alert('Login successful!');
-      // TODO: Redirect to dashboard or admin home
+      navigate('/products');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

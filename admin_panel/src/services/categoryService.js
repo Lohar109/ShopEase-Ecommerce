@@ -1,0 +1,34 @@
+// src/services/categoryService.js
+// Fetches categories for the admin panel
+
+const API_BASE_URL = 'http://localhost:5000/api';
+
+
+export async function fetchCategories() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Add a new category
+export async function addCategory({ name, image }) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, image })
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add category');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}

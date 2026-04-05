@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MainPage.css";
 
 const MainPage = () => {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     fetch("http://localhost:5000/api/products")
       .then((res) => res.json())
@@ -38,14 +40,25 @@ const MainPage = () => {
 
       {/* Featured Products */}
       <div className="featured-products-grid">
-        {safeProducts.slice(0, 3).map((product) => (
-          <div className="product-card" key={product.id}>
-            <img src={product.image_url} alt={product.description} className="product-image" />
-            <h3 className="product-title">{product.name}</h3>
-            <span className="product-price">₹ {product.price}</span>
-            <button type="button" className="btn-buy-now">Buy Now</button>
-          </div>
-        ))}
+        {safeProducts.slice(0, 3).map((product) => {
+          // Use main_image and show price from first variant if available
+          const price = Array.isArray(product.variants) && product.variants.length > 0
+            ? product.variants[0].price
+            : (product.price || '');
+          return (
+            <div
+              className="product-card"
+              key={product.id}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
+              <img src={product.main_image} alt={product.description || product.name} className="product-image" />
+              <h3 className="product-title">{product.name}</h3>
+              <span className="product-price">₹ {price}</span>
+              <button type="button" className="btn-buy-now" onClick={e => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>Buy Now</button>
+            </div>
+          );
+        })}
       </div>
 
       {/* Newsletter Subscription Section */}
