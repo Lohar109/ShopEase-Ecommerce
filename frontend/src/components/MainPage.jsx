@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../../styles.css";
+import "../styles.css";
 import ProductCard from "./ProductCard";
 
 const MainPage = () => {
