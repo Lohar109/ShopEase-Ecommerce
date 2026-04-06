@@ -6,9 +6,15 @@
   box-shadow: 0 4px 24px rgba(0,0,0,0.06);
   padding: 36px;
 }
+/* Amazon-style 2-column layout */
 .product-detail-main {
   display: flex;
-  gap: 36px;
+  gap: 48px;
+  align-items: flex-start;
+}
+.product-detail-images-col {
+  flex: 1 1 340px;
+  max-width: 380px;
 }
 .product-detail-image {
   width: 340px;
@@ -16,9 +22,26 @@
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 18px;
 }
-.product-detail-info {
-  flex: 1;
+.product-detail-info-col {
+  flex: 1 1 340px;
+  min-width: 320px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.product-detail-title {
+  font-size: 2.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.product-detail-price {
+  font-size: 2rem;
+  color: #e33170;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 .product-detail-brand {
   color: #888;
@@ -42,18 +65,73 @@
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-.product-detail-variants {
-  margin-top: 18px;
+/* Size Selector */
+.product-detail-size-selector {
+  margin: 10px 0 0 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
-.product-detail-variants table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
+.size-chips {
+  display: flex;
+  gap: 0.5rem;
 }
-.product-detail-variants th, .product-detail-variants td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
+.size-chip {
+  background: #f5f6fa;
+  border: 1.5px solid #d1d5db;
+  border-radius: 20px;
+  padding: 7px 22px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.size-chip.selected, .size-chip:hover {
+  border-color: #e33170;
+  background: #ffe4ef;
+  color: #e33170;
+}
+/* Meta info */
+.product-detail-meta {
+  margin: 8px 0 0 0;
+  color: #555;
+  font-size: 1rem;
+  display: flex;
+  gap: 2.5rem;
+}
+/* Action Buttons */
+.product-detail-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2.2rem;
+}
+.btn-add-to-cart, .btn-buy-now {
+  flex: 1 1 0;
+  font-size: 1.2rem;
+  padding: 1.1rem 0;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.btn-add-to-cart {
+  background: #ffd814;
+  color: #222;
+  border: 1.5px solid #ffd814;
+  margin-right: 0.5rem;
+}
+.btn-add-to-cart:hover {
+  background: #ffe564;
+  border-color: #ffe564;
+}
+.btn-buy-now {
+  background: #e33170;
+  color: #fff;
+  border: 1.5px solid #e33170;
+}
+.btn-buy-now:hover {
+  background: #c81e5b;
+  border-color: #c81e5b;
 }
 .back-btn {
   background: #f5f6fa;
@@ -71,15 +149,3 @@
   color: #888;
   font-size: 20px;
 }
-
-
-
-
-// i want to push this code tell me the command
-
-To push your code to a remote repository, you can use the following Git commands in your terminal:
-```bashgit add .
-git commit -m "Add ProductDetail component styles"
-git push origin main
-```
-

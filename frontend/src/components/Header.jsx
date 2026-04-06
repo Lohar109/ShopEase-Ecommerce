@@ -1,12 +1,11 @@
 import React from "react";
-import "./Header.css";
 
 const Header = () => (
   <header>
     <nav aria-label="Main Navigation">
       <div className="logo">
         <a href="/" aria-label="ShopEase Home">
-          <strong>Shop<span className="logo-e">E</span>ase</strong>
+          Shop<span className="logo-e">E</span>ase
         </a>
       </div>
       <form className="search-form" action="#" method="GET">

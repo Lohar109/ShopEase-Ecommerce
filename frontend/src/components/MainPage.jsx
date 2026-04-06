@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./MainPage.css";
+import "../../../styles.css";
+import ProductCard from "./ProductCard";
 
 const MainPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
+    // Fetch all products, then fetch variants for each product
     fetch("http://localhost:5000/api/products")
       .then((res) => res.json())
-      .then((data) => setProducts(data))
+      .then(async (data) => {
+        if (!Array.isArray(data)) return setProducts([]);
+        // Fetch variants for each product
+        const productsWithVariants = await Promise.all(
+          data.slice(0, 3).map(async (product) => {
+            try {
+              const res = await fetch(`http://localhost:5000/api/products/${product.id}`);
+              const details = await res.json();
+              return { ...product, variants: details.variants || [] };
+            } catch {
+              return { ...product, variants: [] };
+            }
+          })
+        );
+        setProducts(productsWithVariants);
+      })
       .catch(() => setProducts([]));
   }, []);
 
@@ -16,7 +33,7 @@ const MainPage = () => {
   safeProducts.slice(0, 10); // instead of products.slice(0, 10)
 
   return (
-    <>
+    <main>
       {/* Hero Section */}
       <section className="hero" aria-labelledby="hero-heading">
         <h1 id="hero-heading">Welcome to ShopEase</h1>
@@ -40,25 +57,9 @@ const MainPage = () => {
 
       {/* Featured Products */}
       <div className="featured-products-grid">
-        {safeProducts.slice(0, 3).map((product) => {
-          // Use main_image and show price from first variant if available
-          const price = Array.isArray(product.variants) && product.variants.length > 0
-            ? product.variants[0].price
-            : (product.price || '');
-          return (
-            <div
-              className="product-card"
-              key={product.id}
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate(`/product/${product.id}`)}
-            >
-              <img src={product.main_image} alt={product.description || product.name} className="product-image" />
-              <h3 className="product-title">{product.name}</h3>
-              <span className="product-price">₹ {price}</span>
-              <button type="button" className="btn-buy-now" onClick={e => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>Buy Now</button>
-            </div>
-          );
-        })}
+        {safeProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
 
       {/* Newsletter Subscription Section */}
@@ -98,7 +99,7 @@ const MainPage = () => {
       <footer>
         <p>&copy; 2026 ShopEase. All rights reserved.</p>
       </footer>
-    </>
+    </main>
   );
 };
 

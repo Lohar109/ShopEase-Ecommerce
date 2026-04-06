@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="ShopEase - Your ultimate e-commerce destination for high-quality products. Shop the latest trends today.">
+    <meta name="keywords" content="e-commerce, shopping, ShopEase, products, online store">
+    <meta name="author" content="ShopEase">
+    
+    <title>ShopEase | Quality Products Delivered</title>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header & Main Navigation -->
+    <header>
+        <nav aria-label="Main Navigation">
+            <div class="logo">
+                <a href="/" aria-label="ShopEase Home">
+                    <!-- You can replace this text with an <img> tag for your actual logo -->
+                    <strong>Shop<span class="logo-e">E</span>ase</strong>
+                </a>
+            </div>
+            
+            <!-- Search Bar -->
+            <form class="search-form" action="#" method="GET">
+                <label for="search" class="sr-only">Search products</label>
+                <input type="text" id="search" name="q" class="search-input" placeholder="Search products...">
+                <button type="submit" class="btn-search" aria-label="Search">Search</button>
+            </form>
+
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/shop">Shop</a></li>
+                <li><a href="/cart">Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-heading">
+            <h1 id="hero-heading">Welcome to ShopEase</h1>
+            <p>Discover top-quality products at unbeatable prices.</p>
+            <button type="button" class="btn-shop-now" onclick="window.location.href='/shop';">Shop Now</button>
+        </section>
+
+        <!-- Shop by Category Section -->
+        <section class="categories" aria-labelledby="categories-heading">
+            <h2 id="categories-heading" class="section-title">Shop by Category</h2>
+            <div class="categories-container">
+                <a href="#electronics" class="category-link">
+                    <div class="category-card">Electronics</div>
+                </a>
+                <a href="#fashion" class="category-link">
+                    <div class="category-card">Fashion</div>
+                </a>
+                <a href="#home" class="category-link">
+                    <div class="category-card">Home</div>
+                </a>
+                <a href="#sports" class="category-link">
+                    <div class="category-card">Sports</div>
+                </a>
+                <a href="#beauty" class="category-link">
+                    <div class="category-card"><span>Beauty</span></div>
+                </a>
+                <a href="#books" class="category-link">
+                    <div class="category-card"><span>Books</span></div>
+                </a>
+                <a href="#toys" class="category-link">
+                    <div class="category-card"><span>Toys</span></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <div class="featured-products-grid">
+            <!-- Product Card 1 -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop" alt="High-quality wireless headphones" class="product-image">
+                <h3 class="product-title">Wireless Headphones</h3>
+                <span class="product-price">$59.99</span>
+                <button type="button" class="btn-buy-now">Buy Now</button>
+            </div>
+            
+            <!-- Product Card 2 -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&auto=format&fit=crop" alt="Sleek smart watch" class="product-image">
+                <h3 class="product-title">Smart Watch</h3>
+                <span class="product-price">$129.99</span>
+                <button type="button" class="btn-buy-now">Buy Now</button>
+            </div>
+            
+            <!-- Product Card 3 -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1608156639585-b3a032ef9689?q=80&w=600&auto=format&fit=crop" alt="Portable bluetooth speaker" class="product-image">
+                <h3 class="product-title">Bluetooth Speaker</h3>
+                <span class="product-price">$45.00</span>
+                <button type="button" class="btn-buy-now">Buy Now</button>
+            </div>
+        </div>
+
+        <!-- Newsletter Subscription Section -->
+        <section class="newsletter" aria-labelledby="newsletter-heading">
+            <h3 id="newsletter-heading">Join our Newsletter</h3>
+            <p>Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+            <form class="newsletter-form" action="#" method="POST">
+                <label for="email-subscribe" class="sr-only">Email address</label>
+                <input type="email" id="email-subscribe" name="email" class="newsletter-input" placeholder="Enter your email address" required>
+                <button type="submit" class="btn-subscribe">Subscribe</button>
+            </form>
+        </section>
+
+        <!-- Customer Reviews Section -->
+        <section class="reviews" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading" class="section-title">Customer Reviews</h2>
+            <div class="reviews-grid">
+                <!-- Review Card 1 -->
+                <div class="review-card">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop" alt="Profile of Sarah Jenkins" class="review-avatar">
+                    <h3 class="review-name">Sarah Jenkins</h3>
+                    <p class="review-text">"ShopEase is my absolute favorite place to shop! The product quality always exceeds my expectations and shipping is incredibly fast."</p>
+                </div>
+                <!-- Review Card 2 -->
+                <div class="review-card">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" alt="Profile of Mark Robinson" class="review-avatar">
+                    <h3 class="review-name">Mark Robinson</h3>
+                    <p class="review-text">"I bought the wireless headphones and couldn't be happier. Fantastic audio clarity, and the customer support team was very helpful."</p>
+                </div>
+                <!-- Review Card 3 -->
+                <div class="review-card">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" alt="Profile of Emily Chen" class="review-avatar">
+                    <h3 class="review-name">Emily Chen</h3>
+                    <p class="review-text">"A beautifully designed site with top-tier products. I love the minimalist layout, making it so easy to find exactly what I need."</p>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Site Footer -->
+    <footer>
+        <p>&copy; 2026 ShopEase. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
