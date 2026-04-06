@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 
 const ProductDetail = () => {
+  const [showModal, setShowModal] = useState(false);
   const { id } = useParams();
-  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,6 +143,17 @@ const ProductDetail = () => {
                   )}
                 </div>
               )}
+              {/* Purchasing block */}
+              <div className="product-detail-purchasing-block">
+                <div className="product-detail-price-group">
+                  <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
+                  <span className="product-detail-tax">All taxes included</span>
+                </div>
+                <div className="product-detail-actions">
+                  <button className="btn-add-to-cart">Add to Cart</button>
+                  <button className="btn-buy-now">Buy Now</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -161,20 +172,76 @@ const ProductDetail = () => {
 
           <h2 className="product-detail-title">{product.name}</h2>
           <p className="product-detail-desc">{product.description}</p>
+          <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
+            Product Specifications & Features
+          </button>
+          
+          <div className="product-detail-trust-icons">
+            <div className="trust-icon-item">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+              <span>Pay on Delivery</span>
+            </div>
+            <div className="trust-icon-item">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.2 14.2L11 11V7h1.5v3.4l4.3 4.3z"/></svg>
+              <span>10 days Replacement</span>
+            </div>
+            <div className="trust-icon-item">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 8l-4 4h3c0 3.31-2.69 6-6 6a5.87 5.87 0 0 1-2.8-.7l-1.46 1.46A7.93 7.93 0 0 0 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46A7.93 7.93 0 0 0 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+              <span>ShopEase Delivered</span>
+            </div>
+            <div className="trust-icon-item">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+              <span>Top Brand</span>
+            </div>
+            <div className="trust-icon-item">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+              <span>Secure Transaction</span>
+            </div>
+          </div>
+          
           <p className="product-detail-delivery">Delivered by Tuesday, April 14</p>
-          
-          <div className="product-detail-price-group">
-            <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
-            <div className="product-detail-tax">All taxes included</div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="product-detail-actions">
-            <button className="btn-add-to-cart">Add to Cart</button>
-            <button className="btn-buy-now">Buy Now</button>
-          </div>
         </div>
       </div>
+
+      {/* Specifications Modal Overlay */}
+      {showModal && (
+        <div className="specs-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="specs-modal" onClick={e => e.stopPropagation()}>
+            <div className="specs-modal-header">
+              <h3>Product Specifications</h3>
+              <button type="button" className="specs-modal-close" onClick={() => setShowModal(false)}>&times;</button>
+            </div>
+            <div className="specs-modal-body">
+              <table className="specs-table">
+                <tbody>
+                  {product?.brand && (
+                    <tr>
+                      <th>Brand</th>
+                      <td>{product.brand}</td>
+                    </tr>
+                  )}
+                  {selectedVariant?.color && (
+                    <tr>
+                      <th>Color</th>
+                      <td>{selectedVariant.color}</td>
+                    </tr>
+                  )}
+                  {product?.features && (
+                    <tr>
+                      <th>Features</th>
+                      <td>{product.features}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              {/* Fallback details if fields are empty */}
+              {!product?.brand && !selectedVariant?.color && !product?.features && (
+                 <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
