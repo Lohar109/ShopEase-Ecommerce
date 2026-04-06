@@ -11,7 +11,7 @@ const ProductCard = ({ product }) => {
       .map((variant) => parseFloat(variant.price))
       .filter((p) => !isNaN(p));
     if (prices.length > 0) {
-      price = `$${Math.min(...prices).toFixed(2)}`;
+      price = `₹${Math.min(...prices).toFixed(2)}`;
     }
   }
 
@@ -20,6 +20,21 @@ const ProductCard = ({ product }) => {
       <img src={product.main_image} alt={product.name} className="product-image" />
       <h3 className="product-title">{product.name}</h3>
       <span className="product-price">{price}</span>
+      <p className="product-card-delivery">Delivered by Tuesday, April 14</p>
+      <div className="product-card-actions">
+        <button 
+          className="btn-card-add-to-cart" 
+          onClick={(e) => { e.stopPropagation(); /* Add to cart logic */ }}
+        >
+          Add to Cart
+        </button>
+        <button 
+          className="btn-card-buy-now" 
+          onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}
+        >
+          Buy Now
+        </button>
+      </div>
     </div>
   );
 };
