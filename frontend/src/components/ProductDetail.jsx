@@ -143,15 +143,16 @@ const ProductDetail = () => {
                   )}
                 </div>
               )}
+              <p className="product-detail-delivery">Delivered by Tuesday, April 14</p>
               {/* Purchasing block */}
               <div className="product-detail-purchasing-block">
                 <div className="product-detail-price-group">
                   <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
                   <span className="product-detail-tax">All taxes included</span>
                 </div>
-                <div className="product-detail-actions">
-                  <button className="btn-add-to-cart">Add to Cart</button>
-                  <button className="btn-buy-now">Buy Now</button>
+                <div className="product-card-actions detail-page-buttons">
+                  <button className="btn-card-add-to-cart">Add to Cart</button>
+                  <button className="btn-card-buy-now">Buy Now</button>
                 </div>
               </div>
             </div>
@@ -198,8 +199,6 @@ const ProductDetail = () => {
               <span>Secure Transaction</span>
             </div>
           </div>
-          
-          <p className="product-detail-delivery">Delivered by Tuesday, April 14</p>
         </div>
       </div>
 

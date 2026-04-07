@@ -134,10 +134,14 @@
 }
 
 .product-detail-delivery {
-  margin: 12px 0 0 0;
-  font-size: 1rem;
+  margin: 4px 0 0 0;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #1e8e3e;
+}
+.detail-page-buttons {
+  margin-top: 1.2rem;
+  width: 100%;
 }
 @media (max-width: 768px) {
   .product-detail-main {

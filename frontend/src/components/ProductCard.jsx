@@ -49,20 +49,6 @@ const ProductCard = ({ product }) => {
           </svg>
         </button>
       </div>
-      <div className="product-card-actions">
-        <button 
-          className="btn-card-add-to-cart" 
-          onClick={(e) => { e.stopPropagation(); /* Add to cart logic */ }}
-        >
-          Add to Cart
-        </button>
-        <button 
-          className="btn-card-buy-now" 
-          onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}
-        >
-          Buy Now
-        </button>
-      </div>
     </div>
   );
 };
