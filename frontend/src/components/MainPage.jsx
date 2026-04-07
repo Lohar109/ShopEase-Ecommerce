@@ -49,9 +49,14 @@ const MainPage = () => {
           <a href="#fashion" className="category-link"><div className="category-card">Fashion</div></a>
           <a href="#home" className="category-link"><div className="category-card">Home</div></a>
           <a href="#sports" className="category-link"><div className="category-card">Sports</div></a>
-          <a href="#beauty" className="category-link"><div className="category-card"><span>Beauty</span></div></a>
-          <a href="#books" className="category-link"><div className="category-card"><span>Books</span></div></a>
-          <a href="#toys" className="category-link"><div className="category-card"><span>Toys</span></div></a>
+          <a href="#beauty" className="category-link"><div className="category-card">Beauty</div></a>
+          <a href="#books" className="category-link"><div className="category-card">Books</div></a>
+          <a href="#toys" className="category-link"><div className="category-card">Toys</div></a>
+          <a href="#mobiles" className="category-link"><div className="category-card">Mobiles</div></a>
+          <a href="#shoes" className="category-link"><div className="category-card">Shoes</div></a>
+          <a href="#groceries" className="category-link"><div className="category-card">Groceries</div></a>
+          <a href="#furniture" className="category-link"><div className="category-card">Furniture</div></a>
+          <a href="#watches" className="category-link"><div className="category-card">Watches</div></a>
         </div>
       </section>
 

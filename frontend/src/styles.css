@@ -177,16 +177,16 @@ button:hover {
 }
 
 .category-card {
-    width: 120px;
-    height: 60px;
+    width: 100px; padding: 0 10px;
+    height: 44px;
     border-radius: 12px;
     background-color: #ffffff;
     border: 1px solid #eee;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--primary-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -248,6 +248,36 @@ button:hover {
     font-weight: 600;
     color: #374151;
     margin-bottom: 0.1rem;
+}
+
+.product-card-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.product-card-pricing-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-wishlist-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+}
+
+.card-wishlist-btn svg {
+    transition: fill 0.3s ease, stroke 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-wishlist-btn.active svg {
+    transform: scale(1.15);
 }
 
 .product-card-delivery {
@@ -470,4 +500,11 @@ footer {
     .newsletter-input, .btn-subscribe {
         width: 100%;
     }
+}
+
+
+.card-wishlist-btn:hover, .card-wishlist-btn:focus, .card-wishlist-btn:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
