@@ -24,22 +24,22 @@ const ProductList = () => {
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f6fa', padding: '40px 0' }}>
-      <div style={{ maxWidth: 950, margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', padding: 36 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <h2 style={{ fontWeight: 700, letterSpacing: 1, margin: 0 }}>All Products</h2>
+    <div style={{ minHeight: '100vh', background: '#f4f7f6', padding: '60px 20px' }}>
+      <div style={{ maxWidth: 950, margin: '0 auto', background: '#ffffff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: 48 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+          <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.5px', margin: 0, color: '#111' }}>All Products</h2>
           <button
             onClick={() => navigate('/products/new')}
             style={{
-              background: '#111',
+              background: '#000',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
               padding: '12px 28px',
-              fontSize: 16,
-              fontWeight: 600,
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '15px',
+              fontWeight: 500,
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
               transition: 'background 0.2s',
             }}
           >
@@ -47,29 +47,29 @@ const ProductList = () => {
           </button>
         </div>
         {products.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#888', fontSize: 18, padding: 40 }}>No products found.</div>
+          <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 60 }}>No products found.</div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', borderRadius: 12, overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
               <thead>
-                <tr style={{ background: '#f5f6fa', borderRadius: 12 }}>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Name</th>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Brand</th>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Category</th>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Active</th>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Featured</th>
-                  <th style={{ padding: 14, borderBottom: '2px solid #eee', fontWeight: 600, color: '#222', fontSize: 16 }}>Created</th>
+                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Name</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Brand</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Featured</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((p) => (
-                  <tr key={p.id} style={{ background: '#fff', transition: 'background 0.2s' }}>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.name}</td>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.brand}</td>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.category_name || ''}</td>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.is_active ? 'Yes' : 'No'}</td>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.is_featured ? 'Yes' : 'No'}</td>
-                    <td style={{ padding: 12, borderBottom: '1px solid #f0f0f0', fontSize: 15 }}>{p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</td>
+                  <tr key={p.id} style={{ background: '#fff', borderBottom: '1px solid #f1f3f5', transition: 'background 0.2s' }}>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.name}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.brand}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.category_name || ''}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.is_active ? 'Yes' : 'No'}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.is_featured ? 'Yes' : 'No'}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</td>
                   </tr>
                 ))}
               </tbody>

@@ -145,57 +145,89 @@ const ProductForm = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(120deg, #f5f6fa 0%, #e9ecef 100%)',
-      padding: '60px 0',
+      background: '#f9f9f9',
+      fontFamily: 'Poppins, sans-serif',
+      paddingBottom: '80px'
     }}>
+      {/* Sticky Header & Breadcrumbs */}
       <div style={{
-        maxWidth: 700,
-        margin: '0 auto',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
         background: '#fff',
-        borderRadius: 20,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
-        padding: 40,
-        position: 'relative',
+        padding: '16px 40px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        borderBottom: '1px solid #e0e0e0'
       }}>
-        <h2 style={{
-          textAlign: 'center',
-          marginBottom: 36,
-          fontWeight: 800,
-          fontSize: 30,
-          letterSpacing: 1,
-          color: '#222',
-        }}>Add New Product</h2>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: 36,
-          gap: 18,
-        }}>
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                padding: '12px 32px',
-                border: 'none',
-                borderBottom: activeTab === tab.key ? '4px solid #111' : '4px solid transparent',
-                background: 'none',
-                fontWeight: 700,
-                fontSize: 18,
-                color: activeTab === tab.key ? '#111' : '#aaa',
-                cursor: 'pointer',
-                outline: 'none',
-                transition: 'border 0.2s, color 0.2s',
-                letterSpacing: 0.5,
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div style={{ color: '#888', fontSize: 15, fontWeight: 500 }}>
+          Products / <span style={{ color: '#111', fontWeight: 600 }}>Add New Product</span>
         </div>
-        <div>
-          {activeTab === 'general' && (
-            <div style={{ maxWidth: 520, margin: '0 auto' }}>
+        <button
+          type="button"
+          style={{ 
+            background: saving ? '#888' : '#000', 
+            color: '#fff', 
+            border: 'none', 
+            borderRadius: 8, 
+            padding: '8px 20px', 
+            fontSize: 15, 
+            fontWeight: 500, 
+            cursor: saving ? 'not-allowed' : 'pointer', 
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            fontFamily: 'Poppins, sans-serif',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+          disabled={saving}
+          onClick={async () => {
+            if (!categoryId) {
+              alert('Please select a category.');
+              return;
+            }
+            setSaving(true);
+            try {
+              const productData = {
+                name, slug, brand, description, category_id: categoryId,
+                main_image: mainImage, images: galleryImages.filter(Boolean),
+                specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
+                variants: variantRows.map(v => ({
+                  size: v.size, color: v.color, price: v.price, stock: v.stock, sku: v.sku, image: v.image
+                }))
+              };
+              await saveProduct(productData);
+              setSaving(false);
+              navigate('/products');
+            } catch (err) {
+              setSaving(false);
+              alert(err.message || 'Failed to save product');
+            }
+          }}
+        >
+          {saving && (
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }}>
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="4" fill="none" />
+              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+            </svg>
+          )}
+          {saving ? 'Saving...' : 'Save Product'}
+        </button>
+      </div>
+
+      <div style={{
+        maxWidth: 800,
+        margin: '40px auto 0',
+        background: '#ffffff',
+        borderRadius: 12,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+        padding: '48px',
+      }}>
+          <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>General Details</h3>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Product Name</label>
               <input
@@ -254,12 +286,15 @@ const ProductForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowCategoryModal(true)}
-                  style={{ background: '#f5f6fa', border: '1px solid #ccc', borderRadius: 6, padding: '8px 16px', cursor: 'pointer', color: '#111', marginTop: 4, fontWeight: 600 }}
+                  style={{ background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '8px 16px', cursor: 'pointer', color: '#000', marginTop: 4, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}
                 >
-                  + Add Category
+                  <span>+</span> Add Category
                 </button>
               </div>
             </div>
+            
+            <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }} />
+
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Specifications</label>
               {specs.map((spec, idx) => (
@@ -281,12 +316,12 @@ const ProductForm = () => {
                   <button type="button" onClick={() => removeSpec(idx)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
                 </div>
               ))}
-              <button type="button" onClick={addSpec} style={{ marginTop: 4, background: '#f5f6fa', border: '1px solid #ccc', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#111' }}>+ Add Specification</button>
+              <button type="button" onClick={addSpec} style={{ marginTop: 4, background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#000', display: 'flex', alignItems: 'center', gap: 6 }}><span>+</span> Add Specification</button>
             </div>
-          </div>
-        )}
-        {activeTab === 'media' && (
-          <div style={{ maxWidth: 520, margin: '0 auto' }}>
+            
+            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
+            
+            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Media</h3>
             <div style={{ marginBottom: 24 }}>
               <label style={{ fontWeight: 500 }}>Main Image URL</label>
               <input
@@ -327,27 +362,27 @@ const ProductForm = () => {
             <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
               (Paste Cloudinary image links. You can add as many as you want.)
             </div>
-          </div>
-        )}
-        {activeTab === 'inventory' && (
-          <div style={{ maxWidth: 520, margin: '0 auto' }}>
-            <label style={{ fontWeight: 500, marginBottom: 12, display: 'block' }}>Product Variants</label>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16 }}>
+            
+            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
+            
+            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Inventory</h3>
+            <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
               <thead>
-                <tr style={{ background: '#f5f6fa' }}>
-                  <th style={{ padding: 8, fontSize: 15 }}>Size</th>
-                  <th style={{ padding: 8, fontSize: 15 }}>Color</th>
-                  <th style={{ padding: 8, fontSize: 15 }}>Price</th>
-                  <th style={{ padding: 8, fontSize: 15 }}>Stock</th>
-                  <th style={{ padding: 8, fontSize: 15 }}>SKU</th>
-                  <th style={{ padding: 8, fontSize: 15 }}>Image</th>
+                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Size</th>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Color</th>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Price</th>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Stock</th>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>SKU</th>
+                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Image</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {/* Dynamic variant rows */}
                 {variantRows.map((variant, idx) => (
-                  <tr key={idx}>
+                  <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
                     <td><input type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
                     <td><input type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
                     <td><input type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
@@ -366,9 +401,8 @@ const ProductForm = () => {
                 ))}
               </tbody>
             </table>
-            <button type="button" onClick={addVariant} style={{ background: '#f5f6fa', border: '1px solid #ccc', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#111' }}>+ Add Variant</button>
+            <button type="button" onClick={addVariant} style={{ background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#000', display: 'flex', alignItems: 'center', gap: 6 }}><span>+</span> Add Variant</button>
           </div>
-        )}
         </div>
         {/* Add Category Modal */}
         {showCategoryModal && (
@@ -396,52 +430,6 @@ const ProductForm = () => {
             </form>
           </div>
         )}
-
-        {/* Save Product Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 36 }}>
-          <button
-            type="button"
-            style={{ background: saving ? '#888' : '#111', color: '#fff', border: 'none', borderRadius: 8, padding: '14px 38px', fontSize: 18, fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
-            disabled={saving}
-            onClick={async () => {
-              if (!categoryId) {
-                alert('Please select a category.');
-                return;
-              }
-              setSaving(true);
-              try {
-                // Prepare product data
-                const productData = {
-                  name,
-                  slug,
-                  brand,
-                  description,
-                  category_id: categoryId,
-                  main_image: mainImage,
-                  images: galleryImages.filter(Boolean),
-                  specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
-                  variants: variantRows.map(v => ({
-                    size: v.size,
-                    color: v.color,
-                    price: v.price,
-                    stock: v.stock,
-                    sku: v.sku,
-                    image: v.image
-                  }))
-                };
-                await saveProduct(productData);
-                setSaving(false);
-                navigate('/products');
-              } catch (err) {
-                setSaving(false);
-                alert(err.message || 'Failed to save product');
-              }
-            }}
-          >
-            {saving ? 'Saving...' : 'Save Product'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
