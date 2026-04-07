@@ -49,6 +49,10 @@ app.use('/api/categories', categoriesRoute);
 const adminRoute = require('./routes/admin');
 app.use('/api/admin', adminRoute);
 
+// Wishlist route
+const wishlistRoute = require('./routes/wishlistRoutes');
+app.use('/api/wishlist', wishlistRoute);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

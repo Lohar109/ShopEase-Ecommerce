@@ -20,6 +20,8 @@ const ProductForm = () => {
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [subcategoryId, setSubcategoryId] = useState('');
+  const [audience, setAudience] = useState('unisex');
   const [categories, setCategories] = useState([]);
   // Dynamic specifications
   const [specs, setSpecs] = useState([{ key: '', value: '' }]);
@@ -28,6 +30,8 @@ const ProductForm = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryImage, setNewCategoryImage] = useState('');
+  const [isSubcategory, setIsSubcategory] = useState(false);
+  const [parentCategoryId, setParentCategoryId] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
 
   // Media state (Cloudinary URLs only)
@@ -60,20 +64,34 @@ const ProductForm = () => {
   // Set default category if available
   useEffect(() => {
     if (!categoryId && categories.length > 0) {
-      setCategoryId(categories[0].id);
+      const mainCategories = categories.filter(c => !c.parent_id);
+      if (mainCategories.length > 0) setCategoryId(mainCategories[0].id);
     }
   }, [categories]);
+
+  // When category changes, reset subcategory
+  useEffect(() => {
+    setSubcategoryId('');
+  }, [categoryId]);
 
   // Add Category handler
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (!newCategoryName.trim() || !newCategoryImage.trim()) return;
+    if (isSubcategory && !parentCategoryId) {
+      alert('Please select a parent category.');
+      return;
+    }
     setAddingCategory(true);
     try {
-      await addCategory({ name: newCategoryName, image: newCategoryImage });
+      const payload = { name: newCategoryName, image: newCategoryImage };
+      if (isSubcategory) payload.parent_id = parentCategoryId;
+      await addCategory(payload);
       setShowCategoryModal(false);
       setNewCategoryName('');
       setNewCategoryImage('');
+      setIsSubcategory(false);
+      setParentCategoryId('');
       loadCategories();
     } catch (err) {
       alert('Failed to add category');
@@ -191,7 +209,7 @@ const ProductForm = () => {
             setSaving(true);
             try {
               const productData = {
-                name, slug, brand, description, category_id: categoryId,
+                name, slug, brand, description, category_id: subcategoryId || categoryId, audience,
                 main_image: mainImage, images: galleryImages.filter(Boolean),
                 specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
                 variants: variantRows.map(v => ({
@@ -270,26 +288,76 @@ const ProductForm = () => {
               />
             </div>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Category</label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <select
-                  value={categoryId}
-                  onChange={e => setCategoryId(e.target.value)}
-                  style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
-                  required
-                >
-                  <option value="">Select category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => setShowCategoryModal(true)}
-                  style={{ background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '8px 16px', cursor: 'pointer', color: '#000', marginTop: 4, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}
-                >
-                  <span>+</span> Add Category
-                </button>
+              <label style={{ fontWeight: 500 }}>Target Audience</label>
+              <select
+                value={audience}
+                onChange={e => setAudience(e.target.value)}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
+                required
+              >
+                <option value="unisex">Unisex</option>
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="kids">Kids</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 18, display: 'flex', gap: '20px' }}>
+              {/* Column 1 (Category) */}
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <select
+                    value={categoryId}
+                    onChange={e => setCategoryId(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc' }}
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {categories.filter(c => !c.parent_id).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setParentCategoryId('');
+                      setIsSubcategory(false);
+                      setShowCategoryModal(true);
+                    }}
+                    style={{ background: '#fff', border: '1px solid #000', borderRadius: 8, padding: '9px 16px', cursor: 'pointer', color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <span>+</span> Add Category
+                  </button>
+                </div>
+              </div>
+              
+              {/* Column 2 (Subcategory) */}
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <select
+                    value={subcategoryId}
+                    onChange={e => setSubcategoryId(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                    disabled={!categoryId}
+                  >
+                    <option value="">Select subcategory</option>
+                    {categories.filter(c => c.parent_id === categoryId).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (categoryId) setParentCategoryId(categoryId);
+                      setIsSubcategory(true);
+                      setShowCategoryModal(true);
+                    }}
+                    style={{ background: '#fff', border: '1px solid #000', borderRadius: 8, padding: '9px 16px', cursor: 'pointer', color: '#000', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <span>+</span> Add Subcategory
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -419,6 +487,28 @@ const ProductForm = () => {
                 <label style={{ fontWeight: 500 }}>Name</label>
                 <input type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} required />
               </div>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={isSubcategory} onChange={e => setIsSubcategory(e.target.checked)} style={{ marginRight: 8 }} />
+                  Is this a subcategory?
+                </label>
+              </div>
+              {isSubcategory && (
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ fontWeight: 500 }}>Parent Category</label>
+                  <select
+                    value={parentCategoryId}
+                    onChange={e => setParentCategoryId(e.target.value)}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }}
+                    required={isSubcategory}
+                  >
+                    <option value="">Select Parent Category</option>
+                    {categories.filter(c => !c.parent_id).map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div style={{ marginBottom: 18 }}>
                 <label style={{ fontWeight: 500 }}>Image URL</label>
                 <input type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} required />
