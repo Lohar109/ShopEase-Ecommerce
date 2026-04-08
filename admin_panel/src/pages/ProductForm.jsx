@@ -20,6 +20,8 @@ const ProductForm = () => {
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [subcategoryId, setSubcategoryId] = useState('');
+  const [audience, setAudience] = useState('unisex');
   const [categories, setCategories] = useState([]);
   // Dynamic specifications
   const [specs, setSpecs] = useState([{ key: '', value: '' }]);
@@ -29,6 +31,8 @@ const ProductForm = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryImage, setNewCategoryImage] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
+  const [isSubcategory, setIsSubcategory] = useState(false);
+  const [parentCategoryId, setParentCategoryId] = useState('');
 
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
@@ -60,20 +64,34 @@ const ProductForm = () => {
   // Set default category if available
   useEffect(() => {
     if (!categoryId && categories.length > 0) {
-      setCategoryId(categories[0].id);
+      const mainCategories = categories.filter(c => !c.parent_id);
+      if (mainCategories.length > 0) setCategoryId(mainCategories[0].id);
     }
   }, [categories]);
+
+  // When category changes, reset subcategory
+  useEffect(() => {
+    setSubcategoryId('');
+  }, [categoryId]);
 
   // Add Category handler
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (!newCategoryName.trim() || !newCategoryImage.trim()) return;
+    if (isSubcategory && !parentCategoryId) {
+      alert('Please select a parent category.');
+      return;
+    }
     setAddingCategory(true);
     try {
-      await addCategory({ name: newCategoryName, image: newCategoryImage });
+      const payload = { name: newCategoryName, image: newCategoryImage };
+      if (isSubcategory) payload.parent_id = parentCategoryId;
+      await addCategory(payload);
       setShowCategoryModal(false);
       setNewCategoryName('');
       setNewCategoryImage('');
+      setIsSubcategory(false);
+      setParentCategoryId('');
       loadCategories();
     } catch (err) {
       alert('Failed to add category');
@@ -149,6 +167,12 @@ const ProductForm = () => {
       fontFamily: 'Poppins, sans-serif',
       paddingBottom: '80px'
     }}>
+      <style>{`
+        .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
+        .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
+        .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
+        .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
+      `}</style>
       {/* Sticky Header & Breadcrumbs */}
       <div style={{
         position: 'sticky',
@@ -171,7 +195,7 @@ const ProductForm = () => {
             background: saving ? '#888' : '#000', 
             color: '#fff', 
             border: 'none', 
-            borderRadius: 8, 
+            borderRadius: 12, 
             padding: '8px 20px', 
             fontSize: 15, 
             fontWeight: 500, 
@@ -191,7 +215,7 @@ const ProductForm = () => {
             setSaving(true);
             try {
               const productData = {
-                name, slug, brand, description, category_id: categoryId,
+                name, slug, brand, description, category_id: subcategoryId || categoryId, audience,
                 main_image: mainImage, images: galleryImages.filter(Boolean),
                 specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
                 variants: variantRows.map(v => ({
@@ -221,40 +245,71 @@ const ProductForm = () => {
       <div style={{
         maxWidth: 800,
         margin: '40px auto 0',
-        background: '#ffffff',
-        borderRadius: 12,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-        padding: '48px',
       }}>
+        <div style={{ marginBottom: '24px' }}>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} style={{ color: '#666', textDecoration: 'none', fontSize: 14, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
+            &lt; Back to Products
+          </a>
+          <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111', margin: '8px 0 0 0', fontFamily: 'Poppins, sans-serif' }}>
+            Add New Product
+          </h2>
+        </div>
+
+        <div style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+          padding: '48px',
+        }}>
           <div style={{ maxWidth: '100%', margin: '0 auto' }}>
             <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>General Details</h3>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Product Name</label>
               <input
+                className="custom-input"
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
                 placeholder="Enter product name"
                 required
               />
             </div>
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
-              <input
-                type="text"
-                value={slug}
-                readOnly
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #eee', background: '#f5f6fa', marginTop: 4 }}
-              />
+            <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500 }}>Target Audience</label>
+                <select
+                  className="custom-input"
+                  value={audience}
+                  onChange={e => setAudience(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                  required
+                >
+                  <option value="unisex">Unisex</option>
+                  <option value="men">Men</option>
+                  <option value="women">Women</option>
+                  <option value="kids">Kids</option>
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
+                <input
+                  className="custom-input"
+                  type="text"
+                  value={slug}
+                  readOnly
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', background: '#f5f6fa', marginTop: 4 }}
+                />
+              </div>
             </div>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Brand</label>
               <input
+                className="custom-input"
                 type="text"
                 value={brand}
                 onChange={e => setBrand(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
                 placeholder="Enter brand name"
                 required
               />
@@ -262,61 +317,101 @@ const ProductForm = () => {
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Description</label>
               <textarea
+                className="custom-input"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', minHeight: 80, marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', minHeight: 80, marginTop: 4 }}
                 placeholder="Enter product description"
                 required
               />
             </div>
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Category</label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <select
-                  value={categoryId}
-                  onChange={e => setCategoryId(e.target.value)}
-                  style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
-                  required
-                >
-                  <option value="">Select category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => setShowCategoryModal(true)}
-                  style={{ background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '8px 16px', cursor: 'pointer', color: '#000', marginTop: 4, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}
-                >
-                  <span>+</span> Add Category
-                </button>
+            
+            <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                  <select
+                    className="custom-input"
+                    value={categoryId}
+                    onChange={e => setCategoryId(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #999' }}
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {categories.filter(c => !c.parent_id).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="outline-btn"
+                    onClick={() => {
+                      setParentCategoryId('');
+                      setIsSubcategory(false);
+                      setShowCategoryModal(true);
+                    }}
+                  >
+                    <span>+</span> Add Category
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                  <select
+                    className="custom-input"
+                    value={subcategoryId}
+                    onChange={e => setSubcategoryId(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #999', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                    disabled={!categoryId}
+                  >
+                    <option value="">Select subcategory</option>
+                    {categories.filter(c => c.parent_id === categoryId).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="outline-btn"
+                    onClick={() => {
+                      if (categoryId) setParentCategoryId(categoryId);
+                      setIsSubcategory(true);
+                      setShowCategoryModal(true);
+                    }}
+                  >
+                    <span>+</span> Add Subcategory
+                  </button>
+                </div>
               </div>
             </div>
             
-            <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid #999', margin: '24px 0' }} />
 
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Specifications</label>
               {specs.map((spec, idx) => (
                 <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                   <input
+                    className="custom-input"
                     type="text"
                     value={spec.key}
                     onChange={e => handleSpecChange(idx, 'key', e.target.value)}
                     placeholder="Key (e.g. Material)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #ccc' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
                   />
                   <input
+                    className="custom-input"
                     type="text"
                     value={spec.value}
                     onChange={e => handleSpecChange(idx, 'value', e.target.value)}
                     placeholder="Value (e.g. Cotton)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #ccc' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
                   />
-                  <button type="button" onClick={() => removeSpec(idx)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
+                  <button type="button" onClick={() => removeSpec(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
                 </div>
               ))}
-              <button type="button" onClick={addSpec} style={{ marginTop: 4, background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#000', display: 'flex', alignItems: 'center', gap: 6 }}><span>+</span> Add Specification</button>
+              <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 4 }}><span>+</span> Add Specification</button>
             </div>
             
             <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
@@ -325,15 +420,16 @@ const ProductForm = () => {
             <div style={{ marginBottom: 24 }}>
               <label style={{ fontWeight: 500 }}>Main Image URL</label>
               <input
+                className="custom-input"
                 type="text"
                 value={mainImage}
                 onChange={e => setMainImage(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ccc', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
                 placeholder="Paste Cloudinary main image URL"
                 required
               />
               {mainImage && (
-                <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
               )}
             </div>
             <div style={{ marginBottom: 24 }}>
@@ -341,20 +437,21 @@ const ProductForm = () => {
               {galleryImages.map((img, idx) => (
                 <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                   <input
+                    className="custom-input"
                     type="text"
                     value={img}
                     onChange={e => handleGalleryImageChange(idx, e.target.value)}
                     placeholder="Paste Cloudinary image URL"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #ccc' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
                   />
-                  <button type="button" onClick={() => removeGalleryImage(idx)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
+                  <button type="button" onClick={() => removeGalleryImage(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
                 </div>
               ))}
-              <button type="button" onClick={addGalleryImage} style={{ marginTop: 4, background: '#f5f6fa', border: '1px solid #ccc', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#111' }}>+ Add Image Link</button>
+              <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><span>+</span> Add Image Link</button>
               {galleryImages.filter(Boolean).length > 0 && (
                 <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
                   {galleryImages.filter(Boolean).map((img, i) => (
-                    <img key={i} src={img} alt="Gallery" style={{ maxWidth: 90, borderRadius: 6, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
+                    <img key={i} src={img} alt="Gallery" style={{ maxWidth: 90, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
                   ))}
                 </div>
               )}
@@ -383,27 +480,29 @@ const ProductForm = () => {
                 {/* Dynamic variant rows */}
                 {variantRows.map((variant, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                    <td><input type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
-                    <td><input type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
-                    <td><input type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
-                    <td><input type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} /></td>
+                    <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
+                    <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
+                    <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
+                    <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
                     <td>
                       <input
+                        className="custom-input"
                         type="text"
                         value={variant.sku}
                         readOnly
-                        style={{ width: 100, padding: 4, borderRadius: 4, border: '1px solid #ccc', background: '#f5f6fa', color: '#888' }}
+                        style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #999', background: '#f5f6fa', color: '#888' }}
                       />
                     </td>
-                    <td><input type="text" value={variant.image} onChange={e => handleVariantChange(idx, 'image', e.target.value)} style={{ width: 100, padding: 4, borderRadius: 4, border: '1px solid #ccc' }} placeholder="Image URL" /></td>
-                    <td><button type="button" onClick={() => removeVariant(idx)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button></td>
+                    <td><input className="custom-input" type="text" value={variant.image} onChange={e => handleVariantChange(idx, 'image', e.target.value)} style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #999' }} placeholder="Image URL" /></td>
+                    <td><button type="button" onClick={() => removeVariant(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <button type="button" onClick={addVariant} style={{ background: '#fff', border: '1px solid #000', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', color: '#000', display: 'flex', alignItems: 'center', gap: 6 }}><span>+</span> Add Variant</button>
+            <button type="button" className="outline-btn" onClick={addVariant}><span>+</span> Add Variant</button>
           </div>
         </div>
+      </div>
         {/* Add Category Modal */}
         {showCategoryModal && (
           <div style={{
@@ -413,15 +512,38 @@ const ProductForm = () => {
             zIndex: 1000,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <form onSubmit={handleAddCategory} style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 32, minWidth: 340 }}>
+            <form onSubmit={handleAddCategory} style={{ background: '#fff', borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 32, minWidth: 340 }}>
               <h3 style={{ marginBottom: 18, fontWeight: 700 }}>Add New Category</h3>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ fontWeight: 500 }}>Name</label>
-                <input type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} required />
+                <input className="custom-input" type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }} required />
               </div>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={isSubcategory} onChange={e => setIsSubcategory(e.target.checked)} style={{ marginRight: 8 }} />
+                  Is this a subcategory?
+                </label>
+              </div>
+              {isSubcategory && (
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ fontWeight: 500 }}>Parent Category</label>
+                  <select
+                    className="custom-input"
+                    value={parentCategoryId}
+                    onChange={e => setParentCategoryId(e.target.value)}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                    required={isSubcategory}
+                  >
+                    <option value="">Select Parent Category</option>
+                    {categories.filter(c => !c.parent_id).map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div style={{ marginBottom: 18 }}>
                 <label style={{ fontWeight: 500 }}>Image URL</label>
-                <input type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} required />
+                <input className="custom-input" type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }} required />
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowCategoryModal(false)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', color: '#333' }}>Cancel</button>
