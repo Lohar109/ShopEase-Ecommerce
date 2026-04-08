@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
@@ -89,13 +90,13 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (uniqueSizes.length > 0 && !selectedSize) {
-      alert("Please select a size");
+      toast.error("Please select a size");
       return;
     }
 
     const variantToAdd = variants.find(v => v.size === selectedSize) || selectedVariant;
     if (!variantToAdd?.id) {
-      alert("Please select a size");
+      toast.error("Please select a size");
       return;
     }
 

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const CartContext = createContext();
 
@@ -20,35 +21,38 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, selectedVariant) => {
     if (!product?.id || !selectedVariant?.id) return;
+    const normalizedSize = selectedVariant.size || null;
+    const normalizedColor = selectedVariant.color || null;
 
-    setCartItems(prevItems => {
-      const existingIndex = prevItems.findIndex(
-        item => item.productId === product.id && item.variantId === selectedVariant.id
-      );
+    const exists = cartItems.some(
+      item =>
+        item.productId === product.id &&
+        (item.size || null) === normalizedSize &&
+        (item.color || null) === normalizedColor
+    );
 
-      if (existingIndex !== -1) {
-        return prevItems.map((item, index) =>
-          index === existingIndex
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
+    if (exists) {
+      toast('Item already in cart', { icon: 'ℹ️' });
+      return { added: false };
+    }
 
-      const cartItemId = `${product.id}-${selectedVariant.id}`;
-      return [
-        ...prevItems,
-        {
-          cartItemId,
-          productId: product.id,
-          variantId: selectedVariant.id,
-          productName: product.name,
-          image: selectedVariant.image || product.main_image || '',
-          size: selectedVariant.size || null,
-          price: selectedVariant.price ?? null,
-          quantity: 1,
-        },
-      ];
-    });
+    const cartItemId = `${product.id}-${selectedVariant.id}`;
+    setCartItems(prevItems => [
+      ...prevItems,
+      {
+        cartItemId,
+        productId: product.id,
+        variantId: selectedVariant.id,
+        productName: product.name,
+        image: selectedVariant.image || product.main_image || '',
+        size: normalizedSize,
+        color: normalizedColor,
+        price: selectedVariant.price ?? null,
+        quantity: 1,
+      },
+    ]);
+    toast.success('Added to Cart');
+    return { added: true };
   };
 
   const removeFromCart = (cartItemId) => {
