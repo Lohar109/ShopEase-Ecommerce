@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
+import { useCart } from "../context/CartContext";
 
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
@@ -11,6 +12,7 @@ const ProductDetail = () => {
   const [error, setError] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [mainDisplay, setMainDisplay] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/products/${id}`)
@@ -85,6 +87,22 @@ const ProductDetail = () => {
   const displayItems = galleryItems.slice(0, 4);
   const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
 
+  const handleAddToCart = () => {
+    if (uniqueSizes.length > 0 && !selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+
+    const variantToAdd = variants.find(v => v.size === selectedSize) || selectedVariant;
+    if (!variantToAdd?.id) {
+      alert("Please select a size");
+      return;
+    }
+
+    addToCart(product, variantToAdd);
+    alert("Added to Cart!");
+  };
+
   return (
     <div className="product-detail-container">
       <div className="product-detail-main">
@@ -151,7 +169,7 @@ const ProductDetail = () => {
                   <span className="product-detail-tax">All taxes included</span>
                 </div>
                 <div className="product-card-actions detail-page-buttons">
-                  <button className="btn-card-add-to-cart">Add to Cart</button>
+                  <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
                   <button className="btn-card-buy-now">Buy Now</button>
                 </div>
               </div>

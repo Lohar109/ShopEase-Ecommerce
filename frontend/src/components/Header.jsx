@@ -1,34 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Search, User } from "lucide-react";
 import { WishlistContext } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
 
 const Header = () => {
   const { wishlist } = useContext(WishlistContext);
-  const [cartCount, setCartCount] = useState(0);
-
-  useEffect(() => {
-    const getCartCount = () => {
-      try {
-        const raw = localStorage.getItem("cart") || localStorage.getItem("cartItems") || "[]";
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed.length;
-        if (parsed && Array.isArray(parsed.items)) return parsed.items.length;
-        return 0;
-      } catch {
-        return 0;
-      }
-    };
-
-    const syncCartCount = () => setCartCount(getCartCount());
-    syncCartCount();
-
-    window.addEventListener("storage", syncCartCount);
-    window.addEventListener("focus", syncCartCount);
-    return () => {
-      window.removeEventListener("storage", syncCartCount);
-      window.removeEventListener("focus", syncCartCount);
-    };
-  }, []);
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
 
   return (
     <header>
