@@ -172,6 +172,9 @@ const ProductForm = () => {
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
+        .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
+        .remove-tag-btn:hover { background: #e53935; color: #fff; }
+        .remove-tag-btn svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
       `}</style>
       {/* Sticky Header & Breadcrumbs */}
       <div style={{
@@ -270,7 +273,7 @@ const ProductForm = () => {
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
                 placeholder="Enter product name"
                 required
               />
@@ -282,7 +285,7 @@ const ProductForm = () => {
                   className="custom-input"
                   value={audience}
                   onChange={e => setAudience(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
                   required
                 >
                   <option value="unisex">Unisex</option>
@@ -298,7 +301,7 @@ const ProductForm = () => {
                   type="text"
                   value={slug}
                   readOnly
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', background: '#f5f6fa', marginTop: 4 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', marginTop: 4 }}
                 />
               </div>
             </div>
@@ -309,7 +312,7 @@ const ProductForm = () => {
                 type="text"
                 value={brand}
                 onChange={e => setBrand(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
                 placeholder="Enter brand name"
                 required
               />
@@ -320,7 +323,7 @@ const ProductForm = () => {
                 className="custom-input"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', minHeight: 80, marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
                 placeholder="Enter product description"
                 required
               />
@@ -334,7 +337,7 @@ const ProductForm = () => {
                     className="custom-input"
                     value={categoryId}
                     onChange={e => setCategoryId(e.target.value)}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #999' }}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                     required
                   >
                     <option value="">Select category</option>
@@ -363,7 +366,7 @@ const ProductForm = () => {
                     className="custom-input"
                     value={subcategoryId}
                     onChange={e => setSubcategoryId(e.target.value)}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #999', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
                     disabled={!categoryId}
                   >
                     <option value="">Select subcategory</option>
@@ -386,7 +389,7 @@ const ProductForm = () => {
               </div>
             </div>
             
-            <hr style={{ border: 'none', borderTop: '1px solid #999', margin: '24px 0' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid #a0a0a0', margin: '24px 0' }} />
 
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 500 }}>Specifications</label>
@@ -398,7 +401,7 @@ const ProductForm = () => {
                     value={spec.key}
                     onChange={e => handleSpecChange(idx, 'key', e.target.value)}
                     placeholder="Key (e.g. Material)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                   />
                   <input
                     className="custom-input"
@@ -406,9 +409,14 @@ const ProductForm = () => {
                     value={spec.value}
                     onChange={e => handleSpecChange(idx, 'value', e.target.value)}
                     placeholder="Value (e.g. Cotton)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                   />
-                  <button type="button" onClick={() => removeSpec(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
+                  <button type="button" className="remove-tag-btn" onClick={() => removeSpec(idx)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 </div>
               ))}
               <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 4 }}><span>+</span> Add Specification</button>
@@ -424,7 +432,7 @@ const ProductForm = () => {
                 type="text"
                 value={mainImage}
                 onChange={e => setMainImage(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
                 placeholder="Paste Cloudinary main image URL"
                 required
               />
@@ -442,9 +450,14 @@ const ProductForm = () => {
                     value={img}
                     onChange={e => handleGalleryImageChange(idx, e.target.value)}
                     placeholder="Paste Cloudinary image URL"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #999' }}
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                   />
-                  <button type="button" onClick={() => removeGalleryImage(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button>
+                  <button type="button" className="remove-tag-btn" onClick={() => removeGalleryImage(idx)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 </div>
               ))}
               <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><span>+</span> Add Image Link</button>
@@ -480,21 +493,28 @@ const ProductForm = () => {
                 {/* Dynamic variant rows */}
                 {variantRows.map((variant, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                    <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
-                    <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
-                    <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
-                    <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #999' }} /></td>
+                    <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                    <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                    <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                    <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
                     <td>
                       <input
                         className="custom-input"
                         type="text"
                         value={variant.sku}
                         readOnly
-                        style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #999', background: '#f5f6fa', color: '#888' }}
+                        style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
                       />
                     </td>
-                    <td><input className="custom-input" type="text" value={variant.image} onChange={e => handleVariantChange(idx, 'image', e.target.value)} style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #999' }} placeholder="Image URL" /></td>
-                    <td><button type="button" onClick={() => removeVariant(idx)} style={{ background: '#eee', border: 'none', borderRadius: 12, padding: '0 10px', cursor: 'pointer', color: '#d32f2f' }}>✕</button></td>
+                    <td><input className="custom-input" type="text" value={variant.image} onChange={e => handleVariantChange(idx, 'image', e.target.value)} style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} placeholder="Image URL" /></td>
+                    <td>
+                      <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -516,7 +536,7 @@ const ProductForm = () => {
               <h3 style={{ marginBottom: 18, fontWeight: 700 }}>Add New Category</h3>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ fontWeight: 500 }}>Name</label>
-                <input className="custom-input" type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }} required />
+                <input className="custom-input" type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
               </div>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
@@ -531,7 +551,7 @@ const ProductForm = () => {
                     className="custom-input"
                     value={parentCategoryId}
                     onChange={e => setParentCategoryId(e.target.value)}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
                     required={isSubcategory}
                   >
                     <option value="">Select Parent Category</option>
@@ -543,7 +563,7 @@ const ProductForm = () => {
               )}
               <div style={{ marginBottom: 18 }}>
                 <label style={{ fontWeight: 500 }}>Image URL</label>
-                <input className="custom-input" type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #999', marginTop: 4 }} required />
+                <input className="custom-input" type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowCategoryModal(false)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', color: '#333' }}>Cancel</button>
