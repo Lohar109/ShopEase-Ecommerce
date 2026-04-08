@@ -100,7 +100,6 @@ const ProductDetail = () => {
     }
 
     addToCart(product, variantToAdd);
-    alert("Added to Cart!");
   };
 
   return (
