@@ -17,12 +17,12 @@ export async function fetchCategories() {
 }
 
 // Add a new category
-export async function addCategory({ name, image }) {
+export async function addCategory({ name, image, parent_id = null }) {
   try {
     const response = await fetch(`${API_BASE_URL}/categories`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, image })
+      body: JSON.stringify({ name, image, parent_id })
     });
     if (!response.ok) {
       throw new Error('Failed to add category');

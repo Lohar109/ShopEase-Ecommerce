@@ -64,7 +64,7 @@ const ProductForm = () => {
   // Set default category if available
   useEffect(() => {
     if (!categoryId && categories.length > 0) {
-      const mainCategories = categories.filter(c => !c.parent_id);
+      const mainCategories = categories.filter(c => c.parent_id === null);
       if (mainCategories.length > 0) setCategoryId(mainCategories[0].id);
     }
   }, [categories]);
@@ -78,14 +78,19 @@ const ProductForm = () => {
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (!newCategoryName.trim() || !newCategoryImage.trim()) return;
-    if (isSubcategory && !parentCategoryId) {
+    const normalizedParentCategoryId = String(parentCategoryId || '').trim();
+    if (isSubcategory && !normalizedParentCategoryId) {
       alert('Please select a parent category.');
       return;
     }
     setAddingCategory(true);
     try {
       const payload = { name: newCategoryName, image: newCategoryImage };
-      if (isSubcategory) payload.parent_id = parentCategoryId;
+      if (isSubcategory) {
+        payload.parent_id = normalizedParentCategoryId;
+      } else {
+        payload.parent_id = null;
+      }
       await addCategory(payload);
       setShowCategoryModal(false);
       setNewCategoryName('');
@@ -341,7 +346,7 @@ const ProductForm = () => {
                     required
                   >
                     <option value="">Select category</option>
-                    {categories.filter(c => !c.parent_id).map(cat => (
+                    {categories.filter(c => c.parent_id === null).map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
@@ -354,7 +359,7 @@ const ProductForm = () => {
                       setShowCategoryModal(true);
                     }}
                   >
-                    <span>+</span> Add Category
+                    Add Category
                   </button>
                 </div>
               </div>
@@ -383,7 +388,7 @@ const ProductForm = () => {
                       setShowCategoryModal(true);
                     }}
                   >
-                    <span>+</span> Add Subcategory
+                    Add Subcategory
                   </button>
                 </div>
               </div>
@@ -419,7 +424,7 @@ const ProductForm = () => {
                   </button>
                 </div>
               ))}
-              <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 4 }}><span>+</span> Add Specification</button>
+              <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 4 }}>Add Specification</button>
             </div>
             
             <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
@@ -460,7 +465,7 @@ const ProductForm = () => {
                   </button>
                 </div>
               ))}
-              <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><span>+</span> Add Image Link</button>
+              <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}>Add Image Link</button>
               {galleryImages.filter(Boolean).length > 0 && (
                 <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
                   {galleryImages.filter(Boolean).map((img, i) => (
@@ -519,7 +524,7 @@ const ProductForm = () => {
                 ))}
               </tbody>
             </table>
-            <button type="button" className="outline-btn" onClick={addVariant}><span>+</span> Add Variant</button>
+            <button type="button" className="outline-btn" onClick={addVariant}>Add Variant</button>
           </div>
         </div>
       </div>
@@ -533,16 +538,10 @@ const ProductForm = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <form onSubmit={handleAddCategory} style={{ background: '#fff', borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 32, minWidth: 340 }}>
-              <h3 style={{ marginBottom: 18, fontWeight: 700 }}>Add New Category</h3>
+              <h3 style={{ marginBottom: 18, fontWeight: 700 }}>{isSubcategory ? 'Add New Subcategory' : 'Add New Category'}</h3>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ fontWeight: 500 }}>Name</label>
                 <input className="custom-input" type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
-              </div>
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={isSubcategory} onChange={e => setIsSubcategory(e.target.checked)} style={{ marginRight: 8 }} />
-                  Is this a subcategory?
-                </label>
               </div>
               {isSubcategory && (
                 <div style={{ marginBottom: 14 }}>
@@ -555,7 +554,7 @@ const ProductForm = () => {
                     required={isSubcategory}
                   >
                     <option value="">Select Parent Category</option>
-                    {categories.filter(c => !c.parent_id).map(c => (
+                    {categories.filter(c => c.parent_id === null).map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
