@@ -19,9 +19,14 @@ exports.getAllProducts = async (req, res) => {
     const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
     const result = await pool.query(`
-      SELECT p.*, c.name AS category_name
+      SELECT p.*, c.name AS category_name, COALESCE(vs.total_stock, 0) AS stock
       FROM product p
       LEFT JOIN category c ON p.category_id = c.id
+      LEFT JOIN LATERAL (
+        SELECT SUM(pv.stock)::int AS total_stock
+        FROM product_variant pv
+        WHERE pv.product_id = p.id
+      ) vs ON TRUE
       ${whereString}
       ORDER BY p.created_at DESC
     `, queryArgs);
@@ -160,5 +165,59 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ error: err.message });
   } finally {
     client.release();
+  }
+};
+
+// Update product flags (active/featured)
+exports.updateProductStatus = async (req, res) => {
+  const { id } = req.params;
+  const { is_active, is_featured } = req.body;
+
+  const updates = [];
+  const values = [];
+
+  if (typeof is_active === 'boolean') {
+    updates.push(`is_active = $${values.length + 1}`);
+    values.push(is_active);
+  }
+
+  if (typeof is_featured === 'boolean') {
+    updates.push(`is_featured = $${values.length + 1}`);
+    values.push(is_featured);
+  }
+
+  if (updates.length === 0) {
+    return res.status(400).json({ error: 'No valid status fields provided' });
+  }
+
+  values.push(id);
+
+  try {
+    const result = await pool.query(
+      `UPDATE product SET ${updates.join(', ')}, updated_at = now() WHERE id = $${values.length} RETURNING id, is_active, is_featured`,
+      values
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Delete a product and its variants
+exports.deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM product WHERE id = $1 RETURNING id', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({ message: 'Product deleted', product_id: id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

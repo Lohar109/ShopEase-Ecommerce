@@ -12,9 +12,12 @@ const MainPage = () => {
       .then((res) => res.json())
       .then(async (data) => {
         if (!Array.isArray(data)) return setProducts([]);
+        const activeProducts = data.filter(
+          (product) => product?.is_active === true || product?.active === true
+        );
         // Fetch variants for each product
         const productsWithVariants = await Promise.all(
-          data.slice(0, 3).map(async (product) => {
+          activeProducts.slice(0, 3).map(async (product) => {
             try {
               const res = await fetch(`http://localhost:5000/api/products/${product.id}`);
               const details = await res.json();
@@ -30,7 +33,9 @@ const MainPage = () => {
   }, []);
 
   const safeProducts = Array.isArray(products) ? products : [];
-  safeProducts.slice(0, 10); // instead of products.slice(0, 10)
+  const visibleProducts = safeProducts.filter(
+    (product) => product?.is_active === true || product?.active === true
+  );
 
   return (
     <main>
@@ -62,7 +67,7 @@ const MainPage = () => {
 
       {/* Featured Products */}
       <div className="featured-products-grid">
-        {safeProducts.map((product) => (
+        {visibleProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
