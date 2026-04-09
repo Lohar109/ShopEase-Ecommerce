@@ -43,7 +43,7 @@ const ProductList = () => {
               transition: 'background 0.2s',
             }}
           >
-            + Add Product
+            Add Product
           </button>
         </div>
         {products.length === 0 ? (
@@ -59,6 +59,7 @@ const ProductList = () => {
                   <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active</th>
                   <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Featured</th>
                   <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,6 +71,27 @@ const ProductList = () => {
                     <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.is_active ? 'Yes' : 'No'}</td>
                     <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.is_featured ? 'Yes' : 'No'}</td>
                     <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</td>
+                    <td style={{ padding: '16px 20px', fontSize: '14px' }}>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/products/${p.id}/edit`)}
+                        style={{
+                          background: '#000',
+                          color: '#fff',
+                          border: '1px solid #000',
+                          borderRadius: 8,
+                          padding: '5px 12px',
+                          fontFamily: 'Poppins, sans-serif',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          lineHeight: 1.2,
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        Edit
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

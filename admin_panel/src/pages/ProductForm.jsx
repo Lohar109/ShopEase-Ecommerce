@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { addCategory } from '../services/categoryService';
 import { fetchCategories } from '../services/categoryService';
-import { saveProduct } from '../services/productService';
+import { fetchProductById, saveProduct, updateProduct } from '../services/productService';
 
 const TABS = [
   { label: 'General Details', key: 'general' },
@@ -11,8 +11,13 @@ const TABS = [
 ];
 
 const ProductForm = () => {
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [prefillCategoryId, setPrefillCategoryId] = useState('');
+  const [prefillApplied, setPrefillApplied] = useState(false);
   const navigate = useNavigate();
   // General Details state
   const [name, setName] = useState('');
@@ -61,18 +66,94 @@ const ProductForm = () => {
     loadCategories();
   }, []);
 
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const loadProduct = async () => {
+      setLoadingProduct(true);
+      try {
+        const data = await fetchProductById(id);
+        const product = data?.product;
+        const variants = data?.variants || [];
+
+        if (!product) {
+          alert('Product not found');
+          navigate('/products');
+          return;
+        }
+
+        setName(product.name || '');
+        setSlug(product.slug || '');
+        setBrand(product.brand || '');
+        setDescription(product.description || '');
+        setAudience(product.audience || 'unisex');
+        setMainImage(product.main_image || '');
+        setGalleryImages(Array.isArray(product.images) && product.images.length > 0 ? product.images : ['']);
+
+        const specEntries = product.specifications && typeof product.specifications === 'object'
+          ? Object.entries(product.specifications)
+          : [];
+        setSpecs(specEntries.length > 0 ? specEntries.map(([key, value]) => ({ key, value: String(value) })) : [{ key: '', value: '' }]);
+
+        setVariantRows(
+          variants.length > 0
+            ? variants.map(v => ({
+                size: v.size || '',
+                color: v.color || '',
+                price: v.price ?? '',
+                stock: v.stock ?? '',
+                sku: v.sku || '',
+                image: v.image || ''
+              }))
+            : [{ size: '', color: '', price: '', stock: '', sku: '', image: '' }]
+        );
+
+        setPrefillCategoryId(product.category_id || '');
+      } catch (err) {
+        alert(err.message || 'Failed to load product details');
+        navigate('/products');
+      } finally {
+        setLoadingProduct(false);
+      }
+    };
+
+    loadProduct();
+  }, [id, isEditMode, navigate]);
+
   // Set default category if available
   useEffect(() => {
+    if (isEditMode) return;
     if (!categoryId && categories.length > 0) {
       const mainCategories = categories.filter(c => c.parent_id === null);
       if (mainCategories.length > 0) setCategoryId(mainCategories[0].id);
     }
-  }, [categories]);
+  }, [categories, categoryId, isEditMode]);
+
+  useEffect(() => {
+    if (!isEditMode || !prefillCategoryId || prefillApplied || categories.length === 0) return;
+
+    const selectedCategory = categories.find(c => c.id === prefillCategoryId);
+    if (!selectedCategory) {
+      setPrefillApplied(true);
+      return;
+    }
+
+    if (selectedCategory.parent_id) {
+      setCategoryId(selectedCategory.parent_id);
+      setSubcategoryId(selectedCategory.id);
+    } else {
+      setCategoryId(selectedCategory.id);
+      setSubcategoryId('');
+    }
+
+    setPrefillApplied(true);
+  }, [categories, isEditMode, prefillApplied, prefillCategoryId]);
 
   // When category changes, reset subcategory
   useEffect(() => {
+    if (isEditMode && !prefillApplied) return;
     setSubcategoryId('');
-  }, [categoryId]);
+  }, [categoryId, isEditMode, prefillApplied]);
 
   // Add Category handler
   const handleAddCategory = async (e) => {
@@ -165,6 +246,56 @@ const ProductForm = () => {
     setVariantRows(rows => rows.map((row, i) => i === idx ? { ...row, sku: value, skuManuallyEdited: true } : row));
   };
 
+  const handleSubmitProduct = async () => {
+    if (!categoryId) {
+      alert('Please select a category.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const productData = {
+        name,
+        slug,
+        brand,
+        description,
+        category_id: subcategoryId || categoryId,
+        audience,
+        main_image: mainImage,
+        images: galleryImages.filter(Boolean),
+        specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
+        variants: variantRows.map(v => ({
+          size: v.size,
+          color: v.color,
+          price: v.price,
+          stock: v.stock,
+          sku: v.sku,
+          image: v.image
+        }))
+      };
+
+      if (isEditMode) {
+        await updateProduct(id, productData);
+      } else {
+        await saveProduct(productData);
+      }
+
+      setSaving(false);
+      navigate('/products');
+    } catch (err) {
+      setSaving(false);
+      alert(err.message || 'Failed to save product');
+    }
+  };
+
+  if (loadingProduct) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins, sans-serif' }}>
+        Loading product...
+      </div>
+    );
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -195,7 +326,7 @@ const ProductForm = () => {
         borderBottom: '1px solid #e0e0e0'
       }}>
         <div style={{ color: '#888', fontSize: 15, fontWeight: 500 }}>
-          Products / <span style={{ color: '#111', fontWeight: 600 }}>Add New Product</span>
+          Products / <span style={{ color: '#111', fontWeight: 600 }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
         </div>
         <button
           type="button"
@@ -215,29 +346,7 @@ const ProductForm = () => {
             gap: '8px'
           }}
           disabled={saving}
-          onClick={async () => {
-            if (!categoryId) {
-              alert('Please select a category.');
-              return;
-            }
-            setSaving(true);
-            try {
-              const productData = {
-                name, slug, brand, description, category_id: subcategoryId || categoryId, audience,
-                main_image: mainImage, images: galleryImages.filter(Boolean),
-                specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
-                variants: variantRows.map(v => ({
-                  size: v.size, color: v.color, price: v.price, stock: v.stock, sku: v.sku, image: v.image
-                }))
-              };
-              await saveProduct(productData);
-              setSaving(false);
-              navigate('/products');
-            } catch (err) {
-              setSaving(false);
-              alert(err.message || 'Failed to save product');
-            }
-          }}
+          onClick={handleSubmitProduct}
         >
           {saving && (
             <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }}>
@@ -246,7 +355,7 @@ const ProductForm = () => {
               <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
             </svg>
           )}
-          {saving ? 'Saving...' : 'Save Product'}
+          {saving ? 'Saving...' : isEditMode ? 'Update Product' : 'Save Product'}
         </button>
       </div>
 
@@ -259,7 +368,7 @@ const ProductForm = () => {
             &lt; Back to Products
           </a>
           <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111', margin: '8px 0 0 0', fontFamily: 'Poppins, sans-serif' }}>
-            Add New Product
+            {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h2>
         </div>
 
