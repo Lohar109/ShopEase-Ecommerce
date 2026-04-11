@@ -640,3 +640,128 @@ footer {
   box-shadow: none !important;
   outline: none !important;
 }
+
+.wishlist-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.wishlist-empty-state {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.wishlist-empty-icon {
+    width: 72px;
+    height: 72px;
+    color: #d1d5db;
+    margin-bottom: 20px;
+}
+
+.wishlist-empty-title {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.wishlist-empty-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+.wishlist-empty-cta {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.wishlist-empty-cta:hover {
+    background: #1f2937;
+    transform: none;
+    box-shadow: none;
+}
+
+.shop-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.shop-categories {
+    margin-bottom: 1.5rem;
+}
+
+.shop-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.shop-pill {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #111827;
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.shop-pill:hover {
+    background: #f9fafb;
+    transform: none;
+    box-shadow: none;
+}
+
+.shop-pill.active {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
+}
+
+.subcategory-row {
+    margin-top: 0.75rem;
+    animation: subcategoryReveal 220ms ease;
+}
+
+.shop-sub-pill {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.75rem;
+}
+
+.shop-product-grid {
+    min-height: 30vh;
+}
+
+.shop-empty-products {
+    color: #6b7280;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+@keyframes subcategoryReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

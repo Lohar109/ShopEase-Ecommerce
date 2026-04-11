@@ -4,11 +4,15 @@ import MainPage from "./components/MainPage";
 import ProductDetail from "./components/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Wishlist from "./pages/Wishlist";
+import Shop from "./pages/Shop";
 
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<MainPage />} />
+      <Route path="/shop" element={<Shop />} />
+      <Route path="/wishlist" element={<Wishlist />} />
       <Route path="/product/:id" element={<ProductDetail />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
