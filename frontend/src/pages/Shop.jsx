@@ -150,7 +150,7 @@ const Shop = () => {
         {visibleProducts.length === 0 ? (
           <p className="shop-empty-products">No products found for this selection.</p>
         ) : (
-          <div className="featured-products-grid">
+          <div className="shop-products-grid-four">
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -17,7 +17,7 @@ const MainPage = () => {
         );
         // Fetch variants for each product
         const productsWithVariants = await Promise.all(
-          activeProducts.slice(0, 3).map(async (product) => {
+          activeProducts.map(async (product) => {
             try {
               const res = await fetch(`http://localhost:5000/api/products/${product.id}`);
               const details = await res.json();
@@ -66,7 +66,7 @@ const MainPage = () => {
       </section>
 
       {/* Featured Products */}
-      <div className="featured-products-grid">
+      <div className="shop-products-grid-four">
         {visibleProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
