@@ -1,7 +1,7 @@
 // src/services/authService.js
 // Handles authentication API calls for admin panel
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Change to your backend URL if different
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api`;
 
 export async function loginAdmin(email, password) {
   try {

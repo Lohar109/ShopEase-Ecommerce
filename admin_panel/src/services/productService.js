@@ -1,7 +1,7 @@
 // src/services/productService.js
 // Handles product API calls for admin panel
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Update if your backend URL is different
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api`;
 
 export async function fetchProducts() {
   try {

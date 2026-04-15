@@ -5,6 +5,8 @@ import ProductCard from "../components/ProductCard";
 import { WishlistContext } from "../context/WishlistContext";
 import "../styles.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 const Wishlist = () => {
   const { wishlist } = useContext(WishlistContext);
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const Wishlist = () => {
       return;
     }
 
-    fetch("http://localhost:5000/api/products")
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) {
