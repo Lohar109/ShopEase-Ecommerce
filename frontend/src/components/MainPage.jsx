@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import "../styles.css";
 import ProductCard from "./ProductCard";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
 
 const MainPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     // Fetch all products, then fetch variants for each product
-    fetch(`${API_BASE_URL}/api/products`)
+    fetch(`${API_ORIGIN}/api/products`)
       .then((res) => res.json())
       .then(async (data) => {
         if (!Array.isArray(data)) return setProducts([]);
@@ -21,7 +23,7 @@ const MainPage = () => {
         const productsWithVariants = await Promise.all(
           activeProducts.map(async (product) => {
             try {
-              const res = await fetch(`${API_BASE_URL}/api/products/${product.id}`);
+              const res = await fetch(`${API_ORIGIN}/api/products/${product.id}`);
               const details = await res.json();
               return { ...product, variants: details.variants || [] };
             } catch {

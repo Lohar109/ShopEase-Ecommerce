@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import "../styles.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -11,14 +13,14 @@ const Shop = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/categories`)
+    fetch(`${API_ORIGIN}/api/categories`)
       .then((res) => res.json())
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/products`)
+    fetch(`${API_ORIGIN}/api/products`)
       .then((res) => res.json())
       .then(async (data) => {
         if (!Array.isArray(data)) {
@@ -33,7 +35,7 @@ const Shop = () => {
         const productsWithVariants = await Promise.all(
           activeProducts.map(async (product) => {
             try {
-              const detailsRes = await fetch(`${API_BASE_URL}/api/products/${product.id}`);
+              const detailsRes = await fetch(`${API_ORIGIN}/api/products/${product.id}`);
               const details = await detailsRes.json();
               return { ...product, variants: details.variants || [] };
             } catch {

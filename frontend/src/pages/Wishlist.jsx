@@ -5,7 +5,9 @@ import ProductCard from "../components/ProductCard";
 import { WishlistContext } from "../context/WishlistContext";
 import "../styles.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
 
 const Wishlist = () => {
   const { wishlist } = useContext(WishlistContext);
@@ -18,7 +20,7 @@ const Wishlist = () => {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/products`)
+    fetch(`${API_ORIGIN}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) {

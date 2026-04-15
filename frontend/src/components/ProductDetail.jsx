@@ -4,7 +4,9 @@ import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
 
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +20,7 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/products/${id}`)
+    fetch(`${API_ORIGIN}/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data.product);
