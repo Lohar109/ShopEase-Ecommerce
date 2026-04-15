@@ -3,9 +3,15 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const dbUrl = process.env.DATABASE_URL || '';
+const sanitizedDbUrl = dbUrl
+  .replace(/([?&])sslmode=[^&]*/gi, '$1')
+  .replace(/([?&])sslcert=[^&]*/gi, '$1')
+  .replace(/([?&])sslkey=[^&]*/gi, '$1')
+  .replace(/([?&])sslrootcert=[^&]*/gi, '$1')
+  .replace(/[?&]$/, '');
 const useManagedSsl = dbUrl.includes('supabase.com') || dbUrl.includes('pooler.supabase.com');
 const pool = new Pool({
-  connectionString: dbUrl,
+  connectionString: sanitizedDbUrl,
   ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
 });
 
