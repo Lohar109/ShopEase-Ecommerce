@@ -1,5 +1,10 @@
 const { Pool } = require('pg');
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const dbUrl = process.env.DATABASE_URL || '';
+const useManagedSsl = dbUrl.includes('supabase.com') || dbUrl.includes('pooler.supabase.com');
+const pool = new Pool({
+  connectionString: dbUrl,
+  ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
+});
 
 exports.getAllProducts = async (req, res) => {
   try {

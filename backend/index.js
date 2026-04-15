@@ -7,13 +7,16 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 5000;
+const dbUrl = process.env.DATABASE_URL || '';
+const useManagedSsl = dbUrl.includes('supabase.com') || dbUrl.includes('pooler.supabase.com');
 
 app.use(cors());
 app.use(express.json());
 
 // PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: dbUrl,
+  ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
 });
 
 // Test route
