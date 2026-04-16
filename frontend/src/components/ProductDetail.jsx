@@ -16,6 +16,8 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [mainDisplay, setMainDisplay] = useState(null);
   const { addToCart } = useCart();
 
@@ -29,6 +31,7 @@ const ProductDetail = () => {
         // Auto-select first size if available
         if (data.variants && data.variants.length > 0) {
           setSelectedSize(data.variants[0].size);
+          setSelectedColor(data.variants[0].color || null);
         }
       })
       .catch(() => {
@@ -37,35 +40,70 @@ const ProductDetail = () => {
       });
   }, [id]);
 
-  // Find selected variant
-  const selectedVariant = variants.find(v => v.size === selectedSize) || variants[0] || {};
-  
-  // Update main display when selected variant changes, if not explicitly overriden
+  // Find selected variant using selected size and color first, then fallback in order
+  const selectedVariant =
+    variants.find(
+      (v) =>
+        (!selectedSize || v.size === selectedSize) &&
+        (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())
+    ) ||
+    variants.find((v) => (!selectedSize || v.size === selectedSize)) ||
+    variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
+    variants[0] ||
+    {};
+
+  // Fetch design-specific gallery when color changes
   useEffect(() => {
-    if (selectedVariant.image || (product && product.main_image)) {
-      setMainDisplay({ type: 'image', url: selectedVariant.image || product.main_image });
+    if (!id || !selectedColor) {
+      setDesignGalleryImages([]);
+      return;
     }
-  }, [selectedVariant, product]);
+
+    fetch(`${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`)
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          setDesignGalleryImages(Array.isArray(data?.images) ? data.images : []);
+          return;
+        }
+
+        // No design-specific gallery for this color, fallback to default product images
+        if (res.status === 404) {
+          setDesignGalleryImages([]);
+          return;
+        }
+
+        setDesignGalleryImages([]);
+      })
+      .catch(() => {
+        setDesignGalleryImages([]);
+      });
+  }, [id, selectedColor]);
 
   const galleryItems = useMemo(() => {
     if (!product) return [];
-    
+
     const items = [];
-    
-    // Add main variant image if exists
-    if (selectedVariant.image) {
-       items.push({ type: 'image', url: selectedVariant.image });
-    } else if (product.main_image) {
-       items.push({ type: 'image', url: product.main_image });
+
+    const defaultImages = Array.isArray(product.images) ? product.images : [];
+    const activeImages = designGalleryImages.length > 0 ? designGalleryImages : defaultImages;
+
+    // Use color-specific design gallery images if available, else fallback to product images
+    if (activeImages.length > 0) {
+      activeImages.forEach((img) => {
+        if (!items.find((i) => i.url === img)) {
+          items.push({ type: 'image', url: img });
+        }
+      });
     }
-    
-    // Add additional gallery images
-    if (product.images && product.images.length > 0) {
-        product.images.forEach(img => {
-            if (!items.find(i => i.url === img)) {
-                items.push({ type: 'image', url: img });
-            }
-        });
+
+    // Final fallback if no gallery images are present
+    if (items.length === 0) {
+      if (selectedVariant.image) {
+        items.push({ type: 'image', url: selectedVariant.image });
+      } else if (product.main_image) {
+        items.push({ type: 'image', url: product.main_image });
+      }
     }
 
     // Add video if exists
@@ -77,9 +115,21 @@ const ProductDetail = () => {
          items.push({ type: 'video', url: product.video_url });
       }
     }
-    
+
     return items;
-  }, [product, selectedVariant]);
+  }, [product, selectedVariant.image, designGalleryImages]);
+
+  // Keep main display synced with whichever gallery is currently active
+  useEffect(() => {
+    if (galleryItems.length === 0) {
+      setMainDisplay(null);
+      return;
+    }
+
+    if (!mainDisplay || !galleryItems.some((item) => item.type === mainDisplay.type && item.url === mainDisplay.url)) {
+      setMainDisplay(galleryItems[0]);
+    }
+  }, [galleryItems, mainDisplay]);
   
 
   if (loading) return <div className="product-detail-loading">Loading...</div>;
@@ -88,6 +138,7 @@ const ProductDetail = () => {
 
   // Unique sizes for selector
   const uniqueSizes = [...new Set(variants.map(v => v.size))];
+  const uniqueColors = [...new Set(variants.map(v => v.color).filter(Boolean))];
   
   const displayItems = galleryItems.slice(0, 4);
   const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
@@ -150,6 +201,23 @@ const ProductDetail = () => {
                         onClick={() => setSelectedSize(size)}
                       >
                         {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Color Selector */}
+              {uniqueColors.length > 0 && (
+                <div className="product-detail-size-selector">
+                  <span>Color:</span>
+                  <div className="size-chips">
+                    {uniqueColors.map((color) => (
+                      <button
+                        key={color}
+                        className={`size-chip${selectedColor === color ? ' selected' : ''}`}
+                        onClick={() => setSelectedColor(color)}
+                      >
+                        {color}
                       </button>
                     ))}
                   </div>
