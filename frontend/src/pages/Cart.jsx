@@ -85,7 +85,7 @@ const Cart = () => {
             <button
               type="button"
               className="cart-continue-btn"
-              style={{ marginTop: '4px' }}
+              style={{ marginTop: '4px', width: '230px' }}
               onClick={() => navigate('/')}
             >
               Continue Shopping

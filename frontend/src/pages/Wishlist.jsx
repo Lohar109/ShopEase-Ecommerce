@@ -42,7 +42,7 @@ const Wishlist = () => {
   const safeWishlist = useMemo(() => (Array.isArray(wishlist) ? wishlist : []), [wishlist]);
 
   return (
-    <main className="w-full min-h-screen px-4">
+    <div className="w-full min-h-screen px-4">
       <div className="max-w-7xl mx-auto">
       {safeWishlist.length === 0 ? (
         <section
@@ -67,12 +67,12 @@ const Wishlist = () => {
             style={{ marginBottom: '6px' }}
           />
           <h1
+            className="cart-title"
             style={{
               fontSize: '2rem',
               fontWeight: '700',
               color: '#1a1a1a',
               textAlign: 'center',
-              margin: 0,
               marginBottom: '2px'
             }}
           >
@@ -84,7 +84,6 @@ const Wishlist = () => {
               color: '#4b5563',
               maxWidth: '460px',
               lineHeight: 1.6,
-              margin: 0,
               marginBottom: '1.6rem'
             }}
           >
@@ -92,17 +91,10 @@ const Wishlist = () => {
           </p>
           <button
             type="button"
+            className="cart-continue-btn"
             style={{
-              background: '#111827',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '10px',
-              padding: '10px 18px',
-              fontSize: '1rem',
-              fontWeight: 600,
-              fontFamily: 'Poppins, sans-serif',
-              cursor: 'pointer',
-              marginTop: '4px'
+              marginTop: '4px',
+              width: '230px'
             }}
             onClick={() => navigate("/shop")}
           >
@@ -120,7 +112,7 @@ const Wishlist = () => {
         </section>
       )}
       </div>
-    </main>
+    </div>
   );
 };
 
