@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingBag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
@@ -45,33 +46,48 @@ const Cart = () => {
               justifyContent: 'center',
               minHeight: '70vh',
               textAlign: 'center',
-              gap: '10px',
+              gap: '12px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
+            <ShoppingBag
+              size={82}
+              strokeWidth={1.5}
+              color="#d1d5db"
+              aria-hidden="true"
+              style={{
+                marginBottom: '6px'
+              }}
+            />
             <h1
               className="cart-title"
               style={{
-                fontSize: '2.5rem',
+                fontSize: '2rem',
                 fontWeight: '700',
-                marginBottom: '1rem',
                 color: '#1a1a1a',
-                textAlign: 'center'
+                textAlign: 'center',
+                marginBottom: '2px'
               }}
             >
-              Your Cart
+              Your shopping bag is empty
             </h1>
             <p
-              className="cart-empty-heading"
               style={{
-                fontSize: '1.2rem',
+                fontSize: '1rem',
                 color: '#4b5563',
-                marginBottom: '1.5rem'
+                maxWidth: '460px',
+                lineHeight: 1.6,
+                marginBottom: '1.6rem'
               }}
             >
-              Your Cart is Empty
+              Looks like you have not added anything yet. Explore our latest collection and find pieces worth carrying home.
             </p>
-            <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
+            <button
+              type="button"
+              className="cart-continue-btn"
+              style={{ marginTop: '4px' }}
+              onClick={() => navigate('/')}
+            >
               Continue Shopping
             </button>
           </div>
