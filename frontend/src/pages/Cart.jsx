@@ -38,7 +38,7 @@ const Cart = () => {
         <h1 className="cart-title">Your Cart</h1>
 
         {cartItems.length === 0 ? (
-          <div className="cart-empty-state flex flex-col items-center justify-center min-h-[400px] cart-empty-center">
+          <div className="cart-empty-state cart-empty-center">
             <p className="cart-empty-heading">Your Cart is Empty</p>
             <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
               Continue Shopping

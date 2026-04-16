@@ -18,20 +18,20 @@
 }
 
 .cart-empty-state {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center !important;
   text-align: center;
   gap: 14px;
 }
 
 .cart-empty-center {
   min-height: 400px;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center !important;
 }
 
 .cart-empty-heading {
