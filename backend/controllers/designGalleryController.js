@@ -122,3 +122,22 @@ exports.getGalleryByProductAndColor = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.deleteDesignGallery = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM product_design_gallery WHERE id = $1 RETURNING id`,
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Design gallery not found' });
+    }
+
+    res.json({ message: 'Design gallery deleted', id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

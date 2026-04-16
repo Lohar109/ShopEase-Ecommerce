@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addCategory } from '../services/categoryService';
 import { fetchCategories } from '../services/categoryService';
-import { fetchProductById, saveProduct, updateProduct } from '../services/productService';
+import {
+  deleteDesignGallery,
+  fetchDesignGalleries,
+  fetchProductById,
+  saveDesignGallery,
+  saveProduct,
+  updateProduct
+} from '../services/productService';
 
 const TABS = [
   { label: 'General Details', key: 'general' },
@@ -42,6 +49,14 @@ const ProductForm = () => {
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
   const [galleryImages, setGalleryImages] = useState(['']);
+
+  // Design specific gallery state
+  const [designColorName, setDesignColorName] = useState('');
+  const [designImagesInput, setDesignImagesInput] = useState('');
+  const [designGalleries, setDesignGalleries] = useState([]);
+  const [loadingDesignGalleries, setLoadingDesignGalleries] = useState(false);
+  const [savingDesignGallery, setSavingDesignGallery] = useState(false);
+  const [deletingDesignGalleryId, setDeletingDesignGalleryId] = useState('');
 
   // Gallery handlers
   const handleGalleryImageChange = (idx, value) => {
@@ -119,6 +134,26 @@ const ProductForm = () => {
 
     loadProduct();
   }, [id, isEditMode, navigate]);
+
+  const loadDesignGalleries = async (productId) => {
+    if (!productId) return;
+
+    setLoadingDesignGalleries(true);
+    try {
+      const galleries = await fetchDesignGalleries(productId);
+      setDesignGalleries(Array.isArray(galleries) ? galleries : []);
+    } catch (err) {
+      setDesignGalleries([]);
+      alert(err.message || 'Failed to load design galleries');
+    } finally {
+      setLoadingDesignGalleries(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isEditMode || !id) return;
+    loadDesignGalleries(id);
+  }, [id, isEditMode]);
 
   // Set default category if available
   useEffect(() => {
@@ -285,6 +320,55 @@ const ProductForm = () => {
     } catch (err) {
       setSaving(false);
       alert(err.message || 'Failed to save product');
+    }
+  };
+
+  const handleSaveDesignGallery = async () => {
+    if (!isEditMode || !id) {
+      alert('Please save the product first, then add design galleries.');
+      return;
+    }
+
+    const normalizedColor = designColorName.trim();
+    const parsedImages = designImagesInput
+      .split(/\r?\n|,/) 
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    if (!normalizedColor || parsedImages.length === 0) {
+      alert('Please provide color name and at least one image URL.');
+      return;
+    }
+
+    setSavingDesignGallery(true);
+    try {
+      await saveDesignGallery({
+        product_id: id,
+        color_name: normalizedColor,
+        images: parsedImages,
+      });
+      setDesignColorName('');
+      setDesignImagesInput('');
+      await loadDesignGalleries(id);
+    } catch (err) {
+      alert(err.message || 'Failed to save design gallery');
+    } finally {
+      setSavingDesignGallery(false);
+    }
+  };
+
+  const handleDeleteDesignGallery = async (galleryId) => {
+    const confirmed = window.confirm('Delete this design gallery?');
+    if (!confirmed) return;
+
+    setDeletingDesignGalleryId(galleryId);
+    try {
+      await deleteDesignGallery(galleryId);
+      setDesignGalleries((prev) => prev.filter((gallery) => gallery.id !== galleryId));
+    } catch (err) {
+      alert(err.message || 'Failed to delete design gallery');
+    } finally {
+      setDeletingDesignGalleryId('');
     }
   };
 
@@ -586,6 +670,89 @@ const ProductForm = () => {
             <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
               (Paste Cloudinary image links. You can add as many as you want.)
             </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
+
+            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Design Specific Galleries</h3>
+            {!isEditMode ? (
+              <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
+                Save the product first, then you can add color-specific galleries.
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontWeight: 500 }}>Color Name</label>
+                  <input
+                    className="custom-input"
+                    type="text"
+                    value={designColorName}
+                    onChange={(e) => setDesignColorName(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                    placeholder="e.g. Red, Floral, Midnight Blue"
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontWeight: 500 }}>Image URLs (comma or new line separated)</label>
+                  <textarea
+                    className="custom-input"
+                    value={designImagesInput}
+                    onChange={(e) => setDesignImagesInput(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 100, marginTop: 4 }}
+                    placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="outline-btn"
+                  onClick={handleSaveDesignGallery}
+                  disabled={savingDesignGallery}
+                  style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
+                >
+                  {savingDesignGallery ? 'Saving Gallery...' : 'Save Gallery'}
+                </button>
+
+                <div style={{ marginTop: 24 }}>
+                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
+                  {loadingDesignGalleries ? (
+                    <div style={{ color: '#666', fontSize: 14 }}>Loading galleries...</div>
+                  ) : designGalleries.length === 0 ? (
+                    <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 12 }}>
+                      {designGalleries.map((gallery) => (
+                        <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 14 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                            <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                            <button
+                              type="button"
+                              className="remove-tag-btn"
+                              onClick={() => handleDeleteDesignGallery(gallery.id)}
+                              disabled={deletingDesignGalleryId === gallery.id}
+                              title="Delete gallery"
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                              </svg>
+                            </button>
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            {(gallery.images || []).map((imgUrl, imgIdx) => (
+                              <img
+                                key={`${gallery.id}-${imgIdx}`}
+                                src={imgUrl}
+                                alt={`${gallery.color_name} ${imgIdx + 1}`}
+                                style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 10, border: '1px solid #f0f0f0' }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
             
             <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
             

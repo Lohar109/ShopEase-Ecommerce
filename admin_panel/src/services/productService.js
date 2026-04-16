@@ -105,3 +105,51 @@ export async function deleteProduct(id) {
     throw error;
   }
 }
+
+export async function fetchDesignGalleries(productId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/design-gallery/${productId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch design galleries');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function saveDesignGallery(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/design-gallery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to save design gallery');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function deleteDesignGallery(galleryId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/design-gallery/${galleryId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete design gallery');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
