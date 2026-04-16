@@ -54,23 +54,25 @@ const Wishlist = () => {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            gap: '2rem',
+            gap: '12px',
             fontFamily: 'Poppins, sans-serif'
           }}
         >
           <Heart
+            size={82}
             strokeWidth={1.5}
+            color="#d1d5db"
             aria-hidden="true"
-            style={{ width: '96px', height: '96px', color: '#d1d5db' }}
+            style={{ marginBottom: '6px' }}
           />
           <h1
             className="wishlist-empty-title"
             style={{
-              fontSize: '2.5rem',
-              fontWeight: 700,
-              color: '#1f2937',
-              lineHeight: 1.15,
-              margin: 0
+              fontSize: '2rem',
+              fontWeight: '700',
+              color: '#1a1a1a',
+              textAlign: 'center',
+              marginBottom: '2px'
             }}
           >
             Your wishlist is lonely
@@ -78,26 +80,26 @@ const Wishlist = () => {
           <p
             className="wishlist-empty-subtitle"
             style={{
-              maxWidth: '680px',
-              fontSize: '1.1rem',
-              color: '#9ca3af',
-              lineHeight: 1.7,
-              margin: 0
+              fontSize: '1rem',
+              color: '#4b5563',
+              maxWidth: '460px',
+              lineHeight: 1.6,
+              marginBottom: '1.6rem'
             }}
           >
             Your wishlist is feeling a bit empty. Explore our unique designs and add products that tell your story!
           </p>
           <button
             type="button"
-            className="wishlist-empty-cta"
             style={{
-              background: '#0f766e',
-              color: '#ffffff',
+              background: '#111827',
+              color: '#fff',
               border: 'none',
-              borderRadius: '14px',
-              padding: '14px 34px',
-              fontSize: '1rem',
-              fontWeight: 600
+              borderRadius: '10px',
+              padding: '10px 18px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              marginTop: '4px'
             }}
             onClick={() => navigate("/shop")}
           >
