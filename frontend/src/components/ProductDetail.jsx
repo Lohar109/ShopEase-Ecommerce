@@ -40,6 +40,48 @@ const ProductDetail = () => {
       });
   }, [id]);
 
+  const getAvailableColors = (size) => {
+    const filtered = size ? variants.filter((v) => v.size === size) : variants;
+    return [...new Set(filtered.map((v) => v.color).filter(Boolean))];
+  };
+
+  const getAvailableSizes = (color) => {
+    const filtered = color
+      ? variants.filter((v) => String(v.color || '').toLowerCase() === String(color).toLowerCase())
+      : variants;
+    return [...new Set(filtered.map((v) => v.size).filter(Boolean))];
+  };
+
+  // If selected size makes current color invalid, auto-correct color selection.
+  useEffect(() => {
+    if (!selectedSize) return;
+
+    const availableColors = getAvailableColors(selectedSize);
+    if (availableColors.length === 0) {
+      if (selectedColor !== null) setSelectedColor(null);
+      return;
+    }
+
+    if (!selectedColor || !availableColors.includes(selectedColor)) {
+      setSelectedColor(availableColors[0]);
+    }
+  }, [selectedSize, variants, selectedColor]);
+
+  // If selected color makes current size invalid, auto-correct size selection.
+  useEffect(() => {
+    if (!selectedColor) return;
+
+    const availableSizes = getAvailableSizes(selectedColor);
+    if (availableSizes.length === 0) {
+      if (selectedSize !== null) setSelectedSize(null);
+      return;
+    }
+
+    if (!selectedSize || !availableSizes.includes(selectedSize)) {
+      setSelectedSize(availableSizes[0]);
+    }
+  }, [selectedColor, variants, selectedSize]);
+
   // Find selected variant using selected size and color first, then fallback in order
   const selectedVariant =
     variants.find(
@@ -137,8 +179,10 @@ const ProductDetail = () => {
 
 
   // Unique sizes for selector
-  const uniqueSizes = [...new Set(variants.map(v => v.size))];
+  const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
   const uniqueColors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+  const availableSizesForSelectedColor = getAvailableSizes(selectedColor);
+  const availableColorsForSelectedSize = getAvailableColors(selectedSize);
   
   const displayItems = galleryItems.slice(0, 4);
   const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
@@ -149,7 +193,12 @@ const ProductDetail = () => {
       return;
     }
 
-    const variantToAdd = variants.find(v => v.size === selectedSize) || selectedVariant;
+    const variantToAdd =
+      variants.find(
+        (v) =>
+          v.size === selectedSize &&
+          String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+      ) || selectedVariant;
     if (!variantToAdd?.id) {
       toast.error("Please select a size");
       return;
@@ -195,13 +244,21 @@ const ProductDetail = () => {
                   <span>Size:</span>
                   <div className="size-chips">
                     {uniqueSizes.map((size) => (
+                      (() => {
+                        const isAvailable =
+                          !selectedColor || availableSizesForSelectedColor.includes(size);
+                        return (
                       <button
                         key={size}
                         className={`size-chip${selectedSize === size ? ' selected' : ''}`}
+                        disabled={!isAvailable}
                         onClick={() => setSelectedSize(size)}
+                        style={!isAvailable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
                       >
                         {size}
                       </button>
+                        );
+                      })()
                     ))}
                   </div>
                 </div>
@@ -212,13 +269,21 @@ const ProductDetail = () => {
                   <span>Color:</span>
                   <div className="size-chips">
                     {uniqueColors.map((color) => (
+                      (() => {
+                        const isAvailable =
+                          !selectedSize || availableColorsForSelectedSize.includes(color);
+                        return (
                       <button
                         key={color}
                         className={`size-chip${selectedColor === color ? ' selected' : ''}`}
+                        disabled={!isAvailable}
                         onClick={() => setSelectedColor(color)}
+                        style={!isAvailable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
                       >
                         {color}
                       </button>
+                        );
+                      })()
                     ))}
                   </div>
                 </div>
