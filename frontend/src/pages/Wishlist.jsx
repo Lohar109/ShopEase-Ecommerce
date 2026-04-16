@@ -42,7 +42,8 @@ const Wishlist = () => {
   const safeWishlist = useMemo(() => (Array.isArray(wishlist) ? wishlist : []), [wishlist]);
 
   return (
-    <main className="wishlist-page">
+    <main className="w-full min-h-screen px-4">
+      <div className="max-w-7xl mx-auto">
       {safeWishlist.length === 0 ? (
         <section
           className="wishlist-empty-state"
@@ -66,24 +67,24 @@ const Wishlist = () => {
             style={{ marginBottom: '6px' }}
           />
           <h1
-            className="wishlist-empty-title"
             style={{
               fontSize: '2rem',
               fontWeight: '700',
               color: '#1a1a1a',
               textAlign: 'center',
+              margin: 0,
               marginBottom: '2px'
             }}
           >
             Your wishlist is lonely
           </h1>
           <p
-            className="wishlist-empty-subtitle"
             style={{
               fontSize: '1rem',
               color: '#4b5563',
               maxWidth: '460px',
               lineHeight: 1.6,
+              margin: 0,
               marginBottom: '1.6rem'
             }}
           >
@@ -97,7 +98,9 @@ const Wishlist = () => {
               border: 'none',
               borderRadius: '10px',
               padding: '10px 18px',
+              fontSize: '1rem',
               fontWeight: 600,
+              fontFamily: 'Poppins, sans-serif',
               cursor: 'pointer',
               marginTop: '4px'
             }}
@@ -116,6 +119,7 @@ const Wishlist = () => {
           </div>
         </section>
       )}
+      </div>
     </main>
   );
 };
