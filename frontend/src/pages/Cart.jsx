@@ -33,12 +33,22 @@ const Cart = () => {
   };
 
   return (
-    <div className="cart-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 cart-container">
+    <div className="w-full min-h-screen px-4">
+      <div className="max-w-7xl mx-auto">
         <h1 className="cart-title">Your Cart</h1>
 
         {cartItems.length === 0 ? (
-          <div className="cart-empty-state cart-empty-center">
+          <div
+            className="cart-empty-state"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '60vh',
+              textAlign: 'center'
+            }}
+          >
             <p className="cart-empty-heading">Your Cart is Empty</p>
             <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
               Continue Shopping
