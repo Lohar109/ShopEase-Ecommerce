@@ -802,7 +802,25 @@ const ProductForm = () => {
                         style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
                       />
                     </td>
-                    <td><input className="custom-input" type="text" value={variant.image} onChange={e => handleVariantChange(idx, 'image', e.target.value)} style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} placeholder="Image URL" /></td>
+                    <td>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={variant.image}
+                        readOnly
+                        title="Auto-synced from main image"
+                        style={{
+                          width: 120,
+                          padding: 4,
+                          borderRadius: 12,
+                          border: '1px solid #d1d5db',
+                          background: '#f3f4f6',
+                          color: '#6b7280',
+                          cursor: 'not-allowed'
+                        }}
+                        placeholder="Auto-synced"
+                      />
+                    </td>
                     <td>
                       <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
