@@ -17,7 +17,7 @@ const ProductDetail = () => {
   const [error, setError] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [availableColors, setAvailableColors] = useState([]);
+  const [filteredColors, setFilteredColors] = useState([]);
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [mainDisplay, setMainDisplay] = useState(null);
   const { addToCart } = useCart();
@@ -46,21 +46,19 @@ const ProductDetail = () => {
     return [...new Set(filtered.map((v) => v.color).filter(Boolean))];
   };
 
-  const getAvailableSizes = (color) => {
-    const filtered = color
-      ? variants.filter((v) => String(v.color || '').toLowerCase() === String(color).toLowerCase())
-      : variants;
-    return [...new Set(filtered.map((v) => v.size).filter(Boolean))];
-  };
-
   // Keep available colors in sync with selected size.
-  // If selected color becomes invalid for the size, clear it.
+  // If selected color becomes invalid for the size, pick first valid color.
   useEffect(() => {
     const colors = getAvailableColors(selectedSize);
-    setAvailableColors(colors);
+    setFilteredColors(colors);
 
-    if (selectedColor && !colors.includes(selectedColor)) {
-      setSelectedColor(null);
+    if (colors.length === 0) {
+      if (selectedColor !== null) setSelectedColor(null);
+      return;
+    }
+
+    if (!selectedColor || !colors.includes(selectedColor)) {
+      setSelectedColor(colors[0]);
     }
   }, [selectedSize, variants, selectedColor]);
 
@@ -162,7 +160,6 @@ const ProductDetail = () => {
 
   // Unique sizes for selector
   const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
-  const availableSizesForSelectedColor = getAvailableSizes(selectedColor);
   
   const displayItems = galleryItems.slice(0, 4);
   const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
@@ -224,31 +221,23 @@ const ProductDetail = () => {
                   <span>Size:</span>
                   <div className="size-chips">
                     {uniqueSizes.map((size) => (
-                      (() => {
-                        const isAvailable =
-                          !selectedColor || availableSizesForSelectedColor.includes(size);
-                        return (
                       <button
                         key={size}
                         className={`size-chip${selectedSize === size ? ' selected' : ''}`}
-                        disabled={!isAvailable}
                         onClick={() => setSelectedSize(size)}
-                        style={!isAvailable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
                       >
                         {size}
                       </button>
-                        );
-                      })()
                     ))}
                   </div>
                 </div>
               )}
               {/* Color Selector */}
-              {availableColors.length > 0 && (
+              {filteredColors.length > 0 && (
                 <div className="product-detail-size-selector">
                   <span>Color:</span>
                   <div className="size-chips">
-                    {availableColors.map((color) => (
+                    {filteredColors.map((color) => (
                       <button
                         key={color}
                         className={`size-chip${selectedColor === color ? ' selected' : ''}`}
