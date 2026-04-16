@@ -852,7 +852,7 @@ const ProductForm = () => {
                             border: '1px solid #d1d5db',
                             background: '#f3f4f6',
                             color: '#6b7280',
-                            cursor: 'pointer'
+                            cursor: 'text'
                           }}
                           placeholder="Auto-synced"
                         />
