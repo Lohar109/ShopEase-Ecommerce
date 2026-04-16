@@ -35,8 +35,6 @@ const Cart = () => {
   return (
     <div className="w-full min-h-screen px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="cart-title">Your Cart</h1>
-
         {cartItems.length === 0 ? (
           <div
             className="cart-empty-state"
@@ -45,18 +43,23 @@ const Cart = () => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '60vh',
+              minHeight: '70vh',
               textAlign: 'center'
             }}
           >
+            <h1 className="cart-title" style={{ textAlign: 'center', marginBottom: '20px' }}>
+              Your Cart
+            </h1>
             <p className="cart-empty-heading">Your Cart is Empty</p>
             <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
               Continue Shopping
             </button>
           </div>
         ) : (
-          <div className="cart-content">
-            <div className="cart-list">
+          <>
+            <h1 className="cart-title">Your Cart</h1>
+            <div className="cart-content">
+              <div className="cart-list">
               {cartItems.map(item => (
                 <div className="cart-item" key={item.cartItemId}>
                   <Link to={`/product/${item.productId}`} className="cart-item-image-link">
@@ -86,32 +89,33 @@ const Cart = () => {
                   </div>
                 </div>
               ))}
+              </div>
+
+              <aside className="cart-summary-card">
+                <h3>Price Details</h3>
+                <div className="cart-summary-row">
+                  <span>Subtotal</span>
+                  <strong>₹ {subtotal.toFixed(2)}</strong>
+                </div>
+                <div className="cart-summary-row">
+                  <span>Delivery Fee</span>
+                  <span>Free</span>
+                </div>
+                <div className="cart-summary-row grand-total">
+                  <span>Grand Total</span>
+                  <strong>₹ {grandTotal.toFixed(2)}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  className="cart-checkout-btn"
+                  onClick={handleCheckout}
+                >
+                  Proceed to Checkout
+                </button>
+              </aside>
             </div>
-
-            <aside className="cart-summary-card">
-              <h3>Price Details</h3>
-              <div className="cart-summary-row">
-                <span>Subtotal</span>
-                <strong>₹ {subtotal.toFixed(2)}</strong>
-              </div>
-              <div className="cart-summary-row">
-                <span>Delivery Fee</span>
-                <span>Free</span>
-              </div>
-              <div className="cart-summary-row grand-total">
-                <span>Grand Total</span>
-                <strong>₹ {grandTotal.toFixed(2)}</strong>
-              </div>
-
-              <button
-                type="button"
-                className="cart-checkout-btn"
-                onClick={handleCheckout}
-              >
-                Proceed to Checkout
-              </button>
-            </aside>
-          </div>
+          </>
         )}
       </div>
     </div>
