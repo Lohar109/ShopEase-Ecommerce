@@ -44,20 +44,51 @@ const Cart = () => {
               alignItems: 'center',
               justifyContent: 'center',
               minHeight: '70vh',
-              textAlign: 'center'
+              textAlign: 'center',
+              gap: '10px',
+              fontFamily: "Poppins, sans-serif"
             }}
           >
-            <h1 className="cart-title" style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <h1
+              className="cart-title"
+              style={{
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '1rem',
+                color: '#1a1a1a',
+                textAlign: 'center'
+              }}
+            >
               Your Cart
             </h1>
-            <p className="cart-empty-heading">Your Cart is Empty</p>
+            <p
+              className="cart-empty-heading"
+              style={{
+                fontSize: '1.2rem',
+                color: '#4b5563',
+                marginBottom: '1.5rem'
+              }}
+            >
+              Your Cart is Empty
+            </p>
             <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
               Continue Shopping
             </button>
           </div>
         ) : (
           <>
-            <h1 className="cart-title">Your Cart</h1>
+            <h1
+              className="cart-title"
+              style={{
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '1rem',
+                color: '#1a1a1a',
+                textAlign: 'center'
+              }}
+            >
+              Your Cart
+            </h1>
             <div className="cart-content">
               <div className="cart-list">
               {cartItems.map(item => (
