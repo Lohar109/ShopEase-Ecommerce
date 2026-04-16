@@ -34,74 +34,76 @@ const Cart = () => {
 
   return (
     <div className="cart-page">
-      <h1 className="cart-title">Your Cart</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 cart-container">
+        <h1 className="cart-title">Your Cart</h1>
 
-      {cartItems.length === 0 ? (
-        <div className="cart-empty-state">
-          <p className="cart-empty-heading">Your Cart is Empty</p>
-          <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
-            Continue Shopping
-          </button>
-        </div>
-      ) : (
-        <div className="cart-content">
-          <div className="cart-list">
-            {cartItems.map(item => (
-              <div className="cart-item" key={item.cartItemId}>
-                <Link to={`/product/${item.productId}`} className="cart-item-image-link">
-                  <img src={item.image} alt={item.productName} className="cart-item-image" />
-                </Link>
-
-                <div className="cart-item-details">
-                  <h3>
-                    <Link to={`/product/${item.productId}`} className="cart-item-title-link">
-                      {item.productName}
-                    </Link>
-                  </h3>
-                  <p>Size: {item.size || 'N/A'}</p>
-                  <p>Color: {item.color || 'N/A'}</p>
-                  <p>Price: ₹ {item.price ?? 'N/A'}</p>
-                </div>
-
-                <div className="cart-item-actions">
-                  <div className="cart-qty-control">
-                    <button type="button" onClick={() => handleDecrease(item)}>-</button>
-                    <span>{item.quantity}</span>
-                    <button type="button" onClick={() => handleIncrease(item)}>+</button>
-                  </div>
-                  <button type="button" className="cart-remove-btn" onClick={() => handleRemove(item)}>
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <aside className="cart-summary-card">
-            <h3>Price Details</h3>
-            <div className="cart-summary-row">
-              <span>Subtotal</span>
-              <strong>₹ {subtotal.toFixed(2)}</strong>
-            </div>
-            <div className="cart-summary-row">
-              <span>Delivery Fee</span>
-              <span>Free</span>
-            </div>
-            <div className="cart-summary-row grand-total">
-              <span>Grand Total</span>
-              <strong>₹ {grandTotal.toFixed(2)}</strong>
-            </div>
-
-            <button
-              type="button"
-              className="cart-checkout-btn"
-              onClick={handleCheckout}
-            >
-              Proceed to Checkout
+        {cartItems.length === 0 ? (
+          <div className="cart-empty-state flex flex-col items-center justify-center min-h-[400px] cart-empty-center">
+            <p className="cart-empty-heading">Your Cart is Empty</p>
+            <button type="button" className="cart-continue-btn" onClick={() => navigate('/')}>
+              Continue Shopping
             </button>
-          </aside>
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="cart-content">
+            <div className="cart-list">
+              {cartItems.map(item => (
+                <div className="cart-item" key={item.cartItemId}>
+                  <Link to={`/product/${item.productId}`} className="cart-item-image-link">
+                    <img src={item.image} alt={item.productName} className="cart-item-image" />
+                  </Link>
+
+                  <div className="cart-item-details">
+                    <h3>
+                      <Link to={`/product/${item.productId}`} className="cart-item-title-link">
+                        {item.productName}
+                      </Link>
+                    </h3>
+                    <p>Size: {item.size || 'N/A'}</p>
+                    <p>Color: {item.color || 'N/A'}</p>
+                    <p>Price: ₹ {item.price ?? 'N/A'}</p>
+                  </div>
+
+                  <div className="cart-item-actions">
+                    <div className="cart-qty-control">
+                      <button type="button" onClick={() => handleDecrease(item)}>-</button>
+                      <span>{item.quantity}</span>
+                      <button type="button" onClick={() => handleIncrease(item)}>+</button>
+                    </div>
+                    <button type="button" className="cart-remove-btn" onClick={() => handleRemove(item)}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <aside className="cart-summary-card">
+              <h3>Price Details</h3>
+              <div className="cart-summary-row">
+                <span>Subtotal</span>
+                <strong>₹ {subtotal.toFixed(2)}</strong>
+              </div>
+              <div className="cart-summary-row">
+                <span>Delivery Fee</span>
+                <span>Free</span>
+              </div>
+              <div className="cart-summary-row grand-total">
+                <span>Grand Total</span>
+                <strong>₹ {grandTotal.toFixed(2)}</strong>
+              </div>
+
+              <button
+                type="button"
+                className="cart-checkout-btn"
+                onClick={handleCheckout}
+              >
+                Proceed to Checkout
+              </button>
+            </aside>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
