@@ -410,6 +410,42 @@ const ProductForm = () => {
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
         .remove-tag-btn:hover { background: #e53935; color: #fff; }
         .remove-tag-btn svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
+        .auto-sync-tooltip-wrap { position: relative; display: inline-block; }
+        .auto-sync-tooltip-bubble {
+          position: absolute;
+          left: 50%;
+          bottom: calc(100% + 8px);
+          transform: translateX(-50%) scale(0.96);
+          transform-origin: bottom center;
+          background: #111827;
+          color: #fff;
+          font-size: 12px;
+          line-height: 1.2;
+          text-align: center;
+          white-space: nowrap;
+          padding: 4px 8px;
+          border-radius: 6px;
+          opacity: 0;
+          pointer-events: none;
+          transition: all 200ms ease;
+          z-index: 5;
+        }
+        .auto-sync-tooltip-arrow {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: 100%;
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid #111827;
+        }
+        .auto-sync-tooltip-wrap:hover .auto-sync-tooltip-bubble,
+        .auto-sync-tooltip-wrap:focus-within .auto-sync-tooltip-bubble {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
       `}</style>
       {/* Sticky Header & Breadcrumbs */}
       <div style={{
@@ -803,23 +839,28 @@ const ProductForm = () => {
                       />
                     </td>
                     <td>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={variant.image}
-                        readOnly
-                        title="Auto-synced from main image"
-                        style={{
-                          width: 120,
-                          padding: 4,
-                          borderRadius: 12,
-                          border: '1px solid #d1d5db',
-                          background: '#f3f4f6',
-                          color: '#6b7280',
-                          cursor: 'not-allowed'
-                        }}
-                        placeholder="Auto-synced"
-                      />
+                      <span className="auto-sync-tooltip-wrap">
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={variant.image}
+                          readOnly
+                          style={{
+                            width: 120,
+                            padding: 4,
+                            borderRadius: 12,
+                            border: '1px solid #d1d5db',
+                            background: '#f3f4f6',
+                            color: '#6b7280',
+                            cursor: 'pointer'
+                          }}
+                          placeholder="Auto-synced"
+                        />
+                        <span className="auto-sync-tooltip-bubble" role="tooltip">
+                          Auto-synced from Main Image
+                          <span className="auto-sync-tooltip-arrow" />
+                        </span>
+                      </span>
                     </td>
                     <td>
                       <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
