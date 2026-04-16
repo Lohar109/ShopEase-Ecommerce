@@ -839,28 +839,46 @@ const ProductForm = () => {
                       />
                     </td>
                     <td>
-                      <span className="auto-sync-tooltip-wrap">
+                      {idx === 0 ? (
+                        <span className="auto-sync-tooltip-wrap">
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={variant.image}
+                            readOnly
+                            style={{
+                              width: 120,
+                              padding: 4,
+                              borderRadius: 12,
+                              border: '1px solid #d1d5db',
+                              background: '#f3f4f6',
+                              color: '#6b7280',
+                              cursor: 'text'
+                            }}
+                            placeholder="Auto-synced"
+                          />
+                          <span className="auto-sync-tooltip-bubble" role="tooltip">
+                            Auto-synced from Main Image
+                            <span className="auto-sync-tooltip-arrow" />
+                          </span>
+                        </span>
+                      ) : (
                         <input
                           className="custom-input"
                           type="text"
                           value={variant.image}
-                          readOnly
+                          onChange={e => handleVariantChange(idx, 'image', e.target.value)}
                           style={{
                             width: 120,
                             padding: 4,
                             borderRadius: 12,
-                            border: '1px solid #d1d5db',
-                            background: '#f3f4f6',
-                            color: '#6b7280',
+                            border: '1px solid #a0a0a0',
+                            background: '#fff',
+                            color: '#111',
                             cursor: 'text'
                           }}
-                          placeholder="Auto-synced"
                         />
-                        <span className="auto-sync-tooltip-bubble" role="tooltip">
-                          Auto-synced from Main Image
-                          <span className="auto-sync-tooltip-arrow" />
-                        </span>
-                      </span>
+                      )}
                     </td>
                     <td>
                       <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
