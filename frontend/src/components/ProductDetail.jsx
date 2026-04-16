@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const [error, setError] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [availableColors, setAvailableColors] = useState([]);
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [mainDisplay, setMainDisplay] = useState(null);
   const { addToCart } = useCart();
@@ -52,35 +53,16 @@ const ProductDetail = () => {
     return [...new Set(filtered.map((v) => v.size).filter(Boolean))];
   };
 
-  // If selected size makes current color invalid, auto-correct color selection.
+  // Keep available colors in sync with selected size.
+  // If selected color becomes invalid for the size, clear it.
   useEffect(() => {
-    if (!selectedSize) return;
+    const colors = getAvailableColors(selectedSize);
+    setAvailableColors(colors);
 
-    const availableColors = getAvailableColors(selectedSize);
-    if (availableColors.length === 0) {
-      if (selectedColor !== null) setSelectedColor(null);
-      return;
-    }
-
-    if (!selectedColor || !availableColors.includes(selectedColor)) {
-      setSelectedColor(availableColors[0]);
+    if (selectedColor && !colors.includes(selectedColor)) {
+      setSelectedColor(null);
     }
   }, [selectedSize, variants, selectedColor]);
-
-  // If selected color makes current size invalid, auto-correct size selection.
-  useEffect(() => {
-    if (!selectedColor) return;
-
-    const availableSizes = getAvailableSizes(selectedColor);
-    if (availableSizes.length === 0) {
-      if (selectedSize !== null) setSelectedSize(null);
-      return;
-    }
-
-    if (!selectedSize || !availableSizes.includes(selectedSize)) {
-      setSelectedSize(availableSizes[0]);
-    }
-  }, [selectedColor, variants, selectedSize]);
 
   // Find selected variant using selected size and color first, then fallback in order
   const selectedVariant =
@@ -180,9 +162,7 @@ const ProductDetail = () => {
 
   // Unique sizes for selector
   const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
-  const uniqueColors = [...new Set(variants.map(v => v.color).filter(Boolean))];
   const availableSizesForSelectedColor = getAvailableSizes(selectedColor);
-  const availableColorsForSelectedSize = getAvailableColors(selectedSize);
   
   const displayItems = galleryItems.slice(0, 4);
   const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
@@ -264,26 +244,18 @@ const ProductDetail = () => {
                 </div>
               )}
               {/* Color Selector */}
-              {uniqueColors.length > 0 && (
+              {availableColors.length > 0 && (
                 <div className="product-detail-size-selector">
                   <span>Color:</span>
                   <div className="size-chips">
-                    {uniqueColors.map((color) => (
-                      (() => {
-                        const isAvailable =
-                          !selectedSize || availableColorsForSelectedSize.includes(color);
-                        return (
+                    {availableColors.map((color) => (
                       <button
                         key={color}
                         className={`size-chip${selectedColor === color ? ' selected' : ''}`}
-                        disabled={!isAvailable}
                         onClick={() => setSelectedColor(color)}
-                        style={!isAvailable ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
                       >
                         {color}
                       </button>
-                        );
-                      })()
                     ))}
                   </div>
                 </div>
