@@ -111,7 +111,7 @@ exports.getProductById = async (req, res) => {
     }
     const product = productResult.rows[0];
     const variantsResult = await pool.query(
-      `SELECT * FROM product_variant WHERE product_id = $1 ORDER BY price ASC`,
+      `SELECT * FROM product_variant WHERE product_id = $1 ORDER BY created_at ASC`,
       [id]
     );
     res.json({
