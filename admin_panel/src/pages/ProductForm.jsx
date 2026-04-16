@@ -269,6 +269,21 @@ const ProductForm = () => {
     // eslint-disable-next-line
   }, [brand, name]);
 
+  // Keep the primary variant image synced with main image to avoid duplicate entry.
+  useEffect(() => {
+    setVariantRows((rows) => {
+      if (!Array.isArray(rows) || rows.length === 0) {
+        return [{ size: '', color: '', price: '', stock: '', sku: '', image: mainImage || '' }];
+      }
+
+      if ((rows[0]?.image || '') === (mainImage || '')) {
+        return rows;
+      }
+
+      return rows.map((row, idx) => (idx === 0 ? { ...row, image: mainImage || '' } : row));
+    });
+  }, [mainImage]);
+
   const addVariant = () => setVariantRows([...variantRows, { size: '', color: '', price: '', stock: '', sku: '', image: '' }]);
   const removeVariant = idx => setVariantRows(rows => rows.filter((_, i) => i !== idx));
 
