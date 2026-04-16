@@ -783,6 +783,69 @@ footer {
     width: 100%;
 }
 
+.product-skeleton-card {
+    cursor: default;
+    pointer-events: none;
+}
+
+.product-skeleton-image,
+.product-skeleton-title,
+.product-skeleton-price,
+.product-skeleton-icon {
+    position: relative;
+    overflow: hidden;
+    background: #e5e7eb;
+}
+
+.product-skeleton-image::after,
+.product-skeleton-title::after,
+.product-skeleton-price::after,
+.product-skeleton-icon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: skeletonSweep 1.2s ease-in-out infinite;
+}
+
+.product-skeleton-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+    margin-bottom: 0.8rem;
+}
+
+.product-skeleton-title {
+    height: 14px;
+    border-radius: 999px;
+    margin-bottom: 0.45rem;
+}
+
+.product-skeleton-title.short {
+    width: 72%;
+    margin-bottom: 0.9rem;
+}
+
+.product-skeleton-row {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-skeleton-price {
+    width: 46%;
+    height: 12px;
+    border-radius: 999px;
+}
+
+.product-skeleton-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
 .shop-empty-products {
     color: #6b7280;
     font-size: 0.95rem;
@@ -798,5 +861,11 @@ footer {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes skeletonSweep {
+    100% {
+        transform: translateX(100%);
     }
 }

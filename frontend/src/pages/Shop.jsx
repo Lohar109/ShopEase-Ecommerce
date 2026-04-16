@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import ProductSkeleton from "../components/ProductSkeleton";
 import "../styles.css";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
@@ -8,6 +9,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
@@ -20,9 +22,12 @@ const Shop = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_ORIGIN}/api/products`)
-      .then((res) => res.json())
-      .then(async (data) => {
+    const loadProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${API_ORIGIN}/api/products`);
+        const data = await response.json();
+
         if (!Array.isArray(data)) {
           setProducts([]);
           return;
@@ -45,8 +50,14 @@ const Shop = () => {
         );
 
         setProducts(productsWithVariants);
-      })
-      .catch(() => setProducts([]));
+      } catch {
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   const mainCategories = useMemo(
@@ -151,7 +162,13 @@ const Shop = () => {
       </section>
 
       <section className="shop-product-grid" aria-label="Products">
-        {visibleProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="shop-products-grid-four">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductSkeleton key={`shop-skeleton-${index}`} />
+            ))}
+          </div>
+        ) : visibleProducts.length === 0 ? (
           <p className="shop-empty-products">No products found for this selection.</p>
         ) : (
           <div className="shop-products-grid-four">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles.css";
 import ProductCard from "./ProductCard";
+import ProductSkeleton from "./ProductSkeleton";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -9,17 +10,25 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const MainPage = () => {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
   useEffect(() => {
-    // Fetch all products, then fetch variants for each product
-    fetch(`${API_ORIGIN}/api/products`)
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (!Array.isArray(data)) return setProducts([]);
+    const loadProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${API_ORIGIN}/api/products`);
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          setProducts([]);
+          return;
+        }
+
         const activeProducts = data.filter(
           (product) => product?.is_active === true || product?.active === true
         );
-        // Fetch variants for each product
+
         const productsWithVariants = await Promise.all(
           activeProducts.map(async (product) => {
             try {
@@ -31,9 +40,16 @@ const MainPage = () => {
             }
           })
         );
+
         setProducts(productsWithVariants);
-      })
-      .catch(() => setProducts([]));
+      } catch {
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   const safeProducts = Array.isArray(products) ? products : [];
@@ -70,11 +86,23 @@ const MainPage = () => {
       </section>
 
       {/* Featured Products */}
-      <div className="shop-products-grid-four">
-        {visibleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      <section className="shop-product-grid" aria-label="Featured products">
+        {isLoading ? (
+          <div className="shop-products-grid-four">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductSkeleton key={`home-skeleton-${index}`} />
+            ))}
+          </div>
+        ) : visibleProducts.length === 0 ? (
+          <p className="shop-empty-products">No products found.</p>
+        ) : (
+          <div className="shop-products-grid-four">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Newsletter Subscription Section */}
       <section className="newsletter" aria-labelledby="newsletter-heading">
