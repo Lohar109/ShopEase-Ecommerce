@@ -44,15 +44,61 @@ const Wishlist = () => {
   return (
     <main className="wishlist-page">
       {safeWishlist.length === 0 ? (
-        <section className="wishlist-empty-state" aria-live="polite">
-          <Heart className="wishlist-empty-icon" strokeWidth={1.5} aria-hidden="true" />
-          <h1 className="wishlist-empty-title">Your wishlist is lonely</h1>
-          <p className="wishlist-empty-subtitle">
-            Start adding items you love to find them later.
+        <section
+          className="wishlist-empty-state"
+          aria-live="polite"
+          style={{
+            minHeight: '70vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            gap: '2rem',
+            fontFamily: 'Poppins, sans-serif'
+          }}
+        >
+          <Heart
+            strokeWidth={1.5}
+            aria-hidden="true"
+            style={{ width: '96px', height: '96px', color: '#d1d5db' }}
+          />
+          <h1
+            className="wishlist-empty-title"
+            style={{
+              fontSize: '2.5rem',
+              fontWeight: 700,
+              color: '#1f2937',
+              lineHeight: 1.15,
+              margin: 0
+            }}
+          >
+            Your wishlist is lonely
+          </h1>
+          <p
+            className="wishlist-empty-subtitle"
+            style={{
+              maxWidth: '680px',
+              fontSize: '1.1rem',
+              color: '#9ca3af',
+              lineHeight: 1.7,
+              margin: 0
+            }}
+          >
+            Your wishlist is feeling a bit empty. Explore our unique designs and add products that tell your story!
           </p>
           <button
             type="button"
             className="wishlist-empty-cta"
+            style={{
+              background: '#0f766e',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '14px',
+              padding: '14px 34px',
+              fontSize: '1rem',
+              fontWeight: 600
+            }}
             onClick={() => navigate("/shop")}
           >
             Explore Shop
