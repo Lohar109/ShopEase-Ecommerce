@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
@@ -22,6 +22,9 @@ const ProductDetail = () => {
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [mainDisplay, setMainDisplay] = useState(null);
+  const descriptionInlineRef = useRef(null);
+  const [inlineDescription, setInlineDescription] = useState("");
+  const [showInlineReadMore, setShowInlineReadMore] = useState(false);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -231,6 +234,125 @@ const ProductDetail = () => {
       return String(value).trim() !== "";
     });
   }, [product?.specifications]);
+
+  const descriptionText = String(product?.description || "").trim();
+
+  useEffect(() => {
+    const container = descriptionInlineRef.current;
+    if (!container) return;
+
+    const recomputeInlineDescription = () => {
+      if (!descriptionText) {
+        setInlineDescription("");
+        setShowInlineReadMore(false);
+        return;
+      }
+
+      const availableWidth = container.clientWidth;
+      if (!availableWidth) {
+        setInlineDescription(descriptionText);
+        setShowInlineReadMore(false);
+        return;
+      }
+
+      const paragraph = container.querySelector(".product-detail-desc");
+      const styles = window.getComputedStyle(paragraph || container);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        setInlineDescription(descriptionText);
+        setShowInlineReadMore(false);
+        return;
+      }
+
+      const baseFont = `${styles.fontStyle} ${styles.fontVariant} ${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
+      const linkFont = `${styles.fontStyle} ${styles.fontVariant} 600 ${styles.fontSize} ${styles.fontFamily}`;
+
+      const measureText = (text, font = baseFont) => {
+        ctx.font = font;
+        return ctx.measureText(text).width;
+      };
+
+      const getWrappedLines = (text) => {
+        const words = text.trim().split(/\s+/).filter(Boolean);
+        if (words.length === 0) return [];
+
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i += 1) {
+          const candidate = `${currentLine} ${words[i]}`;
+          if (measureText(candidate) <= availableWidth) {
+            currentLine = candidate;
+          } else {
+            lines.push(currentLine);
+            currentLine = words[i];
+          }
+        }
+
+        lines.push(currentLine);
+        return lines;
+      };
+
+      const maxLines = 4;
+      const fullLines = getWrappedLines(descriptionText);
+      if (fullLines.length <= maxLines) {
+        setInlineDescription(descriptionText);
+        setShowInlineReadMore(false);
+        return;
+      }
+
+      const words = descriptionText.split(/\s+/).filter(Boolean);
+      const reserveWidth = measureText("... ") + measureText("Read More", linkFont) + 4;
+
+      const fitsInFourLinesWithInlineLink = (wordCount) => {
+        if (wordCount <= 0) return false;
+        const candidateText = words.slice(0, wordCount).join(" ");
+        const lines = getWrappedLines(candidateText);
+
+        if (lines.length > maxLines) return false;
+        if (lines.length < maxLines) return true;
+
+        return measureText(lines[maxLines - 1]) + reserveWidth <= availableWidth;
+      };
+
+      let low = 1;
+      let high = words.length;
+      let best = 1;
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (fitsInFourLinesWithInlineLink(mid)) {
+          best = mid;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      let truncated = words.slice(0, best).join(" ").replace(/[\s.,;:!?-]+$/, "");
+      if (!truncated) {
+        truncated = words[0] || "";
+      }
+
+      setInlineDescription(truncated);
+      setShowInlineReadMore(true);
+    };
+
+    recomputeInlineDescription();
+
+    if (typeof ResizeObserver !== "undefined") {
+      const resizeObserver = new ResizeObserver(() => {
+        recomputeInlineDescription();
+      });
+      resizeObserver.observe(container);
+      return () => resizeObserver.disconnect();
+    }
+
+    window.addEventListener("resize", recomputeInlineDescription);
+    return () => window.removeEventListener("resize", recomputeInlineDescription);
+  }, [descriptionText]);
   
 
   if (loading) return <div className="product-detail-loading">Loading...</div>;
@@ -262,9 +384,6 @@ const ProductDetail = () => {
 
     addToCart(product, variantToAdd);
   };
-
-  const descriptionText = String(product?.description || '').trim();
-  const hasLongDescription = descriptionText.length > 140;
 
   const formatSpecificationValue = (value) => {
     if (Array.isArray(value)) return value.join(", ");
@@ -385,18 +504,25 @@ const ProductDetail = () => {
           </div>
 
           <h2 className="product-detail-title">{product.name}</h2>
-          <div className={`product-detail-desc-preview${hasLongDescription ? ' has-fade' : ''}`}>
-            <p className="product-detail-desc clamped">{descriptionText}</p>
+          <div className="product-detail-desc-preview" ref={descriptionInlineRef}>
+            <p className="product-detail-desc">
+              <span className="product-detail-desc-inline-text">
+                {showInlineReadMore ? inlineDescription : descriptionText}
+              </span>
+              {showInlineReadMore && (
+                <span className="product-detail-desc-inline-cta">
+                  <span className="product-detail-read-more-ellipsis">... </span>
+                  <button
+                    type="button"
+                    className="product-detail-read-more product-detail-read-more-inline"
+                    onClick={() => setShowDescriptionModal(true)}
+                  >
+                    Read More
+                  </button>
+                </span>
+              )}
+            </p>
           </div>
-          {hasLongDescription && (
-            <button
-              type="button"
-              className="product-detail-read-more"
-              onClick={() => setShowDescriptionModal(true)}
-            >
-              Read More
-            </button>
-          )}
           <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
             <svg
               className="btn-specifications-icon btn-specifications-icon-leading"
