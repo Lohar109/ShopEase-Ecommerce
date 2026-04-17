@@ -125,7 +125,12 @@ const Cart = () => {
               {cartItems.map(item => (
                 <div className="cart-item" key={item.cartItemId}>
                   <Link to={`/product/${item.productId}`} className="cart-item-image-link">
-                    <img src={resolveImageSrc(item.image)} alt={item.productName} className="cart-item-image" />
+                    <img
+                      src={resolveImageSrc(item.image)}
+                      alt={item.productName}
+                      className="cart-item-image"
+                      style={{ width: '96px', height: '96px', objectFit: 'cover' }}
+                    />
                   </Link>
 
                   <div className="cart-item-details">
