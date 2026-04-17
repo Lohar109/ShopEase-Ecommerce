@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
@@ -151,8 +151,15 @@ const Cart = () => {
                       <span>{item.quantity}</span>
                       <button type="button" onClick={() => handleIncrease(item)}>+</button>
                     </div>
-                    <button type="button" className="cart-remove-btn" onClick={() => handleRemove(item)}>
-                      Remove
+                    <button
+                      type="button"
+                      className="cart-remove-btn"
+                      onClick={() => handleRemove(item)}
+                      aria-label={`Remove ${item.productName} from cart`}
+                      title="Remove item"
+                    >
+                      <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                      <span>Remove</span>
                     </button>
                   </div>
                 </div>
