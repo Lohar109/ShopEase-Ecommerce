@@ -93,18 +93,22 @@ const Cart = () => {
           </div>
         ) : (
           <>
-            <h1
-              className="cart-title"
-              style={{
-                fontSize: '2.5rem',
-                fontWeight: '700',
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-                textAlign: 'center'
-              }}
-            >
-              Your Cart
-            </h1>
+            <div className="cart-checkout-stepper" aria-label="Checkout progress">
+              <div className="cart-step cart-step-active" aria-current="step">
+                <span className="cart-step-circle">1</span>
+                <span className="cart-step-label">Cart</span>
+              </div>
+              <span className="cart-step-connector" aria-hidden="true" />
+              <div className="cart-step">
+                <span className="cart-step-circle">2</span>
+                <span className="cart-step-label">Shipping</span>
+              </div>
+              <span className="cart-step-connector" aria-hidden="true" />
+              <div className="cart-step">
+                <span className="cart-step-circle">3</span>
+                <span className="cart-step-label">Payment</span>
+              </div>
+            </div>
             <div className="cart-content">
               <div className="cart-list">
               {cartItems.map(item => (
