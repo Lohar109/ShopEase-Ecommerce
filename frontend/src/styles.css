@@ -52,9 +52,15 @@ nav {
     align-items: center;
 }
 
-.main-site-logo {
-    height: 36px;
+.h-9 {
+    height: 80px;
+}
+
+.w-auto {
     width: auto;
+}
+
+.object-contain {
     object-fit: contain;
     display: block;
 }
