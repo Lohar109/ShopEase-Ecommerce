@@ -315,18 +315,34 @@
 }
 
 .product-detail-read-more {
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  font-weight: 600;
+  border: none !important;
+  background: transparent !important;
+  color: #4b5563;
+  font-weight: 500;
   font-size: 0.95rem;
   padding: 0;
+  margin: 0;
+  line-height: 1.2;
   cursor: pointer;
-  width: max-content;
+  width: auto;
+  align-self: flex-start;
+  box-shadow: none !important;
+  outline: none;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.product-detail-read-more:hover {
-  text-decoration: underline;
+.product-detail-read-more:hover,
+.product-detail-read-more:focus,
+.product-detail-read-more:active,
+.product-detail-read-more:focus-visible {
+  border: none !important;
+  background: transparent !important;
+  color: #4b5563;
+  text-decoration: none;
+  box-shadow: none !important;
+  outline: none;
+  transform: none;
 }
 /* Size Selector */
 .product-detail-size-selector {
