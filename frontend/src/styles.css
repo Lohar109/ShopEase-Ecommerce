@@ -472,114 +472,12 @@ button:hover {
     width: 100%; /* Make the button take full width of the card */
 }
 
-/* Customer Reviews Section */
-.reviews {
-    text-align: center;
-    padding: 4rem 0 1rem;
-}
-
-.reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
-    padding: 2rem 0;
-}
-
-.review-card {
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 2.5rem 1.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.review-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.review-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 1.25rem;
-    border: 3px solid #f3f4f6;
-}
-
-.review-name {
-    font-size: 1.25rem;
-    color: var(--primary-color);
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-}
-
-.review-text {
-    font-size: 1rem;
-    color: #4b5563;
-    font-style: italic;
-}
-
-/* Newsletter Section */
-.newsletter {
-    background-color: #e5e7eb;
-    padding: 4rem 2rem;
-    border-radius: 16px;
-    text-align: center;
-    margin-top: 4rem;
-}
-
-.newsletter h3 {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.newsletter-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    max-width: 500px;
-    margin: 1.5rem auto 0;
-}
-
-/* Screen reader only class for accessibility */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-.newsletter-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.newsletter-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
-}
-
 /* Footer */
 footer {
     text-align: center;
     padding: 2rem;
     color: #6b7280;
-    margin-top: 4rem;
+    margin-top: 2.5rem;
 }
 
 /* Media Queries for Mobile Responsiveness */
@@ -625,21 +523,6 @@ footer {
         gap: 1.5rem;
     }
 
-    /* Stack the Reviews Grid into a single column */
-    .reviews-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    /* Adjust Newsletter Form for Mobile */
-    .newsletter-form {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .newsletter-input, .btn-subscribe {
-        width: 100%;
-    }
 }
 
 
@@ -911,6 +794,7 @@ footer {
 
 .shop-product-grid {
     min-height: 30vh;
+    margin-bottom: 1rem;
 }
 
 .shop-products-grid-four {
