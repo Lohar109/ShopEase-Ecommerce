@@ -776,6 +776,42 @@ footer {
     transform: none;
 }
 
+.wishlist-header-skeleton {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.wishlist-skeleton-chip {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    border-radius: 9999px;
+    background: #e5e7eb;
+}
+
+.wishlist-skeleton-chip::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: skeletonSweep 1.2s ease-in-out infinite;
+}
+
+.wishlist-skeleton-title {
+    width: 210px;
+    height: 38px;
+}
+
+.wishlist-skeleton-badge {
+    width: 86px;
+    height: 30px;
+}
+
+.wishlist-skeleton-button {
+    width: 142px;
+    height: 34px;
+}
+
 @media (max-width: 900px) {
     .wishlist-header-bar {
         flex-direction: column;
@@ -786,6 +822,11 @@ footer {
     .wishlist-header-right {
         flex-wrap: wrap;
         gap: 8px;
+    }
+
+    .wishlist-skeleton-title {
+        width: 176px;
+        height: 34px;
     }
 }
 

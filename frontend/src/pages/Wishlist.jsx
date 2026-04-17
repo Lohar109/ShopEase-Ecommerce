@@ -3,6 +3,7 @@ import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import ProductCard from "../components/ProductCard";
+import ProductSkeleton from "../components/ProductSkeleton";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import "../styles.css";
@@ -16,6 +17,7 @@ const Wishlist = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     syncWishlistFromStorage();
@@ -25,8 +27,11 @@ const Wishlist = () => {
     let isCancelled = false;
 
     const loadWishlistProducts = async () => {
+      if (!isCancelled) setIsLoading(true);
+
       if (!Array.isArray(wishlist) || wishlist.length === 0) {
         setProducts([]);
+        if (!isCancelled) setIsLoading(false);
         return;
       }
 
@@ -56,9 +61,13 @@ const Wishlist = () => {
 
         if (!isCancelled) {
           setProducts(detailedProducts.filter(Boolean));
+          setIsLoading(false);
         }
       } catch {
-        if (!isCancelled) setProducts([]);
+        if (!isCancelled) {
+          setProducts([]);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -97,7 +106,26 @@ const Wishlist = () => {
 
   return (
     <main className="shop-page wishlist-page-layout">
-      {!hasWishlistItems ? (
+      {isLoading ? (
+        <section className="shop-product-grid" aria-live="polite" aria-busy="true">
+          <div className="wishlist-header-bar wishlist-header-skeleton">
+            <div className="wishlist-header-left">
+              <span className="wishlist-skeleton-chip wishlist-skeleton-title" />
+            </div>
+
+            <div className="wishlist-header-right">
+              <span className="wishlist-skeleton-chip wishlist-skeleton-badge" />
+              <span className="wishlist-skeleton-chip wishlist-skeleton-button" />
+            </div>
+          </div>
+
+          <div className="featured-products-grid" aria-hidden="true">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <ProductSkeleton key={`wishlist-skeleton-${index}`} />
+            ))}
+          </div>
+        </section>
+      ) : !hasWishlistItems ? (
         <section
           className="wishlist-empty-state"
           aria-live="polite"
