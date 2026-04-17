@@ -38,13 +38,17 @@ export const WishlistProvider = ({ children }) => {
     );
   };
 
+  const clearWishlist = useCallback(() => {
+    setWishlist([]);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(wishlist));
   }, [wishlist]);
 
   const value = useMemo(
-    () => ({ wishlist, toggleWishlist, syncWishlistFromStorage }),
-    [wishlist, syncWishlistFromStorage]
+    () => ({ wishlist, toggleWishlist, clearWishlist, syncWishlistFromStorage }),
+    [wishlist, clearWishlist, syncWishlistFromStorage]
   );
 
   return (

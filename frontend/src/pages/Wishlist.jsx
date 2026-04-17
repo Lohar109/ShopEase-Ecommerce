@@ -13,7 +13,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/api$/, "");
 
 const Wishlist = () => {
-  const { wishlist, syncWishlistFromStorage } = useContext(WishlistContext);
+  const { wishlist, clearWishlist, syncWishlistFromStorage } = useContext(WishlistContext);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -97,10 +97,12 @@ const Wishlist = () => {
       if (result?.added) addedCount += 1;
     });
 
+    clearWishlist();
+
     if (addedCount > 0) {
-      toast.success(`${addedCount} ${addedCount === 1 ? "item" : "items"} added to cart`);
+      toast.success(`${addedCount} ${addedCount === 1 ? "item" : "items"} moved to cart`);
     } else {
-      toast("All available wishlist items are already in cart", { icon: "ℹ️" });
+      toast("Wishlist cleared. Items were already in cart.", { icon: "ℹ️" });
     }
   };
 
