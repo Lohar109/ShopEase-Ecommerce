@@ -294,7 +294,7 @@
 .product-detail-desc.clamped {
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -317,8 +317,8 @@
 .product-detail-read-more {
   border: none !important;
   background: transparent !important;
-  color: #4b5563;
-  font-weight: 500;
+  color: #e33170;
+  font-weight: 600;
   font-size: 0.95rem;
   padding: 0;
   margin: 0;
@@ -329,6 +329,7 @@
   box-shadow: none !important;
   outline: none;
   text-decoration: none;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -338,8 +339,8 @@
 .product-detail-read-more:focus-visible {
   border: none !important;
   background: transparent !important;
-  color: #4b5563;
-  text-decoration: none;
+  color: #c0265f;
+  text-decoration: underline;
   box-shadow: none !important;
   outline: none;
   transform: none;
