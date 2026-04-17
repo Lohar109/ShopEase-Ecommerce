@@ -45,11 +45,11 @@ const Cart = () => {
   };
 
   return (
-    <div className="cart-page-shell">
-      <div className="cart-page-inner">
+    <div className="cart-page-shell block w-full min-h-screen">
+      <div className="cart-page-inner block max-w-7xl mx-auto">
         {cartItems.length === 0 ? (
           <div
-            className="cart-empty-state"
+            className="cart-empty-state flex"
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -104,36 +104,36 @@ const Cart = () => {
           </div>
         ) : (
           <>
-            <div className="cart-checkout-stepper" aria-label="Checkout progress">
-              <div className="cart-step cart-step-active" aria-current="step">
+            <div className="cart-checkout-stepper flex flex-row justify-center items-center w-full" aria-label="Checkout progress">
+              <div className="cart-step cart-step-active flex items-center" aria-current="step" style={{ minWidth: '132px' }}>
                 <span className="cart-step-circle">1</span>
                 <span className="cart-step-label">Cart</span>
               </div>
               <span className="cart-step-connector" aria-hidden="true" />
-              <div className="cart-step">
+              <div className="cart-step flex items-center" style={{ minWidth: '148px' }}>
                 <span className="cart-step-circle">2</span>
                 <span className="cart-step-label">Shipping</span>
               </div>
               <span className="cart-step-connector" aria-hidden="true" />
-              <div className="cart-step">
+              <div className="cart-step flex items-center" style={{ minWidth: '146px' }}>
                 <span className="cart-step-circle">3</span>
                 <span className="cart-step-label">Payment</span>
               </div>
             </div>
-            <div className="cart-content">
-              <div className="cart-list">
+            <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="cart-list block lg:col-span-2">
               {cartItems.map(item => (
-                <div className="cart-item" key={item.cartItemId}>
-                  <Link to={`/product/${item.productId}`} className="cart-item-image-link">
+                <div className="cart-item flex" key={item.cartItemId}>
+                  <Link to={`/product/${item.productId}`} className="cart-item-image-link block">
                     <img
                       src={resolveImageSrc(item.image)}
                       alt={item.productName}
-                      className="cart-item-image"
+                      className="cart-item-image w-24 h-24 min-w-[96px] object-cover rounded-lg"
                       style={{ width: '96px', height: '96px', objectFit: 'cover' }}
                     />
                   </Link>
 
-                  <div className="cart-item-details">
+                  <div className="cart-item-details block">
                     <h3>
                       <Link to={`/product/${item.productId}`} className="cart-item-title-link">
                         {item.productName}
@@ -144,8 +144,8 @@ const Cart = () => {
                     <p>Price: ₹ {item.price ?? 'N/A'}</p>
                   </div>
 
-                  <div className="cart-item-actions">
-                    <div className="cart-qty-control">
+                  <div className="cart-item-actions flex">
+                    <div className="cart-qty-control flex items-center">
                       <button type="button" onClick={() => handleDecrease(item)}>-</button>
                       <span>{item.quantity}</span>
                       <button type="button" onClick={() => handleIncrease(item)}>+</button>
@@ -158,7 +158,7 @@ const Cart = () => {
               ))}
               </div>
 
-              <aside className="cart-summary-card">
+              <aside className="cart-summary-card block lg:col-span-1">
                 <h3>Price Details</h3>
                 <div className="cart-summary-row">
                   <span>Subtotal</span>
