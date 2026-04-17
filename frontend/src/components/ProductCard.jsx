@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, deliveryText = "Delivered by Tuesday, April 14" }) => {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
   const isWishlisted = Array.isArray(wishlist)
@@ -18,6 +18,11 @@ const ProductCard = ({ product }) => {
     if (prices.length > 0) {
       price = `₹${Math.min(...prices).toFixed(2)}`;
     }
+  } else {
+    const basePrice = parseFloat(product?.price);
+    if (!isNaN(basePrice)) {
+      price = `₹${basePrice.toFixed(2)}`;
+    }
   }
 
   return (
@@ -27,7 +32,7 @@ const ProductCard = ({ product }) => {
       <div className="product-card-info-row">
         <div className="product-card-pricing-block">
           <span className="product-price">{price}</span>
-          <p className="product-card-delivery">Delivered by Tuesday, April 14</p>
+          <p className="product-card-delivery">{deliveryText}</p>
         </div>
         <button 
           className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}

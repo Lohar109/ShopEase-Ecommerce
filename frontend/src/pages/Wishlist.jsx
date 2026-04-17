@@ -19,28 +19,51 @@ const Wishlist = () => {
   }, [syncWishlistFromStorage]);
 
   useEffect(() => {
-    if (!Array.isArray(wishlist) || wishlist.length === 0) {
-      setProducts([]);
-      return;
-    }
+    let isCancelled = false;
 
-    fetch(`${API_ORIGIN}/api/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!Array.isArray(data)) {
-          setProducts([]);
-          return;
+    const loadWishlistProducts = async () => {
+      if (!Array.isArray(wishlist) || wishlist.length === 0) {
+        setProducts([]);
+        return;
+      }
+
+      try {
+        const detailedProducts = await Promise.all(
+          wishlist.map(async (productId) => {
+            try {
+              const response = await fetch(`${API_ORIGIN}/api/products/${productId}`);
+              if (!response.ok) return null;
+
+              const data = await response.json();
+              const baseProduct = data?.product || null;
+              if (!baseProduct) return null;
+
+              const isActive = baseProduct?.is_active === true || baseProduct?.active === true;
+              if (!isActive) return null;
+
+              return {
+                ...baseProduct,
+                variants: Array.isArray(data?.variants) ? data.variants : [],
+              };
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        if (!isCancelled) {
+          setProducts(detailedProducts.filter(Boolean));
         }
+      } catch {
+        if (!isCancelled) setProducts([]);
+      }
+    };
 
-        const wishlistIdSet = new Set(wishlist.map((id) => String(id)));
-        const activeWishlistProducts = data.filter((product) => {
-          const isActive = product?.is_active === true || product?.active === true;
-          return isActive && wishlistIdSet.has(String(product?.id));
-        });
+    loadWishlistProducts();
 
-        setProducts(activeWishlistProducts);
-      })
-      .catch(() => setProducts([]));
+    return () => {
+      isCancelled = true;
+    };
   }, [wishlist]);
 
   const safeWishlist = useMemo(() => (Array.isArray(wishlist) ? wishlist : []), [wishlist]);
@@ -109,9 +132,13 @@ const Wishlist = () => {
       ) : (
         <section>
           <h1 className="section-title">Your Wishlist</h1>
-          <div className="featured-products-grid">
+          <div className="shop-products-grid-four wishlist-products-grid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                deliveryText="Delivered by Tuesday, April 14"
+              />
             ))}
           </div>
         </section>
