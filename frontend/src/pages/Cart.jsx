@@ -125,12 +125,13 @@ const Cart = () => {
               {cartItems.map(item => (
                 <div className="cart-item flex" key={item.cartItemId}>
                   <Link to={`/product/${item.productId}`} className="cart-item-image-link block">
-                    <img
-                      src={resolveImageSrc(item.image)}
-                      alt={item.productName}
-                      className="cart-item-image w-24 h-24 min-w-[96px] object-cover rounded-lg"
-                      style={{ width: '96px', height: '96px', objectFit: 'cover' }}
-                    />
+                    <div className="cart-item-image-wrap">
+                      <img
+                        src={resolveImageSrc(item.image)}
+                        alt={item.productName}
+                        className="cart-item-image"
+                      />
+                    </div>
                   </Link>
 
                   <div className="cart-item-details block">
