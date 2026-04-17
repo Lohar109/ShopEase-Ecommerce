@@ -287,15 +287,16 @@
   margin: 0;
   color: #4b5563;
   line-height: 1.7;
-  border-left: 2px solid #e5e7eb;
-  padding-left: 12px;
   font-size: 1rem;
-  display: inline;
+  display: block;
 }
 
 .product-detail-desc-preview {
   width: 100%;
   margin-bottom: 18px;
+  border-left: 2px solid #e5e7eb;
+  padding-left: 12px;
+  box-sizing: border-box;
 }
 
 .product-detail-desc-inline-text,
