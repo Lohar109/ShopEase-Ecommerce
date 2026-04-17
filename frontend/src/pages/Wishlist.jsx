@@ -119,7 +119,7 @@ const Wishlist = () => {
             </div>
           </div>
 
-          <div className="featured-products-grid" aria-hidden="true">
+          <div className="wishlist-products-grid" aria-hidden="true">
             {Array.from({ length: 4 }).map((_, index) => (
               <ProductSkeleton key={`wishlist-skeleton-${index}`} />
             ))}
@@ -204,7 +204,7 @@ const Wishlist = () => {
             </div>
           </div>
 
-          <div className="featured-products-grid">
+          <div className="wishlist-products-grid">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
