@@ -222,9 +222,18 @@
   flex-direction: column;
   gap: 18px;
 }
+
+.product-detail-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .product-detail-title {
-  font-size: 2.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.2;
   margin-bottom: 0.5rem;
 }
 .product-detail-price {
@@ -245,7 +254,7 @@
 .product-detail-brand {
   color: #888;
   font-size: 16px;
-  margin-bottom: 2px;
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 500;
@@ -254,7 +263,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 12px;
+  margin: 0;
   font-size: 1.2rem;
 }
 .product-detail-rating .star {
