@@ -208,11 +208,13 @@ const ProductDetail = () => {
             ))}
           </div>
           <div className="product-detail-main-display">
-            {mainDisplay?.type === 'video' ? (
-              <video src={mainDisplay.url} controls className="product-detail-main-media" autoPlay />
-            ) : (
-              <img src={mainDisplay?.url || selectedVariant.image || product.main_image} alt={product.name} className="product-detail-main-media" />
-            )}
+            <div className="product-detail-main-media-box">
+              {mainDisplay?.type === 'video' ? (
+                <video src={mainDisplay.url} controls className="product-detail-main-media" autoPlay />
+              ) : (
+                <img src={mainDisplay?.url || selectedVariant.image || product.main_image} alt={product.name} className="product-detail-main-media" />
+              )}
+            </div>
             
             <div className="product-detail-options-under-image">
               {/* Size Selector */}
