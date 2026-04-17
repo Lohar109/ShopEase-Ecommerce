@@ -132,26 +132,59 @@ const MainPage = () => {
           <div className="home-footer-column">
             <h3>Connect</h3>
             <div className="home-footer-socials" aria-label="Social media links">
-              <a href="#" aria-label="Instagram">
-                <span className="home-footer-social-icon" aria-hidden="true">IG</span>
-                <span>Instagram</span>
+              <a href="#" className="home-footer-social-link" aria-label="Instagram" title="Instagram">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <defs>
+                    <linearGradient id="footer-instagram-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#f58529" />
+                      <stop offset="45%" stopColor="#dd2a7b" />
+                      <stop offset="100%" stopColor="#8134af" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="url(#footer-instagram-gradient)" />
+                  <circle cx="12" cy="12" r="4" fill="none" stroke="#ffffff" strokeWidth="1.8" />
+                  <circle cx="17.2" cy="6.9" r="1.1" fill="#ffffff" />
+                </svg>
               </a>
-              <a href="#" aria-label="Twitter">
-                <span className="home-footer-social-icon" aria-hidden="true">X</span>
-                <span>Twitter</span>
+              <a href="#" className="home-footer-social-link" aria-label="X" title="X">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="#ffffff" />
+                  <path d="M17.62 4.5h2.35l-5.12 5.86L21 19.5h-4.76l-3.73-4.9-4.18 4.9H5.98l5.47-6.24L5.7 4.5h4.88l3.39 4.45 3.65-4.45z" fill="#0b0b0b" />
+                </svg>
               </a>
-              <a href="#" aria-label="Facebook">
-                <span className="home-footer-social-icon" aria-hidden="true">f</span>
-                <span>Facebook</span>
+              <a href="#" className="home-footer-social-link" aria-label="Facebook" title="Facebook">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <circle cx="12" cy="12" r="9.5" fill="#1877f2" />
+                  <path d="M13.26 19v-6.25h2.08l.33-2.41h-2.41V8.8c0-.7.2-1.17 1.19-1.17h1.27V5.46c-.22-.03-.97-.09-1.85-.09-1.83 0-3.08 1.12-3.08 3.16v1.8H8.72v2.41h2.07V19h2.47z" fill="#ffffff" />
+                </svg>
               </a>
             </div>
 
             <div className="home-footer-payments" aria-label="Accepted payment methods">
               <p>Payment Methods</p>
-              <div className="home-footer-payment-pills">
-                <span>Visa</span>
-                <span>Mastercard</span>
-                <span>UPI</span>
+              <div className="home-footer-payment-logos">
+                <span className="home-footer-payment-logo" aria-label="Visa" title="Visa">
+                  <svg viewBox="0 0 56 24" aria-hidden="true" focusable="false">
+                    <rect x="0.75" y="0.75" width="54.5" height="22.5" rx="6" fill="#ffffff" stroke="#dbe5f5" />
+                    <text x="12" y="16" fill="#1a1f71" fontSize="11" fontWeight="800" fontFamily="Poppins, sans-serif">VISA</text>
+                    <path d="M12 18.2h18l-0.8 1.7H11.2z" fill="#f7b600" />
+                  </svg>
+                </span>
+                <span className="home-footer-payment-logo" aria-label="Mastercard" title="Mastercard">
+                  <svg viewBox="0 0 56 24" aria-hidden="true" focusable="false">
+                    <rect x="0.75" y="0.75" width="54.5" height="22.5" rx="6" fill="#ffffff" stroke="#dbe5f5" />
+                    <circle cx="24" cy="12" r="6.4" fill="#eb001b" />
+                    <circle cx="32" cy="12" r="6.4" fill="#f79e1b" fillOpacity="0.95" />
+                  </svg>
+                </span>
+                <span className="home-footer-payment-logo" aria-label="UPI" title="UPI">
+                  <svg viewBox="0 0 56 24" aria-hidden="true" focusable="false">
+                    <rect x="0.75" y="0.75" width="54.5" height="22.5" rx="6" fill="#ffffff" stroke="#dbe5f5" />
+                    <text x="18" y="16" fill="#1f2937" fontSize="11" fontWeight="800" fontFamily="Poppins, sans-serif">UPI</text>
+                    <path d="M12 6.8 16.8 12 12 17.2" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M15.2 6.8 20 12 15.2 17.2" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
               </div>
             </div>
           </div>
