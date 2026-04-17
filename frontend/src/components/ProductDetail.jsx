@@ -10,6 +10,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
@@ -247,6 +248,9 @@ const ProductDetail = () => {
     addToCart(product, variantToAdd);
   };
 
+  const descriptionText = String(product?.description || '').trim();
+  const hasLongDescription = descriptionText.length > 140;
+
   return (
     <div className="product-detail-container">
       <div className="product-detail-main">
@@ -360,7 +364,18 @@ const ProductDetail = () => {
           </div>
 
           <h2 className="product-detail-title">{product.name}</h2>
-          <p className="product-detail-desc">{product.description}</p>
+          <div className={`product-detail-desc-preview${hasLongDescription ? ' has-fade' : ''}`}>
+            <p className="product-detail-desc clamped">{descriptionText}</p>
+          </div>
+          {hasLongDescription && (
+            <button
+              type="button"
+              className="product-detail-read-more"
+              onClick={() => setShowDescriptionModal(true)}
+            >
+              Read More
+            </button>
+          )}
           <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
             Product Specifications & Features
           </button>
@@ -425,6 +440,26 @@ const ProductDetail = () => {
               {!product?.brand && !selectedVariant?.color && !product?.features && (
                  <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDescriptionModal && (
+        <div className="description-modal-overlay" onClick={() => setShowDescriptionModal(false)}>
+          <div className="description-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="description-modal-header">
+              <h3>Product Description</h3>
+              <button
+                type="button"
+                className="description-modal-close"
+                onClick={() => setShowDescriptionModal(false)}
+              >
+                Close
+              </button>
+            </div>
+            <div className="description-modal-body">
+              <p>{descriptionText}</p>
             </div>
           </div>
         </div>
