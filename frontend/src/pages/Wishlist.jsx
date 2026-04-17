@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import ProductCard from "../components/ProductCard";
 import { WishlistContext } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
 import "../styles.css";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
@@ -11,6 +13,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const Wishlist = () => {
   const { wishlist, syncWishlistFromStorage } = useContext(WishlistContext);
+  const { addToCart } = useCart();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
@@ -66,8 +69,31 @@ const Wishlist = () => {
     };
   }, [wishlist]);
 
-  const safeWishlist = useMemo(() => (Array.isArray(wishlist) ? wishlist : []), [wishlist]);
   const hasWishlistItems = products.length > 0;
+  const wishlistCountLabel = useMemo(
+    () => `${products.length} ${products.length === 1 ? "Item" : "Items"}`,
+    [products.length]
+  );
+
+  const handleAddAllToCart = () => {
+    if (!Array.isArray(products) || products.length === 0) return;
+
+    let addedCount = 0;
+    products.forEach((product) => {
+      const variants = Array.isArray(product?.variants) ? product.variants : [];
+      const fallbackVariant = variants.find((variant) => Boolean(variant?.id));
+      if (!fallbackVariant) return;
+
+      const result = addToCart(product, fallbackVariant);
+      if (result?.added) addedCount += 1;
+    });
+
+    if (addedCount > 0) {
+      toast.success(`${addedCount} ${addedCount === 1 ? "item" : "items"} added to cart`);
+    } else {
+      toast("All available wishlist items are already in cart", { icon: "ℹ️" });
+    }
+  };
 
   return (
     <main className="shop-page wishlist-page-layout">
@@ -130,7 +156,27 @@ const Wishlist = () => {
         </section>
       ) : (
         <section className="shop-product-grid">
-          <h1 className="section-title wishlist-section-title">Your Wishlist</h1>
+          <div className="wishlist-header-bar">
+            <div className="wishlist-header-left" aria-hidden="true">
+              <span className="wishlist-header-icon-wrap">
+                <Heart className="wishlist-header-icon" size={18} fill="#e33170" stroke="#e33170" />
+              </span>
+            </div>
+
+            <h1 className="wishlist-header-title">My Favorites</h1>
+
+            <div className="wishlist-header-right">
+              <span className="wishlist-header-badge">{wishlistCountLabel}</span>
+              <button
+                type="button"
+                className="wishlist-add-all-btn"
+                onClick={handleAddAllToCart}
+              >
+                Add All to Cart
+              </button>
+            </div>
+          </div>
+
           <div className="featured-products-grid">
             {products.map((product) => (
               <ProductCard
