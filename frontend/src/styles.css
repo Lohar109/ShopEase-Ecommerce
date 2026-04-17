@@ -649,12 +649,6 @@ footer {
   outline: none !important;
 }
 
-.wishlist-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
 .wishlist-empty-state {
     min-height: 60vh;
     display: flex;
@@ -700,6 +694,11 @@ footer {
     background: #1f2937;
     transform: none;
     box-shadow: none;
+}
+
+.wishlist-section-title {
+    margin-bottom: 1.5rem;
+    text-align: left;
 }
 
 .shop-page {

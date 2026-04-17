@@ -70,8 +70,7 @@ const Wishlist = () => {
   const hasWishlistItems = products.length > 0;
 
   return (
-    <div className="w-full min-h-screen px-4">
-      <div className="max-w-7xl mx-auto">
+    <main className="shop-page wishlist-page-layout">
       {!hasWishlistItems ? (
         <section
           className="wishlist-empty-state"
@@ -130,9 +129,9 @@ const Wishlist = () => {
           </button>
         </section>
       ) : (
-        <section>
-          <h1 className="section-title">Your Wishlist</h1>
-          <div className="shop-products-grid-four wishlist-products-grid">
+        <section className="shop-product-grid">
+          <h1 className="section-title wishlist-section-title">Your Wishlist</h1>
+          <div className="featured-products-grid">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -143,8 +142,7 @@ const Wishlist = () => {
           </div>
         </section>
       )}
-      </div>
-    </div>
+    </main>
   );
 };
 
