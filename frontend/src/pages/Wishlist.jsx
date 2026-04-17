@@ -157,13 +157,12 @@ const Wishlist = () => {
       ) : (
         <section className="shop-product-grid">
           <div className="wishlist-header-bar">
-            <div className="wishlist-header-left" aria-hidden="true">
+            <div className="wishlist-header-left">
               <span className="wishlist-header-icon-wrap">
                 <Heart className="wishlist-header-icon" size={18} fill="#e33170" stroke="#e33170" />
               </span>
+              <h1 className="wishlist-header-title">My Favorites</h1>
             </div>
-
-            <h1 className="wishlist-header-title">My Favorites</h1>
 
             <div className="wishlist-header-right">
               <span className="wishlist-header-badge">{wishlistCountLabel}</span>
