@@ -216,6 +216,21 @@ const ProductDetail = () => {
       setMainDisplay(galleryItems[0]);
     }
   }, [galleryItems, mainDisplay]);
+
+  const specificationRows = useMemo(() => {
+    const specs = product?.specifications;
+    if (!specs || typeof specs !== "object" || Array.isArray(specs)) {
+      return [];
+    }
+
+    return Object.entries(specs).filter(([key, value]) => {
+      const normalizedKey = String(key || "").trim().toLowerCase();
+      if (!normalizedKey) return false;
+      if (normalizedKey === "brand") return false;
+      if (value === null || value === undefined) return false;
+      return String(value).trim() !== "";
+    });
+  }, [product?.specifications]);
   
 
   if (loading) return <div className="product-detail-loading">Loading...</div>;
@@ -250,6 +265,12 @@ const ProductDetail = () => {
 
   const descriptionText = String(product?.description || '').trim();
   const hasLongDescription = descriptionText.length > 140;
+
+  const formatSpecificationValue = (value) => {
+    if (Array.isArray(value)) return value.join(", ");
+    if (value && typeof value === "object") return JSON.stringify(value);
+    return String(value);
+  };
 
   return (
     <div className="product-detail-container">
@@ -411,7 +432,13 @@ const ProductDetail = () => {
           <div className="specs-modal" onClick={e => e.stopPropagation()}>
             <div className="specs-modal-header">
               <h3>Product Specifications</h3>
-              <button type="button" className="specs-modal-close" onClick={() => setShowModal(false)}>&times;</button>
+              <button
+                type="button"
+                className="description-modal-close"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
             </div>
             <div className="specs-modal-body">
               <table className="specs-table">
@@ -422,22 +449,16 @@ const ProductDetail = () => {
                       <td>{product.brand}</td>
                     </tr>
                   )}
-                  {selectedVariant?.color && (
-                    <tr>
-                      <th>Color</th>
-                      <td>{selectedVariant.color}</td>
+                  {specificationRows.map(([key, value]) => (
+                    <tr key={key}>
+                      <th>{key}</th>
+                      <td>{formatSpecificationValue(value)}</td>
                     </tr>
-                  )}
-                  {product?.features && (
-                    <tr>
-                      <th>Features</th>
-                      <td>{product.features}</td>
-                    </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
               {/* Fallback details if fields are empty */}
-              {!product?.brand && !selectedVariant?.color && !product?.features && (
+              {!product?.brand && specificationRows.length === 0 && (
                  <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
               )}
             </div>
