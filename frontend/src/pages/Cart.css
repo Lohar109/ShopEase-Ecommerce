@@ -1,3 +1,14 @@
+.cart-page-shell {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 1rem;
+}
+
+.cart-page-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
 .cart-title {
   margin-top: 24px;
   margin-bottom: 18px;
@@ -227,6 +238,10 @@
 }
 
 @media (max-width: 640px) {
+  .cart-page-shell {
+    padding: 0 0.75rem;
+  }
+
   .cart-checkout-stepper {
     gap: 8px;
     padding: 18px 0 20px;

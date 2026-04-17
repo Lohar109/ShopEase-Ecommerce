@@ -5,6 +5,10 @@ import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '');
+
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
@@ -33,9 +37,16 @@ const Cart = () => {
     toast('Item removed', { icon: '🗑️' });
   };
 
+  const resolveImageSrc = (src) => {
+    if (!src) return '';
+    if (/^https?:\/\//i.test(src) || src.startsWith('data:')) return src;
+    if (src.startsWith('/')) return `${API_ORIGIN}${src}`;
+    return `${API_ORIGIN}/${src}`;
+  };
+
   return (
-    <div className="w-full min-h-screen px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="cart-page-shell">
+      <div className="cart-page-inner">
         {cartItems.length === 0 ? (
           <div
             className="cart-empty-state"
@@ -114,7 +125,7 @@ const Cart = () => {
               {cartItems.map(item => (
                 <div className="cart-item" key={item.cartItemId}>
                   <Link to={`/product/${item.productId}`} className="cart-item-image-link">
-                    <img src={item.image} alt={item.productName} className="cart-item-image" />
+                    <img src={resolveImageSrc(item.image)} alt={item.productName} className="cart-item-image" />
                   </Link>
 
                   <div className="cart-item-details">
