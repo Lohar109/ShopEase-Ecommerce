@@ -178,11 +178,10 @@ const MainPage = () => {
                   </svg>
                 </span>
                 <span className="home-footer-payment-logo" aria-label="UPI" title="UPI">
-                  <svg viewBox="0 0 56 24" aria-hidden="true" focusable="false">
-                    <rect x="0.75" y="0.75" width="54.5" height="22.5" rx="6" fill="#ffffff" stroke="#dbe5f5" />
-                    <text x="18" y="16" fill="#1f2937" fontSize="11" fontWeight="800" fontFamily="Poppins, sans-serif">UPI</text>
-                    <path d="M12 6.8 16.8 12 12 17.2" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M15.2 6.8 20 12 15.2 17.2" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg viewBox="0 0 96 28" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+                    <path d="M16.5 6.3 22.9 13.9 16.5 21.5" fill="none" stroke="#2b6df6" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M20.8 6.3 27.2 13.9 20.8 21.5" fill="none" stroke="#f28b21" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <text x="33" y="18.2" fill="#1f2937" fontSize="14" fontWeight="800" fontFamily="Poppins, sans-serif">UPI</text>
                   </svg>
                 </span>
               </div>
