@@ -473,11 +473,101 @@ button:hover {
 }
 
 /* Footer */
-footer {
-    text-align: center;
-    padding: 2rem;
-    color: #6b7280;
+.home-footer {
     margin-top: 2.5rem;
+    background: #020617;
+    color: #d1d5db;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.home-footer-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2.5rem 1.75rem;
+}
+
+.home-footer-column h3 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+}
+
+.home-footer-column a {
+    display: block;
+    width: fit-content;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.92rem;
+    margin-bottom: 0.55rem;
+    transition: color 0.2s ease;
+}
+
+.home-footer-column a:hover {
+    color: #ffffff;
+}
+
+.home-footer-socials {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 1.15rem;
+}
+
+.home-footer-socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.home-footer-social-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.home-footer-payments p {
+    font-size: 0.83rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.6rem;
+}
+
+.home-footer-payment-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.home-footer-payment-pills span {
+    border: 1px solid #334155;
+    border-radius: 999px;
+    padding: 0.28rem 0.6rem;
+    font-size: 0.78rem;
+    color: #e2e8f0;
+    background: rgba(15, 23, 42, 0.75);
+}
+
+.home-footer-bottom {
+    border-top: 1px solid #1e293b;
+    padding: 1rem 1.75rem 1.2rem;
+    text-align: center;
+}
+
+.home-footer-bottom p {
+    color: #94a3b8;
+    font-size: 0.86rem;
 }
 
 /* Media Queries for Mobile Responsiveness */
@@ -523,6 +613,18 @@ footer {
         gap: 1.5rem;
     }
 
+}
+
+@media (min-width: 1024px) {
+    .home-footer-top {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 2.5rem;
+        padding: 3rem 2.25rem;
+    }
+
+    .home-footer-bottom {
+        padding: 1.1rem 2.25rem 1.25rem;
+    }
 }
 
 

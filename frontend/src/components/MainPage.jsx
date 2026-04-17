@@ -103,8 +103,63 @@ const MainPage = () => {
       </section>
 
       {/* Site Footer */}
-      <footer>
-        <p>&copy; 2026 ShopEase. All rights reserved.</p>
+      <footer className="home-footer" aria-label="Footer navigation and company information">
+        <div className="home-footer-top">
+          <div className="home-footer-column">
+            <h3>Shop</h3>
+            <a href="/shop">All Products</a>
+            <a href="/shop">Featured</a>
+            <a href="/shop">New Arrivals</a>
+            <a href="/shop">Discounts</a>
+          </div>
+
+          <div className="home-footer-column">
+            <h3>Help &amp; Support</h3>
+            <a href="#">Contact Us</a>
+            <a href="#">Order Tracking</a>
+            <a href="#">Shipping Policy</a>
+            <a href="#">Returns &amp; Exchanges</a>
+          </div>
+
+          <div className="home-footer-column">
+            <h3>Company</h3>
+            <a href="#">About ShopEase</a>
+            <a href="#">Careers</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+          </div>
+
+          <div className="home-footer-column">
+            <h3>Connect</h3>
+            <div className="home-footer-socials" aria-label="Social media links">
+              <a href="#" aria-label="Instagram">
+                <span className="home-footer-social-icon" aria-hidden="true">IG</span>
+                <span>Instagram</span>
+              </a>
+              <a href="#" aria-label="Twitter">
+                <span className="home-footer-social-icon" aria-hidden="true">X</span>
+                <span>Twitter</span>
+              </a>
+              <a href="#" aria-label="Facebook">
+                <span className="home-footer-social-icon" aria-hidden="true">f</span>
+                <span>Facebook</span>
+              </a>
+            </div>
+
+            <div className="home-footer-payments" aria-label="Accepted payment methods">
+              <p>Payment Methods</p>
+              <div className="home-footer-payment-pills">
+                <span>Visa</span>
+                <span>Mastercard</span>
+                <span>UPI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="home-footer-bottom">
+          <p>&copy; 2026 ShopEase. All rights reserved.</p>
+        </div>
       </footer>
     </main>
   );
