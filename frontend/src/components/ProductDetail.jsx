@@ -18,6 +18,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [filteredColors, setFilteredColors] = useState([]);
+  const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [mainDisplay, setMainDisplay] = useState(null);
   const { addToCart } = useCart();
@@ -101,6 +102,68 @@ const ProductDetail = () => {
         setDesignGalleryImages([]);
       });
   }, [id, selectedColor]);
+
+  const getVariantColorImage = (colorName) => {
+    const normalized = String(colorName || '').toLowerCase();
+    const sizeMatched = variants.find(
+      (v) =>
+        (!selectedSize || v.size === selectedSize) &&
+        String(v.color || '').toLowerCase() === normalized &&
+        Boolean(v.image)
+    );
+
+    if (sizeMatched?.image) return sizeMatched.image;
+
+    const fallback = variants.find(
+      (v) => String(v.color || '').toLowerCase() === normalized && Boolean(v.image)
+    );
+    return fallback?.image || '';
+  };
+
+  useEffect(() => {
+    if (!id || filteredColors.length === 0) {
+      setColorThumbnails({});
+      return;
+    }
+
+    let isCancelled = false;
+
+    const loadColorThumbnails = async () => {
+      const entries = await Promise.all(
+        filteredColors.map(async (color) => {
+          let thumbnail = '';
+
+          try {
+            const res = await fetch(`${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data?.images) && data.images.length > 0) {
+                thumbnail = data.images[0];
+              }
+            }
+          } catch {
+            // Fall back to variant image below.
+          }
+
+          if (!thumbnail) {
+            thumbnail = getVariantColorImage(color);
+          }
+
+          return [color, thumbnail];
+        })
+      );
+
+      if (!isCancelled) {
+        setColorThumbnails(Object.fromEntries(entries));
+      }
+    };
+
+    loadColorThumbnails();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [id, filteredColors, variants, selectedSize]);
 
   const galleryItems = useMemo(() => {
     if (!product) return [];
@@ -236,17 +299,26 @@ const ProductDetail = () => {
               )}
               {/* Color Selector */}
               {filteredColors.length > 0 && (
-                <div className="product-detail-size-selector">
+                <div className="product-detail-color-selector">
                   <span>Color:</span>
-                  <div className="size-chips">
+                  <div className="product-color-thumbs-row">
                     {filteredColors.map((color) => (
-                      <button
-                        key={color}
-                        className={`size-chip${selectedColor === color ? ' selected' : ''}`}
-                        onClick={() => setSelectedColor(color)}
-                      >
-                        {color}
-                      </button>
+                      <div key={color} className="product-color-thumb-item">
+                        <button
+                          type="button"
+                          className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
+                          onClick={() => setSelectedColor(color)}
+                          title={color}
+                          aria-label={`Select color ${color}`}
+                        >
+                          <img
+                            src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
+                            alt={color}
+                            className="product-color-thumb-img"
+                          />
+                        </button>
+                        <span className="product-color-thumb-label">{color}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
