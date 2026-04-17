@@ -10,9 +10,13 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/api$/, "");
 
 const Wishlist = () => {
-  const { wishlist } = useContext(WishlistContext);
+  const { wishlist, syncWishlistFromStorage } = useContext(WishlistContext);
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    syncWishlistFromStorage();
+  }, [syncWishlistFromStorage]);
 
   useEffect(() => {
     if (!Array.isArray(wishlist) || wishlist.length === 0) {
@@ -40,11 +44,12 @@ const Wishlist = () => {
   }, [wishlist]);
 
   const safeWishlist = useMemo(() => (Array.isArray(wishlist) ? wishlist : []), [wishlist]);
+  const hasWishlistItems = products.length > 0;
 
   return (
     <div className="w-full min-h-screen px-4">
       <div className="max-w-7xl mx-auto">
-      {safeWishlist.length === 0 ? (
+      {!hasWishlistItems ? (
         <section
           className="wishlist-empty-state"
           aria-live="polite"

@@ -5,7 +5,9 @@ import { WishlistContext } from "../context/WishlistContext";
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
-  const isWishlisted = wishlist.includes(product.id);
+  const isWishlisted = Array.isArray(wishlist)
+    ? wishlist.some((id) => String(id) === String(product.id))
+    : false;
 
   // Find the lowest price from variants
   let price = "Price N/A";
