@@ -280,6 +280,29 @@ const ProductDetail = () => {
             </div>
             
             <div className="product-detail-options-under-image">
+              {/* Color Selector */}
+              {filteredColors.length > 0 && (
+                <div className="product-detail-color-selector" aria-label="Color variants">
+                  <div className="product-color-thumbs-row">
+                    {filteredColors.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
+                        onClick={() => setSelectedColor(color)}
+                        title={color}
+                        aria-label={`Select color ${color}`}
+                      >
+                        <img
+                          src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
+                          alt={color}
+                          className="product-color-thumb-img"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {/* Size Selector */}
               {uniqueSizes.length > 0 && (
                 <div className="product-detail-size-selector">
@@ -293,32 +316,6 @@ const ProductDetail = () => {
                       >
                         {size}
                       </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {/* Color Selector */}
-              {filteredColors.length > 0 && (
-                <div className="product-detail-color-selector">
-                  <span>Color:</span>
-                  <div className="product-color-thumbs-row">
-                    {filteredColors.map((color) => (
-                      <div key={color} className="product-color-thumb-item">
-                        <button
-                          type="button"
-                          className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
-                          onClick={() => setSelectedColor(color)}
-                          title={color}
-                          aria-label={`Select color ${color}`}
-                        >
-                          <img
-                            src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
-                            alt={color}
-                            className="product-color-thumb-img"
-                          />
-                        </button>
-                        <span className="product-color-thumb-label">{color}</span>
-                      </div>
                     ))}
                   </div>
                 </div>
