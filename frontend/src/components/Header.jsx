@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Search, User } from "lucide-react";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
+import seLogo from "../assets/SE.png";
 
 const Header = () => {
   const { wishlist } = useContext(WishlistContext);
@@ -13,7 +14,7 @@ const Header = () => {
       <nav aria-label="Main Navigation">
         <div className="logo">
           <a href="/" aria-label="ShopEase Home">
-            Shop<span className="logo-e">E</span>ase
+            <img src={seLogo} alt="ShopEase Logo" className="main-site-logo" />
           </a>
         </div>
         <form className="search-form" action="#" method="GET">

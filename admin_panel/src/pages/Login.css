@@ -1,11 +1,3 @@
-.logo-e {
-  color: #111;
-  font-family: inherit;
-  font-size: 2.55rem;
-  font-weight: bold;
-  letter-spacing: 0;
-}
-
 .admin-bg {
   height: 100vh;
   background: #f5f6fa;
@@ -38,13 +30,19 @@
 }
 
 .admin-logo {
-  font-size: 2.55rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   margin-bottom: 0;
   width: 100%;
+}
+
+.admin-logo-img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .login-header {
@@ -134,13 +132,8 @@
 }
 
 @media (max-width: 640px) {
-  .admin-logo {
-    font-size: 2.2rem;
-    margin-bottom: 24px;
-  }
-
-  .logo-e {
-    font-size: 2.2rem;
+  .admin-logo-img {
+    height: 34px;
   }
 
   .login-card {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../services/authService';
+import adminLogo from '../assets/Admin.png';
 import './Login.css';
 
 const Login = () => {
@@ -32,8 +33,8 @@ const Login = () => {
   return (
     <div className="admin-bg h-screen overflow-hidden flex flex-col items-center pt-16">
       <div className="login-shell flex flex-col items-center gap-8">
-        <div className="admin-logo text-3xl sm:text-4xl font-semibold tracking-tight text-center text-gray-900 w-full">
-          Shop<span className="logo-e">E</span>ase Admin
+        <div className="admin-logo">
+          <img src={adminLogo} alt="Admin Dashboard Logo" className="admin-logo-img" />
         </div>
 
         <div className="login-card">

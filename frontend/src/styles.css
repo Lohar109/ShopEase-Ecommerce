@@ -48,14 +48,15 @@ nav {
 .logo a {
     text-decoration: none;
     color: var(--primary-color);
-    font-size: 1.5rem;
-    font-weight: normal;
+    display: inline-flex;
+    align-items: center;
 }
 
-.logo-e {
-    display: inline-block;
-    transform: rotate(-18deg);
-    color: #e33170;
+.main-site-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    display: block;
 }
 
 /* Search Bar */
