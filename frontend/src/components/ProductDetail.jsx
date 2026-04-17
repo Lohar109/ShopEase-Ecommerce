@@ -398,7 +398,31 @@ const ProductDetail = () => {
             </button>
           )}
           <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
-            Product Specifications & Features
+            <svg
+              className="btn-specifications-icon btn-specifications-icon-leading"
+              viewBox="0 0 20 20"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <path
+                fill="currentColor"
+                d="M10 1.75A8.25 8.25 0 1 0 18.25 10 8.26 8.26 0 0 0 10 1.75Zm0 1.5A6.75 6.75 0 1 1 3.25 10 6.76 6.76 0 0 1 10 3.25Zm0 2.85a1 1 0 1 0 1 1 1 1 0 0 0-1-1Zm-.75 3.3a.75.75 0 0 0 0 1.5h.25v3a.75.75 0 0 0 1.5 0V9.4a.75.75 0 0 0-.75-.75h-1Z"
+              />
+            </svg>
+            <span className="btn-specifications-text">Product Specifications & Features</span>
+            <svg
+              className="btn-specifications-icon btn-specifications-icon-cta"
+              viewBox="0 0 20 20"
+              width="14"
+              height="14"
+              aria-hidden="true"
+            >
+              <path
+                fill="currentColor"
+                d="M7.25 4.5a.75.75 0 0 1 1.06 0l4.97 4.97a.75.75 0 0 1 0 1.06L8.31 15.5a.75.75 0 0 1-1.06-1.06L11.69 10 7.25 5.56a.75.75 0 0 1 0-1.06Z"
+              />
+            </svg>
           </button>
           
           <div className="product-detail-trust-icons">

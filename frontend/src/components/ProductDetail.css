@@ -481,21 +481,59 @@
 
 /* Specifications Button & Modal */
 .btn-specifications {
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  color: #333;
-  padding: 10px 16px;
-  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #111827;
+  padding: 0;
+  appearance: none;
+  border-radius: 0;
+  font-size: 0.92rem;
   font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
-  transition: all 0.2s;
-  display: block;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: max-content;
-  margin-top: 10px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 .btn-specifications:hover {
-  background: #eaeaea;
-  border-color: #ccc;
+  background: transparent;
+  color: #111827;
+}
+
+.btn-specifications:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.btn-specifications-icon {
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.btn-specifications-icon-cta {
+  margin-left: 2px;
+}
+
+.btn-specifications-text {
+  text-decoration: none;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.btn-specifications:hover .btn-specifications-text,
+.btn-specifications:focus-visible .btn-specifications-text {
+  text-decoration: underline;
+}
+
+.btn-specifications:hover .btn-specifications-icon,
+.btn-specifications:focus-visible .btn-specifications-icon {
+  color: #e33170;
 }
 
 .specs-modal-overlay {
