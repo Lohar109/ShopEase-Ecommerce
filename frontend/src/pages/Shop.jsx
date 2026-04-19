@@ -183,14 +183,6 @@ const Shop = () => {
 
   return (
     <main className="shop-page">
-      <section className="shop-page-header" aria-label="Shop page heading">
-        <p className="shop-breadcrumbs" aria-label="Breadcrumb">
-          <a href="/">Home</a>
-          <span aria-hidden="true">&nbsp;&gt;&nbsp;</span>
-          <span>Shop</span>
-        </p>
-      </section>
-
       <section className="shop-filter-card" aria-label="Filter by category">
         <div className="shop-filter-card-main">
           <h1 className="shop-page-title">Explore Our Collection</h1>

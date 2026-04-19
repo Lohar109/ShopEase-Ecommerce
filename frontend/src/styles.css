@@ -1204,7 +1204,10 @@ button:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     padding: 0;
+    font-size: 0;
+    line-height: 0;
     transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -1239,7 +1242,7 @@ button:hover {
     justify-content: center;
     gap: 0.52rem;
     min-height: 52px;
-    border: 1px solid #eceef2;
+    border: 1px solid #a1a1aa;
     border-bottom: 3px solid transparent;
     border-radius: 12px;
     background: #ffffff;
@@ -1271,7 +1274,7 @@ button:hover {
 .shop-category-divider {
     width: 1px;
     height: 16px;
-    background: #e5e7eb;
+    background: #27272a;
     flex-shrink: 0;
 }
 
@@ -1283,7 +1286,7 @@ button:hover {
 }
 
 .shop-category-card:hover {
-    border-color: #d8dce3;
+    border-color: #71717a;
     background: #fafafa;
 }
 
