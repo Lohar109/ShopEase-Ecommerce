@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   BedDouble,
   BookOpen,
+  Dice1,
+  Dice4,
   Footprints,
   Monitor,
-  Puzzle,
   Shirt,
   ShoppingBasket,
   Smartphone,
@@ -29,7 +30,7 @@ const CATEGORY_ITEMS = [
   { key: "sports", label: "Sports", icon: Volleyball },
   { key: "beauty", label: "Beauty", icon: Sparkles },
   { key: "books", label: "Books", icon: BookOpen },
-  { key: "toys", label: "Toys", icon: Puzzle },
+  { key: "toys", label: "Toys", icon: null },
   { key: "mobiles", label: "Mobiles", icon: Smartphone },
   { key: "shoes", label: "Shoes", icon: Footprints },
   { key: "groceries", label: "Groceries", icon: ShoppingBasket },
@@ -91,12 +92,20 @@ const MainPage = () => {
       <section className="categories" aria-label="Shop categories">
         <div className="categories-container">
           {CATEGORY_ITEMS.map((category) => {
+            const isToysCategory = category.key === "toys";
             const Icon = category.icon;
 
             return (
               <a key={category.key} href={`#${category.key}`} className="category-link">
                 <div className="category-card">
-                  <Icon size={24} strokeWidth={2} className="category-icon" aria-hidden="true" />
+                  {isToysCategory ? (
+                    <span className="category-icon category-dice-pair" aria-hidden="true">
+                      <Dice1 size={13} strokeWidth={2} className="category-die category-die-top" />
+                      <Dice4 size={13} strokeWidth={2} className="category-die category-die-bottom" />
+                    </span>
+                  ) : (
+                    <Icon size={24} strokeWidth={2} className="category-icon" aria-hidden="true" />
+                  )}
                   <span>{category.label}</span>
                 </div>
               </a>

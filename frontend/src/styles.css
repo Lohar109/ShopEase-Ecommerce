@@ -524,6 +524,32 @@ button:hover {
     transition: color 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
 }
 
+.category-dice-pair {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-die {
+    position: absolute;
+    color: currentColor;
+}
+
+.category-die-top {
+    top: -8%;
+    left: 4%;
+    transform: translate(-1px, -1px) rotate(15deg);
+}
+
+.category-die-bottom {
+    bottom: 4%;
+    left: 20%;
+    transform: translate(1px, 1px) rotate(-10deg);
+}
+
 .category-card span {
     display: inline-flex;
     align-items: center;
@@ -540,6 +566,10 @@ button:hover {
     color: #18181b;
     stroke-width: 2.5;
     filter: brightness(1.02);
+}
+
+.category-link:hover .category-die {
+    stroke-width: 2.5;
 }
 
 /* Featured Products (CSS Grid) */
