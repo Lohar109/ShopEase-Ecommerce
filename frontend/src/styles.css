@@ -116,6 +116,42 @@ nav {
     box-shadow: 0 0 0 2px rgba(82, 82, 91, 0.25);
 }
 
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0.45rem;
+    list-style: none;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    z-index: 1300;
+}
+
+.search-suggestion-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #d1d5db;
+    text-align: left;
+    font-size: 0.86rem;
+    font-weight: 500;
+    padding: 0.58rem 0.7rem;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.search-suggestion-item:hover {
+    background: #27272a;
+    color: #f3f4f6;
+    transform: none;
+    box-shadow: none;
+}
+
 .nav-links {
     display: flex;
     align-items: center;
