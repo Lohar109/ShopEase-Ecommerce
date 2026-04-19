@@ -225,26 +225,23 @@ const Shop = () => {
         </div>
 
         {selectedCategory && activeSubcategories.length > 0 && (
-          <div className="shop-subcategory-panel subcategory-row" aria-label="Filter by subcategory">
-            <p className="shop-subcategory-label">Refine by:</p>
-            <div className="shop-pill-row shop-subcategory-pill-row">
-              {activeSubcategories.map((subcategory) => (
-                <button
-                  key={subcategory.id}
-                  type="button"
-                  className={`shop-pill shop-sub-pill ${
-                    String(selectedSubcategory) === String(subcategory.id) ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedSubcategory((prev) =>
-                      String(prev) === String(subcategory.id) ? null : subcategory.id
-                    );
-                  }}
-                >
-                  {subcategory.name}
-                </button>
-              ))}
-            </div>
+          <div className="shop-pill-row shop-subcategory-row subcategory-row" aria-label="Filter by subcategory">
+            {activeSubcategories.map((subcategory) => (
+              <button
+                key={subcategory.id}
+                type="button"
+                className={`shop-pill shop-sub-pill ${
+                  String(selectedSubcategory) === String(subcategory.id) ? "active" : ""
+                }`}
+                onClick={() => {
+                  setSelectedSubcategory((prev) =>
+                    String(prev) === String(subcategory.id) ? null : subcategory.id
+                  );
+                }}
+              >
+                {subcategory.name}
+              </button>
+            ))}
           </div>
         )}
       </section>
