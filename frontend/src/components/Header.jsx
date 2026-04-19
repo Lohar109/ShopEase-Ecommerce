@@ -13,11 +13,10 @@ const Header = () => {
       <nav aria-label="Main Navigation">
         <div className="logo">
           <a href="/" aria-label="ShopEase Home">
-            <img src="/favicon.svg" alt="ShopEase" className="h-9 w-auto object-contain" />
+            <img src="/favicon.svg" alt="ShopEase" className="h-12 w-auto object-contain" />
           </a>
         </div>
         <form className="search-form" action="#" method="GET">
-          <label htmlFor="search" className="sr-only">Search products</label>
           <div className="search-input-wrap">
             <input type="text" id="search" name="q" className="search-input" placeholder="Search products..." />
             <button type="submit" className="btn-search-icon" aria-label="Search">
