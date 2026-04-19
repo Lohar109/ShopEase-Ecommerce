@@ -47,7 +47,6 @@ const Header = () => {
         <div className="logo">
           <a href="/" aria-label="ShopEase Home">
             <img src="/favicon.svg" alt="ShopEase logo" className="logo-mark h-10 w-auto object-contain" />
-            <span className="logo-wordmark">ShopEase</span>
           </a>
         </div>
         <form className="search-form" action="#" method="GET" onSubmit={(event) => event.preventDefault()}>
