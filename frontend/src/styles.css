@@ -1166,10 +1166,11 @@ button:hover {
 }
 
 .shop-page-title {
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.1;
     color: #111827;
+    letter-spacing: 0.01em;
     margin-bottom: 1rem;
 }
 
@@ -1185,6 +1186,35 @@ button:hover {
     padding: 1.1rem 1rem 1rem;
 }
 
+.shop-category-rail {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.shop-category-nav-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #6b7280;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.shop-category-nav-btn:hover {
+    border-color: #d1d5db;
+    color: #111827;
+    background: #fafafa;
+    transform: none;
+    box-shadow: none;
+}
+
 .shop-category-scroll {
     display: flex;
     flex-wrap: nowrap;
@@ -1192,7 +1222,12 @@ button:hover {
     gap: 0.55rem;
     overflow-x: auto;
     padding: 0.35rem 0.15rem 0.55rem;
-    scrollbar-width: thin;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.shop-category-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 .shop-category-card {
@@ -1313,7 +1348,12 @@ button:hover {
     padding: 0.72rem 1rem 0.78rem;
     background: #ffffff;
     border-top: 1px solid #eef0f4;
-    scrollbar-width: thin;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.shop-subcategory-row::-webkit-scrollbar {
+    display: none;
 }
 
 .shop-sub-pill {
@@ -1325,7 +1365,28 @@ button:hover {
     padding: 0.33rem 0.72rem;
     border-radius: 999px;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
     transition: all 0.2s ease;
+}
+
+.shop-sub-pill-icon-wrap {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 999px;
+    background: #f4f4f5;
+    border: 1px solid #e4e4e7;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.shop-sub-pill-icon {
+    color: #52525b;
+    transition: color 0.2s ease;
 }
 
 .shop-sub-pill:hover {
@@ -1337,6 +1398,15 @@ button:hover {
 .shop-sub-pill.active {
     background: #09090b;
     border-color: #09090b;
+    color: #ffffff;
+}
+
+.shop-sub-pill.active .shop-sub-pill-icon-wrap {
+    background: #18181b;
+    border-color: #3f3f46;
+}
+
+.shop-sub-pill.active .shop-sub-pill-icon {
     color: #ffffff;
 }
 
@@ -1422,12 +1492,17 @@ button:hover {
     }
 
     .shop-page-title {
-        font-size: clamp(1.45rem, 6vw, 1.95rem);
+        font-size: 1.25rem;
         margin-bottom: 0.9rem;
     }
 
     .shop-filter-card-main {
         padding: 0.95rem 0.75rem 0.8rem;
+    }
+
+    .shop-category-rail {
+        grid-template-columns: 28px 1fr 28px;
+        gap: 0.25rem;
     }
 
     .shop-subcategory-row {
