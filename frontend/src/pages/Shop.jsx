@@ -20,6 +20,15 @@ const Shop = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [imageLoadFailedById, setImageLoadFailedById] = useState({});
+
+  const handleCategoryImageError = (categoryId) => {
+    const key = String(categoryId);
+    setImageLoadFailedById((prev) => {
+      if (prev[key]) return prev;
+      return { ...prev, [key]: true };
+    });
+  };
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
@@ -145,31 +154,42 @@ const Shop = () => {
           </button>
 
           {mainCategories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              className={`shop-category-card ${
-                String(selectedCategory) === String(category.id) ? "active" : ""
-              }`}
-              onClick={() => {
-                setSelectedCategory(category.id);
-                setSelectedSubcategory(null);
-              }}
-              aria-pressed={String(selectedCategory) === String(category.id)}
-            >
-              <span className="shop-category-media" aria-hidden="true">
-                {category.image_url ? (
-                  <img
-                    src={getCategoryImageSrc(category.image_url)}
-                    alt={category.name || "Category"}
-                    loading="lazy"
-                  />
-                ) : (
-                  <Store size={28} strokeWidth={2} />
-                )}
-              </span>
-              <span className="shop-category-name">{category.name}</span>
-            </button>
+            (() => {
+              const categoryName = category.name || "Category";
+              const firstLetter = categoryName.trim().charAt(0).toUpperCase() || "?";
+              const categoryImageSrc = getCategoryImageSrc(category.image_url);
+              const imageFailed = imageLoadFailedById[String(category.id)];
+              const showImage = Boolean(categoryImageSrc) && !imageFailed;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={`shop-category-card ${
+                    String(selectedCategory) === String(category.id) ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedCategory(category.id);
+                    setSelectedSubcategory(null);
+                  }}
+                  aria-pressed={String(selectedCategory) === String(category.id)}
+                >
+                  <span className="shop-category-media" aria-hidden="true">
+                    {showImage ? (
+                      <img
+                        src={categoryImageSrc}
+                        alt={categoryName}
+                        loading="lazy"
+                        onError={() => handleCategoryImageError(category.id)}
+                      />
+                    ) : (
+                      <span className="shop-category-fallback">{firstLetter}</span>
+                    )}
+                  </span>
+                  <span className="shop-category-name">{categoryName}</span>
+                </button>
+              );
+            })()
           ))}
         </div>
 
