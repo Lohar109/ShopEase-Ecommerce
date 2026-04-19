@@ -7,6 +7,7 @@ import {
   Footprints,
   Monitor,
   Package,
+  SearchX,
   Shirt,
   ShoppingBasket,
   Smartphone,
@@ -174,11 +175,12 @@ const Shop = () => {
           <span aria-hidden="true">&nbsp;&gt;&nbsp;</span>
           <span>Shop</span>
         </p>
-        <h1 className="shop-page-title">Explore Our Collection</h1>
       </section>
 
-      <section className="shop-categories" aria-label="Filter by category">
-        <div className="shop-category-nav-zone">
+      <section className="shop-filter-card" aria-label="Filter by category">
+        <div className="shop-filter-card-main">
+          <h1 className="shop-page-title">Explore Our Collection</h1>
+
           <div className="shop-category-scroll" role="list" aria-label="Category cards">
             <button
               type="button"
@@ -190,37 +192,37 @@ const Shop = () => {
               aria-pressed={!selectedCategory}
             >
               <span className="shop-category-media shop-category-media-all" aria-hidden="true">
-                <Store size={28} strokeWidth={2} className="shop-category-icon" />
+                <Store size={24} strokeWidth={2} className="shop-category-icon" />
               </span>
+              <span className="shop-category-divider" aria-hidden="true" />
               <span className="shop-category-name">All</span>
             </button>
 
-            {mainCategories.map((category) => (
-              (() => {
-                const categoryName = category.name || "Category";
-                const CategoryIcon = getCategoryIcon(categoryName);
+            {mainCategories.map((category) => {
+              const categoryName = category.name || "Category";
+              const CategoryIcon = getCategoryIcon(categoryName);
 
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    className={`shop-category-card ${
-                      String(selectedCategory) === String(category.id) ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setSelectedCategory(category.id);
-                      setSelectedSubcategory(null);
-                    }}
-                    aria-pressed={String(selectedCategory) === String(category.id)}
-                  >
-                    <span className="shop-category-media" aria-hidden="true">
-                      <CategoryIcon size={28} strokeWidth={2} className="shop-category-icon" />
-                    </span>
-                    <span className="shop-category-name">{categoryName}</span>
-                  </button>
-                );
-              })()
-            ))}
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={`shop-category-card ${
+                    String(selectedCategory) === String(category.id) ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedCategory(category.id);
+                    setSelectedSubcategory(null);
+                  }}
+                  aria-pressed={String(selectedCategory) === String(category.id)}
+                >
+                  <span className="shop-category-media" aria-hidden="true">
+                    <CategoryIcon size={24} strokeWidth={2} className="shop-category-icon" />
+                  </span>
+                  <span className="shop-category-divider" aria-hidden="true" />
+                  <span className="shop-category-name">{categoryName}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -247,16 +249,36 @@ const Shop = () => {
       </section>
 
       <section className="shop-product-grid" aria-label="Products">
+        {!isLoading && (
+          <div className="shop-results-meta" aria-live="polite">
+            <span>Showing {visibleProducts.length} {visibleProducts.length === 1 ? "product" : "products"}</span>
+          </div>
+        )}
+
         {isLoading ? (
-          <div className="shop-products-grid-four">
+          <div className="wishlist-products-grid">
             {Array.from({ length: 8 }).map((_, index) => (
               <ProductSkeleton key={`shop-skeleton-${index}`} />
             ))}
           </div>
         ) : visibleProducts.length === 0 ? (
-          <p className="shop-empty-products">No products found for this selection.</p>
+          <div className="shop-empty-results" role="status">
+            <SearchX size={72} strokeWidth={1.6} className="shop-empty-results-icon" aria-hidden="true" />
+            <h2>No products match your filters</h2>
+            <p>Try removing one or more filters to view more products.</p>
+            <button
+              type="button"
+              className="shop-clear-filters-btn"
+              onClick={() => {
+                setSelectedCategory(null);
+                setSelectedSubcategory(null);
+              }}
+            >
+              Clear All Filters
+            </button>
+          </div>
         ) : (
-          <div className="shop-products-grid-four">
+          <div className="wishlist-products-grid">
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
