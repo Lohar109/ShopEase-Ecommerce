@@ -1,5 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Package, Store } from "lucide-react";
+import {
+  BedDouble,
+  BookOpen,
+  Dice5,
+  Dumbbell,
+  Footprints,
+  Monitor,
+  Package,
+  Shirt,
+  ShoppingBasket,
+  Smartphone,
+  Sofa,
+  Sparkles,
+  Store,
+  Volleyball,
+  Watch
+} from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import ProductSkeleton from "../components/ProductSkeleton";
 import "../styles.css";
@@ -8,10 +24,44 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
-const getCategoryImageSrc = (imageUrl) => {
-  if (!imageUrl) return "";
-  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
-  return `${API_ORIGIN}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+const CATEGORY_ICON_MAP = {
+  electronics: Monitor,
+  fashion: Shirt,
+  home: Sofa,
+  sports: Volleyball,
+  beauty: Sparkles,
+  books: BookOpen,
+  toys: Dice5,
+  mobiles: Smartphone,
+  shoes: Footprints,
+  groceries: ShoppingBasket,
+  furniture: BedDouble,
+  watches: Watch
+};
+
+const getCategoryIcon = (name) => {
+  const normalized = String(name || "")
+    .trim()
+    .toLowerCase();
+
+  if (CATEGORY_ICON_MAP[normalized]) {
+    return CATEGORY_ICON_MAP[normalized];
+  }
+
+  if (normalized.includes("elect")) return Monitor;
+  if (normalized.includes("fashion") || normalized.includes("cloth")) return Shirt;
+  if (normalized.includes("furnit")) return BedDouble;
+  if (normalized.includes("toy")) return Dice5;
+  if (normalized.includes("book")) return BookOpen;
+  if (normalized.includes("beaut")) return Sparkles;
+  if (normalized.includes("grocery")) return ShoppingBasket;
+  if (normalized.includes("shoe")) return Footprints;
+  if (normalized.includes("watch")) return Watch;
+  if (normalized.includes("mobile") || normalized.includes("phone")) return Smartphone;
+  if (normalized.includes("sport")) return Dumbbell;
+  if (normalized.includes("home")) return Sofa;
+
+  return Package;
 };
 
 const Shop = () => {
@@ -20,15 +70,6 @@ const Shop = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [imageLoadFailedById, setImageLoadFailedById] = useState({});
-
-  const handleCategoryImageError = (categoryId) => {
-    const key = String(categoryId);
-    setImageLoadFailedById((prev) => {
-      if (prev[key]) return prev;
-      return { ...prev, [key]: true };
-    });
-  };
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
@@ -156,9 +197,7 @@ const Shop = () => {
           {mainCategories.map((category) => (
             (() => {
               const categoryName = category.name || "Category";
-              const categoryImageSrc = getCategoryImageSrc(category.image || category.image_url);
-              const imageFailed = imageLoadFailedById[String(category.id)];
-              const showImage = Boolean(categoryImageSrc) && !imageFailed;
+              const CategoryIcon = getCategoryIcon(categoryName);
 
               return (
                 <button
@@ -174,18 +213,7 @@ const Shop = () => {
                   aria-pressed={String(selectedCategory) === String(category.id)}
                 >
                   <span className="shop-category-media" aria-hidden="true">
-                    {showImage ? (
-                      <img
-                        src={categoryImageSrc}
-                        alt={categoryName}
-                        loading="lazy"
-                        onError={() => handleCategoryImageError(category.id)}
-                      />
-                    ) : (
-                      <span className="shop-category-icon-fallback" aria-hidden="true">
-                        <Package size={22} strokeWidth={1.9} />
-                      </span>
-                    )}
+                    <CategoryIcon size={28} strokeWidth={2} className="shop-category-icon" />
                   </span>
                   <span className="shop-category-name">{categoryName}</span>
                 </button>
