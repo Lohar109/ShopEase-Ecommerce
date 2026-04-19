@@ -189,7 +189,7 @@ const Shop = () => {
             aria-pressed={!selectedCategory}
           >
             <span className="shop-category-media shop-category-media-all" aria-hidden="true">
-              <Store size={28} strokeWidth={2} />
+              <Store size={28} strokeWidth={2} className="shop-category-icon" />
             </span>
             <span className="shop-category-name">All</span>
           </button>
