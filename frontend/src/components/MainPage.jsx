@@ -87,11 +87,8 @@ const MainPage = () => {
 
   return (
     <main>
-      <HeroCarousel />
-
       {/* Shop by Category Section */}
-      <section className="categories" aria-labelledby="categories-heading">
-        <h2 id="categories-heading" className="section-title">Shop by Category</h2>
+      <section className="categories" aria-label="Shop categories">
         <div className="categories-container">
           {CATEGORY_ITEMS.map((category) => {
             const Icon = category.icon;
@@ -107,6 +104,8 @@ const MainPage = () => {
           })}
         </div>
       </section>
+
+      <HeroCarousel />
 
       {/* Featured Products */}
       <section className="shop-product-grid" aria-label="Featured products">

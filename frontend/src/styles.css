@@ -304,7 +304,7 @@ nav {
 main {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem 2rem 2rem;
 }
 
 /* Hero Carousel */
@@ -477,7 +477,7 @@ button:hover {
 /* Shop by Category Section */
 .categories {
     text-align: center;
-    padding: 3rem 0 1rem;
+    padding: 0.25rem 0 1rem;
 }
 
 .section-title {
@@ -492,6 +492,10 @@ button:hover {
     justify-content: center;
     gap: 0.85rem;
     flex-wrap: wrap;
+}
+
+.categories + .hero-carousel {
+    margin-top: 0.85rem;
 }
 
 .category-link {
@@ -819,6 +823,10 @@ button:hover {
     .hero-carousel {
         height: clamp(280px, 62vw, 360px);
         border-radius: 20px;
+    }
+
+    main {
+        padding: 0.85rem 1rem 1.5rem;
     }
 
     .hero-carousel-content {
