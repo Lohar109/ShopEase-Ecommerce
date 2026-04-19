@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Store } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import ProductSkeleton from "../components/ProductSkeleton";
 import "../styles.css";
@@ -6,6 +7,12 @@ import "../styles.css";
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
+
+const getCategoryImageSrc = (imageUrl) => {
+  if (!imageUrl) return "";
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+  return `${API_ORIGIN}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+};
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -111,30 +118,57 @@ const Shop = () => {
 
   return (
     <main className="shop-page">
+      <section className="shop-page-header" aria-label="Shop page heading">
+        <p className="shop-breadcrumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">&nbsp;&gt;&nbsp;</span>
+          <span>Shop</span>
+        </p>
+        <h1 className="shop-page-title">Explore Our Collection</h1>
+      </section>
+
       <section className="shop-categories" aria-label="Filter by category">
-        <div className="shop-pill-row">
+        <div className="shop-category-scroll" role="list" aria-label="Category cards">
           <button
             type="button"
-            className={`shop-pill ${!selectedCategory ? "active" : ""}`}
+            className={`shop-category-card ${!selectedCategory ? "active" : ""}`}
             onClick={() => {
               setSelectedCategory(null);
               setSelectedSubcategory(null);
             }}
+            aria-pressed={!selectedCategory}
           >
-            All
+            <span className="shop-category-media shop-category-media-all" aria-hidden="true">
+              <Store size={28} strokeWidth={2} />
+            </span>
+            <span className="shop-category-name">All</span>
           </button>
 
           {mainCategories.map((category) => (
             <button
               key={category.id}
               type="button"
-              className={`shop-pill ${String(selectedCategory) === String(category.id) ? "active" : ""}`}
+              className={`shop-category-card ${
+                String(selectedCategory) === String(category.id) ? "active" : ""
+              }`}
               onClick={() => {
                 setSelectedCategory(category.id);
                 setSelectedSubcategory(null);
               }}
+              aria-pressed={String(selectedCategory) === String(category.id)}
             >
-              {category.name}
+              <span className="shop-category-media" aria-hidden="true">
+                {category.image_url ? (
+                  <img
+                    src={getCategoryImageSrc(category.image_url)}
+                    alt={category.name || "Category"}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Store size={28} strokeWidth={2} />
+                )}
+              </span>
+              <span className="shop-category-name">{category.name}</span>
             </button>
           ))}
         </div>

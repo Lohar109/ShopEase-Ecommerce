@@ -177,6 +177,13 @@ nav {
     color: #ffffff;
 }
 
+.nav-links a.nav-link-active {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+}
+
 .nav-icon-link {
     position: relative;
     width: 36px;
@@ -1139,8 +1146,114 @@ button:hover {
     padding: 2rem;
 }
 
+.shop-page-header {
+    margin-bottom: 1rem;
+}
+
+.shop-breadcrumbs {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin-bottom: 0.35rem;
+}
+
+.shop-breadcrumbs a {
+    color: #4b5563;
+    text-decoration: none;
+}
+
+.shop-breadcrumbs a:hover {
+    color: #111827;
+}
+
+.shop-page-title {
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #111827;
+}
+
 .shop-categories {
     margin-bottom: 1.5rem;
+}
+
+.shop-category-scroll {
+    display: flex;
+    gap: 0.9rem;
+    overflow-x: auto;
+    padding: 0.2rem 0.2rem 0.45rem;
+    scrollbar-width: thin;
+}
+
+.shop-category-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    min-width: 96px;
+    border: none;
+    background: transparent;
+    color: #111827;
+    padding: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+.shop-category-media {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shop-category-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.shop-category-media-all {
+    background: #ffffff;
+}
+
+.shop-category-name {
+    font-size: 0.78rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.shop-category-card:hover {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+.shop-category-card:hover .shop-category-media {
+    transform: scale(1.04);
+    border-color: #9ca3af;
+}
+
+.shop-category-card.active .shop-category-media {
+    transform: scale(1.1);
+    border-color: #111827;
+    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.14);
+}
+
+.shop-category-card.active .shop-category-name {
+    color: #111827;
 }
 
 .shop-pill-row {
@@ -1198,6 +1311,16 @@ button:hover {
 @media (min-width: 640px) {
     .shop-products-grid-four {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-page-header {
+        margin-bottom: 0.85rem;
+    }
+
+    .shop-page-title {
+        font-size: clamp(1.45rem, 6vw, 1.95rem);
     }
 }
 

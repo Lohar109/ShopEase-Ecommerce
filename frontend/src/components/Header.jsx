@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState } from "react";
 import { Heart, Search, ShoppingCart, User } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 
@@ -17,11 +18,13 @@ const SEARCH_SUGGESTIONS = [
 ];
 
 const Header = () => {
+  const location = useLocation();
   const { wishlist } = useContext(WishlistContext);
   const { cartItems } = useCart();
   const [query, setQuery] = useState("");
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const cartCount = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const isShopRoute = location.pathname.startsWith("/shop");
 
   const filteredSuggestions = useMemo(() => {
     const trimmedQuery = query.trim().toLowerCase();
@@ -88,7 +91,7 @@ const Header = () => {
         </form>
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
-          <li><a href="/shop">Shop</a></li>
+          <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>
           <li>
             <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
               <Heart size={16} />
