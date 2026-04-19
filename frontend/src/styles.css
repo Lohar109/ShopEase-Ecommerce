@@ -3,6 +3,7 @@
     --bg-color: #f3f4f6;
     --text-color: #1f2937;
     --primary-color: #111827;
+    --brand-accent: #d70d40;
     --hover-color: #374151;
     --card-bg: rgba(255, 255, 255, 0.45);
     --card-border: rgba(255, 255, 255, 0.6);
@@ -385,14 +386,21 @@ button:hover {
 }
 
 .category-icon {
-    color: #27272a;
+    color: var(--brand-accent);
     flex-shrink: 0;
+    transition: color 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
 }
 
 .category-link:hover .category-card {
     transform: scale(1.05);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     border-color: #d4d4d8;
+}
+
+.category-link:hover .category-icon {
+    color: #ff7f7f;
+    stroke-width: 2.5;
+    filter: brightness(1.06);
 }
 
 /* Featured Products (CSS Grid) */
