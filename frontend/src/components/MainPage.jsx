@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   BedDouble,
   BookOpen,
-  Dumbbell,
   Footprints,
   Monitor,
+  Puzzle,
   Shirt,
   ShoppingBasket,
   Smartphone,
   Sofa,
   Sparkles,
-  ToyBrick,
+  Volleyball,
   Watch
 } from "lucide-react";
 import "../styles.css";
@@ -26,10 +26,10 @@ const CATEGORY_ITEMS = [
   { key: "electronics", label: "Electronics", icon: Monitor },
   { key: "fashion", label: "Fashion", icon: Shirt },
   { key: "home", label: "Home", icon: Sofa },
-  { key: "sports", label: "Sports", icon: Dumbbell },
+  { key: "sports", label: "Sports", icon: Volleyball },
   { key: "beauty", label: "Beauty", icon: Sparkles },
   { key: "books", label: "Books", icon: BookOpen },
-  { key: "toys", label: "Toys", icon: ToyBrick },
+  { key: "toys", label: "Toys", icon: Puzzle },
   { key: "mobiles", label: "Mobiles", icon: Smartphone },
   { key: "shoes", label: "Shoes", icon: Footprints },
   { key: "groceries", label: "Groceries", icon: ShoppingBasket },

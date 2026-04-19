@@ -518,7 +518,7 @@ button:hover {
 }
 
 .category-icon {
-    color: var(--brand-accent);
+    color: #09090b;
     flex-shrink: 0;
     stroke-width: 2;
     transition: color 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
@@ -537,9 +537,9 @@ button:hover {
 }
 
 .category-link:hover .category-icon {
-    color: #ff7f7f;
+    color: #18181b;
     stroke-width: 2.5;
-    filter: brightness(1.06);
+    filter: brightness(1.02);
 }
 
 /* Featured Products (CSS Grid) */
