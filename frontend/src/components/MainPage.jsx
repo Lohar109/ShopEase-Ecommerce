@@ -103,7 +103,7 @@ const MainPage = () => {
             return (
               <a key={category.key} href={`#${category.key}`} className="category-link">
                 <div className="category-card">
-                  <Icon size={16} className="category-icon" aria-hidden="true" />
+                  <Icon size={24} strokeWidth={2} className="category-icon" aria-hidden="true" />
                   <span>{category.label}</span>
                 </div>
               </a>

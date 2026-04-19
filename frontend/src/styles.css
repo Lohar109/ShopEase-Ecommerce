@@ -3,7 +3,7 @@
     --bg-color: #f3f4f6;
     --text-color: #1f2937;
     --primary-color: #111827;
-    --brand-accent: #d70d40;
+    --brand-accent: #c10654;
     --hover-color: #374151;
     --card-bg: rgba(255, 255, 255, 0.45);
     --card-border: rgba(255, 255, 255, 0.6);
@@ -373,8 +373,8 @@ button:hover {
 .category-card {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    gap: 0.6rem;
+    padding: 0.5rem 1.25rem;
     border-radius: 999px;
     background-color: #ffffff;
     border: 1px solid #e4e4e7;
@@ -388,7 +388,14 @@ button:hover {
 .category-icon {
     color: var(--brand-accent);
     flex-shrink: 0;
+    stroke-width: 2;
     transition: color 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+}
+
+.category-card span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .category-link:hover .category-card {
@@ -692,7 +699,7 @@ button:hover {
     }
 
     .category-card {
-        padding: 0.48rem 0.9rem;
+        padding: 0.5rem 1.05rem;
         font-size: 0.84rem;
     }
 
