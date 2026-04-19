@@ -48,10 +48,30 @@ nav {
     color: #f4f4f5;
     display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
     background: transparent;
     border: none;
     box-shadow: none;
     padding: 0;
+}
+
+.h-10 {
+    height: 40px;
+}
+
+.w-auto {
+    width: auto;
+}
+
+.object-contain {
+    object-fit: contain;
+    display: block;
+}
+
+.logo-mark {
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .logo-wordmark {
@@ -199,6 +219,12 @@ nav {
     gap: 0.42rem;
 }
 
+.nav-label-with-badge {
+    position: relative;
+    display: inline-block;
+    padding-right: 0.34rem;
+}
+
 .nav-text-badge-link svg {
     color: currentColor;
     flex-shrink: 0;
@@ -210,7 +236,9 @@ nav {
 }
 
 .nav-badge {
-    position: static;
+    position: absolute;
+    top: -8px;
+    right: -8px;
     width: 15px;
     min-width: 15px;
     height: 15px;
@@ -223,14 +251,6 @@ nav {
     font-weight: 600;
     padding: 0;
     border: 1px solid #111;
-    margin-left: 4px;
-}
-
-.nav-icon-badge-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .pulse-icon {
