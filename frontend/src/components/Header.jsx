@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Search, User } from "lucide-react";
+import { Heart, Search, ShoppingCart, User } from "lucide-react";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 
@@ -18,10 +18,10 @@ const Header = () => {
         </div>
         <form className="search-form" action="#" method="GET">
           <div className="search-input-wrap">
+            <span className="search-leading-icon" aria-hidden="true">
+              <Search size={14} />
+            </span>
             <input type="text" id="search" name="q" className="search-input" placeholder="Search products..." />
-            <button type="submit" className="btn-search-icon" aria-label="Search">
-              <Search size={18} />
-            </button>
           </div>
         </form>
         <ul className="nav-links">
@@ -29,14 +29,20 @@ const Header = () => {
           <li><a href="/shop">Shop</a></li>
           <li>
             <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
+              <span className="nav-icon-badge-wrap">
+                <Heart size={16} />
+                {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
+              </span>
               Wishlist
-              {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
             </a>
           </li>
           <li>
             <a href="/cart" className="nav-text-badge-link" aria-label="Cart">
+              <span className="nav-icon-badge-wrap">
+                <ShoppingCart size={16} />
+                {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
+              </span>
               Cart
-              {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
             </a>
           </li>
           <li>
