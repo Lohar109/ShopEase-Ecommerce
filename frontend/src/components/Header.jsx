@@ -46,7 +46,7 @@ const Header = () => {
       <nav aria-label="Main Navigation">
         <div className="logo">
           <a href="/" aria-label="ShopEase Home">
-            <img src="/favicon.svg" alt="ShopEase" className="h-12 w-auto object-contain" />
+            <span className="logo-wordmark">ShopEase</span>
           </a>
         </div>
         <form className="search-form" action="#" method="GET" onSubmit={(event) => event.preventDefault()}>
@@ -91,20 +91,16 @@ const Header = () => {
           <li><a href="/shop">Shop</a></li>
           <li>
             <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
-              <span className="nav-icon-badge-wrap">
-                <Heart size={16} />
-                {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
-              </span>
+              <Heart size={16} />
               Wishlist
+              {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
             </a>
           </li>
           <li>
             <a href="/cart" className="nav-text-badge-link" aria-label="Cart">
-              <span className="nav-icon-badge-wrap">
-                <ShoppingCart size={16} />
-                {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
-              </span>
+              <ShoppingCart size={16} />
               Cart
+              {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
             </a>
           </li>
           <li>
