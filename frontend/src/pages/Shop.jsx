@@ -178,68 +178,73 @@ const Shop = () => {
       </section>
 
       <section className="shop-categories" aria-label="Filter by category">
-        <div className="shop-category-scroll" role="list" aria-label="Category cards">
-          <button
-            type="button"
-            className={`shop-category-card ${!selectedCategory ? "active" : ""}`}
-            onClick={() => {
-              setSelectedCategory(null);
-              setSelectedSubcategory(null);
-            }}
-            aria-pressed={!selectedCategory}
-          >
-            <span className="shop-category-media shop-category-media-all" aria-hidden="true">
-              <Store size={28} strokeWidth={2} className="shop-category-icon" />
-            </span>
-            <span className="shop-category-name">All</span>
-          </button>
+        <div className="shop-category-nav-zone">
+          <div className="shop-category-scroll" role="list" aria-label="Category cards">
+            <button
+              type="button"
+              className={`shop-category-card ${!selectedCategory ? "active" : ""}`}
+              onClick={() => {
+                setSelectedCategory(null);
+                setSelectedSubcategory(null);
+              }}
+              aria-pressed={!selectedCategory}
+            >
+              <span className="shop-category-media shop-category-media-all" aria-hidden="true">
+                <Store size={28} strokeWidth={2} className="shop-category-icon" />
+              </span>
+              <span className="shop-category-name">All</span>
+            </button>
 
-          {mainCategories.map((category) => (
-            (() => {
-              const categoryName = category.name || "Category";
-              const CategoryIcon = getCategoryIcon(categoryName);
+            {mainCategories.map((category) => (
+              (() => {
+                const categoryName = category.name || "Category";
+                const CategoryIcon = getCategoryIcon(categoryName);
 
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  className={`shop-category-card ${
-                    String(selectedCategory) === String(category.id) ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(category.id);
-                    setSelectedSubcategory(null);
-                  }}
-                  aria-pressed={String(selectedCategory) === String(category.id)}
-                >
-                  <span className="shop-category-media" aria-hidden="true">
-                    <CategoryIcon size={28} strokeWidth={2} className="shop-category-icon" />
-                  </span>
-                  <span className="shop-category-name">{categoryName}</span>
-                </button>
-              );
-            })()
-          ))}
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    className={`shop-category-card ${
+                      String(selectedCategory) === String(category.id) ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setSelectedSubcategory(null);
+                    }}
+                    aria-pressed={String(selectedCategory) === String(category.id)}
+                  >
+                    <span className="shop-category-media" aria-hidden="true">
+                      <CategoryIcon size={28} strokeWidth={2} className="shop-category-icon" />
+                    </span>
+                    <span className="shop-category-name">{categoryName}</span>
+                  </button>
+                );
+              })()
+            ))}
+          </div>
         </div>
 
         {selectedCategory && activeSubcategories.length > 0 && (
-          <div className="shop-pill-row subcategory-row" aria-label="Filter by subcategory">
-            {activeSubcategories.map((subcategory) => (
-              <button
-                key={subcategory.id}
-                type="button"
-                className={`shop-pill shop-sub-pill ${
-                  String(selectedSubcategory) === String(subcategory.id) ? "active" : ""
-                }`}
-                onClick={() => {
-                  setSelectedSubcategory((prev) =>
-                    String(prev) === String(subcategory.id) ? null : subcategory.id
-                  );
-                }}
-              >
-                {subcategory.name}
-              </button>
-            ))}
+          <div className="shop-subcategory-panel subcategory-row" aria-label="Filter by subcategory">
+            <p className="shop-subcategory-label">Refine by:</p>
+            <div className="shop-pill-row shop-subcategory-pill-row">
+              {activeSubcategories.map((subcategory) => (
+                <button
+                  key={subcategory.id}
+                  type="button"
+                  className={`shop-pill shop-sub-pill ${
+                    String(selectedSubcategory) === String(subcategory.id) ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedSubcategory((prev) =>
+                      String(prev) === String(subcategory.id) ? null : subcategory.id
+                    );
+                  }}
+                >
+                  {subcategory.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </section>
