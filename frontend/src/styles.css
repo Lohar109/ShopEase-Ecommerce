@@ -1362,31 +1362,33 @@ button:hover {
 }
 
 .shop-sub-pill {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: #52525b;
     border: 1px solid #d4d4d8;
-    background: transparent;
-    padding: 0.33rem 0.72rem;
-    border-radius: 999px;
+    border-bottom: 3px solid transparent;
+    background: #fafafa;
+    min-height: 40px;
+    padding: 0.28rem 0.58rem;
+    border-radius: 12px;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    transition: all 0.2s ease;
+    gap: 0.42rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, border-bottom-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .shop-sub-pill-icon-wrap {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
     border-radius: 999px;
     background: #f8fafc;
     border: 1px solid #d4d4d8;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .shop-sub-pill-icon {
@@ -1394,25 +1396,40 @@ button:hover {
     transition: color 0.2s ease;
 }
 
-.shop-sub-pill:hover {
-    background: transparent;
+.shop-sub-pill-divider {
+    width: 1px;
+    height: 13px;
+    background: #27272a;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.shop-sub-pill:not(.active):hover {
+    background: #f4f4f5;
     border-color: #9ca3af;
     color: #3f3f46;
 }
 
 .shop-sub-pill.active {
     background: transparent;
-    border-color: #111827;
-    color: #111827;
+    border-color: #f4c4d8;
+    border-bottom-color: #c8507a;
+    color: #c8507a;
+    font-weight: 600;
+    box-shadow: 0 6px 12px rgba(227, 49, 112, 0.12);
 }
 
 .shop-sub-pill.active .shop-sub-pill-icon-wrap {
-    background: #09090b;
-    border-color: #09090b;
+    background: #ffe5ef;
+    border-color: #ffc2d8;
 }
 
 .shop-sub-pill.active .shop-sub-pill-icon {
-    color: #ffffff;
+    color: #c8507a;
+}
+
+.shop-sub-pill.active .shop-sub-pill-divider {
+    background: #c8507a;
 }
 
 .shop-product-grid {

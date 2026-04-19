@@ -272,8 +272,9 @@ const Shop = () => {
                   }}
                 >
                   <span className="shop-sub-pill-icon-wrap" aria-hidden="true">
-                    <SubcategoryIcon size={16} strokeWidth={2} className="shop-sub-pill-icon" />
+                    <SubcategoryIcon size={14} strokeWidth={2} className="shop-sub-pill-icon" />
                   </span>
+                  <span className="shop-sub-pill-divider" aria-hidden="true" />
                   <span>{subcategoryName}</span>
                 </button>
               );
