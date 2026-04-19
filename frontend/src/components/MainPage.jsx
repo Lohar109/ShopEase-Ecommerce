@@ -1,4 +1,18 @@
 import React, { useEffect, useState } from "react";
+import {
+  BookOpen,
+  Dumbbell,
+  Gem,
+  Monitor,
+  Package,
+  Shirt,
+  Smartphone,
+  Sofa,
+  Sparkles,
+  Store,
+  ToyBrick,
+  Watch
+} from "lucide-react";
 import "../styles.css";
 import ProductCard from "./ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
@@ -6,6 +20,21 @@ import ProductSkeleton from "./ProductSkeleton";
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
+
+const CATEGORY_ITEMS = [
+  { key: "electronics", label: "Electronics", icon: Monitor },
+  { key: "fashion", label: "Fashion", icon: Shirt },
+  { key: "home", label: "Home", icon: Sofa },
+  { key: "sports", label: "Sports", icon: Dumbbell },
+  { key: "beauty", label: "Beauty", icon: Sparkles },
+  { key: "books", label: "Books", icon: BookOpen },
+  { key: "toys", label: "Toys", icon: ToyBrick },
+  { key: "mobiles", label: "Mobiles", icon: Smartphone },
+  { key: "shoes", label: "Shoes", icon: Gem },
+  { key: "groceries", label: "Groceries", icon: Store },
+  { key: "furniture", label: "Furniture", icon: Package },
+  { key: "watches", label: "Watches", icon: Watch }
+];
 
 const MainPage = () => {
   const [products, setProducts] = useState([]);
@@ -68,18 +97,18 @@ const MainPage = () => {
       <section className="categories" aria-labelledby="categories-heading">
         <h2 id="categories-heading" className="section-title">Shop by Category</h2>
         <div className="categories-container">
-          <a href="#electronics" className="category-link"><div className="category-card">Electronics</div></a>
-          <a href="#fashion" className="category-link"><div className="category-card">Fashion</div></a>
-          <a href="#home" className="category-link"><div className="category-card">Home</div></a>
-          <a href="#sports" className="category-link"><div className="category-card">Sports</div></a>
-          <a href="#beauty" className="category-link"><div className="category-card">Beauty</div></a>
-          <a href="#books" className="category-link"><div className="category-card">Books</div></a>
-          <a href="#toys" className="category-link"><div className="category-card">Toys</div></a>
-          <a href="#mobiles" className="category-link"><div className="category-card">Mobiles</div></a>
-          <a href="#shoes" className="category-link"><div className="category-card">Shoes</div></a>
-          <a href="#groceries" className="category-link"><div className="category-card">Groceries</div></a>
-          <a href="#furniture" className="category-link"><div className="category-card">Furniture</div></a>
-          <a href="#watches" className="category-link"><div className="category-card">Watches</div></a>
+          {CATEGORY_ITEMS.map((category) => {
+            const Icon = category.icon;
+
+            return (
+              <a key={category.key} href={`#${category.key}`} className="category-link">
+                <div className="category-card">
+                  <Icon size={16} className="category-icon" aria-hidden="true" />
+                  <span>{category.label}</span>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </section>
 
