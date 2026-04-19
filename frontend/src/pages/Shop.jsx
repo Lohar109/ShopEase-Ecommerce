@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Store } from "lucide-react";
+import { Package, Store } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import ProductSkeleton from "../components/ProductSkeleton";
 import "../styles.css";
@@ -156,8 +156,7 @@ const Shop = () => {
           {mainCategories.map((category) => (
             (() => {
               const categoryName = category.name || "Category";
-              const firstLetter = categoryName.trim().charAt(0).toUpperCase() || "?";
-              const categoryImageSrc = getCategoryImageSrc(category.image_url);
+              const categoryImageSrc = getCategoryImageSrc(category.image || category.image_url);
               const imageFailed = imageLoadFailedById[String(category.id)];
               const showImage = Boolean(categoryImageSrc) && !imageFailed;
 
@@ -183,7 +182,9 @@ const Shop = () => {
                         onError={() => handleCategoryImageError(category.id)}
                       />
                     ) : (
-                      <span className="shop-category-fallback">{firstLetter}</span>
+                      <span className="shop-category-icon-fallback" aria-hidden="true">
+                        <Package size={22} strokeWidth={1.9} />
+                      </span>
                     )}
                   </span>
                   <span className="shop-category-name">{categoryName}</span>

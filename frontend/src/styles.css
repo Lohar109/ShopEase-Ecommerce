@@ -1190,7 +1190,7 @@ button:hover {
     align-items: center;
     justify-content: flex-start;
     gap: 0.45rem;
-    min-width: 84px;
+    min-width: 92px;
     border: none;
     background: transparent;
     color: #111827;
@@ -1200,8 +1200,8 @@ button:hover {
 }
 
 .shop-category-media {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     border-radius: 999px;
     border: 1px solid #d1d5db;
     background: #ffffff;
@@ -1219,14 +1219,12 @@ button:hover {
     display: block;
 }
 
-.shop-category-fallback {
+.shop-category-icon-fallback {
     width: 100%;
     height: 100%;
     border-radius: 999px;
-    background: #e5e7eb;
+    background: #f3f4f6;
     color: #111827;
-    font-size: 0.92rem;
-    font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1263,7 +1261,7 @@ button:hover {
     transform: scale(1.1);
     border-width: 2px;
     border-color: #111827;
-    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.14);
+    box-shadow: 0 0 0 2px #f3f4f6, 0 0 0 4px #111827;
 }
 
 .shop-category-card.active .shop-category-name {
