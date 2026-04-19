@@ -14,6 +14,7 @@ import {
   Watch
 } from "lucide-react";
 import "../styles.css";
+import HeroCarousel from "./HeroCarousel";
 import ProductCard from "./ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
 
@@ -86,12 +87,7 @@ const MainPage = () => {
 
   return (
     <main>
-      {/* Hero Section */}
-      <section className="hero" aria-labelledby="hero-heading">
-        <h1 id="hero-heading">Welcome to ShopEase</h1>
-        <p>Discover top-quality products at unbeatable prices.</p>
-        <button type="button" className="btn-shop-now" onClick={() => window.location.href='/shop'}>Shop Now</button>
-      </section>
+      <HeroCarousel />
 
       {/* Shop by Category Section */}
       <section className="categories" aria-labelledby="categories-heading">
