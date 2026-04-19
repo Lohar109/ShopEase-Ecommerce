@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
+  BedDouble,
   BookOpen,
   Dumbbell,
-  Gem,
+  Footprints,
   Monitor,
-  Package,
   Shirt,
+  ShoppingBasket,
   Smartphone,
   Sofa,
   Sparkles,
-  Store,
   ToyBrick,
   Watch
 } from "lucide-react";
@@ -30,9 +30,9 @@ const CATEGORY_ITEMS = [
   { key: "books", label: "Books", icon: BookOpen },
   { key: "toys", label: "Toys", icon: ToyBrick },
   { key: "mobiles", label: "Mobiles", icon: Smartphone },
-  { key: "shoes", label: "Shoes", icon: Gem },
-  { key: "groceries", label: "Groceries", icon: Store },
-  { key: "furniture", label: "Furniture", icon: Package },
+  { key: "shoes", label: "Shoes", icon: Footprints },
+  { key: "groceries", label: "Groceries", icon: ShoppingBasket },
+  { key: "furniture", label: "Furniture", icon: BedDouble },
   { key: "watches", label: "Watches", icon: Watch }
 ];
 
