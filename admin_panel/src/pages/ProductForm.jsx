@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCategories } from '../services/categoryService';
 import {
@@ -442,6 +443,21 @@ const ProductForm = () => {
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
+        .pf-select-wrap { position: relative; }
+        .pf-select {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 48px !important;
+        }
+        .pf-select-icon {
+          position: absolute;
+          right: 24px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #71717a;
+          pointer-events: none;
+        }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
@@ -567,18 +583,21 @@ const ProductForm = () => {
             <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500 }}>Target Audience</label>
-                <select
-                  className="custom-input"
-                  value={audience}
-                  onChange={e => setAudience(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                  required
-                >
-                  <option value="unisex">Unisex</option>
-                  <option value="men">Men</option>
-                  <option value="women">Women</option>
-                  <option value="kids">Kids</option>
-                </select>
+                <div className="pf-select-wrap">
+                  <select
+                    className="custom-input pf-select"
+                    value={audience}
+                    onChange={aud => setAudience(aud.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                    required
+                  >
+                    <option value="unisex">Unisex</option>
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="kids">Kids</option>
+                  </select>
+                  <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                </div>
               </div>
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
@@ -618,37 +637,43 @@ const ProductForm = () => {
             <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
-                <select
-                  className="custom-input"
-                  value={categoryId}
-                  onChange={e => {
-                    setCategoryId(e.target.value);
-                    setSubcategoryId('');
-                  }}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                  required
-                >
-                  <option value="">Select category</option>
-                  {categories.filter(c => c.parent_id === null).map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
+                <div className="pf-select-wrap">
+                  <select
+                    className="custom-input pf-select"
+                    value={categoryId}
+                    onChange={e => {
+                      setCategoryId(e.target.value);
+                      setSubcategoryId('');
+                    }}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {categories.filter(c => c.parent_id === null).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="pf-select-icon" />
+                </div>
               </div>
 
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
-                <select
-                  className="custom-input"
-                  value={subcategoryId}
-                  onChange={e => setSubcategoryId(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
-                  disabled={!categoryId || isSubcategoriesLoading}
-                >
-                  <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
-                  {subcategoriesOptions.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
+                <div className="pf-select-wrap">
+                  <select
+                    className="custom-input pf-select"
+                    value={subcategoryId}
+                    onChange={e => setSubcategoryId(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
+                    disabled={!categoryId || isSubcategoriesLoading}
+                  >
+                    <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
+                    {subcategoriesOptions.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="pf-select-icon" />
+                </div>
               </div>
             </div>
             
