@@ -20,7 +20,7 @@ export async function fetchCategories() {
 }
 
 // Add a new category
-export async function addCategory({ name, image, parent_id = null }) {
+export async function addCategory({ name, image = null, parent_id = null }) {
   try {
     const response = await fetch(`${API_BASE_URL}/categories`, {
       method: 'POST',

@@ -10,11 +10,9 @@ const CategoryPage = () => {
   const [error, setError] = useState('');
 
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryImage, setNewCategoryImage] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
 
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
-  const [newSubcategoryImage, setNewSubcategoryImage] = useState('');
   const [selectedParentId, setSelectedParentId] = useState('');
   const [addingSubcategory, setAddingSubcategory] = useState(false);
 
@@ -142,8 +140,8 @@ const CategoryPage = () => {
 
   const handleAddCategory = async (event) => {
     event.preventDefault();
-    if (!newCategoryName.trim() || !newCategoryImage.trim()) {
-      alert('Please enter category name and image URL.');
+    if (!newCategoryName.trim()) {
+      alert('Please enter category name.');
       return;
     }
 
@@ -151,11 +149,9 @@ const CategoryPage = () => {
     try {
       await addCategory({
         name: newCategoryName.trim(),
-        image: newCategoryImage.trim(),
         parent_id: null,
       });
       setNewCategoryName('');
-      setNewCategoryImage('');
       await loadCategories();
     } catch (err) {
       alert(err.message || 'Failed to add category');
@@ -170,8 +166,8 @@ const CategoryPage = () => {
       alert('Please choose a parent category.');
       return;
     }
-    if (!newSubcategoryName.trim() || !newSubcategoryImage.trim()) {
-      alert('Please enter subcategory name and image URL.');
+    if (!newSubcategoryName.trim()) {
+      alert('Please enter subcategory name.');
       return;
     }
 
@@ -179,11 +175,9 @@ const CategoryPage = () => {
     try {
       await addCategory({
         name: newSubcategoryName.trim(),
-        image: newSubcategoryImage.trim(),
         parent_id: selectedParentId,
       });
       setNewSubcategoryName('');
-      setNewSubcategoryImage('');
       await loadCategories();
     } catch (err) {
       alert(err.message || 'Failed to add subcategory');
@@ -334,14 +328,6 @@ const CategoryPage = () => {
                   placeholder="Category name"
                   required
                 />
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={newCategoryImage}
-                  onChange={(event) => setNewCategoryImage(event.target.value)}
-                  placeholder="Category image URL"
-                  required
-                />
                 <button
                   type="submit"
                   disabled={addingCategory}
@@ -395,14 +381,6 @@ const CategoryPage = () => {
                   value={newSubcategoryName}
                   onChange={(event) => setNewSubcategoryName(event.target.value)}
                   placeholder="Subcategory name"
-                  required
-                />
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={newSubcategoryImage}
-                  onChange={(event) => setNewSubcategoryImage(event.target.value)}
-                  placeholder="Subcategory image URL"
                   required
                 />
                 <button
