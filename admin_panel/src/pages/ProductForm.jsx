@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addCategory } from '../services/categoryService';
 import { fetchCategories } from '../services/categoryService';
@@ -184,11 +184,10 @@ const ProductForm = () => {
     setPrefillApplied(true);
   }, [categories, isEditMode, prefillApplied, prefillCategoryId]);
 
-  // When category changes, reset subcategory
-  useEffect(() => {
-    if (isEditMode && !prefillApplied) return;
-    setSubcategoryId('');
-  }, [categoryId, isEditMode, prefillApplied]);
+  const filteredSubcategories = useMemo(
+    () => categories.filter(c => c.parent_id === categoryId),
+    [categories, categoryId]
+  );
 
   // Add Category handler
   const handleAddCategory = async (e) => {
@@ -585,7 +584,10 @@ const ProductForm = () => {
                   <select
                     className="custom-input"
                     value={categoryId}
-                    onChange={e => setCategoryId(e.target.value)}
+                    onChange={e => {
+                      setCategoryId(e.target.value);
+                      setSubcategoryId('');
+                    }}
                     style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                     required
                   >
@@ -619,7 +621,7 @@ const ProductForm = () => {
                     disabled={!categoryId}
                   >
                     <option value="">Select subcategory</option>
-                    {categories.filter(c => c.parent_id === categoryId).map(cat => (
+                    {filteredSubcategories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
