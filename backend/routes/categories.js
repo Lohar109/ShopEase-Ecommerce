@@ -28,9 +28,11 @@ router.get('/', async (req, res) => {
 // POST /api/categories - add a new category
 router.post('/', async (req, res) => {
   const { name, image, parent_id } = req.body;
-  if (!name) {
+  const normalizedName = typeof name === 'string' ? name.trim() : '';
+  if (!normalizedName) {
     return res.status(400).json({ error: 'Name is required' });
   }
+  const imageValue = typeof image === 'string' && image.trim() ? image.trim() : '';
   const normalizedParentId = typeof parent_id === 'string' ? parent_id.trim() : null;
   const finalParentId = normalizedParentId ? normalizedParentId : null;
   try {
@@ -49,7 +51,7 @@ router.post('/', async (req, res) => {
 
     const result = await pool.query(
       'INSERT INTO category (name, image, parent_id) VALUES ($1, $2, $3) RETURNING id, name, image, parent_id',
-      [name, image || null, finalParentId]
+      [normalizedName, imageValue, finalParentId]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

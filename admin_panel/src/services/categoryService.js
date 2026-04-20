@@ -28,7 +28,13 @@ export async function addCategory({ name, image = null, parent_id = null }) {
       body: JSON.stringify({ name, image, parent_id })
     });
     if (!response.ok) {
-      throw new Error('Failed to add category');
+      let parsed = null;
+      try {
+        parsed = await response.json();
+      } catch {
+        parsed = null;
+      }
+      throw new Error(parsed?.error || 'Failed to add category');
     }
     return await response.json();
   } catch (error) {
