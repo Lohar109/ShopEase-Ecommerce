@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
 
@@ -19,6 +19,7 @@ const CategoryPage = () => {
   const [addingSubcategory, setAddingSubcategory] = useState(false);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState([]);
 
   const loadCategories = async () => {
     try {
@@ -56,21 +57,30 @@ const CategoryPage = () => {
     return index;
   }, [categories]);
 
-  const visibleRows = useMemo(() => {
-    const rows = [];
+  const childCategories = useMemo(
+    () => categories.filter((category) => category?.parent_id !== null),
+    [categories]
+  );
 
-    mainCategories.forEach((parentCategory) => {
-      rows.push({ ...parentCategory, depth: 0 });
-
-      categories
-        .filter((category) => String(category?.parent_id || '') === String(parentCategory.id))
-        .forEach((childCategory) => {
-          rows.push({ ...childCategory, depth: 1 });
-        });
+  const childrenByParentId = useMemo(() => {
+    const group = {};
+    childCategories.forEach((category) => {
+      const parentId = String(category.parent_id);
+      if (!group[parentId]) group[parentId] = [];
+      group[parentId].push(category);
     });
+    return group;
+  }, [childCategories]);
 
-    return rows;
-  }, [categories, mainCategories]);
+  const toggleParentRow = (parentId) => {
+    const normalizedParentId = String(parentId);
+    setExpandedCategories((previous) => {
+      if (previous.includes(normalizedParentId)) {
+        return previous.filter((id) => id !== normalizedParentId);
+      }
+      return [...previous, normalizedParentId];
+    });
+  };
 
   const handleAddCategory = async (event) => {
     event.preventDefault();
@@ -141,6 +151,8 @@ const CategoryPage = () => {
       setDeletingCategoryId('');
     }
   };
+
+  const hasAnyRows = mainCategories.length > 0;
 
   return (
     <div style={{ minHeight: '100vh', background: '#fafafa', padding: '40px 20px' }}>
@@ -277,9 +289,6 @@ const CategoryPage = () => {
               minHeight: 520,
             }}
           >
-            <div style={{ color: '#6b7280', fontSize: 14, marginBottom: 8, fontWeight: 500 }}>
-              Dashboard / Categories
-            </div>
             <h1 style={{ margin: '0 0 16px 0', fontSize: 28, fontWeight: 700, color: '#111827' }}>
               Category Management
             </h1>
@@ -288,7 +297,7 @@ const CategoryPage = () => {
               <div style={{ color: '#6b7280', padding: '18px 6px' }}>Loading categories...</div>
             ) : error ? (
               <div style={{ color: '#b91c1c', padding: '18px 6px' }}>{error}</div>
-            ) : visibleRows.length === 0 ? (
+            ) : !hasAnyRows ? (
               <div style={{ color: '#6b7280', padding: '18px 6px' }}>No categories yet.</div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
@@ -310,46 +319,96 @@ const CategoryPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {visibleRows.map((category) => {
-                      const categoryId = String(category.id);
-                      const isDeleting = deletingCategoryId === categoryId;
-                      const parentName = category.parent_id ? categoryById[String(category.parent_id)]?.name || '-' : '-';
+                    {mainCategories.map((parentCategory) => {
+                      const parentId = String(parentCategory.id);
+                      const parentChildren = childrenByParentId[parentId] || [];
+                      const isExpanded = expandedCategories.includes(parentId);
+                      const isParentDeleting = deletingCategoryId === parentId;
 
                       return (
-                        <tr key={categoryId} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '12px 10px', color: '#111827', fontWeight: category.depth === 0 ? 600 : 500 }}>
-                            {category.depth === 1 ? '   ' : ''}
-                            {category.name}
-                          </td>
-                          <td style={{ padding: '12px 10px', color: '#475569' }}>{category.parent_id ? 'Subcategory' : 'Category'}</td>
-                          <td style={{ padding: '12px 10px', color: '#475569' }}>
-                            {category.parent_id ? `${parentName} > ${category.name}` : category.name}
-                          </td>
-                          <td style={{ padding: '12px 10px', textAlign: 'right' }}>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteCategory(category)}
-                              disabled={isDeleting}
-                              style={{
-                                border: '1px solid #fecaca',
-                                background: isDeleting ? '#fee2e2' : '#fff1f2',
-                                color: '#b91c1c',
-                                borderRadius: 8,
-                                padding: '6px 9px',
-                                cursor: isDeleting ? 'not-allowed' : 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                fontWeight: 600,
-                                fontSize: 12,
-                              }}
-                              title="Delete category"
-                            >
-                              <Trash2 size={14} />
-                              {isDeleting ? 'Deleting...' : 'Delete'}
-                            </button>
-                          </td>
-                        </tr>
+                        <React.Fragment key={parentId}>
+                          <tr
+                            style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', background: '#fafafa' }}
+                            onClick={() => toggleParentRow(parentId)}
+                          >
+                            <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 600 }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                {parentCategory.name}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 10px', color: '#475569' }}>Category</td>
+                            <td style={{ padding: '12px 10px', color: '#475569' }}>{parentCategory.name}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'right' }}>
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleDeleteCategory(parentCategory);
+                                }}
+                                disabled={isParentDeleting}
+                                style={{
+                                  border: '1px solid #fecaca',
+                                  background: isParentDeleting ? '#fee2e2' : '#fff1f2',
+                                  color: '#b91c1c',
+                                  borderRadius: 8,
+                                  padding: '6px 9px',
+                                  cursor: isParentDeleting ? 'not-allowed' : 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                }}
+                                title="Delete category"
+                              >
+                                <Trash2 size={14} />
+                                {isParentDeleting ? 'Deleting...' : 'Delete'}
+                              </button>
+                            </td>
+                          </tr>
+
+                          {isExpanded &&
+                            parentChildren.map((childCategory) => {
+                              const childId = String(childCategory.id);
+                              const isChildDeleting = deletingCategoryId === childId;
+                              const parentName = categoryById[String(childCategory.parent_id)]?.name || '-';
+
+                              return (
+                                <tr key={childId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                  <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 500 }}>
+                                    <span style={{ paddingLeft: 24 }}>{childCategory.name}</span>
+                                  </td>
+                                  <td style={{ padding: '12px 10px', color: '#475569' }}>Subcategory</td>
+                                  <td style={{ padding: '12px 10px', color: '#475569' }}>{`${parentName} > ${childCategory.name}`}</td>
+                                  <td style={{ padding: '12px 10px', textAlign: 'right' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteCategory(childCategory)}
+                                      disabled={isChildDeleting}
+                                      style={{
+                                        border: '1px solid #fecaca',
+                                        background: isChildDeleting ? '#fee2e2' : '#fff1f2',
+                                        color: '#b91c1c',
+                                        borderRadius: 8,
+                                        padding: '6px 9px',
+                                        cursor: isChildDeleting ? 'not-allowed' : 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        fontWeight: 600,
+                                        fontSize: 12,
+                                      }}
+                                      title="Delete category"
+                                    >
+                                      <Trash2 size={14} />
+                                      {isChildDeleting ? 'Deleting...' : 'Delete'}
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                        </React.Fragment>
                       );
                     })}
                   </tbody>
