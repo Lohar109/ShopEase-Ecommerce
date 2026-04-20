@@ -26,16 +26,49 @@ const Sidebar = () => {
     >
       <div
         style={{
-          height: 56,
-          padding: '0 8px',
-          marginBottom: 12,
+          height: 82,
+          padding: '10px 10px 12px',
+          marginBottom: 14,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'space-between',
           boxSizing: 'border-box',
+          borderBottom: '1px solid #f1f5f9',
+          borderRadius: 10,
+          background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+          boxShadow: '0 1px 3px rgba(15, 23, 42, 0.07)',
         }}
       >
-        <div style={{ fontWeight: 700, fontSize: 18, color: '#111827', lineHeight: 1.2 }}>
-          ShopEase Admin
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <img
+            src="/favicon.svg"
+            alt="ShopEase"
+            style={{ width: 34, height: 34, flexShrink: 0 }}
+          />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 19, color: '#111827', lineHeight: 1.1 }}>
+              ShopEase
+            </div>
+            <div style={{ marginTop: 2, fontSize: 11, color: '#71717a', fontWeight: 500 }}>
+              Control Panel
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            flexShrink: 0,
+            borderRadius: 999,
+            border: '1px solid #f3d1dc',
+            background: '#fff1f6',
+            color: '#c8507a',
+            fontWeight: 700,
+            fontSize: 10,
+            padding: '3px 8px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Admin
         </div>
       </div>
       <nav style={{ display: 'grid', gap: 8 }}>
