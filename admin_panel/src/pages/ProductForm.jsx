@@ -191,13 +191,13 @@ const ProductForm = () => {
   }, [categories, editProductData, isEditMode, prefillApplied]);
 
   const filteredSubcategories = useMemo(
-    () => categories.filter(c => c.parent_id === categoryId),
+    () => categories.filter(c => String(c.parent_id || '') === String(categoryId || '')),
     [categories, categoryId]
   );
 
   useEffect(() => {
     // Phase 3: wait until subcategory options exist before selecting child.
-    if (!pendingSubcategoryId || filteredSubcategories.length === 0 || !editProductData) return;
+    if (!pendingSubcategoryId || filteredSubcategories.length === 0 || !editProductData || prefillApplied) return;
 
     const hasPendingOption = filteredSubcategories.some(
       (subcategory) => String(subcategory.id) === String(pendingSubcategoryId)
@@ -205,10 +205,15 @@ const ProductForm = () => {
 
     if (!hasPendingOption) return;
 
-    setSubcategoryId(editProductData.category_id || '');
-    setPendingSubcategoryId('');
-    setPrefillApplied(true);
-  }, [filteredSubcategories, pendingSubcategoryId, editProductData]);
+    // Defer assignment until options are painted so the browser keeps the selected option.
+    const timer = setTimeout(() => {
+      setSubcategoryId(editProductData.category_id || '');
+      setPendingSubcategoryId('');
+      setPrefillApplied(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [filteredSubcategories, pendingSubcategoryId, editProductData, prefillApplied]);
 
   const isSubcategoriesLoading =
     isEditMode && !!pendingSubcategoryId && filteredSubcategories.length === 0;
