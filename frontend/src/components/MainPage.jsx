@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   BedDouble,
   BookOpen,
+  ChevronLeft,
+  ChevronRight,
   Dice1,
   Dice4,
   Footprints,
@@ -39,8 +41,20 @@ const CATEGORY_ITEMS = [
 ];
 
 const MainPage = () => {
+  const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const scrollHomeCategories = (direction) => {
+    const rail = categoryScrollRef.current;
+    if (!rail) return;
+
+    const distance = Math.max(220, Math.floor(rail.clientWidth * 0.6));
+    rail.scrollBy({
+      left: direction === "left" ? -distance : distance,
+      behavior: "smooth"
+    });
+  };
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -90,27 +104,54 @@ const MainPage = () => {
     <main>
       {/* Shop by Category Section */}
       <section className="categories" aria-label="Shop categories">
-        <div className="categories-container">
-          {CATEGORY_ITEMS.map((category) => {
-            const isToysCategory = category.key === "toys";
-            const Icon = category.icon;
+        <div className="home-categories-card">
+          <h2 className="home-categories-title">Shop by Category</h2>
 
-            return (
-              <a key={category.key} href={`#${category.key}`} className="category-link">
-                <div className="category-card">
-                  {isToysCategory ? (
-                    <span className="category-icon category-dice-pair" aria-hidden="true">
-                      <Dice1 size={13} strokeWidth={2} className="category-die category-die-top" />
-                      <Dice4 size={13} strokeWidth={2} className="category-die category-die-bottom" />
-                    </span>
-                  ) : (
-                    <Icon size={24} strokeWidth={2} className="category-icon" aria-hidden="true" />
-                  )}
-                  <span>{category.label}</span>
-                </div>
-              </a>
-            );
-          })}
+          <div className="home-category-rail">
+            <button
+              type="button"
+              className="home-category-nav-btn"
+              aria-label="Scroll categories left"
+              onClick={() => scrollHomeCategories("left")}
+            >
+              <ChevronLeft size={16} strokeWidth={2.4} />
+            </button>
+
+            <div ref={categoryScrollRef} className="home-categories-scroll" role="list" aria-label="Category cards">
+              {CATEGORY_ITEMS.map((category) => {
+                const isToysCategory = category.key === "toys";
+                const Icon = category.icon;
+
+                return (
+                  <a key={category.key} href={`#${category.key}`} className="home-category-link">
+                    <div className="home-category-card">
+                      <span className="home-category-media" aria-hidden="true">
+                        {isToysCategory ? (
+                          <span className="home-category-icon home-category-dice-pair">
+                            <Dice1 size={11} strokeWidth={2} className="home-category-die home-category-die-top" />
+                            <Dice4 size={11} strokeWidth={2} className="home-category-die home-category-die-bottom" />
+                          </span>
+                        ) : (
+                          <Icon size={18} strokeWidth={2} className="home-category-icon" />
+                        )}
+                      </span>
+                      <span className="home-category-divider" aria-hidden="true" />
+                      <span className="home-category-name">{category.label}</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              className="home-category-nav-btn"
+              aria-label="Scroll categories right"
+              onClick={() => scrollHomeCategories("right")}
+            >
+              <ChevronRight size={16} strokeWidth={2.4} />
+            </button>
+          </div>
         </div>
       </section>
 
