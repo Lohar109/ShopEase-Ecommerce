@@ -439,6 +439,36 @@ const ProductForm = () => {
   const canPrev = activeIdx > 0;
   const canNext = activeIdx < STEPS.length - 1;
 
+  const stepDone = useMemo(() => {
+    const general = Boolean(name.trim() && brand.trim() && description.trim() && categoryId);
+
+    const usedSpecs = specs.filter((s) => String(s?.key || '').trim() || String(s?.value || '').trim());
+    const specifications = usedSpecs.length > 0 && usedSpecs.every((s) => String(s?.key || '').trim() && String(s?.value || '').trim());
+
+    const media = Boolean(String(mainImage || '').trim() && galleryImages.some((img) => String(img || '').trim()));
+
+    const inventory =
+      Array.isArray(variantRows) &&
+      variantRows.length > 0 &&
+      variantRows.every((v) => {
+        const size = String(v?.size || '').trim();
+        const color = String(v?.color || '').trim();
+        const price = Number(v?.price);
+        const stock = Number(v?.stock);
+        return size && color && Number.isFinite(price) && price >= 0 && Number.isFinite(stock) && stock >= 0;
+      });
+
+    const galleries = isEditMode ? Array.isArray(designGalleries) && designGalleries.length > 0 : false;
+
+    return {
+      general,
+      specifications,
+      media,
+      inventory,
+      galleries,
+    };
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries]);
+
   const goNext = () => {
     if (!canNext) return;
     setActiveTab(STEPS[activeIdx + 1].key);
@@ -498,6 +528,13 @@ const ProductForm = () => {
         .pf-step-pane {
           animation: pf-fade-slide-up 220ms ease;
         }
+        .pf-check-anim {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          animation: pf-check-pop 220ms ease-out;
+          transform-origin: center;
+        }
         @keyframes pf-fade-slide-up {
           from {
             opacity: 0;
@@ -506,6 +543,16 @@ const ProductForm = () => {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+        @keyframes pf-check-pop {
+          from {
+            opacity: 0;
+            transform: scale(0.78);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
           }
         }
         .pf-section-title {
@@ -668,9 +715,9 @@ const ProductForm = () => {
             }}
           >
             {STEPS.map((step, idx) => {
-              const completed = idx < activeIdx;
+              const completed = Boolean(stepDone[step.key]);
               const active = idx === activeIdx;
-              const lineColor = idx < activeIdx ? '#c8507a' : '#e4e4e7';
+              const lineColor = completed ? '#86efac' : '#e4e4e7';
 
               return (
                 <div key={step.key} style={{ position: 'relative', paddingBottom: idx < STEPS.length - 1 ? 26 : 0 }}>
@@ -711,15 +758,15 @@ const ProductForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: active ? 'none' : completed ? '2px solid #c8507a' : '1px solid #d4d4d8',
-                        background: active ? '#c8507a' : completed ? '#ffffff' : '#f4f4f5',
-                        color: active ? '#ffffff' : completed ? '#c8507a' : '#9ca3af',
+                        border: completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8',
+                        background: completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5',
+                        color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
                         fontWeight: 700,
                         fontSize: 12,
                         flexShrink: 0,
                       }}
                     >
-                      {completed ? <Check size={16} /> : idx + 1}
+                      {completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx + 1}
                     </span>
 
                     <span
