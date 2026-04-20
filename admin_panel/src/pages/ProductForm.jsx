@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Box, Check, ChevronDown, Image, Info, Layers, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCategories } from '../services/categoryService';
 import {
@@ -459,6 +459,16 @@ const ProductForm = () => {
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
+        input.custom-input,
+        select.custom-input {
+          height: 44px !important;
+          border-radius: 8px !important;
+          background: #f9fafb !important;
+        }
+        textarea.custom-input {
+          border-radius: 8px !important;
+          background: #f9fafb !important;
+        }
         .pf-step-layout {
           display: grid;
           grid-template-columns: 250px minmax(0, 1fr);
@@ -484,6 +494,55 @@ const ProductForm = () => {
           transform: translateY(-50%);
           color: #71717a;
           pointer-events: none;
+        }
+        .pf-step-pane {
+          animation: pf-fade-slide-up 220ms ease;
+        }
+        @keyframes pf-fade-slide-up {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .pf-section-title {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 24px;
+        }
+        .pf-section-title-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #f3d1dc;
+          background: #fff1f6;
+          color: #c8507a;
+        }
+        .pf-outline-accent-btn {
+          transition: all 0.2s ease;
+          background: #ffffff;
+          color: #c8507a;
+          border: 1px solid #c8507a;
+          border-radius: 10px;
+          padding: 8px 14px;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          font-family: 'Poppins', sans-serif;
+          white-space: nowrap;
+        }
+        .pf-outline-accent-btn:hover {
+          background: #fff1f6;
         }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
@@ -676,9 +735,13 @@ const ProductForm = () => {
                 padding: '34px 36px',
               }}
             >
+              <div key={activeTab} className="pf-step-pane">
               {activeTab === 'general' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>General Details</h3>
+                  <div className="pf-section-title">
+                    <span className="pf-section-title-icon"><Info size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
+                  </div>
                   <div style={{ marginBottom: 18 }}>
                     <label style={{ fontWeight: 500 }}>Product Name</label>
                     <input
@@ -795,7 +858,10 @@ const ProductForm = () => {
 
               {activeTab === 'specifications' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Specifications</h3>
+                  <div className="pf-section-title">
+                    <span className="pf-section-title-icon"><Layers size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
+                  </div>
                   <div style={{ marginBottom: 8 }}>
                     <label style={{ fontWeight: 500 }}>Product Specifications</label>
                     {specs.map((spec, idx) => (
@@ -824,14 +890,17 @@ const ProductForm = () => {
                         </button>
                       </div>
                     ))}
-                    <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 8 }}>Add Specification</button>
+                    <button type="button" className="pf-outline-accent-btn" onClick={addSpec} style={{ marginTop: 8 }}><Plus size={14} />Add Specification</button>
                   </div>
                 </>
               )}
 
               {activeTab === 'media' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Media</h3>
+                  <div className="pf-section-title">
+                    <span className="pf-section-title-icon"><Image size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Media</h3>
+                  </div>
                   <div style={{ marginBottom: 24 }}>
                     <label style={{ fontWeight: 500 }}>Main Image URL</label>
                     <input
@@ -886,7 +955,10 @@ const ProductForm = () => {
 
               {activeTab === 'inventory' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Inventory</h3>
+                  <div className="pf-section-title">
+                    <span className="pf-section-title-icon"><Box size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
+                  </div>
                   <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
                     <thead>
@@ -970,13 +1042,16 @@ const ProductForm = () => {
                       ))}
                     </tbody>
                   </table>
-                  <button type="button" className="outline-btn" onClick={addVariant}>Add Variant</button>
+                  <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>
                 </>
               )}
 
               {activeTab === 'galleries' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Design Specific Galleries</h3>
+                  <div className="pf-section-title">
+                    <span className="pf-section-title-icon"><Image size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Design Specific Galleries</h3>
+                  </div>
                   {!isEditMode ? (
                     <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
                       Save the product first, then you can add color-specific galleries.
@@ -1058,6 +1133,7 @@ const ProductForm = () => {
                   )}
                 </>
               )}
+              </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
                 <button
