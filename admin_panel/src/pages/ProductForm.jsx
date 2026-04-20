@@ -17,6 +17,8 @@ const TABS = [
   { label: 'Inventory', key: 'inventory' },
 ];
 
+const normalizeId = (value) => String(value ?? '').trim();
+
 const ProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -24,8 +26,6 @@ const ProductForm = () => {
   const [saving, setSaving] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [editProductData, setEditProductData] = useState(null);
-  const [pendingSubcategoryId, setPendingSubcategoryId] = useState('');
-  const [prefillApplied, setPrefillApplied] = useState(false);
   const navigate = useNavigate();
   // General Details state
   const [name, setName] = useState('');
@@ -125,8 +125,6 @@ const ProductForm = () => {
         );
 
         setEditProductData(product || null);
-        setPrefillApplied(false);
-        setPendingSubcategoryId('');
       } catch (err) {
         alert(err.message || 'Failed to load product details');
         navigate('/products');
@@ -167,56 +165,89 @@ const ProductForm = () => {
     }
   }, [categories, categoryId, isEditMode]);
 
+  const resolvedProductSubcategoryId = useMemo(() => {
+    if (!editProductData || categories.length === 0) return '';
+
+    const explicitSubcategoryId =
+      normalizeId(editProductData.subcategory_id) ||
+      normalizeId(editProductData.sub_category_id) ||
+      normalizeId(editProductData.subcategoryId);
+
+    if (explicitSubcategoryId) return explicitSubcategoryId;
+
+    const productCategoryId = normalizeId(editProductData.category_id);
+    const matchedCategory = categories.find(
+      (category) => normalizeId(category?.id) === productCategoryId
+    );
+
+    if (!matchedCategory) return '';
+
+    const matchedParentId = normalizeId(matchedCategory.parent_id);
+    if (matchedParentId) {
+      return productCategoryId;
+    }
+
+    const directChildren = categories.filter(
+      (category) => normalizeId(category?.parent_id) === productCategoryId
+    );
+
+    return directChildren.length === 1 ? normalizeId(directChildren[0].id) : '';
+  }, [categories, editProductData]);
+
   useEffect(() => {
-    if (!isEditMode || !editProductData || prefillApplied || categories.length === 0) return;
+    if (!isEditMode || !editProductData?.category_id || categories.length === 0) return;
 
-    const selectedCategory = categories.find(c => String(c.id) === String(editProductData.category_id));
-    if (!selectedCategory) {
-      setPrefillApplied(true);
-      return;
-    }
+    // Step A: Trace product.category_id in all categories and inspect parent_id.
+    const matchedCategory = categories.find(
+      (category) => normalizeId(category?.id) === normalizeId(editProductData.category_id)
+    );
 
-    if (selectedCategory.parent_id) {
-      // Phase 2: set parent first so child options are derived for this parent.
-      setCategoryId(selectedCategory.parent_id);
+    if (!matchedCategory) {
+      setCategoryId(normalizeId(editProductData.category_id));
       setSubcategoryId('');
-      setPendingSubcategoryId(selectedCategory.id);
       return;
     }
 
-    setCategoryId(selectedCategory.id);
-    setSubcategoryId('');
-    setPendingSubcategoryId('');
-    setPrefillApplied(true);
-  }, [categories, editProductData, isEditMode, prefillApplied]);
+    // Step B: Set parent first when product.category_id points to a subcategory.
+    if (matchedCategory.parent_id) {
+      setCategoryId(normalizeId(matchedCategory.parent_id));
+      setSubcategoryId('');
+      return;
+    }
 
-  const filteredSubcategories = useMemo(
-    () => categories.filter(c => String(c.parent_id || '') === String(categoryId || '')),
+    setCategoryId(normalizeId(matchedCategory.id));
+    setSubcategoryId('');
+  }, [categories, editProductData, isEditMode]);
+
+  const subcategoriesOptions = useMemo(
+    () => categories.filter(c => normalizeId(c.parent_id) === normalizeId(categoryId)),
     [categories, categoryId]
   );
 
   useEffect(() => {
-    // Phase 3: wait until subcategory options exist before selecting child.
-    if (!pendingSubcategoryId || filteredSubcategories.length === 0 || !editProductData || prefillApplied) return;
+    // Step C: Watchdog - only set subcategory after its option list is populated.
+    if (!isEditMode || !resolvedProductSubcategoryId || subcategoriesOptions.length === 0) return;
 
-    const hasPendingOption = filteredSubcategories.some(
-      (subcategory) => String(subcategory.id) === String(pendingSubcategoryId)
+    const hasOptionForProductCategory = subcategoriesOptions.some(
+      (subcategory) => normalizeId(subcategory?.id) === normalizeId(resolvedProductSubcategoryId)
     );
 
-    if (!hasPendingOption) return;
+    if (!hasOptionForProductCategory) return;
+    if (normalizeId(subcategoryId) === normalizeId(resolvedProductSubcategoryId)) return;
 
-    // Defer assignment until options are painted so the browser keeps the selected option.
     const timer = setTimeout(() => {
-      setSubcategoryId(editProductData.category_id || '');
-      setPendingSubcategoryId('');
-      setPrefillApplied(true);
+      setSubcategoryId(normalizeId(resolvedProductSubcategoryId));
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [filteredSubcategories, pendingSubcategoryId, editProductData, prefillApplied]);
+  }, [subcategoriesOptions, isEditMode, subcategoryId, resolvedProductSubcategoryId]);
 
   const isSubcategoriesLoading =
-    isEditMode && !!pendingSubcategoryId && filteredSubcategories.length === 0;
+    isEditMode &&
+    !!resolvedProductSubcategoryId &&
+    normalizeId(categoryId).length > 0 &&
+    normalizeId(subcategoryId) === '' &&
+    subcategoriesOptions.length === 0;
 
   // Add Category handler
   const handleAddCategory = async (e) => {
@@ -616,7 +647,6 @@ const ProductForm = () => {
                     onChange={e => {
                       setCategoryId(e.target.value);
                       setSubcategoryId('');
-                      setPendingSubcategoryId('');
                     }}
                     style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                     required
@@ -651,7 +681,7 @@ const ProductForm = () => {
                     disabled={!categoryId || isSubcategoriesLoading}
                   >
                     <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
-                    {filteredSubcategories.map(cat => (
+                    {subcategoriesOptions.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
