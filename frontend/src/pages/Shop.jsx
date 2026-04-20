@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import ProductSkeleton from "../components/ProductSkeleton";
+import CategorySkeleton from "../components/CategorySkeleton";
 import "../styles.css";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
@@ -81,6 +82,7 @@ const Shop = () => {
   const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
@@ -100,7 +102,8 @@ const Shop = () => {
     fetch(`${API_ORIGIN}/api/categories`)
       .then((res) => res.json())
       .then((data) => setCategories(Array.isArray(data) ? data : []))
-      .catch(() => setCategories([]));
+      .catch(() => setCategories([]))
+      .finally(() => setIsCategoriesLoading(false));
   }, []);
 
   useEffect(() => {
@@ -229,47 +232,55 @@ const Shop = () => {
             </button>
 
             <div ref={categoryScrollRef} className="shop-category-scroll" role="list" aria-label="Category cards">
-              <button
-                type="button"
-                className={`shop-category-card ${!selectedCategory ? "active" : ""}`}
-                onClick={() => {
-                  setSelectedCategory(null);
-                  setSelectedSubcategory(null);
-                }}
-                aria-pressed={!selectedCategory}
-              >
-                <span className="shop-category-media shop-category-media-all" aria-hidden="true">
-                  <Store size={24} strokeWidth={2} className="shop-category-icon" />
-                </span>
-                <span className="shop-category-divider" aria-hidden="true" />
-                <span className="shop-category-name">All</span>
-              </button>
-
-              {mainCategories.map((category) => {
-                const categoryName = category.name || "Category";
-                const CategoryIcon = getCategoryIcon(categoryName);
-
-                return (
+              {isCategoriesLoading ? (
+                Array.from({ length: 7 }).map((_, index) => (
+                  <CategorySkeleton key={`category-skeleton-${index}`} />
+                ))
+              ) : (
+                <>
                   <button
-                    key={category.id}
                     type="button"
-                    className={`shop-category-card ${
-                      String(selectedCategory) === String(category.id) ? "active" : ""
-                    }`}
+                    className={`shop-category-card ${!selectedCategory ? "active" : ""}`}
                     onClick={() => {
-                      setSelectedCategory(category.id);
+                      setSelectedCategory(null);
                       setSelectedSubcategory(null);
                     }}
-                    aria-pressed={String(selectedCategory) === String(category.id)}
+                    aria-pressed={!selectedCategory}
                   >
-                    <span className="shop-category-media" aria-hidden="true">
-                      <CategoryIcon size={24} strokeWidth={2} className="shop-category-icon" />
+                    <span className="shop-category-media shop-category-media-all" aria-hidden="true">
+                      <Store size={24} strokeWidth={2} className="shop-category-icon" />
                     </span>
                     <span className="shop-category-divider" aria-hidden="true" />
-                    <span className="shop-category-name">{categoryName}</span>
+                    <span className="shop-category-name whitespace-nowrap">All</span>
                   </button>
-                );
-              })}
+
+                  {mainCategories.map((category) => {
+                    const categoryName = category.name || "Category";
+                    const CategoryIcon = getCategoryIcon(categoryName);
+
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        className={`shop-category-card ${
+                          String(selectedCategory) === String(category.id) ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          setSelectedSubcategory(null);
+                        }}
+                        aria-pressed={String(selectedCategory) === String(category.id)}
+                      >
+                        <span className="shop-category-media" aria-hidden="true">
+                          <CategoryIcon size={24} strokeWidth={2} className="shop-category-icon" />
+                        </span>
+                        <span className="shop-category-divider" aria-hidden="true" />
+                        <span className="shop-category-name whitespace-nowrap">{categoryName}</span>
+                      </button>
+                    );
+                  })}
+                </>
+              )}
             </div>
 
             <button
