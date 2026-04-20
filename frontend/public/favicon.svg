@@ -1,15 +1,23 @@
 <svg width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="180" height="60" rx="10" fill="#1A1A1A"/>
-  
-  <text 
-    x="50%" 
-    y="52%" 
-    dominant-baseline="middle" 
-    text-anchor="middle" 
-    fill="white" 
-    style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 700; font-size: 24px;">
-    ShopEase
-  </text>
-  
-  <path d="M100 45C115 42 135 48 155 43" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round"/>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&amp;display=swap');
+    </style>
+  </defs>
+
+  <rect width="180" height="60" rx="10" fill="#000000"/>
+
+  <text
+    x="50%"
+    y="42%"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    font-family="'Poppins', sans-serif"
+    font-weight="500"
+    font-size="34"
+    fill="white">Shop<tspan fill="#FF6B6B">E</tspan>ase</text>
+
+  <!-- smaller smile arc from p to e -->
+  <path d="M96 50 Q128 57 162 50" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round"/>
+
 </svg>
