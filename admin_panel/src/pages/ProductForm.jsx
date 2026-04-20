@@ -23,7 +23,8 @@ const ProductForm = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
-  const [prefillCategoryId, setPrefillCategoryId] = useState('');
+  const [editProductData, setEditProductData] = useState(null);
+  const [pendingSubcategoryId, setPendingSubcategoryId] = useState('');
   const [prefillApplied, setPrefillApplied] = useState(false);
   const navigate = useNavigate();
   // General Details state
@@ -123,7 +124,9 @@ const ProductForm = () => {
             : [{ size: '', color: '', price: '', stock: '', sku: '', image: '' }]
         );
 
-        setPrefillCategoryId(product.category_id || '');
+        setEditProductData(product || null);
+        setPrefillApplied(false);
+        setPendingSubcategoryId('');
       } catch (err) {
         alert(err.message || 'Failed to load product details');
         navigate('/products');
@@ -165,29 +168,50 @@ const ProductForm = () => {
   }, [categories, categoryId, isEditMode]);
 
   useEffect(() => {
-    if (!isEditMode || !prefillCategoryId || prefillApplied || categories.length === 0) return;
+    if (!isEditMode || !editProductData || prefillApplied || categories.length === 0) return;
 
-    const selectedCategory = categories.find(c => c.id === prefillCategoryId);
+    const selectedCategory = categories.find(c => String(c.id) === String(editProductData.category_id));
     if (!selectedCategory) {
       setPrefillApplied(true);
       return;
     }
 
     if (selectedCategory.parent_id) {
+      // Phase 2: set parent first so child options are derived for this parent.
       setCategoryId(selectedCategory.parent_id);
-      setSubcategoryId(selectedCategory.id);
-    } else {
-      setCategoryId(selectedCategory.id);
       setSubcategoryId('');
+      setPendingSubcategoryId(selectedCategory.id);
+      return;
     }
 
+    setCategoryId(selectedCategory.id);
+    setSubcategoryId('');
+    setPendingSubcategoryId('');
     setPrefillApplied(true);
-  }, [categories, isEditMode, prefillApplied, prefillCategoryId]);
+  }, [categories, editProductData, isEditMode, prefillApplied]);
 
   const filteredSubcategories = useMemo(
     () => categories.filter(c => c.parent_id === categoryId),
     [categories, categoryId]
   );
+
+  useEffect(() => {
+    // Phase 3: wait until subcategory options exist before selecting child.
+    if (!pendingSubcategoryId || filteredSubcategories.length === 0 || !editProductData) return;
+
+    const hasPendingOption = filteredSubcategories.some(
+      (subcategory) => String(subcategory.id) === String(pendingSubcategoryId)
+    );
+
+    if (!hasPendingOption) return;
+
+    setSubcategoryId(editProductData.category_id || '');
+    setPendingSubcategoryId('');
+    setPrefillApplied(true);
+  }, [filteredSubcategories, pendingSubcategoryId, editProductData]);
+
+  const isSubcategoriesLoading =
+    isEditMode && !!pendingSubcategoryId && filteredSubcategories.length === 0;
 
   // Add Category handler
   const handleAddCategory = async (e) => {
@@ -587,6 +611,7 @@ const ProductForm = () => {
                     onChange={e => {
                       setCategoryId(e.target.value);
                       setSubcategoryId('');
+                      setPendingSubcategoryId('');
                     }}
                     style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                     required
@@ -617,10 +642,10 @@ const ProductForm = () => {
                     className="custom-input"
                     value={subcategoryId}
                     onChange={e => setSubcategoryId(e.target.value)}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
-                    disabled={!categoryId}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
+                    disabled={!categoryId || isSubcategoriesLoading}
                   >
-                    <option value="">Select subcategory</option>
+                    <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
                     {filteredSubcategories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
