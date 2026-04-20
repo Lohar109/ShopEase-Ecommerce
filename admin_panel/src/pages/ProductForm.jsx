@@ -937,10 +937,10 @@ const ProductForm = () => {
                     <span className="pf-section-title-icon"><Layers size={16} /></span>
                     <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                   </div>
-                  <div style={{ marginBottom: 8 }}>
+                  <div style={{ marginBottom: 6 }}>
                     <label style={{ fontWeight: 500 }}>Product Specifications</label>
                     {specs.map((spec, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                         <input
                           className="custom-input"
                           type="text"
@@ -992,10 +992,10 @@ const ProductForm = () => {
                     )}
                   </div>
 
-                  <div style={{ marginBottom: 10 }}>
+                  <div style={{ marginBottom: 8 }}>
                     <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
                     {galleryImages.map((img, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                         <input
                           className="custom-input"
                           type="text"
@@ -1038,22 +1038,22 @@ const ProductForm = () => {
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
                     <thead>
                       <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Size</th>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Color</th>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Price</th>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Stock</th>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>SKU</th>
-                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Image</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Size</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Color</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Price</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Stock</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>SKU</th>
+                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Image</th>
                         <th></th>
                       </tr>
                     </thead>
                     <tbody>
                       {variantRows.map((variant, idx) => (
                         <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                          <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
                           <td>
                             <input
                               className="custom-input"
@@ -1171,10 +1171,10 @@ const ProductForm = () => {
                         ) : designGalleries.length === 0 ? (
                           <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
                         ) : (
-                          <div style={{ display: 'grid', gap: 12 }}>
+                          <div style={{ display: 'grid', gap: 8 }}>
                             {designGalleries.map((gallery) => (
-                              <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 14 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                              <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 12 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                                   <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
                                   <button
                                     type="button"
