@@ -270,11 +270,12 @@ const CategoryPage = () => {
         }
 
         .category-form-submit {
-          width: 100%;
-          max-width: 100%;
+          width: fit-content;
+          max-width: none;
           box-sizing: border-box;
-          height: 44px;
+          height: auto;
           border-radius: 8px;
+          justify-self: end;
         }
 
         .category-search-wrap {
@@ -369,7 +370,7 @@ const CategoryPage = () => {
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 8,
-                    padding: '0 14px',
+                    padding: '8px 40px',
                     fontWeight: 600,
                     cursor: addingCategory ? 'not-allowed' : 'pointer',
                   }}
@@ -424,7 +425,7 @@ const CategoryPage = () => {
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 8,
-                    padding: '0 14px',
+                    padding: '8px 40px',
                     fontWeight: 600,
                     cursor: addingSubcategory ? 'not-allowed' : 'pointer',
                   }}
