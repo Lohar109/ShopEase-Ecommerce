@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
 
@@ -18,6 +19,8 @@ const CategoryPage = () => {
   const [addingSubcategory, setAddingSubcategory] = useState(false);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [targetId, setTargetId] = useState('');
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -187,17 +190,29 @@ const CategoryPage = () => {
     }
   };
 
-  const handleDeleteCategory = async (category) => {
-    const confirmed = window.confirm('Are you sure? This will also delete all subcategories under it.');
-    if (!confirmed) return;
-
+  const openDeleteModal = (category) => {
     const categoryId = String(category?.id || '');
     if (!categoryId) return;
 
-    setDeletingCategoryId(categoryId);
+    setTargetId(categoryId);
+    setIsModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deletingCategoryId) return;
+    setIsModalOpen(false);
+    setTargetId('');
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!targetId) return;
+
+    setDeletingCategoryId(targetId);
     try {
-      await deleteCategory(categoryId);
+      await deleteCategory(targetId);
       await loadCategories();
+      setIsModalOpen(false);
+      setTargetId('');
     } catch (err) {
       alert(err.message || 'Failed to delete category');
     } finally {
@@ -525,7 +540,7 @@ const CategoryPage = () => {
                                 type="button"
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  handleDeleteCategory(parentCategory);
+                                  openDeleteModal(parentCategory);
                                 }}
                                 disabled={isParentDeleting}
                                 style={{
@@ -594,7 +609,7 @@ const CategoryPage = () => {
                                   <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                                     <button
                                       type="button"
-                                      onClick={() => handleDeleteCategory(childCategory)}
+                                      onClick={() => openDeleteModal(childCategory)}
                                       disabled={isChildDeleting}
                                       style={{
                                         border: '1px solid #fecaca',
@@ -629,6 +644,17 @@ const CategoryPage = () => {
           </section>
         </main>
       </div>
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        title="Are you sure?"
+        message="This action cannot be undone. All subcategories under this will also be deleted."
+        cancelLabel="Cancel"
+        confirmLabel={deletingCategoryId ? 'Deleting...' : 'Delete'}
+        onCancel={closeDeleteModal}
+        onConfirm={handleDeleteCategory}
+        isConfirming={Boolean(deletingCategoryId)}
+      />
     </div>
   );
 };
