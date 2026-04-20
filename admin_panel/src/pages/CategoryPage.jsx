@@ -175,7 +175,8 @@ const CategoryPage = () => {
                 borderRadius: 12,
                 boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
                 border: '1px solid #ececec',
-                padding: 18,
+                padding: 20,
+                overflow: 'hidden',
               }}
             >
               <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
@@ -184,6 +185,7 @@ const CategoryPage = () => {
 
               <form onSubmit={handleAddCategory} style={{ display: 'grid', gap: 10 }}>
                 <input
+                  className="w-full box-border"
                   type="text"
                   value={newCategoryName}
                   onChange={(event) => setNewCategoryName(event.target.value)}
@@ -192,6 +194,7 @@ const CategoryPage = () => {
                   required
                 />
                 <input
+                  className="w-full box-border"
                   type="text"
                   value={newCategoryImage}
                   onChange={(event) => setNewCategoryImage(event.target.value)}
@@ -223,7 +226,8 @@ const CategoryPage = () => {
                 borderRadius: 12,
                 boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
                 border: '1px solid #ececec',
-                padding: 18,
+                padding: 20,
+                overflow: 'hidden',
               }}
             >
               <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
@@ -232,6 +236,7 @@ const CategoryPage = () => {
 
               <form onSubmit={handleAddSubcategory} style={{ display: 'grid', gap: 10 }}>
                 <select
+                  className="w-full box-border"
                   value={selectedParentId}
                   onChange={(event) => setSelectedParentId(event.target.value)}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
@@ -245,6 +250,7 @@ const CategoryPage = () => {
                   ))}
                 </select>
                 <input
+                  className="w-full box-border"
                   type="text"
                   value={newSubcategoryName}
                   onChange={(event) => setNewSubcategoryName(event.target.value)}
@@ -253,6 +259,7 @@ const CategoryPage = () => {
                   required
                 />
                 <input
+                  className="w-full box-border"
                   type="text"
                   value={newSubcategoryImage}
                   onChange={(event) => setNewSubcategoryImage(event.target.value)}
