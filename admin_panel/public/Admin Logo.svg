@@ -1,0 +1,21 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&amp;display=swap');
+    </style>
+  </defs>
+
+  <rect width="60" height="60" rx="10" fill="#000000"/>
+
+  <text
+    x="50%"
+    y="50%"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    font-family="'Poppins', sans-serif"
+    font-weight="500"
+    font-size="38"
+    fill="white">A<tspan fill="#FF6B6B">d</tspan></text>
+
+  <line x1="32" y1="52" x2="50" y2="52" stroke="#FF6B6B" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
