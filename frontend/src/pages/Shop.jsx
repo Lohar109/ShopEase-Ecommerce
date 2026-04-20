@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   BedDouble,
   BookOpen,
@@ -67,7 +68,16 @@ const getCategoryIcon = (name) => {
   return Package;
 };
 
+const normalizeCategoryKey = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+
 const Shop = () => {
+  const [searchParams] = useSearchParams();
   const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -158,6 +168,27 @@ const Shop = () => {
   const activeSubcategories = selectedCategory
     ? subcategoriesByParent[selectedCategory] || []
     : [];
+
+  useEffect(() => {
+    const requestedCategory = normalizeCategoryKey(searchParams.get("category"));
+    if (!requestedCategory || mainCategories.length === 0) return;
+
+    const matchedCategory = mainCategories.find((category) => {
+      const nameKey = normalizeCategoryKey(category?.name);
+      if (!nameKey) return false;
+
+      return (
+        nameKey === requestedCategory ||
+        nameKey.startsWith(requestedCategory) ||
+        requestedCategory.startsWith(nameKey)
+      );
+    });
+
+    if (matchedCategory?.id) {
+      setSelectedCategory(matchedCategory.id);
+      setSelectedSubcategory(null);
+    }
+  }, [searchParams, mainCategories]);
 
   const getFilteredProducts = () => {
     if (!selectedCategory) return products;

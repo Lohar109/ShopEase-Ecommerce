@@ -563,17 +563,42 @@ button:hover {
     gap: 0.52rem;
     min-height: 52px;
     border: 1px solid #a1a1aa;
+    border-bottom: 3px solid transparent;
     border-radius: 12px;
     background: #ffffff;
     color: #111827;
     padding: 0.48rem 0.78rem;
     white-space: nowrap;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, border-bottom-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .home-category-card:hover {
     border-color: #71717a;
     background: #fafafa;
+}
+
+.home-category-card.active {
+    border-color: #f4c4d8;
+    border-bottom-color: #e33170;
+    box-shadow: 0 8px 16px rgba(227, 49, 112, 0.14);
+}
+
+.home-category-card.active .home-category-media {
+    background: #09090b;
+    border-color: #09090b;
+}
+
+.home-category-card.active .home-category-icon {
+    color: #ffffff;
+}
+
+.home-category-card.active .home-category-name {
+    color: #e33170;
+    font-weight: 700;
+}
+
+.home-category-card.active .home-category-divider {
+    background: #f2b2cc;
 }
 
 .home-category-media {

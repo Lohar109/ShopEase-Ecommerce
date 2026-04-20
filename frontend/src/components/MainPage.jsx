@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BedDouble,
   BookOpen,
@@ -41,9 +42,11 @@ const CATEGORY_ITEMS = [
 ];
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeCategoryKey, setActiveCategoryKey] = useState(null);
 
   const scrollHomeCategories = (direction) => {
     const rail = categoryScrollRef.current;
@@ -123,8 +126,17 @@ const MainPage = () => {
                 const Icon = category.icon;
 
                 return (
-                  <a key={category.key} href={`#${category.key}`} className="home-category-link">
-                    <div className="home-category-card">
+                  <a
+                    key={category.key}
+                    href={`/shop?category=${category.key}`}
+                    className="home-category-link"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setActiveCategoryKey(category.key);
+                      navigate(`/shop?category=${category.key}`);
+                    }}
+                  >
+                    <div className={`home-category-card ${activeCategoryKey === category.key ? "active" : ""}`}>
                       <span className="home-category-media" aria-hidden="true">
                         {isToysCategory ? (
                           <span className="home-category-icon home-category-dice-pair">
