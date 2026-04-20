@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Search, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
 
@@ -244,15 +244,29 @@ const CategoryPage = () => {
           box-sizing: border-box;
         }
 
+        .category-search-wrap {
+          margin-bottom: 14px;
+          max-width: 360px;
+        }
+
         .category-search-input {
+          display: block;
           width: 100%;
+          box-sizing: border-box;
           border: 1px solid #e4e4e7;
           border-radius: 10px;
-          padding: 10px 16px 10px 40px;
-          color: #111827;
           background: #fafafa;
+          color: #111827;
+          line-height: 1.2;
+          padding: 10px 14px;
           transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
           outline: none;
+          box-shadow: none;
+          appearance: none;
+        }
+
+        .category-search-input::placeholder {
+          color: #a1a1aa;
         }
 
         .category-search-input:focus {
@@ -403,18 +417,7 @@ const CategoryPage = () => {
               Category Management
             </h1>
 
-            <div className="relative" style={{ position: 'relative', marginBottom: 14, maxWidth: 360 }}>
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2"
-                style={{
-                  position: 'absolute',
-                  left: 12,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#a1a1aa',
-                }}
-              />
+            <div className="category-search-wrap">
               <input
                 type="text"
                 value={searchTerm}
