@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import TableSkeleton from '../components/TableSkeleton';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
 
 const CategoryPage = () => {
@@ -427,11 +428,9 @@ const CategoryPage = () => {
               />
             </div>
 
-            {loading ? (
-              <div style={{ color: '#6b7280', padding: '18px 6px' }}>Loading categories...</div>
-            ) : error ? (
+            {error ? (
               <div style={{ color: '#b91c1c', padding: '18px 6px' }}>{error}</div>
-            ) : !hasAnyRows ? (
+            ) : !loading && !hasAnyRows ? (
               <div style={{ color: '#6b7280', padding: '18px 6px' }}>
                 {normalizedSearchTerm ? 'No categories found.' : 'No categories yet.'}
               </div>
@@ -454,6 +453,13 @@ const CategoryPage = () => {
                       </th>
                     </tr>
                   </thead>
+                  {loading ? (
+                    <TableSkeleton
+                      rows={5}
+                      cols={4}
+                      columns={['chevronName', 'type', 'text', 'actions']}
+                    />
+                  ) : (
                   <tbody>
                     {displayedParents.map((parentCategory) => {
                       const parentId = String(parentCategory.id);
@@ -616,6 +622,7 @@ const CategoryPage = () => {
                       );
                     })}
                   </tbody>
+                  )}
                 </table>
               </div>
             )}

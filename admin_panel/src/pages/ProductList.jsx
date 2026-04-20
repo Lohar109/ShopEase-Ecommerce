@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import TableSkeleton from '../components/TableSkeleton';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
@@ -157,7 +158,6 @@ const ProductList = () => {
 
   const rows = useMemo(() => products, [products]);
 
-  if (loading) return <div style={{ textAlign: 'center', marginTop: 40 }}>Loading products...</div>;
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>;
 
   return (
@@ -198,7 +198,7 @@ const ProductList = () => {
             </button>
           </div>
 
-          {rows.length === 0 ? (
+          {!loading && rows.length === 0 ? (
             <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 50 }}>
               No products found.
             </div>
@@ -218,6 +218,14 @@ const ProductList = () => {
                   </tr>
                 </thead>
 
+                {loading ? (
+                  <TableSkeleton
+                    rows={5}
+                    cols={8}
+                    productCol={0}
+                    columns={['product', 'text', 'text', 'text', 'text', 'toggle', 'toggle', 'actions']}
+                  />
+                ) : (
                 <tbody>
                   {rows.map((product) => {
                     const expanded = isExpanded(product.id);
@@ -346,6 +354,7 @@ const ProductList = () => {
                     );
                   })}
                 </tbody>
+                )}
               </table>
             </div>
           )}
