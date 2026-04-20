@@ -1,42 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import { deleteProduct, fetchProducts, updateProductStatus } from '../services/productService';
+import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [hoveredDeleteId, setHoveredDeleteId] = useState(null);
-  const [activeDeleteId, setActiveDeleteId] = useState(null);
   const [updatingToggles, setUpdatingToggles] = useState({});
+  const [exp, setExp] = useState([]);
   const navigate = useNavigate();
 
-  const actionButtonStyle = {
-    background: '#000',
-    color: '#fff',
-    border: '1px solid #000',
-    borderRadius: 8,
-    padding: '5px 12px',
-    fontFamily: 'Poppins, sans-serif',
-    fontSize: '12px',
-    fontWeight: 500,
+  const iconButtonBase = {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    border: '1px solid #e4e4e7',
+    background: '#ffffff',
+    color: '#111827',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     cursor: 'pointer',
-    lineHeight: 1.2,
-    whiteSpace: 'nowrap',
-    transition: 'background-color 0.2s ease, border-color 0.2s ease'
-  };
-
-  const handleDeleteProduct = async (productId) => {
-    const confirmed = window.confirm('Are you sure you want to delete this product?');
-    if (!confirmed) return;
-
-    try {
-      await deleteProduct(productId);
-      setProducts(prev => prev.filter(product => product.id !== productId));
-    } catch (err) {
-      alert(err.message || 'Failed to delete product');
-    }
+    transition: 'all 0.2s ease'
   };
 
   const ToggleSwitch = ({ value, onToggle, disabled }) => {
@@ -85,57 +72,123 @@ const ProductList = () => {
     );
   };
 
+  const toggleExpanded = (productId) => {
+    const normalized = String(productId);
+    setExp((prev) => (prev.includes(normalized) ? prev.filter((id) => id !== normalized) : [...prev, normalized]));
+  };
+
+  const isExpanded = (productId) => exp.includes(String(productId));
+
+  const getBasePrice = (product) => {
+    if (!Array.isArray(product?.variants) || product.variants.length === 0) return null;
+    const prices = product.variants
+      .map((variant) => Number(variant?.price))
+      .filter((price) => Number.isFinite(price));
+    if (prices.length === 0) return null;
+    return Math.min(...prices);
+  };
+
+  const getPriceAdjustmentLabel = (variantPrice, basePrice) => {
+    if (!Number.isFinite(variantPrice) || !Number.isFinite(basePrice)) return '-';
+    const delta = variantPrice - basePrice;
+    if (Math.abs(delta) < 0.0001) return '0.00';
+    return `${delta > 0 ? '+' : '-'}${Math.abs(delta).toFixed(2)}`;
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this product?');
+    if (!confirmed) return;
+
+    try {
+      await deleteProduct(productId);
+      setProducts((prev) => prev.filter((product) => product.id !== productId));
+      setExp((prev) => prev.filter((id) => id !== String(productId)));
+    } catch (err) {
+      alert(err.message || 'Failed to delete product');
+    }
+  };
+
   const handleToggleStatus = async (productId, field) => {
     const product = products.find((p) => p.id === productId);
     if (!product) return;
 
     const nextValue = !product[field];
 
-    setProducts(prev => prev.map(item => item.id === productId ? { ...item, [field]: nextValue } : item));
-    setUpdatingToggles(prev => ({ ...prev, [productId]: true }));
+    setProducts((prev) => prev.map((item) => (item.id === productId ? { ...item, [field]: nextValue } : item)));
+    setUpdatingToggles((prev) => ({ ...prev, [productId]: true }));
 
     try {
       await updateProductStatus(productId, { [field]: nextValue });
     } catch (err) {
-      setProducts(prev => prev.map(item => item.id === productId ? { ...item, [field]: !nextValue } : item));
+      setProducts((prev) => prev.map((item) => (item.id === productId ? { ...item, [field]: !nextValue } : item)));
       alert(err.message || 'Failed to update status');
     } finally {
-      setUpdatingToggles(prev => ({ ...prev, [productId]: false }));
+      setUpdatingToggles((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
   useEffect(() => {
-    fetchProducts()
-      .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const loadProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        const list = Array.isArray(data) ? data : [];
+
+        const hydrated = await Promise.all(
+          list.map(async (product) => {
+            try {
+              const detail = await fetchProductById(product.id);
+              return { ...product, variants: Array.isArray(detail?.variants) ? detail.variants : [] };
+            } catch {
+              return { ...product, variants: [] };
+            }
+          })
+        );
+
+        setProducts(hydrated);
+      } catch (err) {
         setError(err.message || 'Failed to load products');
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    loadProducts();
   }, []);
+
+  const rows = useMemo(() => products, [products]);
 
   if (loading) return <div style={{ textAlign: 'center', marginTop: 40 }}>Loading products...</div>;
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f4f7f6', padding: '60px 20px' }}>
-      <div style={{ maxWidth: 1400, width: '100%', margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa', padding: '44px 20px' }}>
+      <div style={{ maxWidth: 1450, width: '100%', margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
         <Sidebar />
-        <div style={{ flex: 1, background: '#ffffff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: 48 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.5px', margin: 0, color: '#111' }}>All Products</h2>
+
+        <div
+          style={{
+            flex: 1,
+            background: '#ffffff',
+            borderRadius: 16,
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+            border: '1px solid #e4e4e7',
+            padding: 30,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.3px', margin: 0, color: '#111' }}>
+              Product Management
+            </h2>
             <button
               onClick={() => navigate('/products/new')}
               style={{
                 background: '#000',
                 color: '#fff',
                 border: 'none',
-                borderRadius: 8,
-                padding: '12px 28px',
+                borderRadius: 10,
+                padding: '10px 18px',
                 fontFamily: 'Poppins, sans-serif',
-                fontSize: '15px',
+                fontSize: '14px',
                 fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'background 0.2s',
@@ -144,81 +197,155 @@ const ProductList = () => {
               Add Product
             </button>
           </div>
-          {products.length === 0 ? (
-            <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 60 }}>No products found.</div>
+
+          {rows.length === 0 ? (
+            <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 50 }}>
+              No products found.
+            </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
-              <thead>
-                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Name</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Brand</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stock</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Featured</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p.id} style={{ background: '#fff', borderBottom: '1px solid #f1f3f5', transition: 'background 0.2s' }}>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.name}</td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.brand}</td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.category_name || ''}</td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.stock ?? 0}</td>
-                    <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <ToggleSwitch
-                          value={Boolean(p.is_active)}
-                          disabled={Boolean(updatingToggles[p.id])}
-                          onToggle={() => handleToggleStatus(p.id, 'is_active')}
-                        />
-                      </div>
-                    </td>
-                    <td style={{ padding: '16px 20px', verticalAlign: 'middle' }}>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <ToggleSwitch
-                          value={Boolean(p.is_featured)}
-                          disabled={Boolean(updatingToggles[p.id])}
-                          onToggle={() => handleToggleStatus(p.id, 'is_featured')}
-                        />
-                      </div>
-                    </td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px', color: '#333' }}>{p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</td>
-                    <td style={{ padding: '16px 20px', fontSize: '14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/products/${p.id}/edit`)}
-                          style={actionButtonStyle}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteProduct(p.id)}
-                          onMouseEnter={() => setHoveredDeleteId(p.id)}
-                          onMouseLeave={() => {
-                            setHoveredDeleteId(null);
-                            setActiveDeleteId(null);
-                          }}
-                          onMouseDown={() => setActiveDeleteId(p.id)}
-                          onMouseUp={() => setActiveDeleteId(null)}
-                          style={{
-                            ...actionButtonStyle,
-                            background: activeDeleteId === p.id ? '#b91c1c' : hoveredDeleteId === p.id ? '#dc2626' : '#000',
-                            borderColor: activeDeleteId === p.id ? '#b91c1c' : hoveredDeleteId === p.id ? '#dc2626' : '#000'
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+              <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
+                <thead>
+                  <tr style={{ background: '#f9fafb' }}>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Product</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Audience</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Base Price / Adj</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>SKU</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Stock</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Featured</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+
+                <tbody>
+                  {rows.map((product) => {
+                    const expanded = isExpanded(product.id);
+                    const basePrice = getBasePrice(product);
+                    const variants = Array.isArray(product.variants) ? product.variants : [];
+
+                    return (
+                      <React.Fragment key={product.id}>
+                        <tr
+                          onClick={() => toggleExpanded(product.id)}
+                          style={{
+                            borderBottom: '1px solid #f1f5f9',
+                            cursor: 'pointer',
+                            background: expanded ? '#fafafa' : '#ffffff',
+                            transition: 'background-color 0.2s ease',
+                          }}
+                        >
+                          <td style={{ padding: '14px', fontSize: 14, color: '#111827' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                              <img
+                                src={product.main_image}
+                                alt={product.name}
+                                style={{ width: 34, height: 34, borderRadius: 8, objectFit: 'cover', background: '#f4f4f5', border: '1px solid #e4e4e7' }}
+                              />
+                              <div style={{ display: 'grid' }}>
+                                <span style={{ fontWeight: 600, color: '#111827' }}>{product.name}</span>
+                                <span style={{ fontSize: 12, color: '#6b7280' }}>{product.category_name || 'Uncategorized'}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ padding: '14px', fontSize: 14, color: '#334155', textTransform: 'capitalize' }}>{product.audience || '-'}</td>
+                          <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>
+                            {Number.isFinite(basePrice) ? `₹${basePrice.toFixed(2)}` : '-'}
+                          </td>
+                          <td style={{ padding: '14px', fontSize: 13, color: '#94a3b8' }}>-</td>
+                          <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>{product.stock ?? 0}</td>
+                          <td style={{ padding: '14px', verticalAlign: 'middle' }} onClick={(event) => event.stopPropagation()}>
+                            <ToggleSwitch
+                              value={Boolean(product.is_active)}
+                              disabled={Boolean(updatingToggles[product.id])}
+                              onToggle={() => handleToggleStatus(product.id, 'is_active')}
+                            />
+                          </td>
+                          <td style={{ padding: '14px', verticalAlign: 'middle' }} onClick={(event) => event.stopPropagation()}>
+                            <ToggleSwitch
+                              value={Boolean(product.is_featured)}
+                              disabled={Boolean(updatingToggles[product.id])}
+                              onToggle={() => handleToggleStatus(product.id, 'is_featured')}
+                            />
+                          </td>
+                          <td style={{ padding: '14px' }} onClick={(event) => event.stopPropagation()}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <button
+                                type="button"
+                                onClick={() => navigate(`/products/${product.id}/edit`)}
+                                title="Edit product"
+                                style={iconButtonBase}
+                              >
+                                <Pencil size={15} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteProduct(product.id)}
+                                title="Delete product"
+                                style={{
+                                  ...iconButtonBase,
+                                  border: '1px solid #fecaca',
+                                  background: '#fef2f2',
+                                  color: '#dc2626'
+                                }}
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {expanded && (variants.length > 0 ? variants : [{ __empty: true }]).map((variant, index) => {
+                          if (variant.__empty) {
+                            return (
+                              <tr key={`empty-${product.id}`} style={{ background: '#ffffff' }}>
+                                <td style={{ padding: '12px 14px 12px 48px', color: '#94a3b8', fontSize: 13 }} colSpan={8}>
+                                  No variants found for this product.
+                                </td>
+                              </tr>
+                            );
+                          }
+
+                          const variantPrice = Number(variant?.price);
+                          const adjustment = getPriceAdjustmentLabel(variantPrice, basePrice);
+
+                          return (
+                            <tr key={`${product.id}-${variant.id || index}`} style={{ background: '#ffffff' }}>
+                              <td style={{ padding: '10px 14px 10px 48px', fontSize: 13, color: '#374151', position: 'relative' }}>
+                                <span
+                                  style={{
+                                    position: 'absolute',
+                                    left: 30,
+                                    top: 0,
+                                    bottom: 0,
+                                    width: 1,
+                                    background: '#e5e7eb'
+                                  }}
+                                />
+                                <span style={{ fontWeight: 600 }}>Size:</span> {variant.size || '-'}
+                                <span style={{ color: '#9ca3af', margin: '0 6px' }}>•</span>
+                                <span style={{ fontWeight: 600 }}>Color:</span> {variant.color || '-'}
+                              </td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155', fontWeight: 600 }}>
+                                {Number.isFinite(variantPrice) ? `₹${variantPrice.toFixed(2)}` : '-'}
+                                <span style={{ color: '#6b7280', marginLeft: 8 }}>
+                                  ({adjustment === '-' ? '-' : `Adj ${adjustment}`})
+                                </span>
+                              </td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155' }}>{variant.sku || '-'}</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155', fontWeight: 600 }}>{variant.stock ?? 0}</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
               </table>
             </div>
           )}
