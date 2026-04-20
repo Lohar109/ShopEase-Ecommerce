@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
-import { addCategory, deleteCategory } from '../services/categoryService';
 import { fetchCategories } from '../services/categoryService';
 import {
   deleteDesignGallery,
@@ -40,15 +38,6 @@ const ProductForm = () => {
   // Dynamic specifications
   const [specs, setSpecs] = useState([{ key: '', value: '' }]);
 
-  // Add Category modal state
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryImage, setNewCategoryImage] = useState('');
-  const [addingCategory, setAddingCategory] = useState(false);
-  const [deletingCategoryId, setDeletingCategoryId] = useState('');
-  const [isSubcategory, setIsSubcategory] = useState(false);
-  const [parentCategoryId, setParentCategoryId] = useState('');
-
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
   const [galleryImages, setGalleryImages] = useState(['']);
@@ -78,10 +67,28 @@ const ProductForm = () => {
 
   // Fetch categories
   const loadCategories = () => {
-    return fetchCategories().then(setCategories).catch(() => setCategories([]));
+    return fetchCategories()
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
   };
+
   useEffect(() => {
     loadCategories();
+  }, []);
+
+  useEffect(() => {
+    const refreshCategories = () => loadCategories();
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refreshCategories();
+    };
+
+    window.addEventListener('focus', refreshCategories);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', refreshCategories);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -250,90 +257,6 @@ const ProductForm = () => {
     normalizeId(categoryId).length > 0 &&
     normalizeId(subcategoryId) === '' &&
     subcategoriesOptions.length === 0;
-
-  const categoryNameById = useMemo(() => {
-    const index = {};
-    categories.forEach((category) => {
-      if (category?.id) index[String(category.id)] = category.name || 'Unnamed';
-    });
-    return index;
-  }, [categories]);
-
-  const getCategoryDescendantIds = (targetId) => {
-    const allIds = new Set();
-    const queue = [String(targetId)];
-
-    while (queue.length > 0) {
-      const currentId = queue.shift();
-      if (!currentId || allIds.has(currentId)) continue;
-      allIds.add(currentId);
-
-      categories
-        .filter((category) => String(category?.parent_id || '') === currentId)
-        .forEach((child) => queue.push(String(child.id)));
-    }
-
-    return allIds;
-  };
-
-  const handleDeleteCategory = async (targetCategory) => {
-    const targetId = String(targetCategory?.id || '');
-    if (!targetId) return;
-
-    const confirmed = window.confirm('Are you sure? This will also delete all subcategories under it.');
-    if (!confirmed) return;
-
-    const descendantIds = getCategoryDescendantIds(targetId);
-    setDeletingCategoryId(targetId);
-
-    try {
-      await deleteCategory(targetId);
-
-      if (descendantIds.has(String(categoryId))) {
-        setCategoryId('');
-      }
-      if (descendantIds.has(String(subcategoryId))) {
-        setSubcategoryId('');
-      }
-
-      await loadCategories();
-    } catch (err) {
-      alert(err.message || 'Failed to delete category');
-    } finally {
-      setDeletingCategoryId('');
-    }
-  };
-
-  // Add Category handler
-  const handleAddCategory = async (e) => {
-    e.preventDefault();
-    if (!newCategoryName.trim() || !newCategoryImage.trim()) return;
-    const normalizedParentCategoryId = String(parentCategoryId || '').trim();
-    if (isSubcategory && !normalizedParentCategoryId) {
-      alert('Please select a parent category.');
-      return;
-    }
-    setAddingCategory(true);
-    try {
-      const payload = { name: newCategoryName, image: newCategoryImage };
-      if (isSubcategory) {
-        payload.parent_id = normalizedParentCategoryId;
-      } else {
-        payload.parent_id = null;
-      }
-      await addCategory(payload);
-      setShowCategoryModal(false);
-      setNewCategoryName('');
-      setNewCategoryImage('');
-      setIsSubcategory(false);
-      setParentCategoryId('');
-      loadCategories();
-    } catch (err) {
-      alert('Failed to add category');
-    } finally {
-      setAddingCategory(false);
-    }
-  };
 
   // Dynamic specifications handlers
   const handleSpecChange = (idx, field, value) => {
@@ -695,63 +618,37 @@ const ProductForm = () => {
             <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
-                  <select
-                    className="custom-input"
-                    value={categoryId}
-                    onChange={e => {
-                      setCategoryId(e.target.value);
-                      setSubcategoryId('');
-                    }}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                    required
-                  >
-                    <option value="">Select category</option>
-                    {categories.filter(c => c.parent_id === null).map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="outline-btn"
-                    onClick={() => {
-                      setParentCategoryId('');
-                      setIsSubcategory(false);
-                      setShowCategoryModal(true);
-                    }}
-                  >
-                    Add Category
-                  </button>
-                </div>
+                <select
+                  className="custom-input"
+                  value={categoryId}
+                  onChange={e => {
+                    setCategoryId(e.target.value);
+                    setSubcategoryId('');
+                  }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                  required
+                >
+                  <option value="">Select category</option>
+                  {categories.filter(c => c.parent_id === null).map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div style={{ flex: 1 }}>
                 <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
-                  <select
-                    className="custom-input"
-                    value={subcategoryId}
-                    onChange={e => setSubcategoryId(e.target.value)}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
-                    disabled={!categoryId || isSubcategoriesLoading}
-                  >
-                    <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
-                    {subcategoriesOptions.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="outline-btn"
-                    onClick={() => {
-                      if (categoryId) setParentCategoryId(categoryId);
-                      setIsSubcategory(true);
-                      setShowCategoryModal(true);
-                    }}
-                  >
-                    Add Subcategory
-                  </button>
-                </div>
+                <select
+                  className="custom-input"
+                  value={subcategoryId}
+                  onChange={e => setSubcategoryId(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
+                  disabled={!categoryId || isSubcategoriesLoading}
+                >
+                  <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
+                  {subcategoriesOptions.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
             
@@ -1013,104 +910,6 @@ const ProductForm = () => {
           </div>
         </div>
       </div>
-        {/* Add Category Modal */}
-        {showCategoryModal && (
-          <div style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.18)',
-            zIndex: 1000,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <form onSubmit={handleAddCategory} style={{ background: '#fff', borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 32, minWidth: 340 }}>
-              <h3 style={{ marginBottom: 18, fontWeight: 700 }}>{isSubcategory ? 'Add New Subcategory' : 'Add New Category'}</h3>
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ fontWeight: 500 }}>Name</label>
-                <input className="custom-input" type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
-              </div>
-              {isSubcategory && (
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontWeight: 500 }}>Parent Category</label>
-                  <select
-                    className="custom-input"
-                    value={parentCategoryId}
-                    onChange={e => setParentCategoryId(e.target.value)}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                    required={isSubcategory}
-                  >
-                    <option value="">Select Parent Category</option>
-                    {categories.filter(c => c.parent_id === null).map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <div style={{ marginBottom: 18 }}>
-                <label style={{ fontWeight: 500 }}>Image URL</label>
-                <input className="custom-input" type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
-              </div>
-
-              <div style={{ marginBottom: 18 }}>
-                <div style={{ fontWeight: 600, marginBottom: 8 }}>Category Management</div>
-                <div style={{ maxHeight: 240, overflowY: 'auto', border: '1px solid #ececec', borderRadius: 10 }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc' }}>
-                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Name</th>
-                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Type</th>
-                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Parent</th>
-                        <th style={{ textAlign: 'right', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {categories.map((category) => {
-                        const rowId = String(category.id);
-                        const isDeletingRow = deletingCategoryId === rowId;
-                        const parentName = category.parent_id ? (categoryNameById[String(category.parent_id)] || '-') : '-';
-
-                        return (
-                          <tr key={rowId}>
-                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{category.name}</td>
-                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{category.parent_id ? 'Subcategory' : 'Category'}</td>
-                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{parentName}</td>
-                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6', textAlign: 'right' }}>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteCategory(category)}
-                                disabled={isDeletingRow || addingCategory}
-                                style={{
-                                  border: '1px solid #fecaca',
-                                  background: isDeletingRow ? '#fee2e2' : '#fff1f2',
-                                  color: '#b91c1c',
-                                  borderRadius: 8,
-                                  padding: '5px 8px',
-                                  cursor: isDeletingRow ? 'not-allowed' : 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 6,
-                                  fontWeight: 500,
-                                }}
-                                title="Delete category"
-                              >
-                                <Trash2 size={14} />
-                                {isDeletingRow ? 'Deleting...' : 'Delete'}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setShowCategoryModal(false)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', color: '#333' }}>Cancel</button>
-                <button type="submit" disabled={addingCategory} style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 18px', fontWeight: 600, cursor: 'pointer' }}>{addingCategory ? 'Saving...' : 'Save'}</button>
-              </div>
-            </form>
-          </div>
-        )}
     </div>
   );
 }
