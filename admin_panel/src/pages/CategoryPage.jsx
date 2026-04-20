@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
@@ -142,49 +143,55 @@ const CategoryPage = () => {
     });
   };
 
-  const handleAddCategory = async (event) => {
+  const addCat = async (event) => {
     event.preventDefault();
     if (!newCategoryName.trim()) {
-      alert('Please enter category name.');
+      toast.error('Failed to add category.');
       return;
     }
 
     setAddingCategory(true);
     try {
-      await addCategory({
+      const res = await addCategory({
         name: newCategoryName.trim(),
         parent_id: null,
       });
+      if (res) {
+        toast.success('Category added successfully!', { position: 'top-center' });
+      }
       setNewCategoryName('');
       await loadCategories();
     } catch (err) {
-      alert(err.message || 'Failed to add category');
+      toast.error('Failed to add category.');
     } finally {
       setAddingCategory(false);
     }
   };
 
-  const handleAddSubcategory = async (event) => {
+  const addSubCat = async (event) => {
     event.preventDefault();
     if (!selectedParentId) {
-      alert('Please choose a parent category.');
+      toast.error('Failed to add category.');
       return;
     }
     if (!newSubcategoryName.trim()) {
-      alert('Please enter subcategory name.');
+      toast.error('Failed to add category.');
       return;
     }
 
     setAddingSubcategory(true);
     try {
-      await addCategory({
+      const res = await addCategory({
         name: newSubcategoryName.trim(),
         parent_id: selectedParentId,
       });
+      if (res) {
+        toast.success('Category added successfully!', { position: 'top-center' });
+      }
       setNewSubcategoryName('');
       await loadCategories();
     } catch (err) {
-      alert(err.message || 'Failed to add subcategory');
+      toast.error('Failed to add category.');
     } finally {
       setAddingSubcategory(false);
     }
@@ -335,7 +342,7 @@ const CategoryPage = () => {
                 Add New Category
               </h2>
 
-              <form onSubmit={handleAddCategory} className="category-form space-y-5">
+              <form onSubmit={addCat} className="category-form space-y-5">
                 <input
                   className="category-form-control w-full box-border"
                   type="text"
@@ -377,7 +384,7 @@ const CategoryPage = () => {
                 Add New Subcategory
               </h2>
 
-              <form onSubmit={handleAddSubcategory} className="category-form space-y-5">
+              <form onSubmit={addSubCat} className="category-form space-y-5">
                 <select
                   className="category-form-control w-full box-border"
                   value={selectedParentId}
