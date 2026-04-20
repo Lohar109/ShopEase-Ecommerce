@@ -322,22 +322,60 @@ const CategoryPage = () => {
                     {mainCategories.map((parentCategory) => {
                       const parentId = String(parentCategory.id);
                       const parentChildren = childrenByParentId[parentId] || [];
+                      const visibleChildren = parentChildren.filter((childCategory) =>
+                        expandedCategories.includes(String(childCategory.parent_id))
+                      );
                       const isExpanded = expandedCategories.includes(parentId);
                       const isParentDeleting = deletingCategoryId === parentId;
 
                       return (
                         <React.Fragment key={parentId}>
                           <tr
-                            style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', background: '#fafafa' }}
+                            style={{
+                              borderBottom: '1px solid #f1f5f9',
+                              cursor: 'pointer',
+                              background: isExpanded ? '#fafafa' : '#ffffff',
+                            }}
                             onClick={() => toggleParentRow(parentId)}
                           >
                             <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 600 }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                                 {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                 {parentCategory.name}
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    borderRadius: 999,
+                                    background: '#f4f4f5',
+                                    color: '#3f3f46',
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    padding: '2px 8px',
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  {parentChildren.length}
+                                </span>
                               </span>
                             </td>
-                            <td style={{ padding: '12px 10px', color: '#475569' }}>Category</td>
+                            <td style={{ padding: '12px 10px', color: '#475569' }}>
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  borderRadius: 999,
+                                  background: '#e2e8f0',
+                                  color: '#334155',
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
+                                  lineHeight: 1.4,
+                                }}
+                              >
+                                Parent
+                              </span>
+                            </td>
                             <td style={{ padding: '12px 10px', color: '#475569' }}>{parentCategory.name}</td>
                             <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                               <button
@@ -369,17 +407,46 @@ const CategoryPage = () => {
                           </tr>
 
                           {isExpanded &&
-                            parentChildren.map((childCategory) => {
+                            visibleChildren.map((childCategory) => {
                               const childId = String(childCategory.id);
                               const isChildDeleting = deletingCategoryId === childId;
                               const parentName = categoryById[String(childCategory.parent_id)]?.name || '-';
 
                               return (
-                                <tr key={childId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <tr key={childId} style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
                                   <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 500 }}>
-                                    <span style={{ paddingLeft: 24 }}>{childCategory.name}</span>
+                                    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', paddingLeft: 48 }}>
+                                      <span
+                                        aria-hidden="true"
+                                        style={{
+                                          position: 'absolute',
+                                          left: 24,
+                                          top: -12,
+                                          bottom: -12,
+                                          width: 1,
+                                          background: '#e4e4e7',
+                                        }}
+                                      />
+                                      {childCategory.name}
+                                    </span>
                                   </td>
-                                  <td style={{ padding: '12px 10px', color: '#475569' }}>Subcategory</td>
+                                  <td style={{ padding: '12px 10px', color: '#475569' }}>
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        borderRadius: 999,
+                                        background: '#ccfbf1',
+                                        color: '#0f766e',
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        padding: '2px 8px',
+                                        lineHeight: 1.4,
+                                      }}
+                                    >
+                                      Subcategory
+                                    </span>
+                                  </td>
                                   <td style={{ padding: '12px 10px', color: '#475569' }}>{`${parentName} > ${childCategory.name}`}</td>
                                   <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                                     <button
