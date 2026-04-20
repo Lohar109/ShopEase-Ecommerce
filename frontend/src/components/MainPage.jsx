@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import "../styles.css";
 import HeroCarousel from "./HeroCarousel";
+import CategorySkeleton from "./CategorySkeleton";
 import ProductCard from "./ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
 
@@ -41,11 +42,61 @@ const CATEGORY_ITEMS = [
   { key: "watches", label: "Watches", icon: Watch }
 ];
 
+const HOME_CATEGORY_ICON_MAP = {
+  electronics: Monitor,
+  fashion: Shirt,
+  home: Sofa,
+  sports: Volleyball,
+  beauty: Sparkles,
+  books: BookOpen,
+  toys: null,
+  mobiles: Smartphone,
+  shoes: Footprints,
+  groceries: ShoppingBasket,
+  furniture: BedDouble,
+  watches: Watch
+};
+
+const normalizeCategoryKey = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+
+const getHomeCategoryIcon = (name) => {
+  const normalized = String(name || "")
+    .trim()
+    .toLowerCase();
+
+  if (HOME_CATEGORY_ICON_MAP[normalized] !== undefined) {
+    return HOME_CATEGORY_ICON_MAP[normalized];
+  }
+
+  if (normalized.includes("elect")) return Monitor;
+  if (normalized.includes("fashion") || normalized.includes("cloth")) return Shirt;
+  if (normalized.includes("furnit")) return BedDouble;
+  if (normalized.includes("toy")) return null;
+  if (normalized.includes("book")) return BookOpen;
+  if (normalized.includes("beaut")) return Sparkles;
+  if (normalized.includes("grocery")) return ShoppingBasket;
+  if (normalized.includes("shoe")) return Footprints;
+  if (normalized.includes("watch")) return Watch;
+  if (normalized.includes("mobile") || normalized.includes("phone")) return Smartphone;
+  if (normalized.includes("sport")) return Volleyball;
+  if (normalized.includes("home")) return Sofa;
+
+  return Monitor;
+};
+
 const MainPage = () => {
   const navigate = useNavigate();
   const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
+  const [homeCategories, setHomeCategories] = useState(CATEGORY_ITEMS);
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
 
   const scrollHomeCategories = (direction) => {
@@ -58,6 +109,34 @@ const MainPage = () => {
       behavior: "smooth"
     });
   };
+
+  useEffect(() => {
+    fetch(`${API_ORIGIN}/api/categories`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!Array.isArray(data)) {
+          setHomeCategories(CATEGORY_ITEMS);
+          return;
+        }
+
+        const mappedMainCategories = data
+          .filter((category) => category?.parent_id === null)
+          .map((category) => {
+            const label = String(category?.name || "Category").trim() || "Category";
+            const key = normalizeCategoryKey(label) || String(category?.id || label);
+
+            return {
+              key,
+              label,
+              icon: getHomeCategoryIcon(label)
+            };
+          });
+
+        setHomeCategories(mappedMainCategories.length > 0 ? mappedMainCategories : CATEGORY_ITEMS);
+      })
+      .catch(() => setHomeCategories(CATEGORY_ITEMS))
+      .finally(() => setIsCategoriesLoading(false));
+  }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -121,38 +200,44 @@ const MainPage = () => {
             </button>
 
             <div ref={categoryScrollRef} className="home-categories-scroll" role="list" aria-label="Category cards">
-              {CATEGORY_ITEMS.map((category) => {
-                const isToysCategory = category.key === "toys";
-                const Icon = category.icon;
+              {isCategoriesLoading ? (
+                Array.from({ length: 8 }).map((_, index) => (
+                  <CategorySkeleton key={`home-category-skeleton-${index}`} />
+                ))
+              ) : (
+                homeCategories.map((category) => {
+                  const isToysCategory = String(category.key).includes("toy");
+                  const Icon = category.icon || Monitor;
 
-                return (
-                  <a
-                    key={category.key}
-                    href={`/shop?category=${category.key}`}
-                    className="home-category-link"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      setActiveCategoryKey(category.key);
-                      navigate(`/shop?category=${category.key}`);
-                    }}
-                  >
-                    <div className={`home-category-card ${activeCategoryKey === category.key ? "active" : ""}`}>
-                      <span className="home-category-media" aria-hidden="true">
-                        {isToysCategory ? (
-                          <span className="home-category-icon home-category-dice-pair">
-                            <Dice1 size={11} strokeWidth={2} className="home-category-die home-category-die-top" />
-                            <Dice4 size={11} strokeWidth={2} className="home-category-die home-category-die-bottom" />
-                          </span>
-                        ) : (
-                          <Icon size={18} strokeWidth={2} className="home-category-icon" />
-                        )}
-                      </span>
-                      <span className="home-category-divider" aria-hidden="true" />
-                      <span className="home-category-name">{category.label}</span>
-                    </div>
-                  </a>
-                );
-              })}
+                  return (
+                    <a
+                      key={category.key}
+                      href={`/shop?category=${category.key}`}
+                      className="home-category-link"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setActiveCategoryKey(category.key);
+                        navigate(`/shop?category=${category.key}`);
+                      }}
+                    >
+                      <div className={`home-category-card ${activeCategoryKey === category.key ? "active" : ""}`}>
+                        <span className="home-category-media" aria-hidden="true">
+                          {isToysCategory ? (
+                            <span className="home-category-icon home-category-dice-pair">
+                              <Dice1 size={11} strokeWidth={2} className="home-category-die home-category-die-top" />
+                              <Dice4 size={11} strokeWidth={2} className="home-category-die home-category-die-bottom" />
+                            </span>
+                          ) : (
+                            <Icon size={18} strokeWidth={2} className="home-category-icon" />
+                          )}
+                        </span>
+                        <span className="home-category-divider" aria-hidden="true" />
+                        <span className="home-category-name">{category.label}</span>
+                      </div>
+                    </a>
+                  );
+                })
+              )}
             </div>
 
             <button

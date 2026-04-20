@@ -537,10 +537,12 @@ button:hover {
 
 .home-categories-scroll {
     display: flex;
+    align-items: center;
     flex-wrap: nowrap;
     justify-content: center;
     gap: 0.55rem;
     overflow-x: auto;
+    min-height: 66px;
     padding: 0.35rem 0.15rem 0.45rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1322,10 +1324,12 @@ button:hover {
 
 .shop-category-scroll {
     display: flex;
+    align-items: center;
     flex-wrap: nowrap;
     justify-content: center;
     gap: 0.55rem;
     overflow-x: auto;
+    min-height: 66px;
     padding: 0.35rem 0.15rem 0.55rem;
     scrollbar-width: none;
     -ms-overflow-style: none;

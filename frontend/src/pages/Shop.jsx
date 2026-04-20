@@ -233,7 +233,7 @@ const Shop = () => {
 
             <div ref={categoryScrollRef} className="shop-category-scroll" role="list" aria-label="Category cards">
               {isCategoriesLoading ? (
-                Array.from({ length: 7 }).map((_, index) => (
+                Array.from({ length: 8 }).map((_, index) => (
                   <CategorySkeleton key={`category-skeleton-${index}`} />
                 ))
               ) : (
