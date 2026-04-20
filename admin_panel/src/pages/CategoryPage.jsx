@@ -269,6 +269,26 @@ const CategoryPage = () => {
           box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
         }
 
+        .category-parent-select {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 48px;
+        }
+
+        .category-parent-select-wrap {
+          position: relative;
+        }
+
+        .category-parent-select-icon {
+          position: absolute;
+          right: 24px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #71717a;
+          pointer-events: none;
+        }
+
         .category-form-submit {
           width: fit-content;
           max-width: none;
@@ -395,19 +415,22 @@ const CategoryPage = () => {
               </h2>
 
               <form onSubmit={addSubCat} className="category-form space-y-5">
-                <select
-                  className="category-form-control w-full box-border"
-                  value={selectedParentId}
-                  onChange={(event) => setSelectedParentId(event.target.value)}
-                  required
-                >
-                  <option value="">Select parent category</option>
-                  {mainCategories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="category-parent-select-wrap">
+                  <select
+                    className="category-form-control category-parent-select w-full box-border"
+                    value={selectedParentId}
+                    onChange={(event) => setSelectedParentId(event.target.value)}
+                    required
+                  >
+                    <option value="">Select parent category</option>
+                    {mainCategories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="category-parent-select-icon" />
+                </div>
                 <input
                   className="category-form-control w-full box-border"
                   type="text"
