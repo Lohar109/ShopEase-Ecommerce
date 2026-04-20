@@ -27,11 +27,10 @@ const Sidebar = () => {
       <div
         style={{
           height: 82,
-          padding: '10px 10px 12px',
+          padding: '10px 12px 12px',
           marginBottom: 14,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
           boxSizing: 'border-box',
           borderBottom: '1px solid #f1f5f9',
           borderRadius: 10,
@@ -39,36 +38,13 @@ const Sidebar = () => {
           boxShadow: '0 1px 3px rgba(15, 23, 42, 0.07)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-          <img
-            src="/favicon.svg"
-            alt="ShopEase"
-            style={{ width: 34, height: 34, flexShrink: 0 }}
-          />
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 19, color: '#111827', lineHeight: 1.1 }}>
-              ShopEase
-            </div>
-            <div style={{ marginTop: 2, fontSize: 11, color: '#71717a', fontWeight: 500 }}>
-              Control Panel
-            </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: '#111827', lineHeight: 1.1 }}>
+            ShopEase
           </div>
-        </div>
-        <div
-          style={{
-            flexShrink: 0,
-            borderRadius: 999,
-            border: '1px solid #f3d1dc',
-            background: '#fff1f6',
-            color: '#c8507a',
-            fontWeight: 700,
-            fontSize: 10,
-            padding: '3px 8px',
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Admin
+          <div style={{ marginTop: 3, fontSize: 11, color: '#71717a', fontWeight: 500 }}>
+            Control Panel
+          </div>
         </div>
       </div>
       <nav style={{ display: 'grid', gap: 8 }}>
@@ -84,19 +60,20 @@ const Sidebar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 10,
-                border: '1px solid transparent',
-                borderLeft: isActive ? '4px solid #c8507a' : '4px solid transparent',
-                background: isActive ? '#c8507a' : 'transparent',
-                color: isActive ? '#ffffff' : '#52525b',
+                border: '0px solid transparent',
+                borderLeft: isActive ? '4px solid #c8507a' : '0px solid transparent',
+                background: isActive ? 'rgba(200, 80, 122, 0.10)' : 'transparent',
+                color: isActive ? '#c8507a' : '#71717a',
                 borderRadius: 10,
                 padding: '10px 12px',
                 fontWeight: isActive ? 600 : 500,
                 fontSize: 14,
                 cursor: 'pointer',
+                boxSizing: 'border-box',
                 transition: 'all 200ms ease',
               }}
             >
-              <Icon size={16} strokeWidth={isActive ? 2.3 : 2} color={isActive ? '#ffffff' : '#52525b'} />
+              <Icon size={16} strokeWidth={isActive ? 2.3 : 2} color={isActive ? '#c8507a' : '#71717a'} />
               <span>{label}</span>
             </button>
           );
