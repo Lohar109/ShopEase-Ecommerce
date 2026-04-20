@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCategories } from '../services/categoryService';
 import {
@@ -11,10 +11,12 @@ import {
   updateProduct
 } from '../services/productService';
 
-const TABS = [
-  { label: 'General Details', key: 'general' },
-  { label: 'Media', key: 'media' },
-  { label: 'Inventory', key: 'inventory' },
+const STEPS = [
+  { key: 'general', label: 'General' },
+  { key: 'specifications', label: 'Specifications' },
+  { key: 'media', label: 'Media' },
+  { key: 'inventory', label: 'Inventory' },
+  { key: 'galleries', label: 'Galleries' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -433,6 +435,20 @@ const ProductForm = () => {
     );
   }
 
+  const activeIdx = Math.max(0, STEPS.findIndex((s) => s.key === activeTab));
+  const canPrev = activeIdx > 0;
+  const canNext = activeIdx < STEPS.length - 1;
+
+  const goNext = () => {
+    if (!canNext) return;
+    setActiveTab(STEPS[activeIdx + 1].key);
+  };
+
+  const goBack = () => {
+    if (!canPrev) return;
+    setActiveTab(STEPS[activeIdx - 1].key);
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -443,6 +459,17 @@ const ProductForm = () => {
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
+        .pf-step-layout {
+          display: grid;
+          grid-template-columns: 250px minmax(0, 1fr);
+          gap: 24px;
+          align-items: start;
+        }
+        @media (max-width: 980px) {
+          .pf-step-layout {
+            grid-template-columns: 1fr;
+          }
+        }
         .pf-select-wrap { position: relative; }
         .pf-select {
           appearance: none;
@@ -547,392 +574,530 @@ const ProductForm = () => {
         </button>
       </div>
 
-      <div style={{
-        maxWidth: 800,
-        margin: '40px auto 0',
-      }}>
-        <div style={{ marginBottom: '24px' }}>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} style={{ color: '#666', textDecoration: 'none', fontSize: 14, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
-            &lt; Back to Products
-          </a>
-          <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111', margin: '8px 0 0 0', fontFamily: 'Poppins, sans-serif' }}>
-            {isEditMode ? 'Edit Product' : 'Add New Product'}
-          </h2>
-        </div>
+      <div style={{ maxWidth: 1120, margin: '36px auto 0' }}>
+        <div className="pf-step-layout">
+          <aside
+            style={{
+              position: 'sticky',
+              top: 86,
+              background: '#ffffff',
+              borderRadius: 12,
+              border: '1px solid #eceff3',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+              padding: '18px 16px',
+            }}
+          >
+            {STEPS.map((step, idx) => {
+              const completed = idx < activeIdx;
+              const active = idx === activeIdx;
+              const lineColor = idx < activeIdx ? '#c8507a' : '#e4e4e7';
 
-        <div style={{
-          background: '#ffffff',
-          borderRadius: 12,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-          padding: '48px',
-        }}>
-          <div style={{ maxWidth: '100%', margin: '0 auto' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>General Details</h3>
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Product Name</label>
-              <input
-                className="custom-input"
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                placeholder="Enter product name"
-                required
-              />
-            </div>
-            <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 500 }}>Target Audience</label>
-                <div className="pf-select-wrap">
-                  <select
-                    className="custom-input pf-select"
-                    value={audience}
-                    onChange={aud => setAudience(aud.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                    required
-                  >
-                    <option value="unisex">Unisex</option>
-                    <option value="men">Men</option>
-                    <option value="women">Women</option>
-                    <option value="kids">Kids</option>
-                  </select>
-                  <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                </div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
-                <input
-                  className="custom-input"
-                  type="text"
-                  value={slug}
-                  readOnly
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', marginTop: 4 }}
-                />
-              </div>
-            </div>
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Brand</label>
-              <input
-                className="custom-input"
-                type="text"
-                value={brand}
-                onChange={e => setBrand(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                placeholder="Enter brand name"
-                required
-              />
-            </div>
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Description</label>
-              <textarea
-                className="custom-input"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
-                placeholder="Enter product description"
-                required
-              />
-            </div>
-            
-            <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
-                <div className="pf-select-wrap">
-                  <select
-                    className="custom-input pf-select"
-                    value={categoryId}
-                    onChange={e => {
-                      setCategoryId(e.target.value);
-                      setSubcategoryId('');
+              return (
+                <div key={step.key} style={{ position: 'relative', paddingBottom: idx < STEPS.length - 1 ? 26 : 0 }}>
+                  {idx < STEPS.length - 1 && (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        left: 15,
+                        top: 32,
+                        width: 1,
+                        height: 26,
+                        background: lineColor,
+                      }}
+                    />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(step.key)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      width: '100%',
+                      padding: 0,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
                     }}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                    required
                   >
-                    <option value="">Select category</option>
-                    {categories.filter(c => c.parent_id === null).map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={16} className="pf-select-icon" />
-                </div>
-              </div>
+                    <span
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 999,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: active ? 'none' : completed ? '2px solid #c8507a' : '1px solid #d4d4d8',
+                        background: active ? '#c8507a' : completed ? '#ffffff' : '#f4f4f5',
+                        color: active ? '#ffffff' : completed ? '#c8507a' : '#9ca3af',
+                        fontWeight: 700,
+                        fontSize: 12,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {completed ? <Check size={16} /> : idx + 1}
+                    </span>
 
-              <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
-                <div className="pf-select-wrap">
-                  <select
-                    className="custom-input pf-select"
-                    value={subcategoryId}
-                    onChange={e => setSubcategoryId(e.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
-                    disabled={!categoryId || isSubcategoriesLoading}
-                  >
-                    <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
-                    {subcategoriesOptions.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={16} className="pf-select-icon" />
+                    <span
+                      style={{
+                        fontSize: 14,
+                        fontWeight: active ? 700 : completed ? 600 : 500,
+                        color: active ? '#111827' : completed ? '#374151' : '#9ca3af',
+                      }}
+                    >
+                      {step.label}
+                    </span>
+                  </button>
                 </div>
-              </div>
-            </div>
-            
-            <hr style={{ border: 'none', borderTop: '1px solid #a0a0a0', margin: '24px 0' }} />
+              );
+            })}
+          </aside>
 
+          <section>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 500 }}>Specifications</label>
-              {specs.map((spec, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                  <input
-                    className="custom-input"
-                    type="text"
-                    value={spec.key}
-                    onChange={e => handleSpecChange(idx, 'key', e.target.value)}
-                    placeholder="Key (e.g. Material)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                  />
-                  <input
-                    className="custom-input"
-                    type="text"
-                    value={spec.value}
-                    onChange={e => handleSpecChange(idx, 'value', e.target.value)}
-                    placeholder="Value (e.g. Cotton)"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                  />
-                  <button type="button" className="remove-tag-btn" onClick={() => removeSpec(idx)}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                </div>
-              ))}
-              <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 4 }}>Add Specification</button>
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} style={{ color: '#666', textDecoration: 'none', fontSize: 14, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
+                &lt; Back to Products
+              </a>
+              <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111', margin: '8px 0 0 0', fontFamily: 'Poppins, sans-serif' }}>
+                {isEditMode ? 'Edit Product' : 'Add New Product'}
+              </h2>
             </div>
-            
-            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
-            
-            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Media</h3>
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ fontWeight: 500 }}>Main Image URL</label>
-              <input
-                className="custom-input"
-                type="text"
-                value={mainImage}
-                onChange={e => setMainImage(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                placeholder="Paste Cloudinary main image URL"
-                required
-              />
-              {mainImage && (
-                <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: 12,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                border: '1px solid #eceff3',
+                padding: '34px 36px',
+              }}
+            >
+              {activeTab === 'general' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>General Details</h3>
+                  <div style={{ marginBottom: 18 }}>
+                    <label style={{ fontWeight: 500 }}>Product Name</label>
+                    <input
+                      className="custom-input"
+                      type="text"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                      placeholder="Enter product name"
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500 }}>Target Audience</label>
+                      <div className="pf-select-wrap">
+                        <select
+                          className="custom-input pf-select"
+                          value={audience}
+                          onChange={aud => setAudience(aud.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          required
+                        >
+                          <option value="unisex">Unisex</option>
+                          <option value="men">Men</option>
+                          <option value="women">Women</option>
+                          <option value="kids">Kids</option>
+                        </select>
+                        <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                      </div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={slug}
+                        readOnly
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', marginTop: 4 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 18 }}>
+                    <label style={{ fontWeight: 500 }}>Brand</label>
+                    <input
+                      className="custom-input"
+                      type="text"
+                      value={brand}
+                      onChange={e => setBrand(e.target.value)}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                      placeholder="Enter brand name"
+                      required
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: 18 }}>
+                    <label style={{ fontWeight: 500 }}>Description</label>
+                    <textarea
+                      className="custom-input"
+                      value={description}
+                      onChange={e => setDescription(e.target.value)}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
+                      placeholder="Enter product description"
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 4 }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
+                      <div className="pf-select-wrap">
+                        <select
+                          className="custom-input pf-select"
+                          value={categoryId}
+                          onChange={e => {
+                            setCategoryId(e.target.value);
+                            setSubcategoryId('');
+                          }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          required
+                        >
+                          <option value="">Select category</option>
+                          {categories.filter(c => c.parent_id === null).map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={16} className="pf-select-icon" />
+                      </div>
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
+                      <div className="pf-select-wrap">
+                        <select
+                          className="custom-input pf-select"
+                          value={subcategoryId}
+                          onChange={e => setSubcategoryId(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
+                          disabled={!categoryId || isSubcategoriesLoading}
+                        >
+                          <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
+                          {subcategoriesOptions.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={16} className="pf-select-icon" />
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
-              {galleryImages.map((img, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                  <input
-                    className="custom-input"
-                    type="text"
-                    value={img}
-                    onChange={e => handleGalleryImageChange(idx, e.target.value)}
-                    placeholder="Paste Cloudinary image URL"
-                    style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                  />
-                  <button type="button" className="remove-tag-btn" onClick={() => removeGalleryImage(idx)}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                </div>
-              ))}
-              <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}>Add Image Link</button>
-              {galleryImages.filter(Boolean).length > 0 && (
-                <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
-                  {galleryImages.filter(Boolean).map((img, i) => (
-                    <img key={i} src={img} alt="Gallery" style={{ maxWidth: 90, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
-                  ))}
-                </div>
+
+              {activeTab === 'specifications' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Specifications</h3>
+                  <div style={{ marginBottom: 8 }}>
+                    <label style={{ fontWeight: 500 }}>Product Specifications</label>
+                    {specs.map((spec, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={spec.key}
+                          onChange={e => handleSpecChange(idx, 'key', e.target.value)}
+                          placeholder="Key (e.g. Material)"
+                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                        />
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={spec.value}
+                          onChange={e => handleSpecChange(idx, 'value', e.target.value)}
+                          placeholder="Value (e.g. Cotton)"
+                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                        />
+                        <button type="button" className="remove-tag-btn" onClick={() => removeSpec(idx)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                    <button type="button" className="outline-btn" onClick={addSpec} style={{ marginTop: 8 }}>Add Specification</button>
+                  </div>
+                </>
               )}
-            </div>
-            <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
-              (Paste Cloudinary image links. You can add as many as you want.)
-            </div>
 
-            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
+              {activeTab === 'media' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Media</h3>
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={{ fontWeight: 500 }}>Main Image URL</label>
+                    <input
+                      className="custom-input"
+                      type="text"
+                      value={mainImage}
+                      onChange={e => setMainImage(e.target.value)}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                      placeholder="Paste Cloudinary main image URL"
+                      required
+                    />
+                    {mainImage && (
+                      <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                    )}
+                  </div>
 
-            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Design Specific Galleries</h3>
-            {!isEditMode ? (
-              <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
-                Save the product first, then you can add color-specific galleries.
-              </div>
-            ) : (
-              <>
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ fontWeight: 500 }}>Color Name</label>
-                  <input
-                    className="custom-input"
-                    type="text"
-                    value={designColorName}
-                    onChange={(e) => setDesignColorName(e.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                    placeholder="e.g. Red, Floral, Midnight Blue"
-                  />
-                </div>
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ fontWeight: 500 }}>Image URLs (comma or new line separated)</label>
-                  <textarea
-                    className="custom-input"
-                    value={designImagesInput}
-                    onChange={(e) => setDesignImagesInput(e.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 100, marginTop: 4 }}
-                    placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="outline-btn"
-                  onClick={handleSaveDesignGallery}
-                  disabled={savingDesignGallery}
-                  style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
-                >
-                  {savingDesignGallery ? 'Saving Gallery...' : 'Save Gallery'}
-                </button>
+                  <div style={{ marginBottom: 10 }}>
+                    <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
+                    {galleryImages.map((img, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={img}
+                          onChange={e => handleGalleryImageChange(idx, e.target.value)}
+                          placeholder="Paste Cloudinary image URL"
+                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                        />
+                        <button type="button" className="remove-tag-btn" onClick={() => removeGalleryImage(idx)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                    <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}>Add Image Link</button>
+                  </div>
 
-                <div style={{ marginTop: 24 }}>
-                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
-                  {loadingDesignGalleries ? (
-                    <div style={{ color: '#666', fontSize: 14 }}>Loading galleries...</div>
-                  ) : designGalleries.length === 0 ? (
-                    <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
-                  ) : (
-                    <div style={{ display: 'grid', gap: 12 }}>
-                      {designGalleries.map((gallery) => (
-                        <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 14 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                            <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
-                            <button
-                              type="button"
-                              className="remove-tag-btn"
-                              onClick={() => handleDeleteDesignGallery(gallery.id)}
-                              disabled={deletingDesignGalleryId === gallery.id}
-                              title="Delete gallery"
-                            >
+                  {galleryImages.filter(Boolean).length > 0 && (
+                    <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
+                      {galleryImages.filter(Boolean).map((img, i) => (
+                        <img key={i} src={img} alt="Gallery" style={{ maxWidth: 90, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
+                    (Paste Cloudinary image links. You can add as many as you want.)
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'inventory' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Inventory</h3>
+                  <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Size</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Color</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Price</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Stock</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>SKU</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left' }}>Image</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {variantRows.map((variant, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
+                          <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
+                          <td>
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={variant.sku}
+                              readOnly
+                              style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
+                            />
+                          </td>
+                          <td>
+                            {idx === 0 ? (
+                              <span className="auto-sync-tooltip-wrap">
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  value={variant.image}
+                                  readOnly
+                                  style={{
+                                    width: 120,
+                                    padding: 4,
+                                    borderRadius: 12,
+                                    border: '1px solid #d1d5db',
+                                    background: '#f3f4f6',
+                                    color: '#6b7280',
+                                    cursor: 'text'
+                                  }}
+                                  placeholder="Auto-synced"
+                                />
+                                <span className="auto-sync-tooltip-bubble" role="tooltip">
+                                  Auto-synced from Main Image
+                                  <span className="auto-sync-tooltip-arrow" />
+                                </span>
+                              </span>
+                            ) : (
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={variant.image}
+                                onChange={e => handleVariantChange(idx, 'image', e.target.value)}
+                                style={{
+                                  width: 120,
+                                  padding: 4,
+                                  borderRadius: 12,
+                                  border: '1px solid #a0a0a0',
+                                  background: '#fff',
+                                  color: '#111',
+                                  cursor: 'text'
+                                }}
+                              />
+                            )}
+                          </td>
+                          <td>
+                            <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                               </svg>
                             </button>
-                          </div>
-                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                            {(gallery.images || []).map((imgUrl, imgIdx) => (
-                              <img
-                                key={`${gallery.id}-${imgIdx}`}
-                                src={imgUrl}
-                                alt={`${gallery.color_name} ${imgIdx + 1}`}
-                                style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 10, border: '1px solid #f0f0f0' }}
-                              />
-                            ))}
-                          </div>
-                        </div>
+                          </td>
+                        </tr>
                       ))}
+                    </tbody>
+                  </table>
+                  <button type="button" className="outline-btn" onClick={addVariant}>Add Variant</button>
+                </>
+              )}
+
+              {activeTab === 'galleries' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Design Specific Galleries</h3>
+                  {!isEditMode ? (
+                    <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
+                      Save the product first, then you can add color-specific galleries.
                     </div>
-                  )}
-                </div>
-              </>
-            )}
-            
-            <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
-            
-            <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 24 }}>Inventory</h3>
-            <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-              <thead>
-                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Size</th>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Color</th>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Price</th>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Stock</th>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>SKU</th>
-                  <th style={{ padding: '12px 10px', textAlign: 'left' }}>Image</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Dynamic variant rows */}
-                {variantRows.map((variant, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                    <td><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                    <td><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                    <td><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                    <td><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                    <td>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={variant.sku}
-                        readOnly
-                        style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
-                      />
-                    </td>
-                    <td>
-                      {idx === 0 ? (
-                        <span className="auto-sync-tooltip-wrap">
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={variant.image}
-                            readOnly
-                            style={{
-                              width: 120,
-                              padding: 4,
-                              borderRadius: 12,
-                              border: '1px solid #d1d5db',
-                              background: '#f3f4f6',
-                              color: '#6b7280',
-                              cursor: 'text'
-                            }}
-                            placeholder="Auto-synced"
-                          />
-                          <span className="auto-sync-tooltip-bubble" role="tooltip">
-                            Auto-synced from Main Image
-                            <span className="auto-sync-tooltip-arrow" />
-                          </span>
-                        </span>
-                      ) : (
+                  ) : (
+                    <>
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontWeight: 500 }}>Color Name</label>
                         <input
                           className="custom-input"
                           type="text"
-                          value={variant.image}
-                          onChange={e => handleVariantChange(idx, 'image', e.target.value)}
-                          style={{
-                            width: 120,
-                            padding: 4,
-                            borderRadius: 12,
-                            border: '1px solid #a0a0a0',
-                            background: '#fff',
-                            color: '#111',
-                            cursor: 'text'
-                          }}
+                          value={designColorName}
+                          onChange={(e) => setDesignColorName(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          placeholder="e.g. Red, Floral, Midnight Blue"
                         />
-                      )}
-                    </td>
-                    <td>
-                      <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
+                      </div>
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontWeight: 500 }}>Image URLs (comma or new line separated)</label>
+                        <textarea
+                          className="custom-input"
+                          value={designImagesInput}
+                          onChange={(e) => setDesignImagesInput(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 100, marginTop: 4 }}
+                          placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="outline-btn"
+                        onClick={handleSaveDesignGallery}
+                        disabled={savingDesignGallery}
+                        style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
+                      >
+                        {savingDesignGallery ? 'Saving Gallery...' : 'Save Gallery'}
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button type="button" className="outline-btn" onClick={addVariant}>Add Variant</button>
-          </div>
+
+                      <div style={{ marginTop: 24 }}>
+                        <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
+                        {loadingDesignGalleries ? (
+                          <div style={{ color: '#666', fontSize: 14 }}>Loading galleries...</div>
+                        ) : designGalleries.length === 0 ? (
+                          <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
+                        ) : (
+                          <div style={{ display: 'grid', gap: 12 }}>
+                            {designGalleries.map((gallery) => (
+                              <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 14 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                  <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                                  <button
+                                    type="button"
+                                    className="remove-tag-btn"
+                                    onClick={() => handleDeleteDesignGallery(gallery.id)}
+                                    disabled={deletingDesignGalleryId === gallery.id}
+                                    title="Delete gallery"
+                                  >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                  </button>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                  {(gallery.images || []).map((imgUrl, imgIdx) => (
+                                    <img
+                                      key={`${gallery.id}-${imgIdx}`}
+                                      src={imgUrl}
+                                      alt={`${gallery.color_name} ${imgIdx + 1}`}
+                                      style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 10, border: '1px solid #f0f0f0' }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
+              <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
+                <button
+                  type="button"
+                  onClick={goBack}
+                  disabled={!canPrev}
+                  style={{
+                    background: '#ffffff',
+                    color: '#374151',
+                    border: '1px solid #d4d4d8',
+                    borderRadius: 8,
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    cursor: canPrev ? 'pointer' : 'not-allowed',
+                    opacity: canPrev ? 1 : 0.5,
+                  }}
+                >
+                  Back
+                </button>
+
+                <button
+                  type="button"
+                  onClick={goNext}
+                  disabled={!canNext}
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    cursor: canNext ? 'pointer' : 'not-allowed',
+                    opacity: canNext ? 1 : 0.5,
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
