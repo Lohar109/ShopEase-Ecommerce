@@ -544,6 +544,27 @@ const ProductForm = () => {
         .pf-outline-accent-btn:hover {
           background: #fff1f6;
         }
+        .pf-image-link-btn {
+          transition: all 0.2s ease;
+          background: #ffffff;
+          color: #c8507a;
+          border: 1px solid #e4e4e7;
+          border-radius: 10px;
+          height: 44px;
+          padding: 0 24px;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          font-family: 'Poppins', sans-serif;
+          white-space: nowrap;
+          width: fit-content;
+        }
+        .pf-image-link-btn:hover {
+          background: #f9fafb;
+        }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
@@ -937,7 +958,7 @@ const ProductForm = () => {
                         </button>
                       </div>
                     ))}
-                    <button type="button" className="outline-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}>Add Image Link</button>
+                    <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
                   </div>
 
                   {galleryImages.filter(Boolean).length > 0 && (
