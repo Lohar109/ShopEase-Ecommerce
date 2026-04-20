@@ -648,6 +648,26 @@ const ProductForm = () => {
           background: rgba(200, 80, 122, 0.05);
           color: #374151;
         }
+        .pf-ghost-action-btn {
+          height: 38px;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          background: transparent;
+          color: #6b7280;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 14px;
+          font-size: 14px;
+          font-weight: 500;
+          font-family: 'Poppins', sans-serif;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .pf-ghost-action-btn:hover {
+          background: #f4f4f5;
+          color: #374151;
+        }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
@@ -694,14 +714,16 @@ const ProductForm = () => {
       <div style={{
         position: 'sticky',
         top: 0,
-        zIndex: 100,
-        background: '#fff',
+        zIndex: 120,
+        background: 'rgba(255,255,255,0.8)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         padding: '12px 28px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-        borderBottom: '1px solid #eceff3'
+        boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
+        borderBottom: '1px solid #f4f4f5'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           <button
@@ -728,35 +750,46 @@ const ProductForm = () => {
             </h2>
           </div>
         </div>
-        <button
-          type="button"
-          style={{ 
-            background: saving ? '#888' : '#000', 
-            color: '#fff', 
-            border: 'none', 
-            borderRadius: 12, 
-            padding: '8px 20px', 
-            fontSize: 15, 
-            fontWeight: 500, 
-            cursor: saving ? 'not-allowed' : 'pointer', 
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            fontFamily: 'Poppins, sans-serif',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-          disabled={saving}
-          onClick={handleSubmitProduct}
-        >
-          {saving && (
-            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }}>
-              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="4" fill="none" />
-              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-            </svg>
-          )}
-          {saving ? 'Saving...' : isEditMode ? 'Update Product' : 'Save Product'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            className="pf-ghost-action-btn"
+            onClick={() => navigate('/products')}
+            disabled={saving}
+            style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}
+          >
+            Discard
+          </button>
+          <button
+            type="button"
+            style={{
+              background: saving ? '#888' : '#000',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 12,
+              padding: '8px 20px',
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: saving ? 'not-allowed' : 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              fontFamily: 'Poppins, sans-serif',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            disabled={saving}
+            onClick={handleSubmitProduct}
+          >
+            {saving && (
+              <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }}>
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="4" fill="none" />
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+              </svg>
+            )}
+            {saving ? 'Saving...' : isEditMode ? 'Update Product' : 'Save Product'}
+          </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: 1120, margin: '36px auto 0' }}>
