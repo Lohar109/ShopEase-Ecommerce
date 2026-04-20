@@ -489,7 +489,14 @@ const ProductForm = () => {
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
-        input.custom-input,
+        input.custom-input[type='text'],
+        input.custom-input[type='url'],
+        input.custom-input[type='number'] {
+          height: 40px !important;
+          box-sizing: border-box;
+          border-radius: 8px !important;
+          background: #f9fafb !important;
+        }
         select.custom-input {
           height: 44px !important;
           border-radius: 8px !important;
