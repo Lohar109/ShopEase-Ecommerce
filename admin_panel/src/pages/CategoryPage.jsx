@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
 
@@ -20,6 +20,7 @@ const CategoryPage = () => {
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
   const [expandedCategories, setExpandedCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const loadCategories = async () => {
     try {
@@ -71,6 +72,63 @@ const CategoryPage = () => {
     });
     return group;
   }, [childCategories]);
+
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+  const parentMatches = useMemo(() => {
+    if (!normalizedSearchTerm) return [];
+    return mainCategories.filter((category) =>
+      String(category?.name || '').toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [mainCategories, normalizedSearchTerm]);
+
+  const childMatches = useMemo(() => {
+    if (!normalizedSearchTerm) return [];
+    return childCategories.filter((category) =>
+      String(category?.name || '').toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [childCategories, normalizedSearchTerm]);
+
+  const displayedParents = useMemo(() => {
+    if (!normalizedSearchTerm) return mainCategories;
+
+    const parentIdsFromParentMatches = parentMatches.map((category) => String(category.id));
+    const parentIdsFromChildMatches = childMatches.map((category) => String(category.parent_id));
+    const visibleParentIds = new Set([...parentIdsFromParentMatches, ...parentIdsFromChildMatches]);
+
+    return mainCategories.filter((category) => visibleParentIds.has(String(category.id)));
+  }, [mainCategories, parentMatches, childMatches, normalizedSearchTerm]);
+
+  const searchableChildrenByParentId = useMemo(() => {
+    if (!normalizedSearchTerm) return childrenByParentId;
+
+    const matchedChildren = {};
+
+    displayedParents.forEach((parentCategory) => {
+      const parentId = String(parentCategory.id);
+      const parentMatched = parentMatches.some(
+        (category) => String(category.id) === parentId
+      );
+
+      if (parentMatched) {
+        matchedChildren[parentId] = childrenByParentId[parentId] || [];
+        return;
+      }
+
+      matchedChildren[parentId] = childMatches.filter(
+        (category) => String(category.parent_id) === parentId
+      );
+    });
+
+    return matchedChildren;
+  }, [childrenByParentId, childMatches, displayedParents, normalizedSearchTerm, parentMatches]);
+
+  const effectiveExpandedCategories = useMemo(() => {
+    if (!normalizedSearchTerm) return expandedCategories;
+
+    const autoExpandedParentIds = displayedParents.map((category) => String(category.id));
+    return Array.from(new Set([...expandedCategories, ...autoExpandedParentIds]));
+  }, [displayedParents, expandedCategories, normalizedSearchTerm]);
 
   const toggleParentRow = (parentId) => {
     const normalizedParentId = String(parentId);
@@ -152,7 +210,7 @@ const CategoryPage = () => {
     }
   };
 
-  const hasAnyRows = mainCategories.length > 0;
+  const hasAnyRows = displayedParents.length > 0;
 
   return (
     <div style={{ minHeight: '100vh', background: '#fafafa', padding: '40px 20px' }}>
@@ -300,12 +358,47 @@ const CategoryPage = () => {
               Category Management
             </h1>
 
+            <div
+              style={{
+                position: 'relative',
+                marginBottom: 14,
+                maxWidth: 360,
+              }}
+            >
+              <Search
+                size={16}
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#71717a',
+                }}
+              />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search categories"
+                style={{
+                  width: '100%',
+                  border: '1px solid #e4e4e7',
+                  borderRadius: 10,
+                  padding: '9px 12px 9px 36px',
+                  color: '#111827',
+                  background: '#ffffff',
+                }}
+              />
+            </div>
+
             {loading ? (
               <div style={{ color: '#6b7280', padding: '18px 6px' }}>Loading categories...</div>
             ) : error ? (
               <div style={{ color: '#b91c1c', padding: '18px 6px' }}>{error}</div>
             ) : !hasAnyRows ? (
-              <div style={{ color: '#6b7280', padding: '18px 6px' }}>No categories yet.</div>
+              <div style={{ color: '#6b7280', padding: '18px 6px' }}>
+                {normalizedSearchTerm ? 'No categories found.' : 'No categories yet.'}
+              </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -326,13 +419,13 @@ const CategoryPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {mainCategories.map((parentCategory) => {
+                    {displayedParents.map((parentCategory) => {
                       const parentId = String(parentCategory.id);
-                      const parentChildren = childrenByParentId[parentId] || [];
+                      const parentChildren = searchableChildrenByParentId[parentId] || [];
                       const visibleChildren = parentChildren.filter((childCategory) =>
-                        expandedCategories.includes(String(childCategory.parent_id))
+                        effectiveExpandedCategories.includes(String(childCategory.parent_id))
                       );
-                      const isExpanded = expandedCategories.includes(parentId);
+                      const isExpanded = effectiveExpandedCategories.includes(parentId);
                       const isParentDeleting = deletingCategoryId === parentId;
 
                       return (
