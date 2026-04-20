@@ -224,8 +224,9 @@ const CategoryPage = () => {
           width: 100%;
           max-width: 100%;
           box-sizing: border-box;
-          padding: 10px 12px;
-          border-radius: 10px;
+          height: 44px;
+          padding: 0 12px;
+          border-radius: 8px;
           border: 1px solid #d4d4d8;
           background: #ffffff;
           color: #111827;
@@ -242,6 +243,8 @@ const CategoryPage = () => {
           width: 100%;
           max-width: 100%;
           box-sizing: border-box;
+          height: 44px;
+          border-radius: 8px;
         }
 
         .category-search-wrap {
@@ -254,11 +257,12 @@ const CategoryPage = () => {
           width: 100%;
           box-sizing: border-box;
           border: 1px solid #e4e4e7;
-          border-radius: 10px;
+          border-radius: 8px;
           background: #fafafa;
           color: #111827;
           line-height: 1.2;
-          padding: 10px 14px;
+          height: 44px;
+          padding: 0 14px;
           transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
           outline: none;
           box-shadow: none;
@@ -273,6 +277,24 @@ const CategoryPage = () => {
           border-color: #18181b;
           box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.05);
           background: #ffffff;
+        }
+
+        .category-table-head-cell {
+          text-align: left;
+          padding: 12px 10px;
+          font-size: 12px;
+          color: #71717a;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        .category-table-row {
+          transition: background-color 200ms ease;
+        }
+
+        .category-table-row:hover {
+          background: rgba(244, 244, 245, 0.5);
         }
       `}</style>
 
@@ -293,8 +315,8 @@ const CategoryPage = () => {
               style={{
                 background: '#ffffff',
                 borderRadius: 12,
-                boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
-                border: '1px solid #ececec',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(228,228,231,0.5)',
                 padding: 24,
                 overflow: 'hidden',
               }}
@@ -328,8 +350,8 @@ const CategoryPage = () => {
                     background: '#111827',
                     color: '#ffffff',
                     border: 'none',
-                    borderRadius: 10,
-                    padding: '10px 14px',
+                    borderRadius: 8,
+                    padding: '0 14px',
                     fontWeight: 600,
                     cursor: addingCategory ? 'not-allowed' : 'pointer',
                   }}
@@ -343,8 +365,8 @@ const CategoryPage = () => {
               style={{
                 background: '#ffffff',
                 borderRadius: 12,
-                boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
-                border: '1px solid #ececec',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(228,228,231,0.5)',
                 padding: 24,
                 overflow: 'hidden',
               }}
@@ -391,8 +413,8 @@ const CategoryPage = () => {
                     background: '#111827',
                     color: '#ffffff',
                     border: 'none',
-                    borderRadius: 10,
-                    padding: '10px 14px',
+                    borderRadius: 8,
+                    padding: '0 14px',
                     fontWeight: 600,
                     cursor: addingSubcategory ? 'not-allowed' : 'pointer',
                   }}
@@ -407,8 +429,8 @@ const CategoryPage = () => {
             style={{
               background: '#ffffff',
               borderRadius: 12,
-              boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
-              border: '1px solid #ececec',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+              border: '1px solid rgba(228,228,231,0.5)',
               padding: 22,
               minHeight: 520,
             }}
@@ -440,16 +462,16 @@ const CategoryPage = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
-                      <th style={{ textAlign: 'left', padding: '12px 10px', fontSize: 12, color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                      <th className="category-table-head-cell">
                         Name
                       </th>
-                      <th style={{ textAlign: 'left', padding: '12px 10px', fontSize: 12, color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                      <th className="category-table-head-cell">
                         Type
                       </th>
-                      <th style={{ textAlign: 'left', padding: '12px 10px', fontSize: 12, color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                      <th className="category-table-head-cell">
                         Hierarchy
                       </th>
-                      <th style={{ textAlign: 'right', padding: '12px 10px', fontSize: 12, color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                      <th className="category-table-head-cell" style={{ textAlign: 'right' }}>
                         Action
                       </th>
                     </tr>
@@ -467,6 +489,7 @@ const CategoryPage = () => {
                       return (
                         <React.Fragment key={parentId}>
                           <tr
+                            className="category-table-row"
                             style={{
                               borderBottom: '1px solid #f1f5f9',
                               cursor: 'pointer',
@@ -549,7 +572,7 @@ const CategoryPage = () => {
                               const parentName = categoryById[String(childCategory.parent_id)]?.name || '-';
 
                               return (
-                                <tr key={childId} style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                <tr key={childId} className="category-table-row" style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
                                   <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 500 }}>
                                     <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', paddingLeft: 48 }}>
                                       <span
