@@ -220,6 +220,20 @@ const CategoryPage = () => {
       await loadCategories();
       setIsModalOpen(false);
       setTargetId('');
+      toast.success('Category deleted successfully', {
+        position: 'top-center',
+        icon: <Trash2 size={15} color="#dc2626" />,
+        className: 'toast-pop',
+        style: {
+          border: '1px solid #fecaca',
+          borderLeft: '4px solid #dc2626',
+          background: '#ffffff',
+          color: '#111827',
+          borderRadius: '12px',
+          boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
+          padding: '10px 12px',
+        },
+      });
     } catch (err) {
       alert(err.message || 'Failed to delete category');
     } finally {
