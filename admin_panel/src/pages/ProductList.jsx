@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 import { deleteProduct, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
@@ -120,32 +121,34 @@ const ProductList = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f4f7f6', padding: '60px 20px' }}>
-      <div style={{ maxWidth: 1400, width: '100%', margin: '0 auto', background: '#ffffff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: 48 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.5px', margin: 0, color: '#111' }}>All Products</h2>
-          <button
-            onClick={() => navigate('/products/new')}
-            style={{
-              background: '#000',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '12px 28px',
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '15px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-          >
-            Add Product
-          </button>
-        </div>
-        {products.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 60 }}>No products found.</div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
+      <div style={{ maxWidth: 1400, width: '100%', margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+        <Sidebar />
+        <div style={{ flex: 1, background: '#ffffff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: 48 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.5px', margin: 0, color: '#111' }}>All Products</h2>
+            <button
+              onClick={() => navigate('/products/new')}
+              style={{
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '12px 28px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '15px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+            >
+              Add Product
+            </button>
+          </div>
+          {products.length === 0 ? (
+            <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 60 }}>No products found.</div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
               <thead>
                 <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
                   <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: '#6c757d', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Name</th>
@@ -216,9 +219,10 @@ const ProductList = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
-        )}
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
