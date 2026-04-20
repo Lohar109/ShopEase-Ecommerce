@@ -214,6 +214,54 @@ const CategoryPage = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fafafa', padding: '40px 20px' }}>
+      <style>{`
+        .category-form {
+          display: grid;
+          gap: 20px;
+        }
+
+        .category-form-control {
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid #d4d4d8;
+          background: #ffffff;
+          color: #111827;
+          transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+          outline: none;
+        }
+
+        .category-form-control:focus {
+          border-color: #18181b;
+          box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
+        }
+
+        .category-form-submit {
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+
+        .category-search-input {
+          width: 100%;
+          border: 1px solid #e4e4e7;
+          border-radius: 10px;
+          padding: 10px 16px 10px 40px;
+          color: #111827;
+          background: #fafafa;
+          transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+          outline: none;
+        }
+
+        .category-search-input:focus {
+          border-color: #18181b;
+          box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.05);
+          background: #ffffff;
+        }
+      `}</style>
+
       <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
         <Sidebar />
 
@@ -233,7 +281,7 @@ const CategoryPage = () => {
                 borderRadius: 12,
                 boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
                 border: '1px solid #ececec',
-                padding: 20,
+                padding: 24,
                 overflow: 'hidden',
               }}
             >
@@ -241,28 +289,27 @@ const CategoryPage = () => {
                 Add New Category
               </h2>
 
-              <form onSubmit={handleAddCategory} style={{ display: 'grid', gap: 10 }}>
+              <form onSubmit={handleAddCategory} className="category-form space-y-5">
                 <input
-                  className="w-full box-border"
+                  className="category-form-control w-full box-border"
                   type="text"
                   value={newCategoryName}
                   onChange={(event) => setNewCategoryName(event.target.value)}
                   placeholder="Category name"
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
                   required
                 />
                 <input
-                  className="w-full box-border"
+                  className="category-form-control w-full box-border"
                   type="text"
                   value={newCategoryImage}
                   onChange={(event) => setNewCategoryImage(event.target.value)}
                   placeholder="Category image URL"
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
                   required
                 />
                 <button
                   type="submit"
                   disabled={addingCategory}
+                  className="category-form-submit"
                   style={{
                     background: '#111827',
                     color: '#ffffff',
@@ -284,7 +331,7 @@ const CategoryPage = () => {
                 borderRadius: 12,
                 boxShadow: '0 2px 14px rgba(15, 23, 42, 0.08)',
                 border: '1px solid #ececec',
-                padding: 20,
+                padding: 24,
                 overflow: 'hidden',
               }}
             >
@@ -292,12 +339,11 @@ const CategoryPage = () => {
                 Add New Subcategory
               </h2>
 
-              <form onSubmit={handleAddSubcategory} style={{ display: 'grid', gap: 10 }}>
+              <form onSubmit={handleAddSubcategory} className="category-form space-y-5">
                 <select
-                  className="w-full box-border"
+                  className="category-form-control w-full box-border"
                   value={selectedParentId}
                   onChange={(event) => setSelectedParentId(event.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
                   required
                 >
                   <option value="">Select parent category</option>
@@ -308,26 +354,25 @@ const CategoryPage = () => {
                   ))}
                 </select>
                 <input
-                  className="w-full box-border"
+                  className="category-form-control w-full box-border"
                   type="text"
                   value={newSubcategoryName}
                   onChange={(event) => setNewSubcategoryName(event.target.value)}
                   placeholder="Subcategory name"
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
                   required
                 />
                 <input
-                  className="w-full box-border"
+                  className="category-form-control w-full box-border"
                   type="text"
                   value={newSubcategoryImage}
                   onChange={(event) => setNewSubcategoryImage(event.target.value)}
                   placeholder="Subcategory image URL"
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #d1d5db' }}
                   required
                 />
                 <button
                   type="submit"
                   disabled={addingSubcategory}
+                  className="category-form-submit"
                   style={{
                     background: '#111827',
                     color: '#ffffff',
@@ -358,21 +403,16 @@ const CategoryPage = () => {
               Category Management
             </h1>
 
-            <div
-              style={{
-                position: 'relative',
-                marginBottom: 14,
-                maxWidth: 360,
-              }}
-            >
+            <div className="relative" style={{ position: 'relative', marginBottom: 14, maxWidth: 360 }}>
               <Search
                 size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2"
                 style={{
                   position: 'absolute',
                   left: 12,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: '#71717a',
+                  color: '#a1a1aa',
                 }}
               />
               <input
@@ -380,14 +420,7 @@ const CategoryPage = () => {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search categories"
-                style={{
-                  width: '100%',
-                  border: '1px solid #e4e4e7',
-                  borderRadius: 10,
-                  padding: '9px 12px 9px 36px',
-                  color: '#111827',
-                  background: '#ffffff',
-                }}
+                className="category-search-input"
               />
             </div>
 
