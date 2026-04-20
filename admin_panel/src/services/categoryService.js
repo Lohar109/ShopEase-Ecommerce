@@ -35,3 +35,18 @@ export async function addCategory({ name, image, parent_id = null }) {
     throw error;
   }
 }
+
+export async function deleteCategory(id) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete category');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}

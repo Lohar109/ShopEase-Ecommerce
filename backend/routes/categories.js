@@ -62,4 +62,44 @@ router.post('/', async (req, res) => {
   }
 });
 
+// DELETE /api/categories/:id - delete category and all its descendant subcategories
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  const normalizedId = typeof id === 'string' ? id.trim() : '';
+
+  if (!normalizedId) {
+    return res.status(400).json({ error: 'Category id is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      `WITH RECURSIVE category_tree AS (
+         SELECT id
+         FROM category
+         WHERE id = $1
+         UNION ALL
+         SELECT c.id
+         FROM category c
+         INNER JOIN category_tree ct ON c.parent_id = ct.id
+       )
+       DELETE FROM category
+       WHERE id IN (SELECT id FROM category_tree)
+       RETURNING id, name`,
+      [normalizedId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    return res.json({
+      message: 'Category deleted',
+      deleted_count: result.rowCount,
+      deleted_ids: result.rows.map((row) => row.id),
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

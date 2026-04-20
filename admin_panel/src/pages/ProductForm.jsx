@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addCategory } from '../services/categoryService';
+import { Trash2 } from 'lucide-react';
+import { addCategory, deleteCategory } from '../services/categoryService';
 import { fetchCategories } from '../services/categoryService';
 import {
   deleteDesignGallery,
@@ -44,6 +45,7 @@ const ProductForm = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryImage, setNewCategoryImage] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
+  const [deletingCategoryId, setDeletingCategoryId] = useState('');
   const [isSubcategory, setIsSubcategory] = useState(false);
   const [parentCategoryId, setParentCategoryId] = useState('');
 
@@ -76,7 +78,7 @@ const ProductForm = () => {
 
   // Fetch categories
   const loadCategories = () => {
-    fetchCategories().then(setCategories).catch(() => setCategories([]));
+    return fetchCategories().then(setCategories).catch(() => setCategories([]));
   };
   useEffect(() => {
     loadCategories();
@@ -248,6 +250,59 @@ const ProductForm = () => {
     normalizeId(categoryId).length > 0 &&
     normalizeId(subcategoryId) === '' &&
     subcategoriesOptions.length === 0;
+
+  const categoryNameById = useMemo(() => {
+    const index = {};
+    categories.forEach((category) => {
+      if (category?.id) index[String(category.id)] = category.name || 'Unnamed';
+    });
+    return index;
+  }, [categories]);
+
+  const getCategoryDescendantIds = (targetId) => {
+    const allIds = new Set();
+    const queue = [String(targetId)];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift();
+      if (!currentId || allIds.has(currentId)) continue;
+      allIds.add(currentId);
+
+      categories
+        .filter((category) => String(category?.parent_id || '') === currentId)
+        .forEach((child) => queue.push(String(child.id)));
+    }
+
+    return allIds;
+  };
+
+  const handleDeleteCategory = async (targetCategory) => {
+    const targetId = String(targetCategory?.id || '');
+    if (!targetId) return;
+
+    const confirmed = window.confirm('Are you sure? This will also delete all subcategories under it.');
+    if (!confirmed) return;
+
+    const descendantIds = getCategoryDescendantIds(targetId);
+    setDeletingCategoryId(targetId);
+
+    try {
+      await deleteCategory(targetId);
+
+      if (descendantIds.has(String(categoryId))) {
+        setCategoryId('');
+      }
+      if (descendantIds.has(String(subcategoryId))) {
+        setSubcategoryId('');
+      }
+
+      await loadCategories();
+    } catch (err) {
+      alert(err.message || 'Failed to delete category');
+    } finally {
+      setDeletingCategoryId('');
+    }
+  };
 
   // Add Category handler
   const handleAddCategory = async (e) => {
@@ -994,6 +1049,61 @@ const ProductForm = () => {
                 <label style={{ fontWeight: 500 }}>Image URL</label>
                 <input className="custom-input" type="text" value={newCategoryImage} onChange={e => setNewCategoryImage(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} required />
               </div>
+
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>Category Management</div>
+                <div style={{ maxHeight: 240, overflowY: 'auto', border: '1px solid #ececec', borderRadius: 10 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Name</th>
+                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Type</th>
+                        <th style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Parent</th>
+                        <th style={{ textAlign: 'right', padding: '8px 10px', borderBottom: '1px solid #ececec' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {categories.map((category) => {
+                        const rowId = String(category.id);
+                        const isDeletingRow = deletingCategoryId === rowId;
+                        const parentName = category.parent_id ? (categoryNameById[String(category.parent_id)] || '-') : '-';
+
+                        return (
+                          <tr key={rowId}>
+                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{category.name}</td>
+                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{category.parent_id ? 'Subcategory' : 'Category'}</td>
+                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6' }}>{parentName}</td>
+                            <td style={{ padding: '8px 10px', borderBottom: '1px solid #f3f4f6', textAlign: 'right' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCategory(category)}
+                                disabled={isDeletingRow || addingCategory}
+                                style={{
+                                  border: '1px solid #fecaca',
+                                  background: isDeletingRow ? '#fee2e2' : '#fff1f2',
+                                  color: '#b91c1c',
+                                  borderRadius: 8,
+                                  padding: '5px 8px',
+                                  cursor: isDeletingRow ? 'not-allowed' : 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  fontWeight: 500,
+                                }}
+                                title="Delete category"
+                              >
+                                <Trash2 size={14} />
+                                {isDeletingRow ? 'Deleting...' : 'Delete'}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowCategoryModal(false)} style={{ background: '#eee', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', color: '#333' }}>Cancel</button>
                 <button type="submit" disabled={addingCategory} style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 18px', fontWeight: 600, cursor: 'pointer' }}>{addingCategory ? 'Saving...' : 'Save'}</button>
