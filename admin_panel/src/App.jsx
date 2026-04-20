@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import CategoryPage from './pages/CategoryPage';
 import ProductList from './pages/ProductList';
 import ProductForm from './pages/ProductForm';
+import AdminLayout from './components/AdminLayout';
 
 function App() {
   return (
@@ -40,8 +41,10 @@ function App() {
       />
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/categories" element={<CategoryPage />} />
+        <Route element={<AdminLayout />}>
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/categories" element={<CategoryPage />} />
+        </Route>
         <Route path="/products/new" element={<ProductForm />} />
         <Route path="/products/:id/edit" element={<ProductForm />} />
       </Routes>

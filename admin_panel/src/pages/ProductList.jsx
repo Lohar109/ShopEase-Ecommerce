@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
 import TableSkeleton from '../components/TableSkeleton';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
@@ -161,20 +160,15 @@ const ProductList = () => {
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafafa', padding: '44px 20px' }}>
-      <div style={{ maxWidth: 1450, width: '100%', margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-        <Sidebar />
-
-        <div
-          style={{
-            flex: 1,
-            background: '#ffffff',
-            borderRadius: 16,
-            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
-            border: '1px solid #e4e4e7',
-            padding: 30,
-          }}
-        >
+    <div
+      style={{
+        background: '#ffffff',
+        borderRadius: 16,
+        boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+        border: '1px solid #e4e4e7',
+        padding: 30,
+      }}
+    >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.3px', margin: 0, color: '#111' }}>
               Product Management
@@ -358,8 +352,6 @@ const ProductList = () => {
               </table>
             </div>
           )}
-        </div>
-      </div>
     </div>
   );
 };

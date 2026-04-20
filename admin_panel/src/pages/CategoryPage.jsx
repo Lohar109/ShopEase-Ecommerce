@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Sidebar from '../components/Sidebar';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
 import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
@@ -244,7 +243,7 @@ const CategoryPage = () => {
   const hasAnyRows = displayedParents.length > 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafafa', padding: '40px 20px' }}>
+    <div>
       <style>{`
         .category-form {
           display: grid;
@@ -329,18 +328,14 @@ const CategoryPage = () => {
         }
       `}</style>
 
-      <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-        <Sidebar />
-
-        <main
-          style={{
-            flex: 1,
-            display: 'grid',
-            gridTemplateColumns: isNarrowScreen ? '1fr' : 'minmax(320px, 40%) minmax(460px, 60%)',
-            gap: 20,
-            alignItems: 'start',
-          }}
-        >
+      <main
+        style={{
+          display: 'grid',
+          gridTemplateColumns: isNarrowScreen ? '1fr' : 'minmax(320px, 40%) minmax(460px, 60%)',
+          gap: 20,
+          alignItems: 'start',
+        }}
+      >
           <section style={{ position: isNarrowScreen ? 'static' : 'sticky', top: 24, display: 'grid', gap: 16 }}>
             <div
               style={{
@@ -603,7 +598,18 @@ const CategoryPage = () => {
                                           top: -12,
                                           bottom: -12,
                                           width: 1,
-                                          background: '#e4e4e7',
+                                          background: '#71717a',
+                                        }}
+                                      />
+                                      <span
+                                        aria-hidden="true"
+                                        style={{
+                                          position: 'absolute',
+                                          left: 24,
+                                          top: '50%',
+                                          width: 16,
+                                          height: 1,
+                                          background: '#71717a',
                                         }}
                                       />
                                       {childCategory.name}
@@ -663,8 +669,7 @@ const CategoryPage = () => {
               </div>
             )}
           </section>
-        </main>
-      </div>
+      </main>
 
       <ConfirmModal
         isOpen={isModalOpen}

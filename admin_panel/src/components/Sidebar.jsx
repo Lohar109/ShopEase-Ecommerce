@@ -24,8 +24,19 @@ const Sidebar = () => {
         height: 'fit-content',
       }}
     >
-      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 18, color: '#111827' }}>
-        ShopEase Admin
+      <div
+        style={{
+          height: 56,
+          padding: '0 8px',
+          marginBottom: 12,
+          display: 'flex',
+          alignItems: 'center',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ fontWeight: 700, fontSize: 18, color: '#111827', lineHeight: 1.2 }}>
+          ShopEase Admin
+        </div>
       </div>
       <nav style={{ display: 'grid', gap: 8 }}>
         {navItems.map(({ label, path, Icon }) => {
@@ -40,17 +51,19 @@ const Sidebar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 10,
-                border: isActive ? '1px solid #111827' : '1px solid transparent',
-                background: isActive ? '#111827' : '#f9fafb',
-                color: isActive ? '#ffffff' : '#111827',
+                border: '1px solid transparent',
+                borderLeft: isActive ? '4px solid #c8507a' : '4px solid transparent',
+                background: isActive ? '#c8507a' : 'transparent',
+                color: isActive ? '#ffffff' : '#52525b',
                 borderRadius: 10,
                 padding: '10px 12px',
-                fontWeight: 500,
+                fontWeight: isActive ? 600 : 500,
                 fontSize: 14,
                 cursor: 'pointer',
+                transition: 'all 200ms ease',
               }}
             >
-              <Icon size={16} />
+              <Icon size={16} strokeWidth={isActive ? 2.3 : 2} color={isActive ? '#ffffff' : '#52525b'} />
               <span>{label}</span>
             </button>
           );
