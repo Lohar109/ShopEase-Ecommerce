@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Check, ChevronDown, Image, Info, Layers, Plus } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, ChevronRight, Image, Info, Layers, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCategories } from '../services/categoryService';
 import {
@@ -619,6 +619,35 @@ const ProductForm = () => {
         .pf-image-link-btn:hover {
           background: #f9fafb;
         }
+        .pf-crumb-link {
+          color: #6b7280;
+          text-decoration: none;
+          transition: color 0.2s ease;
+          font-weight: 500;
+        }
+        .pf-crumb-link:hover {
+          color: #c8507a;
+        }
+        .pf-ghost-back-btn {
+          height: 34px;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          background: transparent;
+          color: #4b5563;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 0 10px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-family: 'Poppins', sans-serif;
+          font-size: 13px;
+          font-weight: 500;
+        }
+        .pf-ghost-back-btn:hover {
+          background: rgba(200, 80, 122, 0.05);
+          color: #374151;
+        }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
@@ -667,15 +696,37 @@ const ProductForm = () => {
         top: 0,
         zIndex: 100,
         background: '#fff',
-        padding: '16px 40px',
+        padding: '12px 28px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-        borderBottom: '1px solid #e0e0e0'
+        boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+        borderBottom: '1px solid #eceff3'
       }}>
-        <div style={{ color: '#888', fontSize: 15, fontWeight: 500 }}>
-          Products / <span style={{ color: '#111', fontWeight: 600 }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+          <button
+            type="button"
+            className="pf-ghost-back-btn"
+            onClick={() => navigate('/products')}
+          >
+            <ArrowLeft size={14} />
+            Back
+          </button>
+
+          <div style={{ width: 1, alignSelf: 'stretch', background: '#f1f5f9' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6b7280', whiteSpace: 'nowrap' }}>
+              <a href="#" className="pf-crumb-link" onClick={(e) => { e.preventDefault(); navigate('/products'); }}>
+                Products
+              </a>
+              <ChevronRight size={13} style={{ color: '#9ca3af' }} />
+              <span style={{ color: '#6b7280' }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
+            </div>
+            <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+              {isEditMode ? 'Edit Product' : 'Add New Product'}
+            </h2>
+          </div>
         </div>
         <button
           type="button"
@@ -792,15 +843,6 @@ const ProductForm = () => {
           </aside>
 
           <section>
-            <div style={{ marginBottom: 18 }}>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} style={{ color: '#666', textDecoration: 'none', fontSize: 14, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
-                &lt; Back to Products
-              </a>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111', margin: '8px 0 0 0', fontFamily: 'Poppins, sans-serif' }}>
-                {isEditMode ? 'Edit Product' : 'Add New Product'}
-              </h2>
-            </div>
-
             <div
               style={{
                 background: '#ffffff',
