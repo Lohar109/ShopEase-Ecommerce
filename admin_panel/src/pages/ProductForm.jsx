@@ -1046,7 +1046,7 @@ const ProductForm = () => {
                           style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                           required
                         >
-                          <option value="" disabled hidden>Select category</option>
+                          <option value="">Select category</option>
                           {categories.filter(c => c.parent_id === null).map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
