@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 const QuickAddModal = ({
   m,
@@ -46,33 +47,48 @@ const QuickAddModal = ({
         }}
       >
         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>{title}</h4>
-        <p style={{ margin: '6px 0 12px', fontSize: 13, color: '#71717a' }}>Enter a name to quickly add it.</p>
 
         {isSubcategory && (
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#71717a', marginBottom: 4 }}>
               Parent Category
             </label>
-            <select
-              value={pId}
-              onChange={(e) => setPId?.(e.target.value)}
-              style={{
-                width: '100%',
-                height: 40,
-                borderRadius: 10,
-                border: '1px solid #e4e4e7',
-                padding: '0 12px',
-                fontSize: 14,
-                color: '#111827',
-                boxSizing: 'border-box',
-                background: '#ffffff',
-              }}
-            >
-              <option value="" disabled hidden>Select parent category</option>
-              {parentOptions.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={pId}
+                onChange={(e) => setPId?.(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: 40,
+                  borderRadius: 10,
+                  border: '1px solid #e4e4e7',
+                  padding: '0 40px 0 16px',
+                  fontSize: 14,
+                  color: '#111827',
+                  boxSizing: 'border-box',
+                  background: '#ffffff',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'none',
+                }}
+              >
+                <option value="" disabled hidden>Select parent category</option>
+                {parentOptions.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={14}
+                style={{
+                  position: 'absolute',
+                  right: 14,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#71717a',
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
           </div>
         )}
 
@@ -87,7 +103,7 @@ const QuickAddModal = ({
             height: 40,
             borderRadius: 10,
             border: '1px solid #d4d4d8',
-            padding: '0 12px',
+            padding: '0 16px',
             fontSize: 14,
             color: '#111827',
             boxSizing: 'border-box',

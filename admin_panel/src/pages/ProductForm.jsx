@@ -533,7 +533,7 @@ const ProductForm = () => {
     }}>
       <QuickAddModal
         m={m}
-        title={t === 'subcategory' ? 'Quick Add Subcategory' : 'Quick Add Category'}
+        title={t === 'subcategory' ? 'Add Subcategory' : 'Quick Add Category'}
         val={val}
         setVal={setVal}
         isSubcategory={t === 'subcategory'}
