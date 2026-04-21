@@ -1,6 +1,19 @@
 import React from 'react';
 
-const QuickAddModal = ({ m, title, val, setVal, onClose, onAdd, loading }) => {
+const QuickAddModal = ({
+  m,
+  title,
+  val,
+  setVal,
+  onClose,
+  onAdd,
+  loading,
+  isSubcategory = false,
+  pId = '',
+  setPId,
+  parentOptions = [],
+  canAdd = false,
+}) => {
   if (!m) return null;
 
   return (
@@ -34,6 +47,34 @@ const QuickAddModal = ({ m, title, val, setVal, onClose, onAdd, loading }) => {
       >
         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>{title}</h4>
         <p style={{ margin: '6px 0 12px', fontSize: 13, color: '#71717a' }}>Enter a name to quickly add it.</p>
+
+        {isSubcategory && (
+          <div style={{ marginBottom: 10 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#71717a', marginBottom: 4 }}>
+              Parent Category
+            </label>
+            <select
+              value={pId}
+              onChange={(e) => setPId?.(e.target.value)}
+              style={{
+                width: '100%',
+                height: 40,
+                borderRadius: 10,
+                border: '1px solid #e4e4e7',
+                padding: '0 12px',
+                fontSize: 14,
+                color: '#111827',
+                boxSizing: 'border-box',
+                background: '#ffffff',
+              }}
+            >
+              <option value="" disabled hidden>Select parent category</option>
+              {parentOptions.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <input
           type="text"
@@ -75,7 +116,7 @@ const QuickAddModal = ({ m, title, val, setVal, onClose, onAdd, loading }) => {
           <button
             type="button"
             onClick={onAdd}
-            disabled={loading || !val.trim()}
+            disabled={loading || !canAdd}
             style={{
               height: 38,
               borderRadius: 10,
@@ -85,8 +126,8 @@ const QuickAddModal = ({ m, title, val, setVal, onClose, onAdd, loading }) => {
               padding: '0 14px',
               fontSize: 14,
               fontWeight: 600,
-              cursor: loading || !val.trim() ? 'not-allowed' : 'pointer',
-              opacity: loading || !val.trim() ? 0.6 : 1,
+              cursor: loading || !canAdd ? 'not-allowed' : 'pointer',
+              opacity: loading || !canAdd ? 0.6 : 1,
             }}
           >
             {loading ? 'Adding...' : 'Add'}

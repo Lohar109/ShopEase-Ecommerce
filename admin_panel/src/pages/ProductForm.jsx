@@ -42,6 +42,7 @@ const ProductForm = () => {
   const [m, setM] = useState(false);
   const [val, setVal] = useState('');
   const [t, setT] = useState('category');
+  const [pId, setPId] = useState('');
   const [addingQuickCat, setAddingQuickCat] = useState(false);
   // Dynamic specifications
   const [specs, setSpecs] = useState([{ key: '', value: '' }]);
@@ -424,12 +425,9 @@ const ProductForm = () => {
   };
 
   const openQuickAdd = (type) => {
-    if (type === 'subcategory' && !categoryId) {
-      alert('Please select a category first.');
-      return;
-    }
     setT(type);
     setVal('');
+    setPId(type === 'subcategory' ? categoryId : '');
     setM(true);
   };
 
@@ -437,28 +435,31 @@ const ProductForm = () => {
     if (addingQuickCat) return;
     setM(false);
     setVal('');
+    setPId('');
   };
 
   const handleQuickAdd = async () => {
     const nameValue = val.trim();
-    if (!nameValue) return;
+    if (!nameValue || (t === 'subcategory' && !pId)) return;
 
     setAddingQuickCat(true);
     try {
       const created = await addCategory({
         name: nameValue,
-        parent_id: t === 'subcategory' ? categoryId : null,
+        parent_id: t === 'subcategory' ? pId : null,
       });
 
       await fetchCats();
 
       if (t === 'subcategory') {
+        setCategoryId(String(pId));
         setSubcategoryId(String(created?.id || ''));
       } else {
         setCategoryId(String(created?.id || ''));
         setSubcategoryId('');
       }
 
+      setPId('');
       setM(false);
       setVal('');
     } catch (err) {
@@ -520,6 +521,9 @@ const ProductForm = () => {
     setActiveTab(STEPS[activeIdx - 1].key);
   };
 
+  const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
+  const canQuickAdd = t === 'subcategory' ? Boolean(pId && val.trim()) : Boolean(val.trim());
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -532,6 +536,11 @@ const ProductForm = () => {
         title={t === 'subcategory' ? 'Quick Add Subcategory' : 'Quick Add Category'}
         val={val}
         setVal={setVal}
+        isSubcategory={t === 'subcategory'}
+        pId={pId}
+        setPId={setPId}
+        parentOptions={parentOptions}
+        canAdd={canQuickAdd}
         onClose={closeQuickAdd}
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
@@ -1054,8 +1063,6 @@ const ProductForm = () => {
                           className="pf-mini-plus-btn"
                           onClick={() => openQuickAdd('subcategory')}
                           title="Quick add subcategory"
-                          disabled={!categoryId}
-                          style={{ opacity: !categoryId ? 0.45 : 1, cursor: !categoryId ? 'not-allowed' : 'pointer' }}
                         >
                           <span>+</span>
                         </button>
