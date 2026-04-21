@@ -523,6 +523,7 @@ const ProductForm = () => {
 
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const canQuickAdd = t === 'subcategory' ? Boolean(pId && val.trim()) : Boolean(val.trim());
+  const variantCols = '1fr 1fr 1fr 1fr 1fr 1.5fr auto';
 
   return (
     <div style={{
@@ -1221,103 +1222,119 @@ const ProductForm = () => {
                     <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
                   </div>
                   <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-                    <thead>
-                      <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Size</th>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Color</th>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Price</th>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Stock</th>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>SKU</th>
-                        <th style={{ padding: '10px 10px', textAlign: 'left' }}>Image</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                  <div style={{ marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
+                    <div
+                      className="grid grid-cols-7 gap-4"
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: variantCols,
+                        gap: 16,
+                        background: '#f8f9fa',
+                        borderBottom: '2px solid #e9ecef',
+                        padding: '10px 10px',
+                        marginBottom: 8,
+                      }}
+                    >
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
+                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
+                      <div />
+                    </div>
+
+                    <div style={{ display: 'grid', gap: 8 }}>
                       {variantRows.map((variant, idx) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: 90, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: 70, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td style={{ padding: '5px 0' }}><input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: 60, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} /></td>
-                          <td>
-                            <input
-                              className="custom-input"
-                              type="text"
-                              value={variant.sku}
-                              readOnly
-                              style={{ width: 100, padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
-                            />
-                          </td>
-                          <td>
-                            {idx === 0 ? (
-                              <span className="auto-sync-tooltip-wrap">
-                                <input
-                                  className="custom-input"
-                                  type="text"
-                                  value={variant.image}
-                                  readOnly
-                                  style={{
-                                    width: 120,
-                                    padding: 4,
-                                    borderRadius: 12,
-                                    border: '1px solid #d1d5db',
-                                    background: '#f3f4f6',
-                                    color: '#6b7280',
-                                    cursor: 'text'
-                                  }}
-                                  placeholder="Auto-synced"
-                                />
-                                <span className="auto-sync-tooltip-bubble" role="tooltip">
-                                  Auto-synced from Main Image
-                                  <span className="auto-sync-tooltip-arrow" />
-                                </span>
-                              </span>
-                            ) : (
+                        <div
+                          key={idx}
+                          className="grid grid-cols-7 gap-4"
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: variantCols,
+                            gap: 16,
+                            alignItems: 'center',
+                            borderBottom: '1px solid #f1f3f5',
+                            padding: '5px 0',
+                          }}
+                        >
+                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={variant.sku}
+                            readOnly
+                            style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
+                          />
+                          {idx === 0 ? (
+                            <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
                               <input
                                 className="custom-input"
                                 type="text"
                                 value={variant.image}
-                                onChange={e => handleVariantChange(idx, 'image', e.target.value)}
+                                readOnly
                                 style={{
-                                  width: 120,
+                                  width: '100%',
                                   padding: 4,
                                   borderRadius: 12,
-                                  border: '1px solid #a0a0a0',
-                                  background: '#fff',
-                                  color: '#111',
+                                  border: '1px solid #d1d5db',
+                                  background: '#f3f4f6',
+                                  color: '#6b7280',
                                   cursor: 'text'
                                 }}
+                                placeholder="Auto-synced"
                               />
-                            )}
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              onClick={() => removeVariant(idx)}
-                              title="Remove variant"
+                              <span className="auto-sync-tooltip-bubble" role="tooltip">
+                                Auto-synced from Main Image
+                                <span className="auto-sync-tooltip-arrow" />
+                              </span>
+                            </span>
+                          ) : (
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={variant.image}
+                              onChange={e => handleVariantChange(idx, 'image', e.target.value)}
                               style={{
-                                background: '#fef2f2',
-                                color: '#ef4444',
-                                border: 'none',
-                                borderRadius: 8,
-                                padding: 8,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'background 0.15s ease',
+                                width: '100%',
+                                padding: 4,
+                                borderRadius: 12,
+                                border: '1px solid #a0a0a0',
+                                background: '#fff',
+                                color: '#111',
+                                cursor: 'text'
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
-                        </tr>
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeVariant(idx)}
+                            title="Remove variant"
+                            style={{
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: 8,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              justifySelf: 'start',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                  </div>
                   <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>
                 </>
               )}
