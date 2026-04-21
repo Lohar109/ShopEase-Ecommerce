@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -1113,11 +1113,26 @@ const ProductForm = () => {
                           placeholder="Value (e.g. Cotton)"
                           style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                         />
-                        <button type="button" className="remove-tag-btn" onClick={() => removeSpec(idx)}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
+                        <button
+                          type="button"
+                          onClick={() => removeSpec(idx)}
+                          title="Remove specification"
+                          style={{
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            border: 'none',
+                            borderRadius: 8,
+                            padding: 8,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                        >
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     ))}
@@ -1160,11 +1175,26 @@ const ProductForm = () => {
                           placeholder="Paste Cloudinary image URL"
                           style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                         />
-                        <button type="button" className="remove-tag-btn" onClick={() => removeGalleryImage(idx)}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryImage(idx)}
+                          title="Remove image URL"
+                          style={{
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            border: 'none',
+                            borderRadius: 8,
+                            padding: 8,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                        >
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     ))}
@@ -1262,11 +1292,26 @@ const ProductForm = () => {
                             )}
                           </td>
                           <td>
-                            <button type="button" className="remove-tag-btn" onClick={() => removeVariant(idx)}>
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                              </svg>
+                            <button
+                              type="button"
+                              onClick={() => removeVariant(idx)}
+                              title="Remove variant"
+                              style={{
+                                background: '#fef2f2',
+                                color: '#ef4444',
+                                border: 'none',
+                                borderRadius: 8,
+                                padding: 8,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                            >
+                              <Trash2 size={14} />
                             </button>
                           </td>
                         </tr>
