@@ -679,18 +679,23 @@ const ProductForm = () => {
           background: #f9fafb;
         }
         .pf-mini-plus-btn {
-          width: 22px;
-          height: 22px;
-          border: none;
-          border-radius: 999px;
-          background: transparent;
+          height: 24px;
+          border: 1px solid #c8507a;
+          border-radius: 8px;
+          background: #ffffff;
           color: #c8507a;
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          gap: 4px;
           cursor: pointer;
           transition: all 0.2s ease;
-          margin-left: 6px;
+          margin-left: 8px;
+          padding: 0 8px;
+          font-size: 11px;
+          font-weight: 600;
+          line-height: 1;
+          font-family: 'Poppins', sans-serif;
         }
         .pf-mini-plus-btn:hover {
           background: #fff1f6;
@@ -1027,7 +1032,8 @@ const ProductForm = () => {
                       <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                         Category
                         <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
-                          <Plus size={14} />
+                          <Plus size={12} />
+                          <span>+ Add</span>
                         </button>
                       </label>
                       <div className="pf-select-wrap">
@@ -1061,7 +1067,8 @@ const ProductForm = () => {
                           disabled={!categoryId}
                           style={{ opacity: !categoryId ? 0.45 : 1, cursor: !categoryId ? 'not-allowed' : 'pointer' }}
                         >
-                          <Plus size={14} />
+                          <Plus size={12} />
+                          <span>+ Add</span>
                         </button>
                       </label>
                       <div className="pf-select-wrap">
