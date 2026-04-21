@@ -173,15 +173,6 @@ const ProductForm = () => {
     loadDesignGalleries(id);
   }, [id, isEditMode]);
 
-  // Set default category if available
-  useEffect(() => {
-    if (isEditMode) return;
-    if (!categoryId && categories.length > 0) {
-      const mainCategories = categories.filter(c => c.parent_id === null);
-      if (mainCategories.length > 0) setCategoryId(mainCategories[0].id);
-    }
-  }, [categories, categoryId, isEditMode]);
-
   const resolvedProductSubcategoryId = useMemo(() => {
     if (!editProductData || categories.length === 0) return '';
 
@@ -1032,8 +1023,7 @@ const ProductForm = () => {
                       <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                         Category
                         <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
-                          <Plus size={12} />
-                          <span>+ Add</span>
+                          <span>+</span>
                         </button>
                       </label>
                       <div className="pf-select-wrap">
@@ -1047,7 +1037,7 @@ const ProductForm = () => {
                           style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                           required
                         >
-                          <option value="">Select category</option>
+                          <option value="" disabled hidden>Select category</option>
                           {categories.filter(c => c.parent_id === null).map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
@@ -1067,8 +1057,7 @@ const ProductForm = () => {
                           disabled={!categoryId}
                           style={{ opacity: !categoryId ? 0.45 : 1, cursor: !categoryId ? 'not-allowed' : 'pointer' }}
                         >
-                          <Plus size={12} />
-                          <span>+ Add</span>
+                          <span>+</span>
                         </button>
                       </label>
                       <div className="pf-select-wrap">
