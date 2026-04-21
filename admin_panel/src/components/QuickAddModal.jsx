@@ -110,7 +110,7 @@ const QuickAddModal = ({
           }}
         />
 
-        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button
             type="button"
             onClick={onClose}
