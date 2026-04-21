@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, ChevronRight, Image, Info, Layers, Plus } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCategories } from '../services/categoryService';
 import {
@@ -619,15 +619,6 @@ const ProductForm = () => {
         .pf-image-link-btn:hover {
           background: #f9fafb;
         }
-        .pf-crumb-link {
-          color: #6b7280;
-          text-decoration: none;
-          transition: color 0.2s ease;
-          font-weight: 500;
-        }
-        .pf-crumb-link:hover {
-          color: #c8507a;
-        }
         .pf-ghost-back-btn {
           height: 40px;
           border: none;
@@ -737,15 +728,8 @@ const ProductForm = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#71717a', whiteSpace: 'nowrap', lineHeight: 1.1 }}>
-            <a href="#" className="pf-crumb-link" onClick={(e) => { e.preventDefault(); navigate('/products'); }}>
-              Products
-            </a>
-            <ChevronRight size={13} style={{ color: '#a1a1aa' }} />
-            <span style={{ color: '#71717a' }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
-          </div>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: '4px 0 0 0', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h2>
         </div>
