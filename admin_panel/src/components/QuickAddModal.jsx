@@ -17,6 +17,9 @@ const QuickAddModal = ({
 }) => {
   if (!m) return null;
 
+  const s = isSubcategory;
+  const p = pId;
+
   return (
     <div
       role="dialog"
@@ -37,7 +40,7 @@ const QuickAddModal = ({
       <div
         style={{
           width: '100%',
-          maxWidth: 380,
+          maxWidth: 420,
           background: '#ffffff',
           borderRadius: 14,
           border: '1px solid #e4e4e7',
@@ -48,19 +51,22 @@ const QuickAddModal = ({
       >
         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>{title}</h4>
 
-        {isSubcategory && (
+        {s && (
           <div style={{ marginTop: 14, marginBottom: 8 }}>
             <div style={{ position: 'relative' }}>
               <select
-                value={pId}
+                value={p}
                 onChange={(e) => setPId?.(e.target.value)}
                 style={{
+                  display: 'block',
                   width: '100%',
-                  height: 40,
+                  minHeight: 40,
                   borderRadius: 10,
                   border: '1px solid #d4d4d8',
-                  padding: '0 48px 0 16px',
+                  padding: '9px 52px 9px 16px',
                   fontSize: 14,
+                  lineHeight: '1.3',
+                  fontFamily: 'inherit',
                   color: '#111827',
                   boxSizing: 'border-box',
                   background: '#ffffff',
@@ -89,12 +95,12 @@ const QuickAddModal = ({
           </div>
         )}
 
-        <div style={{ marginTop: isSubcategory ? 10 : 20 }}>
+        <div style={{ marginTop: s ? 10 : 20 }}>
         <input
           type="text"
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          placeholder={isSubcategory ? 'Subcategory Name' : 'Category Name'}
+          placeholder={s ? 'Subcategory Name' : 'Category Name'}
           autoFocus
           style={{
             width: '100%',
