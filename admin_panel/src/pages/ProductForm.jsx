@@ -719,13 +719,13 @@ const ProductForm = () => {
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         padding: '12px 28px',
-        display: 'flex',
-        justifyContent: 'space-between',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
         boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
         borderBottom: '1px solid #f4f4f5'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'start', minWidth: 0 }}>
           <button
             type="button"
             className="pf-ghost-back-btn"
@@ -734,23 +734,22 @@ const ProductForm = () => {
             <ArrowLeft size={14} />
             Back
           </button>
-
-          <div style={{ width: 1, alignSelf: 'stretch', background: '#f1f5f9' }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6b7280', whiteSpace: 'nowrap' }}>
-              <a href="#" className="pf-crumb-link" onClick={(e) => { e.preventDefault(); navigate('/products'); }}>
-                Products
-              </a>
-              <ChevronRight size={13} style={{ color: '#9ca3af' }} />
-              <span style={{ color: '#6b7280' }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
-            </div>
-            <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
-              {isEditMode ? 'Edit Product' : 'Add New Product'}
-            </h2>
-          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#71717a', whiteSpace: 'nowrap', lineHeight: 1.1 }}>
+            <a href="#" className="pf-crumb-link" onClick={(e) => { e.preventDefault(); navigate('/products'); }}>
+              Products
+            </a>
+            <ChevronRight size={13} style={{ color: '#a1a1aa' }} />
+            <span style={{ color: '#71717a' }}>{isEditMode ? 'Edit Product' : 'Add New Product'}</span>
+          </div>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: '4px 0 0 0', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+            {isEditMode ? 'Edit Product' : 'Add New Product'}
+          </h2>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: 'end' }}>
           <button
             type="button"
             className="pf-ghost-action-btn"
