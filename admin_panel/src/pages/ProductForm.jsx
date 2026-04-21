@@ -729,7 +729,7 @@ const ProductForm = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+          <h2 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', color: '#18181b', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h2>
         </div>
