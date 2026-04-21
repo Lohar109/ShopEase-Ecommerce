@@ -747,6 +747,26 @@ const ProductForm = () => {
         .remove-tag-btn { transition: all 0.2s ease; background: #eee; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; color: #555; display: inline-flex; align-items: center; justify-content: center; }
         .remove-tag-btn:hover { background: #e53935; color: #fff; }
         .remove-tag-btn svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
+        .pf-preview-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-top: 16px;
+        }
+        .pf-preview-img {
+          width: 96px;
+          height: 96px;
+          aspect-ratio: 1 / 1;
+          object-fit: cover;
+          border-radius: 12px;
+          border: 1px solid #f4f4f5;
+          transition: transform 200ms ease;
+          transform: scale(1);
+          display: block;
+        }
+        .pf-preview-img:hover {
+          transform: scale(1.05);
+        }
         .auto-sync-tooltip-wrap { position: relative; display: inline-block; }
         .auto-sync-tooltip-bubble {
           position: absolute;
@@ -1202,13 +1222,18 @@ const ProductForm = () => {
                     <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
                   </div>
 
-                  {galleryImages.filter(Boolean).length > 0 && (
-                    <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
-                      {galleryImages.filter(Boolean).map((img, i) => (
-                        <img key={i} src={img} alt="Gallery" style={{ maxWidth: 90, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }} />
-                      ))}
-                    </div>
-                  )}
+                  {(() => {
+                    const imgs = galleryImages.filter(Boolean);
+                    if (imgs.length === 0) return null;
+
+                    return (
+                      <div className="pf-preview-grid">
+                        {imgs.map((url, i) => (
+                          <img key={i} src={url} alt="Gallery" className="pf-preview-img" />
+                        ))}
+                      </div>
+                    );
+                  })()}
                   <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
                     (Paste Cloudinary image links. You can add as many as you want.)
                   </div>
@@ -1407,13 +1432,13 @@ const ProductForm = () => {
                                     </svg>
                                   </button>
                                 </div>
-                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                  {(gallery.images || []).map((imgUrl, imgIdx) => (
+                                <div className="pf-preview-grid" style={{ marginTop: 12 }}>
+                                  {(gallery.images || []).map((url, i) => (
                                     <img
-                                      key={`${gallery.id}-${imgIdx}`}
-                                      src={imgUrl}
-                                      alt={`${gallery.color_name} ${imgIdx + 1}`}
-                                      style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 10, border: '1px solid #f0f0f0' }}
+                                      key={`${gallery.id}-${i}`}
+                                      src={url}
+                                      alt={`${gallery.color_name} ${i + 1}`}
+                                      className="pf-preview-img"
                                     />
                                   ))}
                                 </div>
