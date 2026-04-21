@@ -629,24 +629,25 @@ const ProductForm = () => {
           color: #c8507a;
         }
         .pf-ghost-back-btn {
-          height: 34px;
-          border: 1px solid transparent;
-          border-radius: 10px;
-          background: transparent;
-          color: #4b5563;
+          height: 40px;
+          border: none;
+          border-radius: 12px;
+          background: #18181b;
+          color: #ffffff;
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 0 10px;
+          padding: 0 20px;
           cursor: pointer;
           transition: all 0.2s ease;
           font-family: 'Poppins', sans-serif;
-          font-size: 13px;
-          font-weight: 500;
+          font-size: 15px;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .pf-ghost-back-btn:hover {
-          background: rgba(200, 80, 122, 0.05);
-          color: #374151;
+          background: #27272a;
+          color: #ffffff;
         }
         .pf-ghost-action-btn {
           height: 40px;
