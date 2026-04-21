@@ -649,24 +649,24 @@ const ProductForm = () => {
           color: #374151;
         }
         .pf-ghost-action-btn {
-          height: 38px;
-          border: 1px solid transparent;
+          height: 40px;
+          border: 1px solid #fecaca;
           border-radius: 10px;
-          background: transparent;
-          color: #6b7280;
+          background: #fff1f2;
+          color: #dc2626;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 0 14px;
-          font-size: 14px;
-          font-weight: 500;
+          padding: 0 20px;
+          font-size: 15px;
+          font-weight: 600;
           font-family: 'Poppins', sans-serif;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         .pf-ghost-action-btn:hover {
-          background: #f4f4f5;
-          color: #374151;
+          background: #fee2e2;
+          color: #b91c1c;
         }
         .outline-btn { transition: all 0.2s ease; background: #000 !important; color: #fff !important; border: 1px solid #000 !important; border-radius: 12px !important; padding: 8px 16px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Poppins', sans-serif; white-space: nowrap; }
         .outline-btn:hover { background: #333 !important; border-color: #333 !important; }
@@ -749,7 +749,7 @@ const ProductForm = () => {
           </h2>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: 'end' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
             className="pf-ghost-action-btn"
@@ -766,9 +766,10 @@ const ProductForm = () => {
               color: '#fff',
               border: 'none',
               borderRadius: 12,
-              padding: '8px 20px',
+              height: 40,
+              padding: '0 20px',
               fontSize: 15,
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: saving ? 'not-allowed' : 'pointer',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               fontFamily: 'Poppins, sans-serif',
