@@ -17,6 +17,8 @@ const QuickAddModal = ({
 }) => {
   if (!m) return null;
 
+  const inputLabel = isSubcategory ? 'Subcategory Name' : 'Category Name';
+
   return (
     <div
       role="dialog"
@@ -38,19 +40,19 @@ const QuickAddModal = ({
         style={{
           width: '100%',
           maxWidth: 380,
-          background: '#ffffff',
+          background: '#0f172a',
           borderRadius: 14,
-          border: '1px solid #e4e4e7',
-          boxShadow: '0 16px 44px rgba(15, 23, 42, 0.16)',
-          padding: 18,
+          border: '1px solid #1f2937',
+          boxShadow: '0 20px 52px rgba(2, 6, 23, 0.48)',
+          padding: 20,
           fontFamily: 'Poppins, sans-serif',
         }}
       >
-        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827' }}>{title}</h4>
+        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#f8fafc', letterSpacing: '0.02em' }}>{title}</h4>
 
         {isSubcategory && (
-          <div style={{ marginTop: 10, marginBottom: 10 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#71717a', marginBottom: 4 }}>
+          <div style={{ marginTop: 14, marginBottom: 8 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 6, letterSpacing: '0.02em' }}>
               Parent Category
             </label>
             <div style={{ position: 'relative' }}>
@@ -61,12 +63,12 @@ const QuickAddModal = ({
                   width: '100%',
                   height: 40,
                   borderRadius: 10,
-                  border: '1px solid #e4e4e7',
+                  border: '1px solid #334155',
                   padding: '0 40px 0 16px',
                   fontSize: 14,
-                  color: '#111827',
+                  color: '#e2e8f0',
                   boxSizing: 'border-box',
-                  background: '#ffffff',
+                  background: '#111827',
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   MozAppearance: 'none',
@@ -84,7 +86,7 @@ const QuickAddModal = ({
                   right: 14,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: '#71717a',
+                  color: '#94a3b8',
                   pointerEvents: 'none',
                 }}
               />
@@ -92,23 +94,29 @@ const QuickAddModal = ({
           </div>
         )}
 
+        <div style={{ marginTop: 20 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 6, letterSpacing: '0.02em' }}>
+            {inputLabel}
+          </label>
         <input
           type="text"
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          placeholder="Name"
+          placeholder={inputLabel}
           autoFocus
           style={{
             width: '100%',
             height: 40,
             borderRadius: 10,
-            border: '1px solid #d4d4d8',
+            border: '1px solid #334155',
             padding: '0 16px',
             fontSize: 14,
-            color: '#111827',
+            color: '#e2e8f0',
+            background: '#111827',
             boxSizing: 'border-box',
           }}
         />
+        </div>
 
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button
@@ -118,9 +126,9 @@ const QuickAddModal = ({
             style={{
               height: 38,
               borderRadius: 10,
-              border: '1px solid #e4e4e7',
-              background: '#ffffff',
-              color: '#4b5563',
+              border: '1px solid #334155',
+              background: '#1f2937',
+              color: '#cbd5e1',
               padding: '0 14px',
               fontSize: 14,
               fontWeight: 600,
@@ -149,6 +157,10 @@ const QuickAddModal = ({
             {loading ? 'Adding...' : 'Add'}
           </button>
         </div>
+
+        <p style={{ margin: '10px 0 0', fontSize: 11, color: '#64748b', letterSpacing: '0.02em' }}>
+          Form UI Refined for Sober Aesthetic
+        </p>
       </div>
     </div>
   );
