@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchCategories } from '../services/categoryService';
+import QuickAddModal from '../components/QuickAddModal';
+import { addCategory, fetchCategories } from '../services/categoryService';
 import {
   deleteDesignGallery,
   fetchDesignGalleries,
@@ -38,6 +39,10 @@ const ProductForm = () => {
   const [subcategoryId, setSubcategoryId] = useState('');
   const [audience, setAudience] = useState('unisex');
   const [categories, setCategories] = useState([]);
+  const [m, setM] = useState(false);
+  const [val, setVal] = useState('');
+  const [t, setT] = useState('category');
+  const [addingQuickCat, setAddingQuickCat] = useState(false);
   // Dynamic specifications
   const [specs, setSpecs] = useState([{ key: '', value: '' }]);
 
@@ -69,18 +74,18 @@ const ProductForm = () => {
   }, [name]);
 
   // Fetch categories
-  const loadCategories = () => {
+  const fetchCats = () => {
     return fetchCategories()
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
   };
 
   useEffect(() => {
-    loadCategories();
+    fetchCats();
   }, []);
 
   useEffect(() => {
-    const refreshCategories = () => loadCategories();
+    const refreshCategories = () => fetchCats();
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') refreshCategories();
     };
@@ -427,6 +432,51 @@ const ProductForm = () => {
     }
   };
 
+  const openQuickAdd = (type) => {
+    if (type === 'subcategory' && !categoryId) {
+      alert('Please select a category first.');
+      return;
+    }
+    setT(type);
+    setVal('');
+    setM(true);
+  };
+
+  const closeQuickAdd = () => {
+    if (addingQuickCat) return;
+    setM(false);
+    setVal('');
+  };
+
+  const handleQuickAdd = async () => {
+    const nameValue = val.trim();
+    if (!nameValue) return;
+
+    setAddingQuickCat(true);
+    try {
+      const created = await addCategory({
+        name: nameValue,
+        parent_id: t === 'subcategory' ? categoryId : null,
+      });
+
+      await fetchCats();
+
+      if (t === 'subcategory') {
+        setSubcategoryId(String(created?.id || ''));
+      } else {
+        setCategoryId(String(created?.id || ''));
+        setSubcategoryId('');
+      }
+
+      setM(false);
+      setVal('');
+    } catch (err) {
+      alert(err.message || 'Failed to add category');
+    } finally {
+      setAddingQuickCat(false);
+    }
+  };
+
   if (loadingProduct) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins, sans-serif' }}>
@@ -486,6 +536,15 @@ const ProductForm = () => {
       fontFamily: 'Poppins, sans-serif',
       paddingBottom: '80px'
     }}>
+      <QuickAddModal
+        m={m}
+        title={t === 'subcategory' ? 'Quick Add Subcategory' : 'Quick Add Category'}
+        val={val}
+        setVal={setVal}
+        onClose={closeQuickAdd}
+        onAdd={handleQuickAdd}
+        loading={addingQuickCat}
+      />
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
@@ -618,6 +677,23 @@ const ProductForm = () => {
         }
         .pf-image-link-btn:hover {
           background: #f9fafb;
+        }
+        .pf-mini-plus-btn {
+          width: 22px;
+          height: 22px;
+          border: none;
+          border-radius: 999px;
+          background: transparent;
+          color: #c8507a;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          margin-left: 6px;
+        }
+        .pf-mini-plus-btn:hover {
+          background: #fff1f6;
         }
         .pf-ghost-back-btn {
           height: 40px;
@@ -948,7 +1024,12 @@ const ProductForm = () => {
 
                   <div style={{ display: 'flex', gap: 16, marginBottom: 4 }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 4 }}>Category</label>
+                      <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                        Category
+                        <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
+                          <Plus size={14} />
+                        </button>
+                      </label>
                       <div className="pf-select-wrap">
                         <select
                           className="custom-input pf-select"
@@ -970,7 +1051,19 @@ const ProductForm = () => {
                     </div>
 
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'block', marginBottom: 4 }}>Subcategory</label>
+                      <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                        Subcategory
+                        <button
+                          type="button"
+                          className="pf-mini-plus-btn"
+                          onClick={() => openQuickAdd('subcategory')}
+                          title="Quick add subcategory"
+                          disabled={!categoryId}
+                          style={{ opacity: !categoryId ? 0.45 : 1, cursor: !categoryId ? 'not-allowed' : 'pointer' }}
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </label>
                       <div className="pf-select-wrap">
                         <select
                           className="custom-input pf-select"
