@@ -48,6 +48,7 @@ const ProductForm = () => {
   const [val, setVal] = useState('');
   const [t, setT] = useState('category');
   const [pId, setPId] = useState('');
+  const [img, setImg] = useState('');
   const [addingQuickCat, setAddingQuickCat] = useState(false);
   // Dynamic specifications
   const [specs, setSpecs] = useState([newSpec()]);
@@ -362,6 +363,7 @@ const ProductForm = () => {
     setEditProductData(null);
     setPId('');
     setVal('');
+    setImg('');
     setT('category');
     setM(false);
     setActiveTab('general');
@@ -471,6 +473,7 @@ const ProductForm = () => {
   const openQuickAdd = (type) => {
     setT(type);
     setVal('');
+    setImg('');
     setPId(type === 'subcategory' ? categoryId : '');
     setM(true);
   };
@@ -480,6 +483,7 @@ const ProductForm = () => {
     setM(false);
     setVal('');
     setPId('');
+    setImg('');
   };
 
   const handleQuickAdd = async () => {
@@ -490,6 +494,7 @@ const ProductForm = () => {
     try {
       const created = await addCategory({
         name: nameValue,
+        image: t === 'subcategory' ? (img.trim() || null) : null,
         parent_id: t === 'subcategory' ? pId : null,
       });
 
@@ -506,6 +511,7 @@ const ProductForm = () => {
       setPId('');
       setM(false);
       setVal('');
+      setImg('');
     } catch (err) {
       alert(err.message || 'Failed to add category');
     } finally {
@@ -595,6 +601,8 @@ const ProductForm = () => {
         isSubcategory={t === 'subcategory'}
         pId={pId}
         setPId={setPId}
+        img={img}
+        setImg={setImg}
         parentOptions={parentOptions}
         canAdd={canQuickAdd}
         onClose={closeQuickAdd}

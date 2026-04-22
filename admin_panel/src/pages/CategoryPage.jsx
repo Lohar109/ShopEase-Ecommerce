@@ -245,14 +245,20 @@ const CategoryPage = () => {
           width: 100%;
           max-width: 100%;
           box-sizing: border-box;
-          height: 44px;
-          padding: 0 12px;
+          height: 40px;
+          padding: 0 16px;
           border-radius: 8px;
-          border: 1px solid #d4d4d8;
+          border: 1px solid #e4e4e7;
           background: #ffffff;
           color: #111827;
+          font-size: 14px;
           transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
           outline: none;
+        }
+
+        .category-form-control::placeholder {
+          color: #a1a1aa;
+          font-weight: 400;
         }
 
         .category-form-control:focus {

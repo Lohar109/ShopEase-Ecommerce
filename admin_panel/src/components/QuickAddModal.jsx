@@ -12,6 +12,8 @@ const QuickAddModal = ({
   isSubcategory = false,
   pId = '',
   setPId,
+  img = '',
+  setImg,
   parentOptions = [],
   canAdd = false,
 }) => {
@@ -19,6 +21,17 @@ const QuickAddModal = ({
 
   const s = isSubcategory;
   const p = pId;
+  const inputStyle = {
+    width: '100%',
+    height: 40,
+    borderRadius: 8,
+    border: '1px solid #e4e4e7',
+    padding: '0 16px',
+    fontSize: 14,
+    color: '#111827',
+    background: '#ffffff',
+    boxSizing: 'border-box',
+  };
 
   return (
     <div
@@ -51,8 +64,8 @@ const QuickAddModal = ({
       >
         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>{title}</h4>
 
-        {s && (
-          <div style={{ marginTop: 14, marginBottom: 8 }}>
+        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {s && (
             <div style={{ position: 'relative' }}>
               <select
                 value={p}
@@ -60,10 +73,10 @@ const QuickAddModal = ({
                 style={{
                   display: 'block',
                   width: '100%',
-                  minHeight: 40,
-                  borderRadius: 10,
-                  border: '1px solid #d4d4d8',
-                  padding: '9px 52px 9px 16px',
+                  height: 40,
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  padding: '0 52px 0 16px',
                   fontSize: 14,
                   lineHeight: '1.3',
                   fontFamily: 'inherit',
@@ -92,31 +105,29 @@ const QuickAddModal = ({
                 }}
               />
             </div>
-          </div>
-        )}
+          )}
 
-        <div style={{ marginTop: s ? 10 : 20 }}>
-        <input
-          type="text"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-          placeholder={s ? 'Subcategory Name' : 'Category Name'}
-          autoFocus
-          style={{
-            width: '100%',
-            height: 40,
-            borderRadius: 10,
-            border: '1px solid #d4d4d8',
-            padding: '0 16px',
-            fontSize: 14,
-            color: '#111827',
-            background: '#ffffff',
-            boxSizing: 'border-box',
-          }}
-        />
+          <input
+            type="text"
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            placeholder={s ? 'Subcategory Name' : 'Category Name'}
+            autoFocus
+            style={inputStyle}
+          />
+
+          {s && (
+            <input
+              type="text"
+              value={img}
+              onChange={(e) => setImg?.(e.target.value)}
+              placeholder="Subcategory image URL"
+              style={inputStyle}
+            />
+          )}
         </div>
 
-        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button
             type="button"
             onClick={onClose}
