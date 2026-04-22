@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   BedDouble,
   BookOpen,
-  ChevronLeft,
-  ChevronRight,
   Dice5,
   Dumbbell,
   Footprints,
@@ -79,24 +77,12 @@ const normalizeCategoryKey = (value) =>
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
-  const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-
-  const scrollCategoryRail = (direction) => {
-    const rail = categoryScrollRef.current;
-    if (!rail) return;
-
-    const distance = Math.max(220, Math.floor(rail.clientWidth * 0.6));
-    rail.scrollBy({
-      left: direction === "left" ? -distance : distance,
-      behavior: "smooth"
-    });
-  };
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
@@ -219,19 +205,7 @@ const Shop = () => {
     <main className="shop-page">
       <section className="shop-filter-card" aria-label="Filter by category">
         <div className="shop-filter-card-main">
-          <h1 className="shop-page-title">Explore Our Collection</h1>
-
-          <div className="shop-category-rail">
-            <button
-              type="button"
-              className="shop-category-nav-btn"
-              aria-label="Scroll categories left"
-              onClick={() => scrollCategoryRail("left")}
-            >
-              <ChevronLeft size={16} strokeWidth={2.4} />
-            </button>
-
-            <div ref={categoryScrollRef} className="shop-category-scroll" role="list" aria-label="Category cards">
+          <div className="shop-category-scroll" role="list" aria-label="Category cards">
               {isCategoriesLoading ? (
                 Array.from({ length: 8 }).map((_, index) => (
                   <CategorySkeleton key={`category-skeleton-${index}`} />
@@ -281,16 +255,6 @@ const Shop = () => {
                   })}
                 </>
               )}
-            </div>
-
-            <button
-              type="button"
-              className="shop-category-nav-btn"
-              aria-label="Scroll categories right"
-              onClick={() => scrollCategoryRail("right")}
-            >
-              <ChevronRight size={16} strokeWidth={2.4} />
-            </button>
           </div>
         </div>
 

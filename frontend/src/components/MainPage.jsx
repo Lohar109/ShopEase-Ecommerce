@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BedDouble,
   BookOpen,
-  ChevronLeft,
-  ChevronRight,
   Dice1,
   Dice4,
   Footprints,
@@ -92,23 +90,11 @@ const getHomeCategoryIcon = (name) => {
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const categoryScrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [homeCategories, setHomeCategories] = useState(CATEGORY_ITEMS);
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
-
-  const scrollHomeCategories = (direction) => {
-    const rail = categoryScrollRef.current;
-    if (!rail) return;
-
-    const distance = Math.max(220, Math.floor(rail.clientWidth * 0.6));
-    rail.scrollBy({
-      left: direction === "left" ? -distance : distance,
-      behavior: "smooth"
-    });
-  };
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
@@ -187,19 +173,7 @@ const MainPage = () => {
       {/* Shop by Category Section */}
       <section className="categories" aria-label="Shop categories">
         <div className="home-categories-card">
-          <h2 className="home-categories-title">Shop by Category</h2>
-
-          <div className="home-category-rail">
-            <button
-              type="button"
-              className="home-category-nav-btn"
-              aria-label="Scroll categories left"
-              onClick={() => scrollHomeCategories("left")}
-            >
-              <ChevronLeft size={16} strokeWidth={2.4} />
-            </button>
-
-            <div ref={categoryScrollRef} className="home-categories-scroll" role="list" aria-label="Category cards">
+            <div className="home-categories-scroll flex flex-wrap items-center justify-center gap-4 py-6" role="list" aria-label="Category cards">
               {isCategoriesLoading ? (
                 Array.from({ length: 8 }).map((_, index) => (
                   <CategorySkeleton key={`home-category-skeleton-${index}`} />
@@ -239,16 +213,6 @@ const MainPage = () => {
                 })
               )}
             </div>
-
-            <button
-              type="button"
-              className="home-category-nav-btn"
-              aria-label="Scroll categories right"
-              onClick={() => scrollHomeCategories("right")}
-            >
-              <ChevronRight size={16} strokeWidth={2.4} />
-            </button>
-          </div>
         </div>
       </section>
 
