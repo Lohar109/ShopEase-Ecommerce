@@ -25,9 +25,13 @@ const normalizeId = (value) => String(value ?? '').trim();
 const ProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
+  const mk = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const newSpec = () => ({ sk: mk(), key: '', value: '' });
+  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', stock: '', sku: '', image: img });
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
-  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(isEditMode);
+  const [loadErr, setLoadErr] = useState('');
   const [editProductData, setEditProductData] = useState(null);
   const navigate = useNavigate();
   // General Details state
@@ -46,7 +50,7 @@ const ProductForm = () => {
   const [pId, setPId] = useState('');
   const [addingQuickCat, setAddingQuickCat] = useState(false);
   // Dynamic specifications
-  const [specs, setSpecs] = useState([{ key: '', value: '' }]);
+  const [specs, setSpecs] = useState([newSpec()]);
 
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
@@ -106,33 +110,34 @@ const ProductForm = () => {
 
     const loadProduct = async () => {
       setLoadingProduct(true);
+      setLoadErr('');
       try {
         const data = await fetchProductById(id);
-        const product = data?.product;
-        const variants = data?.variants || [];
+        const p = data?.product && typeof data.product === 'object' ? data.product : data;
+        const vs = Array.isArray(data?.variants) ? data.variants : (Array.isArray(p?.variants) ? p.variants : []);
 
-        if (!product) {
-          alert('Product not found');
-          navigate('/products');
-          return;
+        if (!p || typeof p !== 'object' || Array.isArray(p)) {
+          throw new Error('Invalid product data format');
         }
 
-        setName(product.name || '');
-        setSlug(product.slug || '');
-        setBrand(product.brand || '');
-        setDescription(product.description || '');
-        setAudience(product.audience || 'unisex');
-        setMainImage(product.main_image || '');
-        setGalleryImages(Array.isArray(product.images) && product.images.length > 0 ? product.images : ['']);
+        setName(p?.name || '');
+        setSlug(p?.slug || '');
+        setBrand(p?.brand || '');
+        setDescription(p?.description || '');
+        setAudience(p?.audience || 'unisex');
+        setMainImage(p?.main_image || '');
+        setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
-        const specEntries = product.specifications && typeof product.specifications === 'object'
-          ? Object.entries(product.specifications)
+        const rawSpecs = p.specifications;
+        const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
+          ? Object.entries(rawSpecs)
           : [];
-        setSpecs(specEntries.length > 0 ? specEntries.map(([key, value]) => ({ key, value: String(value) })) : [{ key: '', value: '' }]);
+        setSpecs(specEntries.length > 0 ? specEntries.map(([key, value]) => ({ sk: mk(), key: String(key || ''), value: String(value || '') })) : [newSpec()]);
 
         setVariantRows(
-          variants.length > 0
-            ? variants.map(v => ({
+          vs.length > 0
+            ? vs.map(v => ({
+                vk: mk(),
                 size: v.size || '',
                 color: v.color || '',
                 price: v.price ?? '',
@@ -140,13 +145,12 @@ const ProductForm = () => {
                 sku: v.sku || '',
                 image: v.image || ''
               }))
-            : [{ size: '', color: '', price: '', stock: '', sku: '', image: '' }]
+            : [newVar(p?.main_image || '')]
         );
 
-        setEditProductData(product || null);
+        setEditProductData(p || null);
       } catch (err) {
-        alert(err.message || 'Failed to load product details');
-        navigate('/products');
+        setLoadErr(err.message || 'Failed to load product details');
       } finally {
         setLoadingProduct(false);
       }
@@ -263,12 +267,12 @@ const ProductForm = () => {
   const handleSpecChange = (idx, field, value) => {
     setSpecs(specs => specs.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
   };
-  const addSpec = () => setSpecs([...specs, { key: '', value: '' }]);
+  const addSpec = () => setSpecs([...specs, newSpec()]);
   const removeSpec = idx => setSpecs(specs => specs.filter((_, i) => i !== idx));
 
   // --- Variant state and handlers ---
   const [variantRows, setVariantRows] = useState([
-    { size: '', color: '', price: '', stock: '', sku: '', image: '' }
+    newVar()
   ]);
 
   // Helper to get product initials
@@ -320,7 +324,7 @@ const ProductForm = () => {
     });
   }, [mainImage]);
 
-  const addVariant = () => setVariantRows([...variantRows, { size: '', color: '', price: '', stock: '', sku: '', image: '' }]);
+  const addVariant = () => setVariantRows([...variantRows, newVar()]);
   const removeVariant = idx => setVariantRows(rows => rows.filter((_, i) => i !== idx));
 
   const rem = () => {
@@ -509,14 +513,6 @@ const ProductForm = () => {
     }
   };
 
-  if (loadingProduct) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins, sans-serif' }}>
-        Loading product...
-      </div>
-    );
-  }
-
   const activeIdx = Math.max(0, STEPS.findIndex((s) => s.key === activeTab));
   const canPrev = activeIdx > 0;
   const canNext = activeIdx < STEPS.length - 1;
@@ -564,6 +560,25 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const canQuickAdd = t === 'subcategory' ? Boolean(pId && val.trim()) : Boolean(val.trim());
   const variantCols = '1fr 1fr 1fr 1fr 1fr 1.5fr auto';
+
+  if (isEditMode && !editProductData && loadingProduct) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins, sans-serif' }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (isEditMode && !editProductData && loadErr) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins, sans-serif', padding: 16 }}>
+        <div style={{ background: '#fff', border: '1px solid #e4e4e7', borderRadius: 12, padding: 20, maxWidth: 440, width: '100%' }}>
+          <h3 style={{ margin: 0, fontSize: 18, color: '#111827' }}>Unable to load product</h3>
+          <p style={{ margin: '8px 0 0', color: '#4b5563', fontSize: 14 }}>{loadErr}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -1234,7 +1249,7 @@ const ProductForm = () => {
                   <div style={{ marginBottom: 6 }}>
                     <label style={{ fontWeight: 500 }}>Product Specifications</label>
                     {specs.map((spec, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                      <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                         <input
                           className="custom-input"
                           type="text"
@@ -1304,7 +1319,7 @@ const ProductForm = () => {
                   <div style={{ marginBottom: 8 }}>
                     <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
                     {galleryImages.map((img, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                      <div key={`g-${idx}-${String(img || '').slice(0, 24)}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                         <input
                           className="custom-input"
                           type="text"
@@ -1346,7 +1361,7 @@ const ProductForm = () => {
                     return (
                       <div className="pf-preview-grid">
                         {imgs.map((url, i) => (
-                          <img key={i} src={url} alt="Gallery" className="pf-preview-img" />
+                          <img key={`gp-${i}-${String(url || '').slice(0, 24)}`} src={url} alt="Gallery" className="pf-preview-img" />
                         ))}
                       </div>
                     );
@@ -1389,7 +1404,7 @@ const ProductForm = () => {
                     <div style={{ display: 'grid', gap: 8 }}>
                       {variantRows.map((variant, idx) => (
                         <div
-                          key={idx}
+                          key={variant.vk || `var-${idx}`}
                           className="grid grid-cols-7 gap-4"
                           style={{
                             display: 'grid',
