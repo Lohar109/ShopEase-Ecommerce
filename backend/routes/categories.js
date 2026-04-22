@@ -38,14 +38,11 @@ router.post('/', async (req, res) => {
   try {
     if (finalParentId) {
       const parentResult = await pool.query(
-        'SELECT id, parent_id FROM category WHERE id = $1 LIMIT 1',
+        'SELECT id FROM category WHERE id = $1 LIMIT 1',
         [finalParentId]
       );
       if (parentResult.rowCount === 0) {
         return res.status(400).json({ error: 'Selected parent category does not exist' });
-      }
-      if (parentResult.rows[0].parent_id !== null) {
-        return res.status(400).json({ error: 'Parent category must be a main category' });
       }
     }
 

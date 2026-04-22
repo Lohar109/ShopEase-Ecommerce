@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
@@ -14,14 +14,14 @@ const CategoryPage = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
 
-  const [newSubcategoryName, setNewSubcategoryName] = useState('');
-  const [selectedParentId, setSelectedParentId] = useState('');
+  const [sName, setSName] = useState('');
+  const [pId, setPId] = useState('');
+  const [img, setImg] = useState('');
   const [addingSubcategory, setAddingSubcategory] = useState(false);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetId, setTargetId] = useState('');
-  const [expandedCategories, setExpandedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadCategories = async () => {
@@ -47,11 +47,6 @@ const CategoryPage = () => {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const mainCategories = useMemo(
-    () => categories.filter((category) => category?.parent_id === null),
-    [categories]
-  );
-
   const categoryById = useMemo(() => {
     const index = {};
     categories.forEach((category) => {
@@ -60,87 +55,80 @@ const CategoryPage = () => {
     return index;
   }, [categories]);
 
-  const childCategories = useMemo(
-    () => categories.filter((category) => category?.parent_id !== null),
-    [categories]
-  );
-
-  const childrenByParentId = useMemo(() => {
-    const group = {};
-    childCategories.forEach((category) => {
-      const parentId = String(category.parent_id);
-      if (!group[parentId]) group[parentId] = [];
-      group[parentId].push(category);
-    });
-    return group;
-  }, [childCategories]);
-
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
-  const parentMatches = useMemo(() => {
-    if (!normalizedSearchTerm) return [];
-    return mainCategories.filter((category) =>
-      String(category?.name || '').toLowerCase().includes(normalizedSearchTerm)
-    );
-  }, [mainCategories, normalizedSearchTerm]);
+  const { pathById, depthById } = useMemo(() => {
+    const p = {};
+    const d = {};
 
-  const childMatches = useMemo(() => {
-    if (!normalizedSearchTerm) return [];
-    return childCategories.filter((category) =>
-      String(category?.name || '').toLowerCase().includes(normalizedSearchTerm)
-    );
-  }, [childCategories, normalizedSearchTerm]);
+    const getPath = (id, seen = new Set()) => {
+      const k = String(id || '');
+      if (!k) return '';
+      if (p[k]) return p[k];
+      if (seen.has(k)) return String(categoryById[k]?.name || '');
 
-  const displayedParents = useMemo(() => {
-    if (!normalizedSearchTerm) return mainCategories;
+      seen.add(k);
+      const c = categoryById[k];
+      if (!c) return '';
 
-    const parentIdsFromParentMatches = parentMatches.map((category) => String(category.id));
-    const parentIdsFromChildMatches = childMatches.map((category) => String(category.parent_id));
-    const visibleParentIds = new Set([...parentIdsFromParentMatches, ...parentIdsFromChildMatches]);
-
-    return mainCategories.filter((category) => visibleParentIds.has(String(category.id)));
-  }, [mainCategories, parentMatches, childMatches, normalizedSearchTerm]);
-
-  const searchableChildrenByParentId = useMemo(() => {
-    if (!normalizedSearchTerm) return childrenByParentId;
-
-    const matchedChildren = {};
-
-    displayedParents.forEach((parentCategory) => {
-      const parentId = String(parentCategory.id);
-      const parentMatched = parentMatches.some(
-        (category) => String(category.id) === parentId
-      );
-
-      if (parentMatched) {
-        matchedChildren[parentId] = childrenByParentId[parentId] || [];
-        return;
+      const n = String(c.name || '').trim();
+      const parentKey = c.parent_id ? String(c.parent_id) : '';
+      if (!parentKey) {
+        p[k] = n;
+        return p[k];
       }
 
-      matchedChildren[parentId] = childMatches.filter(
-        (category) => String(category.parent_id) === parentId
-      );
-    });
+      const parentPath = getPath(parentKey, seen);
+      p[k] = parentPath ? `${parentPath} > ${n}` : n;
+      return p[k];
+    };
 
-    return matchedChildren;
-  }, [childrenByParentId, childMatches, displayedParents, normalizedSearchTerm, parentMatches]);
+    const getDepth = (id, seen = new Set()) => {
+      const k = String(id || '');
+      if (!k) return 0;
+      if (d[k] !== undefined) return d[k];
+      if (seen.has(k)) return 0;
 
-  const effectiveExpandedCategories = useMemo(() => {
-    if (!normalizedSearchTerm) return expandedCategories;
-
-    const autoExpandedParentIds = displayedParents.map((category) => String(category.id));
-    return Array.from(new Set([...expandedCategories, ...autoExpandedParentIds]));
-  }, [displayedParents, expandedCategories, normalizedSearchTerm]);
-
-  const toggleParentRow = (parentId) => {
-    const normalizedParentId = String(parentId);
-    setExpandedCategories((previous) => {
-      if (previous.includes(normalizedParentId)) {
-        return previous.filter((id) => id !== normalizedParentId);
+      seen.add(k);
+      const c = categoryById[k];
+      if (!c || !c.parent_id) {
+        d[k] = 0;
+        return 0;
       }
-      return [...previous, normalizedParentId];
+
+      d[k] = getDepth(String(c.parent_id), seen) + 1;
+      return d[k];
+    };
+
+    categories.forEach((c) => {
+      const id = String(c.id || '');
+      if (!id) return;
+      getPath(id);
+      getDepth(id);
     });
-  };
+
+    return { pathById: p, depthById: d };
+  }, [categories, categoryById]);
+
+  const orderedRows = useMemo(() => {
+    return [...categories].sort((a, b) => {
+      const ak = String(a?.id || '');
+      const bk = String(b?.id || '');
+      const ap = String(pathById[ak] || a?.name || '');
+      const bp = String(pathById[bk] || b?.name || '');
+      return ap.localeCompare(bp, undefined, { sensitivity: 'base' });
+    });
+  }, [categories, pathById]);
+
+  const displayedRows = useMemo(() => {
+    if (!normalizedSearchTerm) return orderedRows;
+    return orderedRows.filter((c) => {
+      const id = String(c?.id || '');
+      const n = String(c?.name || '').toLowerCase();
+      const p = String(pathById[id] || '').toLowerCase();
+      return n.includes(normalizedSearchTerm) || p.includes(normalizedSearchTerm);
+    });
+  }, [orderedRows, normalizedSearchTerm, pathById]);
 
   const addCat = async (event) => {
     event.preventDefault();
@@ -169,11 +157,11 @@ const CategoryPage = () => {
 
   const addSubCat = async (event) => {
     event.preventDefault();
-    if (!selectedParentId) {
+    if (!pId) {
       toast.error('Failed to add category.');
       return;
     }
-    if (!newSubcategoryName.trim()) {
+    if (!sName.trim()) {
       toast.error('Failed to add category.');
       return;
     }
@@ -181,13 +169,16 @@ const CategoryPage = () => {
     setAddingSubcategory(true);
     try {
       const res = await addCategory({
-        name: newSubcategoryName.trim(),
-        parent_id: selectedParentId,
+        name: sName.trim(),
+        image: img.trim() || null,
+        parent_id: pId,
       });
       if (res) {
         toast.success('Category added successfully!', { position: 'top-center' });
       }
-      setNewSubcategoryName('');
+      setSName('');
+      setImg('');
+      setPId('');
       await loadCategories();
     } catch (err) {
       toast.error('Failed to add category.');
@@ -240,7 +231,7 @@ const CategoryPage = () => {
     }
   };
 
-  const hasAnyRows = displayedParents.length > 0;
+  const hasAnyRows = displayedRows.length > 0;
 
   return (
     <div>
@@ -418,14 +409,14 @@ const CategoryPage = () => {
                 <div className="category-parent-select-wrap">
                   <select
                     className="category-form-control category-parent-select w-full box-border"
-                    value={selectedParentId}
-                    onChange={(event) => setSelectedParentId(event.target.value)}
+                    value={pId}
+                    onChange={(event) => setPId(event.target.value)}
                     required
                   >
                     <option value="">Select parent category</option>
-                    {mainCategories.map((cat) => (
+                    {orderedRows.map((cat) => (
                       <option key={cat.id} value={cat.id}>
-                        {cat.name}
+                        {pathById[String(cat.id)] || cat.name}
                       </option>
                     ))}
                   </select>
@@ -434,10 +425,17 @@ const CategoryPage = () => {
                 <input
                   className="category-form-control w-full box-border"
                   type="text"
-                  value={newSubcategoryName}
-                  onChange={(event) => setNewSubcategoryName(event.target.value)}
+                  value={sName}
+                  onChange={(event) => setSName(event.target.value)}
                   placeholder="Subcategory name"
                   required
+                />
+                <input
+                  className="category-form-control w-full box-border"
+                  type="url"
+                  value={img}
+                  onChange={(event) => setImg(event.target.value)}
+                  placeholder="Subcategory image URL"
                 />
                 <button
                   type="submit"
@@ -516,175 +514,63 @@ const CategoryPage = () => {
                     />
                   ) : (
                   <tbody>
-                    {displayedParents.map((parentCategory) => {
-                      const parentId = String(parentCategory.id);
-                      const parentChildren = searchableChildrenByParentId[parentId] || [];
-                      const visibleChildren = parentChildren.filter((childCategory) =>
-                        effectiveExpandedCategories.includes(String(childCategory.parent_id))
-                      );
-                      const isExpanded = effectiveExpandedCategories.includes(parentId);
-                      const isParentDeleting = deletingCategoryId === parentId;
+                    {displayedRows.map((cat) => {
+                      const id = String(cat.id);
+                      const isDeleting = deletingCategoryId === id;
+                      const isParent = cat.parent_id === null;
+                      const path = pathById[id] || String(cat.name || '-');
+                      const depth = depthById[id] || 0;
 
                       return (
-                        <React.Fragment key={parentId}>
-                          <tr
-                            className="category-table-row"
-                            style={{
-                              borderBottom: '1px solid #f1f5f9',
-                              cursor: 'pointer',
-                              background: isExpanded ? '#fafafa' : '#ffffff',
-                            }}
-                            onClick={() => toggleParentRow(parentId)}
-                          >
-                            <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 600 }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                                {parentCategory.name}
-                                <span
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    borderRadius: 999,
-                                    background: '#f4f4f5',
-                                    color: '#3f3f46',
-                                    fontSize: 11,
-                                    fontWeight: 600,
-                                    padding: '2px 8px',
-                                    lineHeight: 1.4,
-                                  }}
-                                >
-                                  {parentChildren.length}
-                                </span>
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 10px', color: '#475569' }}>
-                              <span
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  borderRadius: 999,
-                                  background: '#e2e8f0',
-                                  color: '#334155',
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: '2px 8px',
-                                  lineHeight: 1.4,
-                                }}
-                              >
-                                Parent
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 10px', color: '#475569' }}>{parentCategory.name}</td>
-                            <td style={{ padding: '12px 10px', textAlign: 'right' }}>
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  openDeleteModal(parentCategory);
-                                }}
-                                disabled={isParentDeleting}
-                                style={{
-                                  border: '1px solid #fecaca',
-                                  background: isParentDeleting ? '#fee2e2' : '#fff1f2',
-                                  color: '#b91c1c',
-                                  borderRadius: 8,
-                                  padding: '6px 9px',
-                                  cursor: isParentDeleting ? 'not-allowed' : 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 6,
-                                  fontWeight: 600,
-                                  fontSize: 12,
-                                }}
-                                title="Delete category"
-                              >
-                                <Trash2 size={14} />
-                                {isParentDeleting ? 'Deleting...' : 'Delete'}
-                              </button>
-                            </td>
-                          </tr>
-
-                          {isExpanded &&
-                            visibleChildren.map((childCategory) => {
-                              const childId = String(childCategory.id);
-                              const isChildDeleting = deletingCategoryId === childId;
-                              const parentName = categoryById[String(childCategory.parent_id)]?.name || '-';
-
-                              return (
-                                <tr key={childId} className="category-table-row" style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
-                                  <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 500 }}>
-                                    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', paddingLeft: 48 }}>
-                                      <span
-                                        aria-hidden="true"
-                                        style={{
-                                          position: 'absolute',
-                                          left: 24,
-                                          top: -12,
-                                          bottom: -12,
-                                          width: 1,
-                                          background: '#71717a',
-                                        }}
-                                      />
-                                      <span
-                                        aria-hidden="true"
-                                        style={{
-                                          position: 'absolute',
-                                          left: 24,
-                                          top: '50%',
-                                          width: 16,
-                                          height: 1,
-                                          background: '#71717a',
-                                        }}
-                                      />
-                                      {childCategory.name}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: '12px 10px', color: '#475569' }}>
-                                    <span
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        borderRadius: 999,
-                                        background: '#ccfbf1',
-                                        color: '#0f766e',
-                                        fontSize: 11,
-                                        fontWeight: 600,
-                                        padding: '2px 8px',
-                                        lineHeight: 1.4,
-                                      }}
-                                    >
-                                      Subcategory
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: '12px 10px', color: '#475569' }}>{`${parentName} > ${childCategory.name}`}</td>
-                                  <td style={{ padding: '12px 10px', textAlign: 'right' }}>
-                                    <button
-                                      type="button"
-                                      onClick={() => openDeleteModal(childCategory)}
-                                      disabled={isChildDeleting}
-                                      style={{
-                                        border: '1px solid #fecaca',
-                                        background: isChildDeleting ? '#fee2e2' : '#fff1f2',
-                                        color: '#b91c1c',
-                                        borderRadius: 8,
-                                        padding: '6px 9px',
-                                        cursor: isChildDeleting ? 'not-allowed' : 'pointer',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 6,
-                                        fontWeight: 600,
-                                        fontSize: 12,
-                                      }}
-                                      title="Delete category"
-                                    >
-                                      <Trash2 size={14} />
-                                      {isChildDeleting ? 'Deleting...' : 'Delete'}
-                                    </button>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                        </React.Fragment>
+                        <tr key={id} className="category-table-row" style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '12px 10px', color: '#111827', fontWeight: isParent ? 600 : 500 }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', paddingLeft: Math.min(depth, 10) * 18 }}>
+                              {cat.name}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 10px', color: '#475569' }}>
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                borderRadius: 999,
+                                background: isParent ? '#e2e8f0' : '#ccfbf1',
+                                color: isParent ? '#334155' : '#0f766e',
+                                fontSize: 11,
+                                fontWeight: 600,
+                                padding: '2px 8px',
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {isParent ? 'Parent' : 'Sub'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 10px', color: '#475569' }}>{path}</td>
+                          <td style={{ padding: '12px 10px', textAlign: 'right' }}>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal(cat)}
+                              disabled={isDeleting}
+                              style={{
+                                border: '1px solid #fecaca',
+                                background: isDeleting ? '#fee2e2' : '#fff1f2',
+                                color: '#b91c1c',
+                                borderRadius: 8,
+                                padding: '6px 9px',
+                                cursor: isDeleting ? 'not-allowed' : 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                fontWeight: 600,
+                                fontSize: 12,
+                              }}
+                              title="Delete category"
+                            >
+                              <Trash2 size={14} />
+                              {isDeleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </td>
+                        </tr>
                       );
                     })}
                   </tbody>
