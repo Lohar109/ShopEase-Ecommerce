@@ -40,6 +40,7 @@ const ProductForm = () => {
   const [audience, setAudience] = useState('unisex');
   const [categories, setCategories] = useState([]);
   const [m, setM] = useState(false);
+  const [d, setD] = useState(false);
   const [val, setVal] = useState('');
   const [t, setT] = useState('category');
   const [pId, setPId] = useState('');
@@ -309,9 +310,7 @@ const ProductForm = () => {
   // Keep the primary variant image synced with main image to avoid duplicate entry.
   useEffect(() => {
     setVariantRows((rows) => {
-      if (!Array.isArray(rows) || rows.length === 0) {
-        return [{ size: '', color: '', price: '', stock: '', sku: '', image: mainImage || '' }];
-      }
+      if (!Array.isArray(rows) || rows.length === 0) return rows;
 
       if ((rows[0]?.image || '') === (mainImage || '')) {
         return rows;
@@ -323,6 +322,47 @@ const ProductForm = () => {
 
   const addVariant = () => setVariantRows([...variantRows, { size: '', color: '', price: '', stock: '', sku: '', image: '' }]);
   const removeVariant = idx => setVariantRows(rows => rows.filter((_, i) => i !== idx));
+
+  const rem = () => {
+    const f = {
+      n: '',
+      b: '',
+      ds: '',
+      c: '',
+      s: '',
+      a: 'unisex',
+      m: '',
+      sp: [],
+      g: [],
+      v: [],
+      dc: '',
+      di: '',
+      dg: [],
+    };
+
+    setName(f.n);
+    setSlug('');
+    setBrand(f.b);
+    setDescription(f.ds);
+    setCategoryId(f.c);
+    setSubcategoryId(f.s);
+    setAudience(f.a);
+    setMainImage(f.m);
+    setSpecs(f.sp);
+    setGalleryImages(f.g);
+    setVariantRows(f.v);
+    setDesignColorName(f.dc);
+    setDesignImagesInput(f.di);
+    setDesignGalleries(f.dg);
+    setDeletingDesignGalleryId('');
+    setEditProductData(null);
+    setPId('');
+    setVal('');
+    setT('category');
+    setM(false);
+    setActiveTab('general');
+    setD(false);
+  };
 
   // Toggle SKU edit mode
   const toggleSkuEditable = (idx) => {
@@ -546,6 +586,83 @@ const ProductForm = () => {
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
       />
+      {d && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setD(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 320,
+            background: 'rgba(15, 23, 42, 0.22)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: 420,
+              background: '#ffffff',
+              borderRadius: 14,
+              border: '1px solid #e4e4e7',
+              boxShadow: '0 20px 44px rgba(15, 23, 42, 0.14)',
+              padding: 20,
+              fontFamily: 'Poppins, sans-serif',
+            }}
+          >
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>
+              Discard Changes?
+            </h4>
+            <p style={{ margin: '10px 0 0', color: '#4b5563', fontSize: 14, lineHeight: 1.5 }}>
+              Are you sure you want to clear all fields? This action cannot be undone.
+            </p>
+
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => setD(false)}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #e4e4e7',
+                  background: 'transparent',
+                  color: '#4b5563',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={rem}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #c8507a',
+                  background: '#c8507a',
+                  color: '#ffffff',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         .custom-input { transition: border-color 0.2s ease; font-family: 'Poppins', sans-serif; }
         .custom-input:focus { border-color: #000 !important; outline: none; box-shadow: 0 0 0 1px #000; }
@@ -840,7 +957,7 @@ const ProductForm = () => {
           <button
             type="button"
             className="pf-ghost-action-btn"
-            onClick={() => navigate('/products')}
+            onClick={() => setD(true)}
             disabled={saving}
             style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}
           >
