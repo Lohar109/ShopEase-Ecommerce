@@ -148,6 +148,14 @@ const CategoryPage = () => {
     return { parentRows: parentList, subRowsByParent: childMap };
   }, [orderedRows, displayedRows, normalizedSearchTerm]);
 
+  const parentCategoryOptions = useMemo(
+    () =>
+      categories.filter(
+        (category) => category?.parent_id === null || category?.parent_id === undefined
+      ),
+    [categories]
+  );
+
   const addCat = async (event) => {
     event.preventDefault();
     if (!newCategoryName.trim()) {
@@ -487,9 +495,9 @@ const CategoryPage = () => {
                     required
                   >
                     <option value="">Select parent category</option>
-                    {orderedRows.map((cat) => (
+                    {parentCategoryOptions.map((cat) => (
                       <option key={cat.id} value={cat.id}>
-                        {pathById[String(cat.id)] || cat.name}
+                        {cat.name}
                       </option>
                     ))}
                   </select>
