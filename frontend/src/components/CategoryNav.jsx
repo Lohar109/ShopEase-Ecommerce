@@ -20,17 +20,17 @@ const CategoryNav = () => {
   );
 
   return (
-    <section className="category-nav-shell" aria-label="Premium category navigation">
-      <div className="category-nav-primary-row flex flex-row items-center justify-center gap-6 overflow-x-auto py-2" role="list" aria-label="Primary categories">
+    <section className="category-nav-shell bg-white border-b border-zinc-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]" aria-label="Premium category navigation">
+      <div className="category-nav-primary-row flex flex-row items-center justify-center gap-6 overflow-x-auto scrollbar-hide py-2" role="list" aria-label="Primary categories">
         {categories.map((category) => {
           return (
-            <div key={category._id || category.name} className="flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[64px]">
+            <div key={category._id || category.name} className="flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[64px] transition-all duration-300 ease-in-out">
               <img
                 src={`/category-icons/${category.name}.png`}
                 alt={category.name}
-                className="w-7 h-7 object-contain group-hover:scale-105 transition-transform"
+                className="w-7 h-7 object-contain group-hover:scale-105 group-hover:-translate-y-1 transition-all duration-300 ease-in-out"
               />
-              <span className="text-center text-xs font-medium text-zinc-800 whitespace-nowrap">
+              <span className="text-center text-xs font-medium text-zinc-800 whitespace-nowrap group-hover:text-[#c8507a] transition-all duration-300 ease-in-out">
                 {category.name}
               </span>
             </div>
