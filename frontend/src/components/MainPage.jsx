@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles.css";
 import CategoryNav from "./CategoryNav";
+import DiscountBanner from "./DiscountBanner";
 import HeroCarousel from "./HeroCarousel";
 import ProductCard from "./ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
@@ -60,6 +61,7 @@ const MainPage = () => {
   return (
     <>
       <CategoryNav />
+      <DiscountBanner />
 
       <main>
       <HeroCarousel />

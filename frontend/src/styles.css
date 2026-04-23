@@ -504,6 +504,139 @@ nav {
     color: #c8507a;
 }
 
+.discount-banner-wrap {
+    width: 100%;
+    padding: 0.6rem 1rem 0.2rem;
+}
+
+.discount-banner-inner {
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(200, 80, 122, 0.14);
+    background: linear-gradient(90deg, #fce4ec 0%, #f8bbd0 100%);
+    box-shadow: 0 8px 22px -14px rgba(17, 24, 39, 0.28);
+    display: grid;
+    grid-template-columns: 1.2fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+
+.discount-banner-inner::before,
+.discount-banner-inner::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    transform: translateY(-50%);
+}
+
+.discount-banner-inner::before {
+    left: -9px;
+}
+
+.discount-banner-inner::after {
+    right: -9px;
+}
+
+.discount-banner-inner:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px -14px rgba(17, 24, 39, 0.3);
+}
+
+.discount-banner-left {
+    display: grid;
+    gap: 0.1rem;
+}
+
+.discount-banner-title {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #c8507a;
+    line-height: 1.1;
+}
+
+.discount-banner-subtitle {
+    margin: 0;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: #27272a;
+}
+
+.discount-banner-code {
+    border: 1px dashed rgba(200, 80, 122, 0.5);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.82);
+    padding: 0.52rem 0.92rem;
+    color: #111827;
+    font-size: 0.84rem;
+    font-weight: 700;
+    font-family: "Courier New", Courier, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.discount-banner-right {
+    justify-self: end;
+    padding-right: 2.15rem;
+}
+
+.discount-banner-right p {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #3f3f46;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.discount-banner-percent {
+    position: absolute;
+    right: 0.72rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(200, 80, 122, 0.14);
+    color: #a52453;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .discount-banner-inner {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+        padding: 0.72rem 0.9rem;
+    }
+
+    .discount-banner-right {
+        justify-self: start;
+        padding-right: 2rem;
+    }
+
+    .discount-banner-code {
+        width: fit-content;
+        max-width: 100%;
+    }
+}
+
 @media (min-width: 768px) {
     .category-nav-primary-row {
         padding-left: 2rem;
