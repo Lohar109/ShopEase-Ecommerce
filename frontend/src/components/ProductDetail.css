@@ -1,15 +1,15 @@
 .product-detail-container {
-  max-width: 900px;
+  max-width: 1440px;
   margin: 40px auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-  padding: 36px;
+  padding: 36px 20px;
 }
 /* Amazon-style 2-column layout */
 .product-detail-main {
   display: flex;
-  gap: 48px;
+  gap: 56px;
   align-items: flex-start;
 }
 .product-detail-images-col {
@@ -215,12 +215,26 @@
   }
 }
 .product-detail-info-col {
-  flex: 1 1 340px;
+  flex: 1 1 460px;
   min-width: 320px;
-  max-width: 480px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+@media (min-width: 768px) {
+  .product-detail-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-detail-container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
 }
 
 .product-detail-header-row {

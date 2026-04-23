@@ -309,15 +309,15 @@ nav {
 
 /* Main Layout */
 main {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 1rem 2rem 2rem;
+    padding: 1rem 1rem 2rem;
 }
 
 /* Hero Carousel */
 .hero-bento {
     width: 100%;
-    max-width: 80rem;
+    max-width: 100%;
     margin: 0 auto 1.25rem;
     display: grid;
     grid-template-columns: 1fr;
@@ -576,7 +576,7 @@ button:hover {
     border: 1px solid #e4e4e7;
     border-radius: 16px;
     box-shadow: none;
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
     padding: 0.35rem 0.55rem;
@@ -1136,6 +1136,16 @@ button:hover {
 }
 
 @media (min-width: 1024px) {
+    main {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+
+    .shop-page {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+
     .home-footer-top {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 2.5rem;
@@ -1365,9 +1375,9 @@ button:hover {
 }
 
 .shop-page {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 1rem;
 }
 
 .shop-page-header {
@@ -1412,7 +1422,7 @@ button:hover {
     border: 1px solid #e4e4e7;
     border-radius: 16px;
     box-shadow: none;
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
     padding: 0.35rem 0.55rem;
@@ -1815,6 +1825,13 @@ button:hover {
 @media (min-width: 1024px) {
     .shop-products-grid-four {
         grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .shop-products-grid-four,
+    .wishlist-products-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 }
 
