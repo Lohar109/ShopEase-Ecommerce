@@ -655,18 +655,38 @@ const CategoryPage = () => {
                               </button>
                             </td>
                           </tr>
-                          {isExpanded && childRows.map((child) => {
+                          {isExpanded && childRows.map((child, index) => {
                             const childId = String(child.id);
                             const childPath = pathById[childId] || String(child.name || '-');
                             const childDeleting = deletingCategoryId === childId;
                             return (
-                              <tr key={childId} className="category-table-row" style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                <td style={{ padding: '12px 10px', color: '#111827', fontWeight: 500 }}>
-                                  <span style={{ display: 'inline-flex', alignItems: 'center', paddingLeft: 26 }}>
+                              <tr
+                                key={childId}
+                                className="category-table-row"
+                                style={{
+                                  borderBottom: '1px solid #f1f5f9',
+                                  background: '#fafafa',
+                                  borderTop: index === 0 ? '1px solid #e5e7eb' : 'none',
+                                }}
+                              >
+                                <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
+                                  <span
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      marginLeft: 16,
+                                      paddingLeft: 12,
+                                      borderLeft: '2px solid #e4e4e7',
+                                      color: '#52525b',
+                                      fontSize: 13,
+                                      fontWeight: 500,
+                                      minHeight: 20,
+                                    }}
+                                  >
                                     {child.name}
                                   </span>
                                 </td>
-                                <td style={{ padding: '12px 10px', color: '#475569' }}>
+                                <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>
                                   <span
                                     style={{
                                       display: 'inline-flex',
@@ -683,8 +703,8 @@ const CategoryPage = () => {
                                     Sub
                                   </span>
                                 </td>
-                                <td style={{ padding: '12px 10px', color: '#475569' }}>{childPath}</td>
-                                <td style={{ padding: '12px 10px', textAlign: 'right' }}>
+                                <td style={{ padding: '12px 10px', color: '#71717a', fontSize: 13, verticalAlign: 'middle' }}>{childPath}</td>
+                                <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
                                   <button
                                     type="button"
                                     onClick={() => openDeleteModal(child)}
