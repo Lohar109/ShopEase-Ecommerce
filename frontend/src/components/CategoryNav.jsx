@@ -21,16 +21,16 @@ const CategoryNav = () => {
 
   return (
     <section className="category-nav-shell" aria-label="Premium category navigation">
-      <div className="category-nav-primary-row" role="list" aria-label="Primary categories">
+      <div className="category-nav-primary-row flex flex-row items-center justify-center gap-6 overflow-x-auto py-2" role="list" aria-label="Primary categories">
         {categories.map((category) => {
           return (
-            <div key={category._id || category.name} className="flex flex-row items-center gap-2 cursor-pointer group">
+            <div key={category._id || category.name} className="flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[64px]">
               <img
                 src={`/category-icons/${category.name}.png`}
                 alt={category.name}
-                className="w-10 h-10 object-contain"
+                className="w-7 h-7 object-contain group-hover:scale-105 transition-transform"
               />
-              <span className="text-zinc-900 font-medium text-xs group-hover:text-[#c8507a] transition-colors whitespace-nowrap">
+              <span className="text-center text-[11px] font-medium text-zinc-800 whitespace-nowrap">
                 {category.name}
               </span>
             </div>
