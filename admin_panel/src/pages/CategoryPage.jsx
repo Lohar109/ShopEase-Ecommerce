@@ -270,7 +270,13 @@ const CategoryPage = () => {
           appearance: none;
           -webkit-appearance: none;
           -moz-appearance: none;
+          height: 44px;
+          padding-top: 10px;
+          padding-bottom: 10px;
           padding-right: 48px;
+          line-height: 1.5;
+          border-color: #e4e4e7;
+          background: #ffffff;
         }
 
         .category-parent-select-wrap {
