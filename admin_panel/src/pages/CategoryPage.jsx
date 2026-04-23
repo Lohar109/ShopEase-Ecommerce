@@ -252,23 +252,23 @@ const CategoryPage = () => {
           background: #ffffff;
           color: #111827;
           font-size: 14px;
+          font-family: Inter, "Plus Jakarta Sans", Poppins, sans-serif;
+          font-weight: 400;
           transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
           outline: none;
         }
 
         .category-form-control::placeholder {
           color: #a1a1aa;
+          opacity: 1;
+          font-family: inherit;
+          font-size: 14px;
           font-weight: 400;
         }
 
         .category-form-control:focus {
-          border-color: #18181b;
-          box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
-        }
-
-        .category-subcategory-image-input {
-          background: #fafafa;
-          border-color: #e4e4e7;
+          border-color: #a1a1aa;
+          box-shadow: 0 0 0 2px rgba(161, 161, 170, 0.18);
         }
 
         .category-parent-select {
@@ -448,11 +448,11 @@ const CategoryPage = () => {
                   required
                 />
                 <input
-                  className="category-form-control category-subcategory-image-input w-full box-border"
-                  type="url"
+                  className="category-form-control w-full box-border"
+                  type="text"
                   value={img}
                   onChange={(event) => setImg(event.target.value)}
-                  placeholder="Subcategory image URL"
+                  placeholder="Subcategory image url"
                 />
                 <button
                   type="submit"
