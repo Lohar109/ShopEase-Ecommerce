@@ -1,8 +1,9 @@
 import React from 'react';
-import { LayoutGrid, Package } from 'lucide-react';
+import { LayoutGrid, Package, Home } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
+  { label: 'Dashboard', path: '/dashboard', Icon: Home },
   { label: 'Products', path: '/products', Icon: Package },
   { label: 'Categories', path: '/categories', Icon: LayoutGrid },
 ];

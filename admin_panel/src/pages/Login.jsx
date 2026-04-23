@@ -22,7 +22,7 @@ const Login = () => {
     try {
       const data = await loginAdmin(email, password);
       // Save token or admin info as needed (e.g., localStorage)
-      navigate('/products');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import CategoryPage from './pages/CategoryPage';
 import ProductList from './pages/ProductList';
 import ProductForm from './pages/ProductForm';
+import DashboardHome from './pages/DashboardHome';
 import AdminLayout from './components/AdminLayout';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route element={<AdminLayout />}>
+          <Route path="/dashboard" element={<DashboardHome />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/categories" element={<CategoryPage />} />
         </Route>
