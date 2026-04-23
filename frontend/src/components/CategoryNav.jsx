@@ -30,7 +30,7 @@ const CategoryNav = () => {
                 alt={category.name}
                 className="w-7 h-7 object-contain group-hover:scale-105 transition-transform"
               />
-              <span className="text-center text-[11px] font-medium text-zinc-800 whitespace-nowrap">
+              <span className="text-center text-xs font-medium text-zinc-800 whitespace-nowrap">
                 {category.name}
               </span>
             </div>
