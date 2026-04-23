@@ -315,11 +315,96 @@ main {
 }
 
 /* Hero Carousel */
+.hero-bento {
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.hero-bento-main {
+    margin-bottom: 0;
+    min-height: 400px;
+    border-radius: 1.5rem;
+    transition: transform 0.25s ease;
+}
+
+.hero-bento-main:hover {
+    transform: scale(1.02);
+}
+
+.hero-bento-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hero-bento-card {
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    min-height: 188px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s ease;
+}
+
+.hero-bento-card:hover {
+    transform: scale(1.02);
+}
+
+.hero-bento-card-dark {
+    background: #18181b;
+    color: #fafafa;
+}
+
+.hero-bento-card-accent {
+    background: #c8507a;
+    color: #ffffff;
+}
+
+.hero-bento-label {
+    margin: 0 0 0.5rem;
+    font-size: 0.73rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.hero-bento-card h2 {
+    margin: 0;
+    font-size: clamp(1.2rem, 1.55vw, 1.6rem);
+    line-height: 1.2;
+}
+
+.hero-bento-card p {
+    margin: 0.45rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    opacity: 0.9;
+}
+
+.hero-bento-card a {
+    align-self: flex-start;
+    margin-top: 0.95rem;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    color: inherit;
+}
+
 .hero-carousel {
     position: relative;
     width: 100%;
     height: clamp(300px, 34vw, 450px);
-    border-radius: 24px;
+    border-radius: 1.5rem;
     overflow: hidden;
     margin-bottom: 1.25rem;
     box-shadow: 0 14px 34px rgba(17, 24, 39, 0.14);
@@ -349,7 +434,7 @@ main {
 .hero-carousel-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(95deg, rgba(3, 7, 18, 0.76) 0%, rgba(3, 7, 18, 0.35) 46%, rgba(3, 7, 18, 0.14) 100%);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.24) 58%, rgba(0, 0, 0, 0.08) 100%);
 }
 
 .hero-carousel-content {
@@ -658,8 +743,28 @@ button:hover {
     color: #374151;
 }
 
-.categories + .hero-carousel {
+.categories + .hero-carousel,
+.categories + .hero-bento {
     margin-top: 0.85rem;
+}
+
+@media (min-width: 1024px) {
+    .hero-bento {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+
+    .hero-bento-main {
+        min-height: 480px;
+    }
+
+    .hero-bento-stack {
+        min-height: 480px;
+    }
+
+    .hero-bento-card {
+        flex: 1;
+        min-height: 0;
+    }
 }
 
 /* Featured Products (CSS Grid) */
@@ -943,6 +1048,24 @@ button:hover {
     .hero-carousel {
         height: clamp(280px, 62vw, 360px);
         border-radius: 20px;
+    }
+
+    .hero-bento {
+        gap: 1rem;
+    }
+
+    .hero-bento-main {
+        min-height: 360px;
+    }
+
+    .hero-bento-stack {
+        gap: 1rem;
+    }
+
+    .hero-bento-card {
+        min-height: 172px;
+        border-radius: 20px;
+        padding: 1.1rem;
     }
 
     main {

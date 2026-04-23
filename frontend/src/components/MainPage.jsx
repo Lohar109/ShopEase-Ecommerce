@@ -171,50 +171,52 @@ const MainPage = () => {
   return (
     <main>
       {/* Shop by Category Section */}
-      <section className="categories" aria-label="Shop categories">
-        <div className="home-categories-card">
-            <div className="home-categories-scroll flex flex-wrap items-center justify-center gap-4 py-6" role="list" aria-label="Category cards">
-              {isCategoriesLoading ? (
-                Array.from({ length: 8 }).map((_, index) => (
-                  <CategorySkeleton key={`home-category-skeleton-${index}`} />
-                ))
-              ) : (
-                homeCategories.map((category) => {
-                  const isToysCategory = String(category.key).includes("toy");
-                  const Icon = category.icon || Monitor;
+      {(isCategoriesLoading || homeCategories.length > 1) && (
+        <section className="categories" aria-label="Shop categories">
+          <div className="home-categories-card">
+              <div className="home-categories-scroll flex flex-wrap items-center justify-center gap-4 py-6" role="list" aria-label="Category cards">
+                {isCategoriesLoading ? (
+                  Array.from({ length: 8 }).map((_, index) => (
+                    <CategorySkeleton key={`home-category-skeleton-${index}`} />
+                  ))
+                ) : (
+                  homeCategories.map((category) => {
+                    const isToysCategory = String(category.key).includes("toy");
+                    const Icon = category.icon || Monitor;
 
-                  return (
-                    <a
-                      key={category.key}
-                      href={`/shop?category=${category.key}`}
-                      className="home-category-link"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setActiveCategoryKey(category.key);
-                        navigate(`/shop?category=${category.key}`);
-                      }}
-                    >
-                      <div className={`home-category-card ${activeCategoryKey === category.key ? "active" : ""}`}>
-                        <span className="home-category-media" aria-hidden="true">
-                          {isToysCategory ? (
-                            <span className="home-category-icon home-category-dice-pair">
-                              <Dice1 size={11} strokeWidth={2} className="home-category-die home-category-die-top" />
-                              <Dice4 size={11} strokeWidth={2} className="home-category-die home-category-die-bottom" />
-                            </span>
-                          ) : (
-                            <Icon size={18} strokeWidth={2} className="home-category-icon" />
-                          )}
-                        </span>
-                        <span className="home-category-divider" aria-hidden="true" />
-                        <span className="home-category-name">{category.label}</span>
-                      </div>
-                    </a>
-                  );
-                })
-              )}
-            </div>
-        </div>
-      </section>
+                    return (
+                      <a
+                        key={category.key}
+                        href={`/shop?category=${category.key}`}
+                        className="home-category-link"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setActiveCategoryKey(category.key);
+                          navigate(`/shop?category=${category.key}`);
+                        }}
+                      >
+                        <div className={`home-category-card ${activeCategoryKey === category.key ? "active" : ""}`}>
+                          <span className="home-category-media" aria-hidden="true">
+                            {isToysCategory ? (
+                              <span className="home-category-icon home-category-dice-pair">
+                                <Dice1 size={11} strokeWidth={2} className="home-category-die home-category-die-top" />
+                                <Dice4 size={11} strokeWidth={2} className="home-category-die home-category-die-bottom" />
+                              </span>
+                            ) : (
+                              <Icon size={18} strokeWidth={2} className="home-category-icon" />
+                            )}
+                          </span>
+                          <span className="home-category-divider" aria-hidden="true" />
+                          <span className="home-category-name">{category.label}</span>
+                        </div>
+                      </a>
+                    );
+                  })
+                )}
+              </div>
+          </div>
+        </section>
+      )}
 
       <HeroCarousel />
 

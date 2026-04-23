@@ -30,6 +30,7 @@ const HERO_BANNERS = [
 
 const HeroCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeBanner = HERO_BANNERS[activeIndex];
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -50,56 +51,74 @@ const HeroCarousel = () => {
   };
 
   return (
-    <section className="hero-carousel" aria-label="Promotional banners">
-      <div
-        className="hero-carousel-track"
-        style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-      >
-        {HERO_BANNERS.map((banner) => (
-          <article key={banner.id} className="hero-carousel-slide">
-            <img src={banner.image} alt={banner.alt} loading="lazy" />
-            <div className="hero-carousel-overlay" aria-hidden="true" />
-            <div className="hero-carousel-content">
-              <p className="hero-carousel-subtitle">{banner.subtitle}</p>
-              <h1>{banner.title}</h1>
-              <a href="/shop" className="hero-carousel-cta">
-                Shop Now
-              </a>
-            </div>
-          </article>
-        ))}
+    <section className="hero-bento" aria-label="Promotional banners">
+      <div className="hero-carousel hero-bento-main">
+        <div
+          className="hero-carousel-track"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+        >
+          {HERO_BANNERS.map((banner) => (
+            <article key={banner.id} className="hero-carousel-slide">
+              <img src={banner.image} alt={banner.alt} loading="lazy" />
+              <div className="hero-carousel-overlay" aria-hidden="true" />
+              <div className="hero-carousel-content">
+                <p className="hero-carousel-subtitle">{banner.subtitle}</p>
+                <h1>{banner.title}</h1>
+                <a href="/shop" className="hero-carousel-cta">
+                  Shop Now
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="hero-carousel-arrow hero-carousel-arrow-left"
+          onClick={handlePrevious}
+          aria-label="Previous banner"
+        >
+          <ChevronLeft size={22} strokeWidth={2.2} />
+        </button>
+
+        <button
+          type="button"
+          className="hero-carousel-arrow hero-carousel-arrow-right"
+          onClick={handleNext}
+          aria-label="Next banner"
+        >
+          <ChevronRight size={22} strokeWidth={2.2} />
+        </button>
+
+        <div className="hero-carousel-dots" role="tablist" aria-label="Banner pagination">
+          {HERO_BANNERS.map((banner, index) => (
+            <button
+              key={banner.id}
+              type="button"
+              role="tab"
+              aria-label={`Go to ${banner.title}`}
+              aria-selected={activeIndex === index}
+              className={`hero-carousel-dot ${activeIndex === index ? "active" : ""}`}
+              onClick={() => setActiveIndex(index)}
+            />
+          ))}
+        </div>
       </div>
 
-      <button
-        type="button"
-        className="hero-carousel-arrow hero-carousel-arrow-left"
-        onClick={handlePrevious}
-        aria-label="Previous banner"
-      >
-        <ChevronLeft size={22} strokeWidth={2.2} />
-      </button>
+      <div className="hero-bento-stack">
+        <article className="hero-bento-card hero-bento-card-dark">
+          <p className="hero-bento-label">New Arrivals</p>
+          <h2>Smartwatches &amp; Audio Gear</h2>
+          <p>Fresh drops curated for your daily setup.</p>
+          <a href="/shop" aria-label="Explore new arrivals">Explore</a>
+        </article>
 
-      <button
-        type="button"
-        className="hero-carousel-arrow hero-carousel-arrow-right"
-        onClick={handleNext}
-        aria-label="Next banner"
-      >
-        <ChevronRight size={22} strokeWidth={2.2} />
-      </button>
-
-      <div className="hero-carousel-dots" role="tablist" aria-label="Banner pagination">
-        {HERO_BANNERS.map((banner, index) => (
-          <button
-            key={banner.id}
-            type="button"
-            role="tab"
-            aria-label={`Go to ${banner.title}`}
-            aria-selected={activeIndex === index}
-            className={`hero-carousel-dot ${activeIndex === index ? "active" : ""}`}
-            onClick={() => setActiveIndex(index)}
-          />
-        ))}
+        <article className="hero-bento-card hero-bento-card-accent">
+          <p className="hero-bento-label">Clearance</p>
+          <h2>Flat 50% Off</h2>
+          <p>Last chance deals on selected collections.</p>
+          <a href="/shop" aria-label={`Shop ${activeBanner?.subtitle || "featured"} offers`}>Shop Offers</a>
+        </article>
       </div>
     </section>
   );
