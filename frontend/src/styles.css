@@ -370,13 +370,18 @@ nav {
     width: 2rem;
     height: 2rem;
     border-radius: 999px;
-    background: #fafafa;
-    border: 1px solid #f4f4f5;
-    color: #3f3f46;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #27272a;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+    transition: color 0.22s ease;
+}
+
+.category-nav-icon {
+    color: inherit;
+    transition: color 0.22s ease;
 }
 
 .category-nav-label {
@@ -384,16 +389,13 @@ nav {
     line-height: 1.1;
     font-weight: 500;
     white-space: nowrap;
-    color: #52525b;
+    color: #18181b;
     transition: color 0.22s ease;
 }
 
 .category-nav-item:hover .category-nav-icon-box,
 .category-nav-item.active .category-nav-icon-box {
-    background: rgba(200, 80, 122, 0.05);
-    border-color: rgba(200, 80, 122, 0.3);
     color: #c8507a;
-    box-shadow: 0 8px 22px rgba(24, 24, 27, 0.05);
 }
 
 .category-nav-item:hover .category-nav-label,
