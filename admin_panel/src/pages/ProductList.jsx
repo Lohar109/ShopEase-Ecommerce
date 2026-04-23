@@ -301,8 +301,16 @@ const ProductList = () => {
                         {expanded && (variants.length > 0 ? variants : [{ __empty: true }]).map((variant, index) => {
                           if (variant.__empty) {
                             return (
-                              <tr key={`empty-${product.id}`} style={{ background: '#ffffff' }}>
-                                <td style={{ padding: '12px 14px 12px 48px', color: '#94a3b8', fontSize: 13 }} colSpan={8}>
+                              <tr key={`empty-${product.id}`} style={{ background: '#f8fafc' }}>
+                                <td
+                                  style={{
+                                    padding: '12px 14px 12px 48px',
+                                    color: '#94a3b8',
+                                    fontSize: 13,
+                                    borderTop: '1px solid #e5e7eb'
+                                  }}
+                                  colSpan={8}
+                                >
                                   No variants found for this product.
                                 </td>
                               </tr>
@@ -313,34 +321,40 @@ const ProductList = () => {
                           const adjustment = getPriceAdjustmentLabel(variantPrice, basePrice);
 
                           return (
-                            <tr key={`${product.id}-${variant.id || index}`} style={{ background: '#ffffff' }}>
-                              <td style={{ padding: '10px 14px 10px 48px', fontSize: 13, color: '#374151', position: 'relative' }}>
+                            <tr
+                              key={`${product.id}-${variant.id || index}`}
+                              style={{
+                                background: '#f8fafc',
+                                borderTop: index === 0 ? '1px solid #e5e7eb' : 'none'
+                              }}
+                            >
+                              <td style={{ padding: '10px 14px 10px 48px', fontSize: 13, color: '#52525b', position: 'relative' }}>
                                 <span
                                   style={{
                                     position: 'absolute',
-                                    left: 30,
-                                    top: 0,
-                                    bottom: 0,
-                                    width: 1,
-                                    background: '#e5e7eb'
+                                    left: 28,
+                                    top: 8,
+                                    bottom: 8,
+                                    width: 0,
+                                    borderLeft: '2px solid #d4d4d8'
                                   }}
                                 />
                                 <span style={{ fontWeight: 600 }}>Size:</span> {variant.size || '-'}
                                 <span style={{ color: '#9ca3af', margin: '0 6px' }}>•</span>
                                 <span style={{ fontWeight: 600 }}>Color:</span> {variant.color || '-'}
                               </td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155', fontWeight: 600 }}>
+                              <td style={{ padding: '10px 14px' }} />
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>
                                 {Number.isFinite(variantPrice) ? `₹${variantPrice.toFixed(2)}` : '-'}
                                 <span style={{ color: '#6b7280', marginLeft: 8 }}>
                                   ({adjustment === '-' ? '-' : `Adj ${adjustment}`})
                                 </span>
                               </td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155' }}>{variant.sku || '-'}</td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#334155', fontWeight: 600 }}>{variant.stock ?? 0}</td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#9ca3af' }}>-</td>
+                              <td style={{ padding: '10px 14px', fontSize: 12, color: '#52525b', whiteSpace: 'nowrap' }}>{variant.sku || '-'}</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>{variant.stock ?? 0}</td>
+                              <td style={{ padding: '10px 14px' }} />
+                              <td style={{ padding: '10px 14px' }} />
+                              <td style={{ padding: '10px 14px' }} />
                             </tr>
                           );
                         })}
