@@ -73,7 +73,7 @@ const CategoryNav = () => {
               aria-pressed={isActive}
             >
               <span className="category-nav-icon-box" aria-hidden="true">
-                <Icon size={16} strokeWidth={1.9} />
+                <Icon size={14} strokeWidth={1.9} />
               </span>
               <span className="category-nav-label">{categoryName}</span>
             </button>
