@@ -1,188 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BedDouble,
   BookOpen,
-  Camera,
-  Dice5,
   Dumbbell,
+  Dice5,
   Footprints,
-  Gamepad2,
-  Headphones,
+  Home,
+  LayoutGrid,
   Laptop,
-  Monitor,
   Shirt,
   ShoppingBasket,
   Smartphone,
-  Sofa,
   Sparkles,
-  TabletSmartphone,
-  Tv,
   Volleyball,
   Watch
 } from "lucide-react";
 
-const categories = [
-  {
-    key: "electronics",
-    label: "Electronics",
-    icon: Monitor,
-    subcategories: [
-      { key: "laptops", label: "Laptops", icon: Laptop },
-      { key: "wearables", label: "Wearables", icon: Watch },
-      { key: "audio", label: "Audio", icon: Headphones },
-      { key: "cameras", label: "Cameras", icon: Camera },
-      { key: "tablets", label: "Tablets", icon: TabletSmartphone }
-    ]
-  },
-  {
-    key: "fashion",
-    label: "Fashion",
-    icon: Shirt,
-    subcategories: [
-      { key: "men", label: "Men", icon: Shirt },
-      { key: "shoes", label: "Shoes", icon: Footprints },
-      { key: "watches", label: "Watches", icon: Watch },
-      { key: "beauty", label: "Beauty", icon: Sparkles }
-    ]
-  },
-  {
-    key: "mobiles",
-    label: "Mobiles",
-    icon: Smartphone,
-    subcategories: [
-      { key: "smartphones", label: "Smartphones", icon: Smartphone },
-      { key: "accessories", label: "Accessories", icon: Headphones },
-      { key: "tablets", label: "Tablets", icon: TabletSmartphone },
-      { key: "smart-tv", label: "Smart TV", icon: Tv }
-    ]
-  },
-  {
-    key: "home",
-    label: "Home",
-    icon: Sofa,
-    subcategories: [
-      { key: "furniture", label: "Furniture", icon: BedDouble },
-      { key: "living-room", label: "Living Room", icon: Sofa },
-      { key: "decor", label: "Decor", icon: Sparkles },
-      { key: "kitchen", label: "Kitchen", icon: ShoppingBasket }
-    ]
-  },
-  {
-    key: "sports",
-    label: "Sports",
-    icon: Volleyball,
-    subcategories: [
-      { key: "fitness", label: "Fitness", icon: Dumbbell },
-      { key: "outdoor", label: "Outdoor", icon: Volleyball },
-      { key: "footwear", label: "Footwear", icon: Footprints },
-      { key: "gear", label: "Gear", icon: Gamepad2 }
-    ]
-  },
-  {
-    key: "beauty",
-    label: "Beauty",
-    icon: Sparkles,
-    subcategories: [
-      { key: "skincare", label: "Skincare", icon: Sparkles },
-      { key: "grooming", label: "Grooming", icon: Shirt },
-      { key: "fragrance", label: "Fragrance", icon: Sparkles },
-      { key: "wellness", label: "Wellness", icon: Dumbbell }
-    ]
-  },
-  {
-    key: "books",
-    label: "Books",
-    icon: BookOpen,
-    subcategories: [
-      { key: "fiction", label: "Fiction", icon: BookOpen },
-      { key: "business", label: "Business", icon: BookOpen },
-      { key: "learning", label: "Learning", icon: Laptop },
-      { key: "kids", label: "Kids", icon: Dice5 }
-    ]
-  },
-  {
-    key: "toys",
-    label: "Toys",
-    icon: Dice5,
-    subcategories: [
-      { key: "games", label: "Games", icon: Gamepad2 },
-      { key: "learning", label: "Learning", icon: BookOpen },
-      { key: "outdoor", label: "Outdoor", icon: Volleyball },
-      { key: "collectibles", label: "Collectibles", icon: Sparkles }
-    ]
-  },
-  {
-    key: "groceries",
-    label: "Groceries",
-    icon: ShoppingBasket,
-    subcategories: [
-      { key: "staples", label: "Staples", icon: ShoppingBasket },
-      { key: "snacks", label: "Snacks", icon: ShoppingBasket },
-      { key: "personal-care", label: "Personal Care", icon: Sparkles },
-      { key: "household", label: "Household", icon: Sofa }
-    ]
-  },
-  {
-    key: "furniture",
-    label: "Furniture",
-    icon: BedDouble,
-    subcategories: [
-      { key: "beds", label: "Beds", icon: BedDouble },
-      { key: "sofas", label: "Sofas", icon: Sofa },
-      { key: "storage", label: "Storage", icon: ShoppingBasket },
-      { key: "workspaces", label: "Workspaces", icon: Laptop }
-    ]
-  }
-];
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
+
+const iconMap = {
+  electronics: Laptop,
+  fashion: Shirt,
+  home: Home,
+  sports: Volleyball,
+  beauty: Sparkles,
+  books: BookOpen,
+  toys: Dice5,
+  mobiles: Smartphone,
+  shoes: Footprints,
+  groceries: ShoppingBasket,
+  furniture: BedDouble,
+  watches: Watch,
+  fitness: Dumbbell
+};
 
 const CategoryNav = () => {
+  const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
-  const activeCategoryData = categories.find((category) => category.key === activeCategory);
+
+  useEffect(() => {
+    fetch(`${API_ORIGIN}/api/categories`)
+      .then((response) => response.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
+  }, []);
+
+  const parentCategories = useMemo(
+    () => categories.filter((category) => category?.parent_id === null),
+    [categories]
+  );
 
   return (
     <section className="category-nav-shell" aria-label="Premium category navigation">
       <div className="category-nav-primary-row" role="list" aria-label="Primary categories">
-        {categories.map((category) => {
-          const Icon = category.icon;
-          const isActive = activeCategory === category.key;
+        {parentCategories.map((category) => {
+          const categoryName = String(category?.name || "Category").trim();
+          const Icon = iconMap[categoryName.toLowerCase()] || LayoutGrid;
+          const isActive = String(activeCategory) === String(category?.id);
 
           return (
             <button
-              key={category.key}
+              key={category.id}
               type="button"
               className={`category-nav-item ${isActive ? "active" : ""}`}
-              onClick={() => setActiveCategory((current) => current === category.key ? null : category.key)}
-              aria-expanded={isActive}
-              aria-controls="category-nav-subcategories"
+              onClick={() =>
+                setActiveCategory((current) =>
+                  String(current) === String(category.id) ? null : category.id
+                )
+              }
+              aria-pressed={isActive}
             >
               <span className="category-nav-icon-box" aria-hidden="true">
-                <Icon size={24} strokeWidth={1.9} />
+                <Icon size={16} strokeWidth={1.9} />
               </span>
-              <span className="category-nav-label">{category.label}</span>
+              <span className="category-nav-label">{categoryName}</span>
             </button>
           );
         })}
-      </div>
-
-      <div
-        id="category-nav-subcategories"
-        className={`category-nav-subcategory-wrap ${activeCategoryData ? "expanded" : ""}`}
-        aria-hidden={!activeCategoryData}
-      >
-        <div className="category-nav-subcategory-row" role="list" aria-label="Subcategories">
-          {activeCategoryData?.subcategories.map((subcategory) => {
-            const Icon = subcategory.icon;
-
-            return (
-              <button key={subcategory.key} type="button" className="category-nav-subitem">
-                <span className="category-nav-subicon-box" aria-hidden="true">
-                  <Icon size={20} strokeWidth={1.9} />
-                </span>
-                <span className="category-nav-sublabel">{subcategory.label}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
     </section>
   );
