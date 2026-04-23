@@ -266,6 +266,11 @@ const CategoryPage = () => {
           box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
         }
 
+        .category-subcategory-image-input {
+          background: #fafafa;
+          border-color: #e4e4e7;
+        }
+
         .category-parent-select {
           appearance: none;
           -webkit-appearance: none;
@@ -443,7 +448,7 @@ const CategoryPage = () => {
                   required
                 />
                 <input
-                  className="category-form-control w-full box-border"
+                  className="category-form-control category-subcategory-image-input w-full box-border"
                   type="url"
                   value={img}
                   onChange={(event) => setImg(event.target.value)}
