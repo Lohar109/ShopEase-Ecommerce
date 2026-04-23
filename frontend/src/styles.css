@@ -329,7 +329,7 @@ nav {
     -ms-overflow-style: none;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1rem;
 }
 
 .category-nav-primary-row::-webkit-scrollbar,
@@ -366,21 +366,8 @@ nav {
     transform: none;
 }
 
-.category-nav-icon-box {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 999px;
-    background: transparent;
-    border: 1px solid transparent;
-    color: #27272a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.22s ease;
-}
-
 .category-nav-icon {
-    color: inherit;
+    color: #3f3f46;
     transition: color 0.22s ease;
 }
 
@@ -389,12 +376,12 @@ nav {
     line-height: 1.1;
     font-weight: 500;
     white-space: nowrap;
-    color: #18181b;
+    color: #3f3f46;
     transition: color 0.22s ease;
 }
 
-.category-nav-item:hover .category-nav-icon-box,
-.category-nav-item.active .category-nav-icon-box {
+.category-nav-item:hover .category-nav-icon,
+.category-nav-item.active .category-nav-icon {
     color: #c8507a;
 }
 
