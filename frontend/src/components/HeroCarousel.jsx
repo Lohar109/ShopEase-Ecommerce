@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const HERO_BANNERS = [
   {
@@ -40,16 +39,6 @@ const HeroCarousel = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handlePrevious = () => {
-    setActiveIndex((previous) =>
-      previous === 0 ? HERO_BANNERS.length - 1 : previous - 1
-    );
-  };
-
-  const handleNext = () => {
-    setActiveIndex((previous) => (previous + 1) % HERO_BANNERS.length);
-  };
-
   return (
     <section className="hero-bento" aria-label="Promotional banners">
       <div className="hero-carousel hero-bento-main">
@@ -72,37 +61,6 @@ const HeroCarousel = () => {
           ))}
         </div>
 
-        <button
-          type="button"
-          className="hero-carousel-arrow hero-carousel-arrow-left"
-          onClick={handlePrevious}
-          aria-label="Previous banner"
-        >
-          <ChevronLeft size={22} strokeWidth={2.2} />
-        </button>
-
-        <button
-          type="button"
-          className="hero-carousel-arrow hero-carousel-arrow-right"
-          onClick={handleNext}
-          aria-label="Next banner"
-        >
-          <ChevronRight size={22} strokeWidth={2.2} />
-        </button>
-
-        <div className="hero-carousel-dots" role="tablist" aria-label="Banner pagination">
-          {HERO_BANNERS.map((banner, index) => (
-            <button
-              key={banner.id}
-              type="button"
-              role="tab"
-              aria-label={`Go to ${banner.title}`}
-              aria-selected={activeIndex === index}
-              className={`hero-carousel-dot ${activeIndex === index ? "active" : ""}`}
-              onClick={() => setActiveIndex(index)}
-            />
-          ))}
-        </div>
       </div>
 
       <div className="hero-bento-stack">
