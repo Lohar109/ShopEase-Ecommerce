@@ -371,7 +371,7 @@ const ProductList = () => {
                   fontSize: 13,
                   fontFamily: 'Poppins, sans-serif',
                   outline: 'none',
-                  minWidth: 200,
+                  minWidth: 240,
                   background: '#ffffff',
                   opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1
                 }}
