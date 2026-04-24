@@ -19,11 +19,17 @@ const CategoryPage = () => {
   const [img, setImg] = useState('');
   const [addingSubcategory, setAddingSubcategory] = useState(false);
 
+  const [ssName, setSsName] = useState('');
+  const [ssPId, setSsPId] = useState('');
+  const [ssImg, setSsImg] = useState('');
+  const [addingSubSubcategory, setAddingSubSubcategory] = useState(false);
+
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetId, setTargetId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedParents, setExpandedParents] = useState({});
+  const [expandedSubs, setExpandedSubs] = useState({});
 
   const loadCategories = async () => {
     try {
@@ -112,7 +118,7 @@ const CategoryPage = () => {
     });
   }, [orderedRows, normalizedSearchTerm, pathById]);
 
-  const { parentRows, subRowsByParent } = useMemo(() => {
+  const { parentRows, subRowsByParent, grandchildRowsByParent } = useMemo(() => {
     const ps = orderedRows.filter((c) => c?.parent_id === null);
     const cs = orderedRows.filter((c) => c?.parent_id !== null);
 
@@ -133,8 +139,9 @@ const CategoryPage = () => {
     }
 
     const parentList = ps.filter((p) => parentIdsToShow.has(String(p.id)));
-    const childMap = {};
 
+    // L1 -> L2 map
+    const childMap = {};
     parentList.forEach((p) => {
       const parentId = String(p.id);
       childMap[parentId] = cs.filter((child) => {
@@ -145,13 +152,28 @@ const CategoryPage = () => {
       });
     });
 
-    return { parentRows: parentList, subRowsByParent: childMap };
+    // L2 -> L3 map (keyed by L2 id)
+    const grandchildMap = {};
+    Object.values(childMap).flat().forEach((sub) => {
+      const subId = String(sub.id);
+      grandchildMap[subId] = cs.filter((gc) => String(gc.parent_id || '') === subId);
+    });
+
+    return { parentRows: parentList, subRowsByParent: childMap, grandchildRowsByParent: grandchildMap };
   }, [orderedRows, displayedRows, normalizedSearchTerm]);
 
   const parentCategoryOptions = useMemo(
     () =>
       categories.filter(
-        (category) => category?.parent_id === null || category?.parent_id === undefined
+        (cat) => cat.level === 1 || !cat.parent_id
+      ),
+    [categories]
+  );
+
+  const subCategoryOptions = useMemo(
+    () =>
+      categories.filter(
+        (cat) => cat.level === 2 || (cat.parent_id && cat.level == null)
       ),
     [categories]
   );
@@ -198,6 +220,7 @@ const CategoryPage = () => {
         name: sName.trim(),
         image: img.trim() || null,
         parent_id: pId,
+        level: 2,
       });
       if (res) {
         toast.success('Category added successfully!', { position: 'top-center' });
@@ -210,6 +233,39 @@ const CategoryPage = () => {
       toast.error('Failed to add category.');
     } finally {
       setAddingSubcategory(false);
+    }
+  };
+
+  const addSubSubCat = async (event) => {
+    event.preventDefault();
+    if (!ssPId) {
+      toast.error('Please select a parent subcategory.');
+      return;
+    }
+    if (!ssName.trim()) {
+      toast.error('Please enter a name for the sub-subcategory.');
+      return;
+    }
+
+    setAddingSubSubcategory(true);
+    try {
+      const res = await addCategory({
+        name: ssName.trim(),
+        image: ssImg.trim() || null,
+        parent_id: ssPId,
+        level: 3,
+      });
+      if (res) {
+        toast.success('Sub-subcategory added successfully!', { position: 'top-center' });
+      }
+      setSsName('');
+      setSsImg('');
+      setSsPId('');
+      await loadCategories();
+    } catch (err) {
+      toast.error('Failed to add sub-subcategory.');
+    } finally {
+      setAddingSubSubcategory(false);
     }
   };
 
@@ -263,6 +319,12 @@ const CategoryPage = () => {
     const key = String(parentId || '');
     if (!key) return;
     setExpandedParents((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleSub = (subId) => {
+    const key = String(subId || '');
+    if (!key) return;
+    setExpandedSubs((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -536,6 +598,71 @@ const CategoryPage = () => {
                 </button>
               </form>
             </div>
+
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: 12,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(228,228,231,0.5)',
+                padding: 24,
+                overflow: 'hidden',
+              }}
+            >
+              <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
+                Add Sub-Subcategory
+              </h2>
+
+              <form onSubmit={addSubSubCat} className="category-form space-y-5">
+                <div className="category-parent-select-wrap">
+                  <select
+                    className="category-form-control category-parent-select w-full box-border"
+                    value={ssPId}
+                    onChange={(event) => setSsPId(event.target.value)}
+                    required
+                  >
+                    <option value="">Select parent subcategory</option>
+                    {subCategoryOptions.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="category-parent-select-icon" />
+                </div>
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={ssName}
+                  onChange={(event) => setSsName(event.target.value)}
+                  placeholder="Sub-subcategory name"
+                  required
+                />
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={ssImg}
+                  onChange={(event) => setSsImg(event.target.value)}
+                  placeholder="Sub-subcategory image url"
+                />
+                <button
+                  type="submit"
+                  disabled={addingSubSubcategory}
+                  className="category-form-submit"
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 40px',
+                    fontWeight: 600,
+                    cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
+                </button>
+              </form>
+            </div>
           </section>
 
           <section
@@ -667,76 +794,188 @@ const CategoryPage = () => {
                             const childId = String(child.id);
                             const childPath = pathById[childId] || String(child.name || '-');
                             const childDeleting = deletingCategoryId === childId;
+                            const grandchildren = grandchildRowsByParent[childId] || [];
+                            const isSubExpanded = Boolean(expandedSubs[childId]);
+
                             return (
-                              <tr
-                                key={childId}
-                                className="category-table-row"
-                                style={{
-                                  borderBottom: '1px solid #f1f5f9',
-                                  background: '#fafafa',
-                                  borderTop: index === 0 ? '1px solid #e5e7eb' : 'none',
-                                }}
-                              >
-                                <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
-                                  <span
-                                    style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      marginLeft: 16,
-                                      paddingLeft: 12,
-                                      borderLeft: '2px solid #e4e4e7',
-                                      color: '#52525b',
-                                      fontSize: 13,
-                                      fontWeight: 500,
-                                      minHeight: 20,
-                                    }}
-                                  >
-                                    {child.name}
-                                  </span>
-                                </td>
-                                <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>
-                                  <span
-                                    style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      borderRadius: 999,
-                                      background: '#ccfbf1',
-                                      color: '#0f766e',
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      padding: '2px 8px',
-                                      lineHeight: 1.4,
-                                    }}
-                                  >
-                                    Sub
-                                  </span>
-                                </td>
-                                <td style={{ padding: '12px 10px', color: '#71717a', fontSize: 13, verticalAlign: 'middle' }}>{childPath}</td>
-                                <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
-                                  <button
-                                    type="button"
-                                    onClick={() => openDeleteModal(child)}
-                                    disabled={childDeleting}
-                                    style={{
-                                      border: '1px solid #fecaca',
-                                      background: childDeleting ? '#fee2e2' : '#fff1f2',
-                                      color: '#b91c1c',
-                                      borderRadius: 8,
-                                      padding: '6px 9px',
-                                      cursor: childDeleting ? 'not-allowed' : 'pointer',
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: 6,
-                                      fontWeight: 600,
-                                      fontSize: 12,
-                                    }}
-                                    title="Delete category"
-                                  >
-                                    <Trash2 size={14} />
-                                    {childDeleting ? 'Deleting...' : 'Delete'}
-                                  </button>
-                                </td>
-                              </tr>
+                              <React.Fragment key={childId}>
+                                {/* ── L2 row ── */}
+                                <tr
+                                  className="category-table-row"
+                                  style={{
+                                    borderBottom: '1px solid #f1f5f9',
+                                    background: '#fafafa',
+                                    borderTop: index === 0 ? '1px solid #e5e7eb' : 'none',
+                                  }}
+                                >
+                                  <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        marginLeft: 16,
+                                        paddingLeft: 12,
+                                        borderLeft: '2px solid #e4e4e7',
+                                        color: '#52525b',
+                                        fontSize: 13,
+                                        fontWeight: 500,
+                                        minHeight: 20,
+                                        gap: 6,
+                                      }}
+                                    >
+                                      {grandchildren.length > 0 ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => toggleSub(childId)}
+                                          aria-expanded={isSubExpanded}
+                                          title={isSubExpanded ? 'Collapse' : 'Expand'}
+                                          style={{
+                                            border: 'none',
+                                            background: 'transparent',
+                                            padding: 0,
+                                            margin: 0,
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            color: '#52525b',
+                                            fontSize: 13,
+                                            fontWeight: 500,
+                                            cursor: 'pointer',
+                                          }}
+                                        >
+                                          <ChevronDown
+                                            size={13}
+                                            className={`category-parent-toggle-icon ${isSubExpanded ? 'expanded' : ''}`}
+                                          />
+                                          {child.name}
+                                        </button>
+                                      ) : (
+                                        child.name
+                                      )}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        borderRadius: 999,
+                                        background: '#ccfbf1',
+                                        color: '#0f766e',
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        padding: '2px 8px',
+                                        lineHeight: 1.4,
+                                      }}
+                                    >
+                                      Sub
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: '12px 10px', color: '#71717a', fontSize: 13, verticalAlign: 'middle' }}>{childPath}</td>
+                                  <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => openDeleteModal(child)}
+                                      disabled={childDeleting}
+                                      style={{
+                                        border: '1px solid #fecaca',
+                                        background: childDeleting ? '#fee2e2' : '#fff1f2',
+                                        color: '#b91c1c',
+                                        borderRadius: 8,
+                                        padding: '6px 9px',
+                                        cursor: childDeleting ? 'not-allowed' : 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        fontWeight: 600,
+                                        fontSize: 12,
+                                      }}
+                                      title="Delete category"
+                                    >
+                                      <Trash2 size={14} />
+                                      {childDeleting ? 'Deleting...' : 'Delete'}
+                                    </button>
+                                  </td>
+                                </tr>
+
+                                {/* ── L3 rows ── */}
+                                {isSubExpanded && grandchildren.map((gc, gcIndex) => {
+                                  const gcId = String(gc.id);
+                                  const gcPath = pathById[gcId] || String(gc.name || '-');
+                                  const gcDeleting = deletingCategoryId === gcId;
+                                  return (
+                                    <tr
+                                      key={gcId}
+                                      className="category-table-row"
+                                      style={{
+                                        borderBottom: '1px solid #f1f5f9',
+                                        background: '#f5f3ff',
+                                        borderTop: gcIndex === 0 ? '1px solid #e5e7eb' : 'none',
+                                      }}
+                                    >
+                                      <td style={{ padding: '10px 10px', verticalAlign: 'middle' }}>
+                                        <span
+                                          style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            marginLeft: 40,
+                                            paddingLeft: 12,
+                                            borderLeft: '2px solid #c4b5fd',
+                                            color: '#6b21a8',
+                                            fontSize: 12,
+                                            fontWeight: 500,
+                                            minHeight: 20,
+                                          }}
+                                        >
+                                          {gc.name}
+                                        </span>
+                                      </td>
+                                      <td style={{ padding: '10px 10px', verticalAlign: 'middle' }}>
+                                        <span
+                                          style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            borderRadius: 999,
+                                            background: '#ede9fe',
+                                            color: '#6d28d9',
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                            padding: '2px 8px',
+                                            lineHeight: 1.4,
+                                          }}
+                                        >
+                                          Sub-Sub
+                                        </span>
+                                      </td>
+                                      <td style={{ padding: '10px 10px', color: '#7c3aed', fontSize: 12, verticalAlign: 'middle' }}>{gcPath}</td>
+                                      <td style={{ padding: '10px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
+                                        <button
+                                          type="button"
+                                          onClick={() => openDeleteModal(gc)}
+                                          disabled={gcDeleting}
+                                          style={{
+                                            border: '1px solid #fecaca',
+                                            background: gcDeleting ? '#fee2e2' : '#fff1f2',
+                                            color: '#b91c1c',
+                                            borderRadius: 8,
+                                            padding: '6px 9px',
+                                            cursor: gcDeleting ? 'not-allowed' : 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            fontWeight: 600,
+                                            fontSize: 12,
+                                          }}
+                                          title="Delete category"
+                                        >
+                                          <Trash2 size={14} />
+                                          {gcDeleting ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </React.Fragment>
                             );
                           })}
                         </React.Fragment>
