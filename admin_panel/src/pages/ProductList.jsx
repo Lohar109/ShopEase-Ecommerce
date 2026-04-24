@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import TableSkeleton from '../components/TableSkeleton';
 import ConfirmModal from '../components/ConfirmModal';
+import { fetchCategories } from '../services/categoryService';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
@@ -14,6 +15,10 @@ const ProductList = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [selectedFilterCategory, setSelectedFilterCategory] = useState('');
+  const [selectedFilterSubcategory, setSelectedFilterSubcategory] = useState('');
+  const [selectedFilterSubSub, setSelectedFilterSubSub] = useState('');
   const navigate = useNavigate();
 
   const iconButtonBase = {
@@ -136,7 +141,8 @@ const ProductList = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const data = await fetchProducts();
+        const [data, catsData] = await Promise.all([fetchProducts(), fetchCategories()]);
+        setCategories(Array.isArray(catsData) ? catsData : []);
         const list = Array.isArray(data) ? data : [];
 
         const hydrated = await Promise.all(
@@ -161,16 +167,54 @@ const ProductList = () => {
     loadProducts();
   }, []);
 
+  const filterSubcategoryOptions = useMemo(
+    () => categories.filter(c => String(c.parent_id) === String(selectedFilterCategory)),
+    [categories, selectedFilterCategory]
+  );
+
+  const filterSubSubOptions = useMemo(
+    () => (selectedFilterSubcategory ? categories.filter(c => String(c.parent_id) === String(selectedFilterSubcategory)) : []),
+    [categories, selectedFilterSubcategory]
+  );
+
   const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return products;
-    const query = searchQuery.toLowerCase();
-    return products.filter((product) => {
-      const matchName = product.name?.toLowerCase().includes(query);
-      const matchBrand = product.brand?.toLowerCase().includes(query);
-      const matchCategory = product.category_name?.toLowerCase().includes(query);
-      return matchName || matchBrand || matchCategory;
-    });
-  }, [products, searchQuery]);
+    let result = products;
+
+    const activeCategoryId = selectedFilterSubSub || selectedFilterSubcategory || selectedFilterCategory;
+    
+    if (activeCategoryId) {
+      const getAllDescendantIds = (catId) => {
+        if (!catId) return [];
+        let descendants = [String(catId)];
+        let currentChildren = categories.filter(c => String(c.parent_id) === String(catId)).map(c => String(c.id));
+        
+        while (currentChildren.length > 0) {
+          descendants = descendants.concat(currentChildren);
+          let nextChildren = [];
+          currentChildren.forEach(childId => {
+            nextChildren = nextChildren.concat(categories.filter(c => String(c.parent_id) === childId).map(c => String(c.id)));
+          });
+          currentChildren = nextChildren;
+        }
+        return descendants;
+      };
+      
+      const descendantIds = getAllDescendantIds(activeCategoryId);
+      result = result.filter(product => descendantIds.includes(String(product.category_id)));
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((product) => {
+        const matchName = product.name?.toLowerCase().includes(query);
+        const matchBrand = product.brand?.toLowerCase().includes(query);
+        const matchCategory = product.category_name?.toLowerCase().includes(query);
+        return matchName || matchBrand || matchCategory;
+      });
+    }
+
+    return result;
+  }, [products, searchQuery, selectedFilterCategory, selectedFilterSubcategory, selectedFilterSubSub, categories]);
 
   const rows = useMemo(() => filteredProducts, [filteredProducts]);
 
@@ -243,6 +287,104 @@ const ProductList = () => {
                 Add Product
               </button>
             </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, background: '#fafafa', padding: 12, borderRadius: 10, border: '1px solid #e4e4e7', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#71717a' }}>Filters:</span>
+            
+            <select
+              value={selectedFilterCategory}
+              onChange={(e) => {
+                setSelectedFilterCategory(e.target.value);
+                setSelectedFilterSubcategory('');
+                setSelectedFilterSubSub('');
+              }}
+              style={{
+                height: 36,
+                padding: '0 12px',
+                borderRadius: 8,
+                border: '1px solid #e4e4e7',
+                fontSize: 13,
+                fontFamily: 'Poppins, sans-serif',
+                outline: 'none',
+                minWidth: 160
+              }}
+            >
+              <option value="">All Categories</option>
+              {categories.filter(c => c.parent_id === null).map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedFilterSubcategory}
+              onChange={(e) => {
+                setSelectedFilterSubcategory(e.target.value);
+                setSelectedFilterSubSub('');
+              }}
+              disabled={!selectedFilterCategory}
+              style={{
+                height: 36,
+                padding: '0 12px',
+                borderRadius: 8,
+                border: '1px solid #e4e4e7',
+                fontSize: 13,
+                fontFamily: 'Poppins, sans-serif',
+                outline: 'none',
+                minWidth: 160,
+                opacity: !selectedFilterCategory ? 0.6 : 1
+              }}
+            >
+              <option value="">All Subcategories</option>
+              {filterSubcategoryOptions.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedFilterSubSub}
+              onChange={(e) => setSelectedFilterSubSub(e.target.value)}
+              disabled={!selectedFilterSubcategory || filterSubSubOptions.length === 0}
+              style={{
+                height: 36,
+                padding: '0 12px',
+                borderRadius: 8,
+                border: '1px solid #e4e4e7',
+                fontSize: 13,
+                fontFamily: 'Poppins, sans-serif',
+                outline: 'none',
+                minWidth: 160,
+                opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1
+              }}
+            >
+              <option value="">All Sub-Subcategories</option>
+              {filterSubSubOptions.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
+            {(selectedFilterCategory || selectedFilterSubcategory || selectedFilterSubSub || searchQuery) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedFilterCategory('');
+                  setSelectedFilterSubcategory('');
+                  setSelectedFilterSubSub('');
+                  setSearchQuery('');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#dc2626',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  marginLeft: 'auto'
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
 
           {!loading && rows.length === 0 ? (
