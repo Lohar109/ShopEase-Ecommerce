@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -46,6 +46,7 @@ const ProductForm = () => {
   const [categories, setCategories] = useState([]);
   const [m, setM] = useState(false);
   const [d, setD] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
   const [val, setVal] = useState('');
   const [t, setT] = useState('category');
   const [pId, setPId] = useState('');
@@ -437,7 +438,7 @@ const ProductForm = () => {
 
   const openQuickAdd = (type) => {
     if (type === 'subsubcategory' && !subcategoryId) {
-      alert('Please select a Subcategory first');
+      setShowWarningModal(true);
       return;
     }
     setT(type);
@@ -583,6 +584,67 @@ const ProductForm = () => {
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
       />
+      {showWarningModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowWarningModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: 400,
+              background: '#ffffff',
+              borderRadius: 8,
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              padding: 24,
+              fontFamily: 'Poppins, sans-serif',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ background: '#fef2f2', padding: 12, borderRadius: '50%', color: '#ef4444' }}>
+                <AlertTriangle size={32} />
+              </div>
+            </div>
+            <h4 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#111827' }}>
+              Action Required
+            </h4>
+            <p style={{ margin: '8px 0 24px', color: '#4b5563', fontSize: 15 }}>
+              Please select a Subcategory first.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setShowWarningModal(false)}
+              style={{
+                width: '100%',
+                height: 44,
+                borderRadius: 8,
+                border: 'none',
+                background: '#000',
+                color: '#ffffff',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
       {d && (
         <div
           role="dialog"
