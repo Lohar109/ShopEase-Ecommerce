@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Pencil, Trash2, Search } from 'lucide-react';
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import TableSkeleton from '../components/TableSkeleton';
 import ConfirmModal from '../components/ConfirmModal';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
@@ -191,12 +191,7 @@ const ProductList = () => {
               Product Management
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ position: 'relative', width: 300 }}>
-                <Search 
-                  size={16} 
-                  color="#a1a1aa" 
-                  style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} 
-                />
+              <div style={{ position: 'relative', width: 400 }}>
                 <input
                   type="text"
                   value={searchQuery}
@@ -204,8 +199,9 @@ const ProductList = () => {
                   placeholder="Search by name, brand, or category..."
                   style={{
                     width: '100%',
+                    height: '42px',
                     boxSizing: 'border-box',
-                    padding: '10px 14px 10px 36px',
+                    padding: '0 16px',
                     borderRadius: 10,
                     border: '1px solid #e4e4e7',
                     background: '#fafafa',
@@ -228,15 +224,19 @@ const ProductList = () => {
               <button
                 onClick={() => navigate('/products/new')}
                 style={{
+                  height: '42px',
                   background: '#000',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 10,
-                  padding: '10px 18px',
+                  padding: '0 18px',
                   fontFamily: 'Poppins, sans-serif',
                   fontSize: '14px',
                   fontWeight: 500,
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
               >
