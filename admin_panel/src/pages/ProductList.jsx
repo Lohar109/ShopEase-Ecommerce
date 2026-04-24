@@ -300,7 +300,8 @@ const ProductList = () => {
                 setSelectedFilterSubSub('');
               }}
               style={{
-                padding: '10px 12px',
+                height: 42,
+                padding: '0 40px 0 16px',
                 lineHeight: 'normal',
                 boxSizing: 'border-box',
                 borderRadius: 8,
@@ -325,7 +326,8 @@ const ProductList = () => {
               }}
               disabled={!selectedFilterCategory}
               style={{
-                padding: '10px 12px',
+                height: 42,
+                padding: '0 40px 0 16px',
                 lineHeight: 'normal',
                 boxSizing: 'border-box',
                 borderRadius: 8,
@@ -348,7 +350,8 @@ const ProductList = () => {
               onChange={(e) => setSelectedFilterSubSub(e.target.value)}
               disabled={!selectedFilterSubcategory || filterSubSubOptions.length === 0}
               style={{
-                padding: '10px 12px',
+                height: 42,
+                padding: '0 40px 0 16px',
                 lineHeight: 'normal',
                 boxSizing: 'border-box',
                 borderRadius: 8,
