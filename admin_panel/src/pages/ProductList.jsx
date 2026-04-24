@@ -292,82 +292,100 @@ const ProductList = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, background: '#fafafa', padding: 12, borderRadius: 10, border: '1px solid #e4e4e7', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: '#71717a' }}>Filters:</span>
             
-            <select
-              value={selectedFilterCategory}
-              onChange={(e) => {
-                setSelectedFilterCategory(e.target.value);
-                setSelectedFilterSubcategory('');
-                setSelectedFilterSubSub('');
-              }}
-              style={{
-                height: 42,
-                padding: '0 40px 0 16px',
-                lineHeight: 'normal',
-                boxSizing: 'border-box',
-                borderRadius: 8,
-                border: '1px solid #e4e4e7',
-                fontSize: 13,
-                fontFamily: 'Poppins, sans-serif',
-                outline: 'none',
-                minWidth: 160
-              }}
-            >
-              <option value="">All Categories</option>
-              {categories.filter(c => c.parent_id === null).map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={selectedFilterCategory}
+                onChange={(e) => {
+                  setSelectedFilterCategory(e.target.value);
+                  setSelectedFilterSubcategory('');
+                  setSelectedFilterSubSub('');
+                }}
+                style={{
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  height: 42,
+                  padding: '0 48px 0 16px',
+                  lineHeight: 'normal',
+                  boxSizing: 'border-box',
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  fontSize: 13,
+                  fontFamily: 'Poppins, sans-serif',
+                  outline: 'none',
+                  minWidth: 160,
+                  background: '#ffffff'
+                }}
+              >
+                <option value="">All Categories</option>
+                {categories.filter(c => c.parent_id === null).map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={16} color="#71717a" style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            </div>
 
-            <select
-              value={selectedFilterSubcategory}
-              onChange={(e) => {
-                setSelectedFilterSubcategory(e.target.value);
-                setSelectedFilterSubSub('');
-              }}
-              disabled={!selectedFilterCategory}
-              style={{
-                height: 42,
-                padding: '0 40px 0 16px',
-                lineHeight: 'normal',
-                boxSizing: 'border-box',
-                borderRadius: 8,
-                border: '1px solid #e4e4e7',
-                fontSize: 13,
-                fontFamily: 'Poppins, sans-serif',
-                outline: 'none',
-                minWidth: 160,
-                opacity: !selectedFilterCategory ? 0.6 : 1
-              }}
-            >
-              <option value="">All Subcategories</option>
-              {filterSubcategoryOptions.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={selectedFilterSubcategory}
+                onChange={(e) => {
+                  setSelectedFilterSubcategory(e.target.value);
+                  setSelectedFilterSubSub('');
+                }}
+                disabled={!selectedFilterCategory}
+                style={{
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  height: 42,
+                  padding: '0 48px 0 16px',
+                  lineHeight: 'normal',
+                  boxSizing: 'border-box',
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  fontSize: 13,
+                  fontFamily: 'Poppins, sans-serif',
+                  outline: 'none',
+                  minWidth: 160,
+                  background: '#ffffff',
+                  opacity: !selectedFilterCategory ? 0.6 : 1
+                }}
+              >
+                <option value="">All Subcategories</option>
+                {filterSubcategoryOptions.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={16} color="#71717a" style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: !selectedFilterCategory ? 0.6 : 1 }} />
+            </div>
 
-            <select
-              value={selectedFilterSubSub}
-              onChange={(e) => setSelectedFilterSubSub(e.target.value)}
-              disabled={!selectedFilterSubcategory || filterSubSubOptions.length === 0}
-              style={{
-                height: 42,
-                padding: '0 40px 0 16px',
-                lineHeight: 'normal',
-                boxSizing: 'border-box',
-                borderRadius: 8,
-                border: '1px solid #e4e4e7',
-                fontSize: 13,
-                fontFamily: 'Poppins, sans-serif',
-                outline: 'none',
-                minWidth: 160,
-                opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1
-              }}
-            >
-              <option value="">All Sub-Subcategories</option>
-              {filterSubSubOptions.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={selectedFilterSubSub}
+                onChange={(e) => setSelectedFilterSubSub(e.target.value)}
+                disabled={!selectedFilterSubcategory || filterSubSubOptions.length === 0}
+                style={{
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  height: 42,
+                  padding: '0 48px 0 16px',
+                  lineHeight: 'normal',
+                  boxSizing: 'border-box',
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  fontSize: 13,
+                  fontFamily: 'Poppins, sans-serif',
+                  outline: 'none',
+                  minWidth: 160,
+                  background: '#ffffff',
+                  opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1
+                }}
+              >
+                <option value="">All Sub-Subcategories</option>
+                {filterSubSubOptions.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={16} color="#71717a" style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1 }} />
+            </div>
 
             {(selectedFilterCategory || selectedFilterSubcategory || selectedFilterSubSub || searchQuery) && (
               <button
