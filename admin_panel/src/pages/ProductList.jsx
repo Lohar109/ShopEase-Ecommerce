@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import TableSkeleton from '../components/TableSkeleton';
+import ConfirmModal from '../components/ConfirmModal';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
@@ -10,6 +11,8 @@ const ProductList = () => {
   const [error, setError] = useState('');
   const [updatingToggles, setUpdatingToggles] = useState({});
   const [exp, setExp] = useState([]);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const iconButtonBase = {
@@ -95,16 +98,18 @@ const ProductList = () => {
     return `${delta > 0 ? '+' : '-'}${Math.abs(delta).toFixed(2)}`;
   };
 
-  const handleDeleteProduct = async (productId) => {
-    const confirmed = window.confirm('Are you sure you want to delete this product?');
-    if (!confirmed) return;
-
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    setIsDeleting(true);
     try {
-      await deleteProduct(productId);
-      setProducts((prev) => prev.filter((product) => product.id !== productId));
-      setExp((prev) => prev.filter((id) => id !== String(productId)));
+      await deleteProduct(productToDelete);
+      setProducts((prev) => prev.filter((product) => product.id !== productToDelete));
+      setExp((prev) => prev.filter((id) => id !== String(productToDelete)));
+      setProductToDelete(null);
     } catch (err) {
       alert(err.message || 'Failed to delete product');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -283,7 +288,7 @@ const ProductList = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => handleDeleteProduct(product.id)}
+                                onClick={() => setProductToDelete(product.id)}
                                 title="Delete product"
                                 style={{
                                   ...iconButtonBase,
@@ -366,6 +371,16 @@ const ProductList = () => {
               </table>
             </div>
           )}
+      <ConfirmModal
+        isOpen={Boolean(productToDelete)}
+        title="Are you sure?"
+        message="This action cannot be undone. This product will be permanently deleted."
+        cancelLabel="Cancel"
+        confirmLabel={isDeleting ? 'Deleting...' : 'Delete'}
+        onCancel={() => setProductToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        isConfirming={isDeleting}
+      />
     </div>
   );
 };
