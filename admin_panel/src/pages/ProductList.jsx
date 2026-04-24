@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Pencil, Trash2, Search } from 'lucide-react';
 import TableSkeleton from '../components/TableSkeleton';
 import ConfirmModal from '../components/ConfirmModal';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
@@ -13,6 +13,7 @@ const ProductList = () => {
   const [exp, setExp] = useState([]);
   const [productToDelete, setProductToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   const iconButtonBase = {
@@ -160,7 +161,18 @@ const ProductList = () => {
     loadProducts();
   }, []);
 
-  const rows = useMemo(() => products, [products]);
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const query = searchQuery.toLowerCase();
+    return products.filter((product) => {
+      const matchName = product.name?.toLowerCase().includes(query);
+      const matchBrand = product.brand?.toLowerCase().includes(query);
+      const matchCategory = product.category_name?.toLowerCase().includes(query);
+      return matchName || matchBrand || matchCategory;
+    });
+  }, [products, searchQuery]);
+
+  const rows = useMemo(() => filteredProducts, [filteredProducts]);
 
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>;
 
@@ -178,23 +190,59 @@ const ProductList = () => {
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.3px', margin: 0, color: '#111' }}>
               Product Management
             </h2>
-            <button
-              onClick={() => navigate('/products/new')}
-              style={{
-                background: '#000',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 10,
-                padding: '10px 18px',
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '14px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'background 0.2s',
-              }}
-            >
-              Add Product
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ position: 'relative', width: 300 }}>
+                <Search 
+                  size={16} 
+                  color="#a1a1aa" 
+                  style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} 
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, brand, or category..."
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '10px 14px 10px 36px',
+                    borderRadius: 10,
+                    border: '1px solid #e4e4e7',
+                    background: '#fafafa',
+                    fontSize: 13,
+                    fontFamily: 'Poppins, sans-serif',
+                    color: '#111827',
+                    outline: 'none',
+                    transition: 'all 200ms ease'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#18181b';
+                    e.target.style.background = '#ffffff';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e4e4e7';
+                    e.target.style.background = '#fafafa';
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => navigate('/products/new')}
+                style={{
+                  background: '#000',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '10px 18px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Add Product
+              </button>
+            </div>
           </div>
 
           {!loading && rows.length === 0 ? (
