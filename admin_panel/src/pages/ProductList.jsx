@@ -240,7 +240,7 @@ const ProductList = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by name, brand, or category..."
+                  placeholder="Search Products"
                   style={{
                     width: '100%',
                     height: '42px',
@@ -300,8 +300,9 @@ const ProductList = () => {
                 setSelectedFilterSubSub('');
               }}
               style={{
-                height: 36,
-                padding: '0 12px',
+                padding: '10px 12px',
+                lineHeight: 'normal',
+                boxSizing: 'border-box',
                 borderRadius: 8,
                 border: '1px solid #e4e4e7',
                 fontSize: 13,
@@ -324,8 +325,9 @@ const ProductList = () => {
               }}
               disabled={!selectedFilterCategory}
               style={{
-                height: 36,
-                padding: '0 12px',
+                padding: '10px 12px',
+                lineHeight: 'normal',
+                boxSizing: 'border-box',
                 borderRadius: 8,
                 border: '1px solid #e4e4e7',
                 fontSize: 13,
@@ -346,8 +348,9 @@ const ProductList = () => {
               onChange={(e) => setSelectedFilterSubSub(e.target.value)}
               disabled={!selectedFilterSubcategory || filterSubSubOptions.length === 0}
               style={{
-                height: 36,
-                padding: '0 12px',
+                padding: '10px 12px',
+                lineHeight: 'normal',
+                boxSizing: 'border-box',
                 borderRadius: 8,
                 border: '1px solid #e4e4e7',
                 fontSize: 13,
