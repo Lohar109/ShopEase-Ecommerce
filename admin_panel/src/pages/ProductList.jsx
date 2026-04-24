@@ -303,8 +303,7 @@ const ProductList = () => {
                 style={{
                   appearance: 'none',
                   WebkitAppearance: 'none',
-                  height: 42,
-                  padding: '0 48px 0 16px',
+                  padding: '10px 48px 10px 16px',
                   lineHeight: 'normal',
                   boxSizing: 'border-box',
                   borderRadius: 8,
@@ -312,7 +311,7 @@ const ProductList = () => {
                   fontSize: 13,
                   fontFamily: 'Poppins, sans-serif',
                   outline: 'none',
-                  minWidth: 160,
+                  minWidth: 180,
                   background: '#ffffff'
                 }}
               >
@@ -335,8 +334,7 @@ const ProductList = () => {
                 style={{
                   appearance: 'none',
                   WebkitAppearance: 'none',
-                  height: 42,
-                  padding: '0 48px 0 16px',
+                  padding: '10px 48px 10px 16px',
                   lineHeight: 'normal',
                   boxSizing: 'border-box',
                   borderRadius: 8,
@@ -344,7 +342,7 @@ const ProductList = () => {
                   fontSize: 13,
                   fontFamily: 'Poppins, sans-serif',
                   outline: 'none',
-                  minWidth: 160,
+                  minWidth: 180,
                   background: '#ffffff',
                   opacity: !selectedFilterCategory ? 0.6 : 1
                 }}
@@ -365,8 +363,7 @@ const ProductList = () => {
                 style={{
                   appearance: 'none',
                   WebkitAppearance: 'none',
-                  height: 42,
-                  padding: '0 48px 0 16px',
+                  padding: '10px 48px 10px 16px',
                   lineHeight: 'normal',
                   boxSizing: 'border-box',
                   borderRadius: 8,
@@ -374,7 +371,7 @@ const ProductList = () => {
                   fontSize: 13,
                   fontFamily: 'Poppins, sans-serif',
                   outline: 'none',
-                  minWidth: 160,
+                  minWidth: 200,
                   background: '#ffffff',
                   opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1
                 }}
