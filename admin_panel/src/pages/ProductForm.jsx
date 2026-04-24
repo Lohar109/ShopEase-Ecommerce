@@ -41,6 +41,7 @@ const ProductForm = () => {
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [subcategoryId, setSubcategoryId] = useState('');
+  const [subSubcategoryId, setSubSubcategoryId] = useState('');
   const [audience, setAudience] = useState('unisex');
   const [categories, setCategories] = useState([]);
   const [m, setM] = useState(false);
@@ -239,6 +240,11 @@ const ProductForm = () => {
     [categories, categoryId]
   );
 
+  const subSubcategoriesOptions = useMemo(
+    () => (subcategoryId ? categories.filter(c => normalizeId(c.parent_id) === normalizeId(subcategoryId)) : []),
+    [categories, subcategoryId]
+  );
+
   useEffect(() => {
     // Step C: Watchdog - only set subcategory after its option list is populated.
     if (!isEditMode || !resolvedProductSubcategoryId || subcategoriesOptions.length === 0) return;
@@ -351,6 +357,7 @@ const ProductForm = () => {
     setDescription(f.ds);
     setCategoryId(f.c);
     setSubcategoryId(f.s);
+    setSubSubcategoryId('');
     setAudience(f.a);
     setMainImage(f.m);
     setSpecs(f.sp);
@@ -392,7 +399,7 @@ const ProductForm = () => {
         slug,
         brand,
         description,
-        category_id: subcategoryId || categoryId,
+        category_id: subSubcategoryId || subcategoryId || categoryId,
         audience,
         main_image: mainImage,
         images: galleryImages.filter(Boolean),
@@ -1188,8 +1195,9 @@ const ProductForm = () => {
                     />
                   </div>
 
-                  <div style={{ display: 'flex', gap: 16, marginBottom: 4 }}>
-                    <div style={{ flex: 1 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 4 }}>
+                    {/* ── Level 1: Category ── */}
+                    <div>
                       <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                         Category
                         <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
@@ -1203,12 +1211,13 @@ const ProductForm = () => {
                           onChange={e => {
                             setCategoryId(e.target.value);
                             setSubcategoryId('');
+                            setSubSubcategoryId('');
                           }}
                           style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                           required
                         >
                           <option value="">Select category</option>
-                          {categories.filter(c => c.parent_id === null).map(cat => (
+                          {categories.filter(c => c.level === 1 || c.parent_id === null).map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
                         </select>
@@ -1216,7 +1225,8 @@ const ProductForm = () => {
                       </div>
                     </div>
 
-                    <div style={{ flex: 1 }}>
+                    {/* ── Level 2: Subcategory ── */}
+                    <div>
                       <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                         Subcategory
                         <button
@@ -1232,12 +1242,50 @@ const ProductForm = () => {
                         <select
                           className="custom-input pf-select"
                           value={subcategoryId}
-                          onChange={e => setSubcategoryId(e.target.value)}
+                          onChange={e => {
+                            setSubcategoryId(e.target.value);
+                            setSubSubcategoryId('');
+                          }}
                           style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
                           disabled={!categoryId || isSubcategoriesLoading}
                         >
-                          <option value="">{isSubcategoriesLoading ? 'Loading subcategories...' : 'Select subcategory'}</option>
+                          <option value="">{isSubcategoriesLoading ? 'Loading...' : 'Select subcategory'}</option>
                           {subcategoriesOptions.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={16} className="pf-select-icon" />
+                      </div>
+                    </div>
+
+                    {/* ── Level 3: Sub-Subcategory ── */}
+                    <div>
+                      <label style={{ fontWeight: 500, color: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#aaa' : '#000', marginBottom: 4, display: 'block' }}>
+                        Sub-Subcategory
+                      </label>
+                      <div className="pf-select-wrap">
+                        <select
+                          className="custom-input pf-select"
+                          value={subSubcategoryId}
+                          onChange={e => setSubSubcategoryId(e.target.value)}
+                          disabled={!subcategoryId || subSubcategoriesOptions.length === 0}
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #a0a0a0',
+                            opacity: (!subcategoryId || subSubcategoriesOptions.length === 0) ? 0.6 : 1,
+                            background: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#f5f6fa' : '#fff',
+                          }}
+                        >
+                          <option value="">
+                            {!subcategoryId
+                              ? 'Select subcategory first'
+                              : subSubcategoriesOptions.length === 0
+                              ? 'No sub-subcategories'
+                              : 'Select sub-subcategory'}
+                          </option>
+                          {subSubcategoriesOptions.map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
                         </select>
