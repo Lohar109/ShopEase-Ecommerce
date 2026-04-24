@@ -13,6 +13,7 @@ const CategoryPage = () => {
 
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
+  const [activeTab, setActiveTab] = useState('main');
 
   const [sName, setSName] = useState('');
   const [pId, setPId] = useState('');
@@ -452,6 +453,8 @@ const CategoryPage = () => {
 
         .category-parent-toggle {
           border: none;
+          outline: none;
+          box-shadow: none;
           background: transparent;
           padding: 0;
           margin: 0;
@@ -464,6 +467,12 @@ const CategoryPage = () => {
           cursor: pointer;
         }
 
+        .category-parent-toggle:focus,
+        .category-parent-toggle:focus-visible {
+          outline: none;
+          box-shadow: none;
+        }
+
         .category-parent-toggle-icon {
           color: #71717a;
           transition: transform 180ms ease;
@@ -472,6 +481,42 @@ const CategoryPage = () => {
 
         .category-parent-toggle-icon.expanded {
           transform: rotate(180deg);
+        }
+
+        .cat-tabs {
+          display: flex;
+          gap: 4px;
+          background: #f4f4f5;
+          border-radius: 10px;
+          padding: 4px;
+          margin-bottom: 20px;
+        }
+
+        .cat-tab {
+          flex: 1;
+          border: none;
+          outline: none;
+          border-radius: 7px;
+          padding: 7px 10px;
+          font-size: 12.5px;
+          font-weight: 600;
+          font-family: Inter, "Plus Jakarta Sans", Poppins, sans-serif;
+          cursor: pointer;
+          transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+          white-space: nowrap;
+          background: transparent;
+          color: #71717a;
+        }
+
+        .cat-tab:hover {
+          background: #e4e4e7;
+          color: #18181b;
+        }
+
+        .cat-tab.active {
+          background: #111827;
+          color: #ffffff;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.18);
         }
       `}</style>
 
@@ -487,11 +532,10 @@ const CategoryPage = () => {
             style={{
               position: isNarrowScreen ? 'static' : 'sticky',
               top: 24,
-              display: 'grid',
-              gap: 16,
               alignSelf: 'start',
             }}
           >
+            {/* ── Single unified tabbed card ── */}
             <div
               style={{
                 background: '#ffffff',
@@ -502,166 +546,164 @@ const CategoryPage = () => {
                 overflow: 'hidden',
               }}
             >
-              <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                Add New Category
+              {/* Heading */}
+              <h2 style={{ margin: '0 0 16px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
+                Create Category
               </h2>
 
-              <form onSubmit={addCat} className="category-form space-y-5">
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(event) => setNewCategoryName(event.target.value)}
-                  placeholder="Category name"
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={addingCategory}
-                  className="category-form-submit"
-                  style={{
-                    background: '#111827',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 40px',
-                    fontWeight: 600,
-                    cursor: addingCategory ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {addingCategory ? 'Saving...' : 'Save Category'}
-                </button>
-              </form>
-            </div>
-
-            <div
-              style={{
-                background: '#ffffff',
-                borderRadius: 12,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                border: '1px solid rgba(228,228,231,0.5)',
-                padding: 24,
-                overflow: 'hidden',
-              }}
-            >
-              <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                Add New Subcategory
-              </h2>
-
-              <form onSubmit={addSubCat} className="category-form space-y-5">
-                <div className="category-parent-select-wrap">
-                  <select
-                    className="category-form-control category-parent-select w-full box-border"
-                    value={pId}
-                    onChange={(event) => setPId(event.target.value)}
-                    required
+              {/* Tab bar */}
+              <div className="cat-tabs">
+                {[
+                  { key: 'main',   label: 'Main' },
+                  { key: 'sub',    label: 'Subcategory' },
+                  { key: 'subsub', label: 'Sub-Subcategory' },
+                ].map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`cat-tab${activeTab === key ? ' active' : ''}`}
+                    onClick={() => setActiveTab(key)}
                   >
-                    <option value="">Select parent category</option>
-                    {parentCategoryOptions.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={16} className="category-parent-select-icon" />
-                </div>
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={sName}
-                  onChange={(event) => setSName(event.target.value)}
-                  placeholder="Subcategory name"
-                  required
-                />
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={img}
-                  onChange={(event) => setImg(event.target.value)}
-                  placeholder="Subcategory image url"
-                />
-                <button
-                  type="submit"
-                  disabled={addingSubcategory}
-                  className="category-form-submit"
-                  style={{
-                    background: '#111827',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 40px',
-                    fontWeight: 600,
-                    cursor: addingSubcategory ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
-                </button>
-              </form>
-            </div>
+                    {label}
+                  </button>
+                ))}
+              </div>
 
-            <div
-              style={{
-                background: '#ffffff',
-                borderRadius: 12,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                border: '1px solid rgba(228,228,231,0.5)',
-                padding: 24,
-                overflow: 'hidden',
-              }}
-            >
-              <h2 style={{ margin: '0 0 12px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                Add Sub-Subcategory
-              </h2>
-
-              <form onSubmit={addSubSubCat} className="category-form space-y-5">
-                <div className="category-parent-select-wrap">
-                  <select
-                    className="category-form-control category-parent-select w-full box-border"
-                    value={ssPId}
-                    onChange={(event) => setSsPId(event.target.value)}
+              {/* ── Main category form ── */}
+              {activeTab === 'main' && (
+                <form onSubmit={addCat} className="category-form space-y-5">
+                  <input
+                    className="category-form-control w-full box-border"
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(event) => setNewCategoryName(event.target.value)}
+                    placeholder="Category name"
                     required
+                  />
+                  <button
+                    type="submit"
+                    disabled={addingCategory}
+                    className="category-form-submit"
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '8px 40px',
+                      fontWeight: 600,
+                      cursor: addingCategory ? 'not-allowed' : 'pointer',
+                    }}
                   >
-                    <option value="">Select parent subcategory</option>
-                    {subCategoryOptions.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={16} className="category-parent-select-icon" />
-                </div>
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={ssName}
-                  onChange={(event) => setSsName(event.target.value)}
-                  placeholder="Sub-subcategory name"
-                  required
-                />
-                <input
-                  className="category-form-control w-full box-border"
-                  type="text"
-                  value={ssImg}
-                  onChange={(event) => setSsImg(event.target.value)}
-                  placeholder="Sub-subcategory image url"
-                />
-                <button
-                  type="submit"
-                  disabled={addingSubSubcategory}
-                  className="category-form-submit"
-                  style={{
-                    background: '#111827',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 40px',
-                    fontWeight: 600,
-                    cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
-                </button>
-              </form>
+                    {addingCategory ? 'Saving...' : 'Save Category'}
+                  </button>
+                </form>
+              )}
+
+              {/* ── Subcategory form ── */}
+              {activeTab === 'sub' && (
+                <form onSubmit={addSubCat} className="category-form space-y-5">
+                  <div className="category-parent-select-wrap">
+                    <select
+                      className="category-form-control category-parent-select w-full box-border"
+                      value={pId}
+                      onChange={(event) => setPId(event.target.value)}
+                      required
+                    >
+                      <option value="">Select parent category</option>
+                      {parentCategoryOptions.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="category-parent-select-icon" />
+                  </div>
+                  <input
+                    className="category-form-control w-full box-border"
+                    type="text"
+                    value={sName}
+                    onChange={(event) => setSName(event.target.value)}
+                    placeholder="Subcategory name"
+                    required
+                  />
+                  <input
+                    className="category-form-control w-full box-border"
+                    type="text"
+                    value={img}
+                    onChange={(event) => setImg(event.target.value)}
+                    placeholder="Subcategory image url"
+                  />
+                  <button
+                    type="submit"
+                    disabled={addingSubcategory}
+                    className="category-form-submit"
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '8px 40px',
+                      fontWeight: 600,
+                      cursor: addingSubcategory ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
+                  </button>
+                </form>
+              )}
+
+              {/* ── Sub-Subcategory form ── */}
+              {activeTab === 'subsub' && (
+                <form onSubmit={addSubSubCat} className="category-form space-y-5">
+                  <div className="category-parent-select-wrap">
+                    <select
+                      className="category-form-control category-parent-select w-full box-border"
+                      value={ssPId}
+                      onChange={(event) => setSsPId(event.target.value)}
+                      required
+                    >
+                      <option value="">Select parent subcategory</option>
+                      {subCategoryOptions.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="category-parent-select-icon" />
+                  </div>
+                  <input
+                    className="category-form-control w-full box-border"
+                    type="text"
+                    value={ssName}
+                    onChange={(event) => setSsName(event.target.value)}
+                    placeholder="Sub-subcategory name"
+                    required
+                  />
+                  <input
+                    className="category-form-control w-full box-border"
+                    type="text"
+                    value={ssImg}
+                    onChange={(event) => setSsImg(event.target.value)}
+                    placeholder="Sub-subcategory image url"
+                  />
+                  <button
+                    type="submit"
+                    disabled={addingSubSubcategory}
+                    className="category-form-submit"
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '8px 40px',
+                      fontWeight: 600,
+                      cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
+                  </button>
+                </form>
+              )}
             </div>
           </section>
 
@@ -732,13 +774,14 @@ const CategoryPage = () => {
                       return (
                         <React.Fragment key={parentId}>
                           <tr className="category-table-row" style={{ borderBottom: '1px solid #f1f5f9' }}>
-                            <td style={{ padding: '12px 10px' }}>
+                            <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
                               <button
                                 type="button"
                                 className="category-parent-toggle"
                                 onClick={() => toggleParent(parentId)}
                                 aria-expanded={isExpanded}
                                 title={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
+                                style={{ outline: 'none', boxShadow: 'none' }}
                               >
                                 <ChevronDown
                                   size={14}
@@ -747,7 +790,7 @@ const CategoryPage = () => {
                                 {parent.name}
                               </button>
                             </td>
-                            <td style={{ padding: '12px 10px', color: '#475569' }}>
+                            <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>
                               <span
                                 style={{
                                   display: 'inline-flex',
@@ -764,7 +807,7 @@ const CategoryPage = () => {
                                 Parent
                               </span>
                             </td>
-                            <td style={{ padding: '12px 10px', color: '#475569' }}>{parentPath}</td>
+                            <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>{parentPath}</td>
                             <td style={{ padding: '12px 10px', textAlign: 'right' }}>
                               <button
                                 type="button"
@@ -809,20 +852,7 @@ const CategoryPage = () => {
                                   }}
                                 >
                                   <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
-                                    <span
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        marginLeft: 16,
-                                        paddingLeft: 12,
-                                        borderLeft: '2px solid #e4e4e7',
-                                        color: '#52525b',
-                                        fontSize: 13,
-                                        fontWeight: 500,
-                                        minHeight: 20,
-                                        gap: 6,
-                                      }}
-                                    >
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', paddingLeft: 32, borderLeft: 'none' }}>
                                       {grandchildren.length > 0 ? (
                                         <button
                                           type="button"
@@ -831,13 +861,15 @@ const CategoryPage = () => {
                                           title={isSubExpanded ? 'Collapse' : 'Expand'}
                                           style={{
                                             border: 'none',
+                                            outline: 'none',
+                                            boxShadow: 'none',
                                             background: 'transparent',
                                             padding: 0,
                                             margin: 0,
                                             display: 'inline-flex',
                                             alignItems: 'center',
                                             gap: 6,
-                                            color: '#52525b',
+                                            color: '#3f3f46',
                                             fontSize: 13,
                                             fontWeight: 500,
                                             cursor: 'pointer',
@@ -850,7 +882,7 @@ const CategoryPage = () => {
                                           {child.name}
                                         </button>
                                       ) : (
-                                        child.name
+                                        <span style={{ color: '#3f3f46', fontSize: 13, fontWeight: 500 }}>{child.name}</span>
                                       )}
                                     </span>
                                   </td>
@@ -918,13 +950,10 @@ const CategoryPage = () => {
                                           style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
-                                            marginLeft: 40,
-                                            paddingLeft: 12,
-                                            borderLeft: '2px solid #c4b5fd',
+                                            paddingLeft: 64,
                                             color: '#6b21a8',
                                             fontSize: 12,
                                             fontWeight: 500,
-                                            minHeight: 20,
                                           }}
                                         >
                                           {gc.name}
