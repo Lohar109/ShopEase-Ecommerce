@@ -181,59 +181,42 @@ const ProductForm = () => {
     loadDesignGalleries(id);
   }, [id, isEditMode]);
 
-  const resolvedProductSubcategoryId = useMemo(() => {
-    if (!editProductData || categories.length === 0) return '';
-
-    const explicitSubcategoryId =
-      normalizeId(editProductData.subcategory_id) ||
-      normalizeId(editProductData.sub_category_id) ||
-      normalizeId(editProductData.subcategoryId);
-
-    if (explicitSubcategoryId) return explicitSubcategoryId;
-
-    const productCategoryId = normalizeId(editProductData.category_id);
-    const matchedCategory = categories.find(
-      (category) => normalizeId(category?.id) === productCategoryId
-    );
-
-    if (!matchedCategory) return '';
-
-    const matchedParentId = normalizeId(matchedCategory.parent_id);
-    if (matchedParentId) {
-      return productCategoryId;
-    }
-
-    const directChildren = categories.filter(
-      (category) => normalizeId(category?.parent_id) === productCategoryId
-    );
-
-    return directChildren.length === 1 ? normalizeId(directChildren[0].id) : '';
-  }, [categories, editProductData]);
-
   useEffect(() => {
     if (!isEditMode || !editProductData?.category_id || categories.length === 0) return;
 
-    // Step A: Trace product.category_id in all categories and inspect parent_id.
-    const matchedCategory = categories.find(
-      (category) => normalizeId(category?.id) === normalizeId(editProductData.category_id)
-    );
+    const savedCategoryId = normalizeId(editProductData.category_id);
+    const targetCategory = categories.find(c => normalizeId(c.id) === savedCategoryId);
 
-    if (!matchedCategory) {
-      setCategoryId(normalizeId(editProductData.category_id));
-      setSubcategoryId('');
-      return;
+    if (!targetCategory) return;
+
+    const getParent = (childId) => {
+      const child = categories.find(c => normalizeId(c.id) === normalizeId(childId));
+      return child?.parent_id ? categories.find(c => normalizeId(c.id) === normalizeId(child.parent_id)) : null;
+    };
+
+    let level1Id = '';
+    let level2Id = '';
+    let level3Id = '';
+
+    const parent1 = getParent(targetCategory.id);
+    if (parent1) {
+      const parent2 = getParent(parent1.id);
+      if (parent2) {
+        level3Id = savedCategoryId;
+        level2Id = normalizeId(parent1.id);
+        level1Id = normalizeId(parent2.id);
+      } else {
+        level2Id = savedCategoryId;
+        level1Id = normalizeId(parent1.id);
+      }
+    } else {
+      level1Id = savedCategoryId;
     }
 
-    // Step B: Set parent first when product.category_id points to a subcategory.
-    if (matchedCategory.parent_id) {
-      setCategoryId(normalizeId(matchedCategory.parent_id));
-      setSubcategoryId('');
-      return;
-    }
-
-    setCategoryId(normalizeId(matchedCategory.id));
-    setSubcategoryId('');
-  }, [categories, editProductData, isEditMode]);
+    setCategoryId(level1Id);
+    setSubcategoryId(level2Id);
+    setSubSubcategoryId(level3Id);
+  }, [isEditMode, editProductData, categories]);
 
   const subcategoriesOptions = useMemo(
     () => categories.filter(c => normalizeId(c.parent_id) === normalizeId(categoryId)),
@@ -244,31 +227,6 @@ const ProductForm = () => {
     () => (subcategoryId ? categories.filter(c => normalizeId(c.parent_id) === normalizeId(subcategoryId)) : []),
     [categories, subcategoryId]
   );
-
-  useEffect(() => {
-    // Step C: Watchdog - only set subcategory after its option list is populated.
-    if (!isEditMode || !resolvedProductSubcategoryId || subcategoriesOptions.length === 0) return;
-
-    const hasOptionForProductCategory = subcategoriesOptions.some(
-      (subcategory) => normalizeId(subcategory?.id) === normalizeId(resolvedProductSubcategoryId)
-    );
-
-    if (!hasOptionForProductCategory) return;
-    if (normalizeId(subcategoryId) === normalizeId(resolvedProductSubcategoryId)) return;
-
-    const timer = setTimeout(() => {
-      setSubcategoryId(normalizeId(resolvedProductSubcategoryId));
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [subcategoriesOptions, isEditMode, subcategoryId, resolvedProductSubcategoryId]);
-
-  const isSubcategoriesLoading =
-    isEditMode &&
-    !!resolvedProductSubcategoryId &&
-    normalizeId(categoryId).length > 0 &&
-    normalizeId(subcategoryId) === '' &&
-    subcategoriesOptions.length === 0;
 
   // Dynamic specifications handlers
   const handleSpecChange = (idx, field, value) => {
@@ -1255,10 +1213,10 @@ const ProductForm = () => {
                             setSubcategoryId(e.target.value);
                             setSubSubcategoryId('');
                           }}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: (!categoryId || isSubcategoriesLoading) ? 0.6 : 1, background: (!categoryId || isSubcategoriesLoading) ? '#f5f6fa' : '#fff' }}
-                          disabled={!categoryId || isSubcategoriesLoading}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                          disabled={!categoryId}
                         >
-                          <option value="">{isSubcategoriesLoading ? 'Loading...' : 'Select subcategory'}</option>
+                          <option value="">Select subcategory</option>
                           {subcategoriesOptions.map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
