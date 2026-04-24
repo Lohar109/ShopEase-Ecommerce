@@ -717,18 +717,20 @@ const CategoryPage = () => {
               minHeight: 520,
             }}
           >
-            <h1 style={{ margin: '0 0 16px 0', fontSize: 28, fontWeight: 700, color: '#111827' }}>
-              Category Management
-            </h1>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: '#111827' }}>
+                Category Management
+              </h1>
 
-            <div className="category-search-wrap">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search categories"
-                className="category-search-input"
-              />
+              <div style={{ maxWidth: 260, width: '100%' }}>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search categories"
+                  className="category-search-input"
+                />
+              </div>
             </div>
 
             {error ? (
