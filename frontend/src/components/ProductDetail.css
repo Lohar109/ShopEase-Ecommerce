@@ -1009,7 +1009,7 @@
   align-items: center;
   justify-content: center;
   /* Maintain a gap for the arrows on wide screens */
-  margin: 0 80px;
+  margin: 0 120px;
 }
 
 .pdp-lightbox-arrow {
@@ -1037,17 +1037,17 @@
 }
 
 .pdp-lightbox-arrow--left {
-  left: -64px;
+  left: -96px;
 }
 
 .pdp-lightbox-arrow--right {
-  right: -64px;
+  right: -96px;
 }
 
 @media (max-width: 1024px) {
-  .pdp-lightbox-content { margin: 0 60px; }
-  .pdp-lightbox-arrow--left { left: -50px; }
-  .pdp-lightbox-arrow--right { right: -50px; }
+  .pdp-lightbox-content { margin: 0 80px; }
+  .pdp-lightbox-arrow--left { left: -70px; }
+  .pdp-lightbox-arrow--right { right: -70px; }
   .pdp-lightbox-arrow { width: 44px; height: 44px; }
 }
 
