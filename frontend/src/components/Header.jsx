@@ -24,6 +24,7 @@ const Header = () => {
   const [query, setQuery] = useState("");
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const cartCount = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const isHomeRoute = location.pathname === "/";
   const isShopRoute = location.pathname.startsWith("/shop");
 
   const filteredSuggestions = useMemo(() => {
@@ -90,7 +91,7 @@ const Header = () => {
           </div>
         </form>
         <ul className="nav-links">
-          <li><a href="/">Home</a></li>
+          <li><a href="/" className={isHomeRoute ? "nav-link-active" : ""}>For You</a></li>
           <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>
           <li>
             <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
