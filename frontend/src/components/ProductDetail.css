@@ -1,5 +1,5 @@
 .product-detail-container {
-  max-width: 1152px;
+  max-width: 960px;
   margin: 40px auto;
   background: #fff;
   border-radius: 16px;
@@ -16,7 +16,7 @@
 @media (min-width: 1024px) {
   .product-detail-main {
     grid-template-columns: repeat(12, 1fr);
-    gap: 40px;
+    gap: 24px;
   }
 }
 .product-detail-images-col {
