@@ -34,27 +34,29 @@ const LightboxModal = ({ images, currentIndex, onClose }) => {
         </svg>
       </button>
 
-      {images.length > 1 && (
-        <>
-          <button className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '32px', height: '32px' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-          <button className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '32px', height: '32px' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </>
-      )}
+      <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
+        {images.length > 1 && (
+          <>
+            <button className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </>
+        )}
 
-      <div className="pdp-lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <img
-          src={images[activeImageIndex]?.url}
-          alt="Product image"
-          className="pdp-lightbox-img"
-        />
+        <div className="pdp-lightbox-content">
+          <img
+            src={images[activeImageIndex]?.url}
+            alt="Product image"
+            className="pdp-lightbox-img"
+          />
+        </div>
       </div>
     </div>
   );

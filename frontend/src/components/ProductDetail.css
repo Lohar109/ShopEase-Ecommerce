@@ -995,17 +995,28 @@
   }
 }
 
+.pdp-lightbox-main-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 1200px);
+  height: 100%;
+}
+
 .pdp-lightbox-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
   border: none;
   color: #fff;
-  padding: 12px;
+  padding: 0;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2002;
   display: flex;
   align-items: center;
@@ -1013,19 +1024,26 @@
 }
 
 .pdp-lightbox-arrow:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .pdp-lightbox-arrow--left {
-  left: 20px;
+  left: 32px;
 }
 
 .pdp-lightbox-arrow--right {
-  right: 20px;
+  right: 32px;
+}
+
+@media (max-width: 1024px) {
+  .pdp-lightbox-arrow--left { left: 16px; }
+  .pdp-lightbox-arrow--right { right: 16px; }
 }
 
 @media (max-width: 768px) {
-  .pdp-lightbox-arrow--left { left: 10px; }
-  .pdp-lightbox-arrow--right { right: 10px; }
-  .pdp-lightbox-arrow svg { width: 24px; height: 24px; }
+  .pdp-lightbox-arrow { width: 44px; height: 44px; }
+  .pdp-lightbox-arrow--left { left: 8px; }
+  .pdp-lightbox-arrow--right { right: 8px; }
+  .pdp-lightbox-arrow svg { width: 22px; height: 22px; }
 }
