@@ -88,9 +88,9 @@
 
 .product-detail-trust-icons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: space-between;
   align-items: flex-start;
   margin: 10px 0 20px;
   border-top: 1px solid #eaeaea;
@@ -103,17 +103,18 @@
   align-items: center;
   text-align: center;
   gap: 8px;
-  width: 75px;
+  flex: 1;
 }
 .trust-icon-item svg {
   color: #007bff;
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 .trust-icon-item span {
-  font-size: 0.75rem;
+  font-size: 10px;
   color: #333;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .product-detail-delivery {
