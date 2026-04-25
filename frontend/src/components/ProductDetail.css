@@ -432,8 +432,16 @@
   color: #db2777;
   box-shadow: 0 0 0 1px #ec4899;
 }
+.size-chip.oos {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  text-decoration: line-through;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+}
 
-/* Stock + Delivery inline row */
+/* Scarcity + Delivery inline row */
 .pdp-stock-delivery-row {
   display: flex;
   align-items: center;
@@ -441,24 +449,30 @@
   margin-top: 14px;
   flex-wrap: wrap;
 }
-.pdp-stock-badge {
+.pdp-scarcity-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 2px 8px;
+  border-radius: 6px;
   flex-shrink: 0;
+  letter-spacing: 0.01em;
 }
-.pdp-stock-badge--in {
-  background: #f0fdf4;
-  color: #15803d;
+.pdp-scarcity-badge--low {
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  animation: pdp-pulse 1.8s ease-in-out infinite;
 }
-.pdp-stock-badge--out {
+.pdp-scarcity-badge--oos {
   background: #fef2f2;
   color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+@keyframes pdp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 .pdp-delivery-text {
   font-size: 0.82rem;

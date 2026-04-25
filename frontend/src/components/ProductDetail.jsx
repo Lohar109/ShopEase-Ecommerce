@@ -479,29 +479,40 @@ const ProductDetail = () => {
                 <div className="product-detail-size-selector">
                   <span>Size</span>
                   <div className="size-chips">
-                    {uniqueSizes.map((size) => (
-                      <button
-                        key={size}
-                        className={`size-chip${selectedSize === size ? ' selected' : ''}`}
-                        onClick={() => setSelectedSize(size)}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    {uniqueSizes.map((size) => {
+                      const sizeVariant = variants.find(
+                        (v) => v.size === size &&
+                          String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+                      ) || variants.find((v) => v.size === size);
+                      const isOOS = !sizeVariant || sizeVariant.stock === 0;
+                      return (
+                        <button
+                          key={size}
+                          className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
+                          onClick={() => !isOOS && setSelectedSize(size)}
+                          disabled={isOOS}
+                          title={isOOS ? 'Out of Stock' : size}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
-              {/* Stock + Delivery — combined inline row */}
+              {/* Scarcity + Delivery row */}
               <div className="pdp-stock-delivery-row">
-                {selectedVariant && (
-                  selectedVariant.stock > 0 ? (
-                    <span className="pdp-stock-badge pdp-stock-badge--in">In Stock</span>
-                  ) : (
-                    <span className="pdp-stock-badge pdp-stock-badge--out">Out of Stock</span>
-                  )
-                )}
+                {selectedVariant && (() => {
+                  const stock = selectedVariant.stock;
+                  if (stock === 0) return (
+                    <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
+                  );
+                  if (stock > 0 && stock <= 10) return (
+                    <span className="pdp-scarcity-badge pdp-scarcity-badge--low">Only {stock} left! Hurry up!</span>
+                  );
+                  return null;
+                })()}
                 <span className="pdp-delivery-text">
-                  {/* Truck icon */}
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline',verticalAlign:'middle',marginRight:'4px',color:'#16a34a'}}><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
                   Delivered by <strong>Tuesday, April 14</strong>
                 </span>
