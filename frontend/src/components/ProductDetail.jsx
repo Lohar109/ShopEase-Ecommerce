@@ -415,9 +415,9 @@ const ProductDetail = () => {
                 }}
               >
                 {galleryItems.map((item, i) => (
-                  <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '30px', boxSizing: 'border-box' }}>
+                  <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', position: 'relative', width: '100%', height: '100%' }}>
                     {item.type === 'video' ? (
-                      <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted />
+                      <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'contain'}} />
                     ) : (
                       <img src={item.url} alt={`${product.name} gallery ${i+1}`} className="product-detail-main-media" />
                     )}
