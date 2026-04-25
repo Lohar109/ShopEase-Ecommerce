@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
-import { Heart, Search, ShoppingCart, User } from "lucide-react";
+import { Heart, Search, ShoppingCart, Sparkles, User } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
@@ -91,7 +91,12 @@ const Header = () => {
           </div>
         </form>
         <ul className="nav-links">
-          <li><a href="/" className={isHomeRoute ? "nav-link-active" : ""}>For You</a></li>
+          <li>
+            <a href="/" className={`nav-link-for-you ${isHomeRoute ? "active" : ""}`}>
+              <Sparkles size={16} className="for-you-icon" />
+              <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent font-bold">For You</span>
+            </a>
+          </li>
           <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>
           <li>
             <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
