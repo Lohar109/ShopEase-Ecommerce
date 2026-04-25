@@ -387,12 +387,17 @@
 /* Size Selector */
 .product-detail-size-selector {
   margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+.product-detail-size-selector > span {
   font-size: 0.9rem;
   font-weight: 600;
   color: #111827;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .size-chips {
   display: flex;
@@ -417,7 +422,8 @@
   box-shadow: none;
 }
 .size-chip:hover:not(.selected) {
-  border-color: #111827;
+  border-color: #9ca3af;
+  background: #f9fafb;
   color: #111827;
 }
 .size-chip.selected {
