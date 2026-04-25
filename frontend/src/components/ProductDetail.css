@@ -945,33 +945,36 @@
 
 .pdp-lightbox-close {
   position: absolute;
-  top: 20px;
+  top: 24px;
   right: 24px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
+  padding: 10px;
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-  z-index: 2001;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2010;
 }
 
 .pdp-lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg) scale(1.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .pdp-lightbox-content {
-  max-width: 90vw;
-  max-height: 90vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Maintain a gap for the arrows on wide screens */
+  margin: 0 120px;
 }
 
 .pdp-lightbox-img {
