@@ -21,7 +21,7 @@ const ProductDetail = () => {
   const [filteredColors, setFilteredColors] = useState([]);
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
-  const [mainDisplay, setMainDisplay] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
@@ -208,17 +208,21 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages]);
 
-  // Keep main display synced with whichever gallery is currently active
+  // Handle auto-advance for the image carousel
   useEffect(() => {
-    if (galleryItems.length === 0) {
-      setMainDisplay(null);
-      return;
-    }
+    if (galleryItems.length <= 1) return;
 
-    if (!mainDisplay || !galleryItems.some((item) => item.type === mainDisplay.type && item.url === mainDisplay.url)) {
-      setMainDisplay(galleryItems[0]);
-    }
-  }, [galleryItems, mainDisplay]);
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [galleryItems.length]);
+
+  // Reset index when gallery changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [galleryItems]);
 
   const specificationRows = useMemo(() => {
     const specs = product?.specifications;
@@ -361,9 +365,6 @@ const ProductDetail = () => {
 
   // Unique sizes for selector
   const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
-  
-  const displayItems = galleryItems.slice(0, 4);
-  const extraCount = galleryItems.length > 4 ? galleryItems.length - 4 : 0;
 
   const handleAddToCart = () => {
     if (uniqueSizes.length > 0 && !selectedSize) {
@@ -396,30 +397,51 @@ const ProductDetail = () => {
       <div className="product-detail-main">
         {/* Left: Images */}
         <div className="product-detail-images-col">
-          <div className="product-detail-gallery">
-            {displayItems.map((item, i) => (
-              <div 
-                key={i} 
-                className={`product-detail-gallery-item ${mainDisplay?.url === item.url ? 'active' : ''}`}
-                onClick={() => setMainDisplay(item)}
-              >
-                 {item.type === 'video' ? (
-                   <div className="video-thumbnail-placeholder">▶</div>
-                 ) : (
-                   <img src={item.url} alt={`${product.name} gallery ${i+1}`} className="product-detail-gallery-img" />
-                 )}
-                 {i === 3 && extraCount > 0 && (
-                   <div className="gallery-overlay">+{extraCount} more</div>
-                 )}
-              </div>
-            ))}
-          </div>
           <div className="product-detail-main-display">
-            <div className="product-detail-main-media-box">
-              {mainDisplay?.type === 'video' ? (
-                <video src={mainDisplay.url} controls className="product-detail-main-media" autoPlay />
-              ) : (
-                <img src={mainDisplay?.url || selectedVariant.image || product.main_image} alt={product.name} className="product-detail-main-media" />
+            <div className="product-detail-main-media-box" style={{ position: 'relative', overflow: 'hidden', padding: 0 }}>
+              <div 
+                className="carousel-track" 
+                style={{ 
+                  display: 'flex', 
+                  height: '100%', 
+                  width: '100%',
+                  transition: 'transform 500ms ease-in-out',
+                  transform: `translateX(-${currentImageIndex * 100}%)`
+                }}
+              >
+                {galleryItems.map((item, i) => (
+                  <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '30px', boxSizing: 'border-box' }}>
+                    {item.type === 'video' ? (
+                      <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted />
+                    ) : (
+                      <img src={item.url} alt={`${product.name} gallery ${i+1}`} className="product-detail-main-media" />
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Navigation Dots */}
+              {galleryItems.length > 1 && (
+                <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                  {galleryItems.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImageIndex(i)}
+                      aria-label={`Go to slide ${i + 1}`}
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        transition: 'all 300ms ease',
+                        backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
+                        transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
+                      }}
+                    />
+                  ))}
+                </div>
               )}
             </div>
             
