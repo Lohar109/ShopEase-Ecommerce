@@ -574,13 +574,6 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        
-        {/* Right: Sidebar Placeholder */}
-        <div className="product-detail-sidebar-col">
-          <div className="pdp-sidebar-placeholder">
-            Checkout / Offers Card Placeholder
-          </div>
-        </div>
       </div>
 
       {/* Specifications Modal Overlay */}
