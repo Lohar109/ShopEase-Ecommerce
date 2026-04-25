@@ -205,7 +205,7 @@ const Shop = () => {
     <main className="shop-page">
       {/* Category filter section removed per user request */}
 
-      <section className="shop-product-grid" aria-label="Products">
+      <section className="shop-product-grid max-w-7xl mx-auto px-4 w-full" aria-label="Products">
         {!isLoading && (
           <div className="shop-results-meta" aria-live="polite">
             <span>Showing {visibleProducts.length} {visibleProducts.length === 1 ? "product" : "products"}</span>
@@ -213,7 +213,7 @@ const Shop = () => {
         )}
 
         {isLoading ? (
-          <div className="wishlist-products-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
               <ProductSkeleton key={`shop-skeleton-${index}`} />
             ))}
@@ -235,7 +235,7 @@ const Shop = () => {
             </button>
           </div>
         ) : (
-          <div className="wishlist-products-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

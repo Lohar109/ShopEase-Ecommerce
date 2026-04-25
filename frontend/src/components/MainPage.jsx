@@ -67,9 +67,9 @@ const MainPage = () => {
       <HeroCarousel />
 
       {/* Featured Products */}
-      <section className="shop-product-grid" aria-label="Featured products">
+      <section className="shop-product-grid max-w-7xl mx-auto px-4 w-full" aria-label="Featured products">
         {isLoading ? (
-          <div className="shop-products-grid-four">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
               <ProductSkeleton key={`home-skeleton-${index}`} />
             ))}
@@ -77,7 +77,7 @@ const MainPage = () => {
         ) : visibleProducts.length === 0 ? (
           <p className="shop-empty-products">No products found.</p>
         ) : (
-          <div className="shop-products-grid-four">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

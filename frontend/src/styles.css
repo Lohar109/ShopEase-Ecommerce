@@ -1359,10 +1359,15 @@ button:hover {
 
 .product-card-delivery {
     font-family: 'Poppins', sans-serif;
-    font-size: 0.75rem;
+    font-size: 11px;
     color: #1e8e3e;
     font-weight: 500;
     margin: 4px 0 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
 }
 
 .product-card-actions {
@@ -2456,3 +2461,17 @@ button:hover {
         transform: translateX(100%);
     }
 }
+
+/* Tailwind Utility Polyfills for Grid Layouts */
+.max-w-7xl { max-width: 80rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.w-full { width: 100%; }
+.grid { display: grid; }
+.gap-6 { gap: 1.5rem; }
+.gap-4 { gap: 1rem; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+@media (min-width: 640px) { .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { .xl\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
