@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from "react";
 import { Heart, Search, ShoppingCart, Sparkles, User } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, NavLink } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 
@@ -92,10 +92,14 @@ const Header = () => {
         </form>
         <ul className="nav-links">
           <li>
-            <a href="/" className={`nav-link-for-you ${isHomeRoute ? "active" : ""}`}>
-              {isHomeRoute && <Sparkles size={16} className="for-you-icon" />}
-              <span className={isHomeRoute ? "bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent font-bold" : ""}>For You</span>
-            </a>
+            <NavLink to="/" className={({ isActive }) => `nav-link-for-you ${isActive ? "active" : ""}`}>
+              {({ isActive }) => (
+                <>
+                  {isActive && <Sparkles size={16} className="for-you-icon animate-sparkle-icon" />}
+                  <span className={isActive ? "bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent font-bold animate-magical-shimmer" : ""}>For You</span>
+                </>
+              )}
+            </NavLink>
           </li>
           <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>
           <li>

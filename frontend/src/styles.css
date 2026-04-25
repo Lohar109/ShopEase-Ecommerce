@@ -209,6 +209,25 @@ nav {
 .text-transparent { color: transparent; -webkit-text-fill-color: transparent; }
 .font-bold { font-weight: 700; }
 
+@keyframes magicalShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.animate-magical-shimmer {
+    background-size: 200% auto;
+    animation: magicalShimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes subtleSparkleFloat {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.8; filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); }
+    50% { transform: translateY(-1.5px) scale(1.1) rotate(10deg); opacity: 1; filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.7)); }
+}
+.animate-sparkle-icon {
+    animation: subtleSparkleFloat 2.5s ease-in-out infinite;
+    transform-origin: center;
+}
+
 .nav-icon-link {
     position: relative;
     width: 36px;
