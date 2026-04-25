@@ -88,12 +88,14 @@
 
 .product-detail-trust-icons {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin: 10px 0 20px;
   border-top: 1px solid #eaeaea;
   border-bottom: 1px solid #eaeaea;
   padding: 16px 0;
-  justify-content: space-between;
 }
 .trust-icon-item {
   display: flex;
@@ -101,7 +103,7 @@
   align-items: center;
   text-align: center;
   gap: 8px;
-  flex: 1;
+  width: 75px;
 }
 .trust-icon-item svg {
   color: #007bff;
@@ -176,10 +178,10 @@
     margin-right: 0;
   }
   .product-detail-trust-icons {
-    flex-wrap: wrap;
+    justify-content: center;
   }
   .trust-icon-item {
-    flex: 1 1 30%;
+    width: 75px;
   }
 }
 .product-detail-info-col {
@@ -187,10 +189,12 @@
   flex-direction: column;
   gap: 18px;
   width: 100%;
+  max-width: 42rem;
 }
 @media (min-width: 1024px) {
   .product-detail-info-col {
     grid-column: span 7 / span 7;
+    padding-left: 2rem;
   }
 }
 
