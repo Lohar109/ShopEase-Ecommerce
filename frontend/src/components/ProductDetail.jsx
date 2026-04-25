@@ -8,6 +8,58 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
+const LightboxModal = ({ images, currentIndex, onClose }) => {
+  const [activeImageIndex, setActiveImageIndex] = useState(currentIndex);
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  return (
+    <div className="pdp-lightbox-overlay" onClick={onClose}>
+      <button
+        className="pdp-lightbox-close"
+        onClick={onClose}
+        aria-label="Close image preview"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      {images.length > 1 && (
+        <>
+          <button className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '32px', height: '32px' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <button className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '32px', height: '32px' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      <div className="pdp-lightbox-content" onClick={(e) => e.stopPropagation()}>
+        <img
+          src={images[activeImageIndex]?.url}
+          alt="Product image"
+          className="pdp-lightbox-img"
+        />
+      </div>
+    </div>
+  );
+};
+
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
@@ -200,9 +252,9 @@ const ProductDetail = () => {
     if (product.video_url) {
       // Must be at index 1 if it exists
       if (items.length > 0) {
-         items.splice(1, 0, { type: 'video', url: product.video_url });
+        items.splice(1, 0, { type: 'video', url: product.video_url });
       } else {
-         items.push({ type: 'video', url: product.video_url });
+        items.push({ type: 'video', url: product.video_url });
       }
     }
 
@@ -365,7 +417,7 @@ const ProductDetail = () => {
     window.addEventListener("resize", recomputeInlineDescription);
     return () => window.removeEventListener("resize", recomputeInlineDescription);
   }, [descriptionText]);
-  
+
 
   if (loading) return <div className="product-detail-loading">Loading...</div>;
   if (error || !product) return <div className="product-detail-error">{error || "Product not found"}</div>;
@@ -408,236 +460,236 @@ const ProductDetail = () => {
         <div className="pdp-left-col">
           <div className="product-detail-container">
             <div className="product-detail-main">
-        {/* Left: Images */}
-        <div className="product-detail-images-col">
-          <div className="product-detail-main-display">
-            <div className="product-detail-main-media-box"
-              style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in' }}
-              onClick={() => {
-                const current = galleryItems[currentImageIndex];
-                if (current && current.type !== 'video') setShowLightbox(true);
-              }}
-            >
-              <div 
-                className="carousel-track" 
-                style={{ 
-                  display: 'flex', 
-                  height: '100%', 
-                  width: '100%',
-                  transition: 'transform 500ms ease-in-out',
-                  transform: `translateX(-${currentImageIndex * 100}%)`
-                }}
-              >
-                {galleryItems.map((item, i) => (
-                  <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', position: 'relative', width: '100%', height: '100%' }}>
-                    {item.type === 'video' ? (
-                      <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'contain'}} />
-                    ) : (
-                      <img src={item.url} alt={`${product.name} gallery ${i+1}`} className="product-detail-main-media" />
+              {/* Left: Images */}
+              <div className="product-detail-images-col">
+                <div className="product-detail-main-display">
+                  <div className="product-detail-main-media-box"
+                    style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in' }}
+                    onClick={() => {
+                      const current = galleryItems[currentImageIndex];
+                      if (current && current.type !== 'video') setShowLightbox(true);
+                    }}
+                  >
+                    <div
+                      className="carousel-track"
+                      style={{
+                        display: 'flex',
+                        height: '100%',
+                        width: '100%',
+                        transition: 'transform 500ms ease-in-out',
+                        transform: `translateX(-${currentImageIndex * 100}%)`
+                      }}
+                    >
+                      {galleryItems.map((item, i) => (
+                        <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', position: 'relative', width: '100%', height: '100%' }}>
+                          {item.type === 'video' ? (
+                            <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+                          ) : (
+                            <img src={item.url} alt={`${product.name} gallery ${i + 1}`} className="product-detail-main-media" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Navigation Dots */}
+                    {galleryItems.length > 1 && (
+                      <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                        {galleryItems.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setCurrentImageIndex(i)}
+                            aria-label={`Go to slide ${i + 1}`}
+                            style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              border: 'none',
+                              padding: 0,
+                              cursor: 'pointer',
+                              transition: 'all 300ms ease',
+                              backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
+                              transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
+                            }}
+                          />
+                        ))}
+                      </div>
                     )}
                   </div>
-                ))}
-              </div>
-              
-              {/* Navigation Dots */}
-              {galleryItems.length > 1 && (
-                <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                  {galleryItems.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentImageIndex(i)}
-                      aria-label={`Go to slide ${i + 1}`}
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        padding: 0,
-                        cursor: 'pointer',
-                        transition: 'all 300ms ease',
-                        backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
-                        transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="product-detail-options-under-image">
-              {/* Color Selector */}
-              {filteredColors.length > 0 && (
-                <div className="product-detail-color-selector" aria-label="Color variants">
-                  <div className="product-color-thumbs-row">
-                    {filteredColors.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
-                        onClick={() => setSelectedColor(color)}
-                        title={color}
-                        aria-label={`Select color ${color}`}
-                      >
-                        <img
-                          src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
-                          alt={color}
-                          className="product-color-thumb-img"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {/* Size Selector */}
-              {uniqueSizes.length > 0 && (
-                <div className="product-detail-size-selector">
-                  <span>Size</span>
-                  <div className="size-chips">
-                    {uniqueSizes.map((size) => {
-                      const sizeVariant = variants.find(
-                        (v) => v.size === size &&
-                          String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
-                      ) || variants.find((v) => v.size === size);
-                      const isOOS = !sizeVariant || sizeVariant.stock === 0;
-                      return (
-                        <button
-                          key={size}
-                          className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
-                          onClick={() => !isOOS && setSelectedSize(size)}
-                          disabled={isOOS}
-                          title={isOOS ? 'Out of Stock' : size}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              {/* Scarcity + Delivery row */}
-              <div className="pdp-stock-delivery-row">
-                {selectedVariant && (() => {
-                  const stock = selectedVariant.stock;
-                  if (stock === 0) return (
-                    <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
-                  );
-                  if (stock > 0 && stock <= 10) return (
-                    <span className="pdp-scarcity-badge pdp-scarcity-badge--low">Only {stock} left! Hurry up!</span>
-                  );
-                  return null;
-                })()}
-                <span className="pdp-delivery-text">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline',verticalAlign:'middle',marginRight:'4px',color:'#16a34a'}}><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                  Delivered by <strong>Tuesday, April 14</strong>
-                </span>
-              </div>
-              {/* Purchasing block */}
-              <div className="product-detail-purchasing-block">
-                <div className="product-detail-price-group">
-                  <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
-                  <span className="product-detail-tax">All taxes included</span>
-                </div>
-                <div className="product-card-actions detail-page-buttons">
-                  <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
-                  <button className="btn-card-buy-now">Buy Now</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Right: Details & Actions */}
-        <div className="product-detail-info-col">
-          <div className="product-detail-header-row">
-            <p className="product-detail-brand">{product.brand}</p>
-            <div className="product-detail-rating">
-              <span className="star full">&#9733;</span>
-              <span className="star full">&#9733;</span>
-              <span className="star full">&#9733;</span>
-              <span className="star full">&#9733;</span>
-              <span className="star half">&#9733;</span>
-              <span className="rating-value">4.5</span>
-            </div>
-          </div>
 
-          <h2 className="product-detail-title">{product.name}</h2>
-          <div className="product-detail-desc-preview" ref={descriptionInlineRef}>
-            <p className="product-detail-desc">
-              <span className="product-detail-desc-inline-text">
-                {showInlineReadMore ? inlineDescription : descriptionText}
-              </span>
-              {showInlineReadMore && (
-                <span className="product-detail-desc-inline-cta">
-                  <span className="product-detail-read-more-ellipsis">... </span>
-                  <button
-                    type="button"
-                    className="product-detail-read-more product-detail-read-more-inline"
-                    onClick={() => setShowDescriptionModal(true)}
+                  <div className="product-detail-options-under-image">
+                    {/* Color Selector */}
+                    {filteredColors.length > 0 && (
+                      <div className="product-detail-color-selector" aria-label="Color variants">
+                        <div className="product-color-thumbs-row">
+                          {filteredColors.map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
+                              onClick={() => setSelectedColor(color)}
+                              title={color}
+                              aria-label={`Select color ${color}`}
+                            >
+                              <img
+                                src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
+                                alt={color}
+                                className="product-color-thumb-img"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* Size Selector */}
+                    {uniqueSizes.length > 0 && (
+                      <div className="product-detail-size-selector">
+                        <span>Size</span>
+                        <div className="size-chips">
+                          {uniqueSizes.map((size) => {
+                            const sizeVariant = variants.find(
+                              (v) => v.size === size &&
+                                String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+                            ) || variants.find((v) => v.size === size);
+                            const isOOS = !sizeVariant || sizeVariant.stock === 0;
+                            return (
+                              <button
+                                key={size}
+                                className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
+                                onClick={() => !isOOS && setSelectedSize(size)}
+                                disabled={isOOS}
+                                title={isOOS ? 'Out of Stock' : size}
+                              >
+                                {size}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {/* Scarcity + Delivery row */}
+                    <div className="pdp-stock-delivery-row">
+                      {selectedVariant && (() => {
+                        const stock = selectedVariant.stock;
+                        if (stock === 0) return (
+                          <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
+                        );
+                        if (stock > 0 && stock <= 10) return (
+                          <span className="pdp-scarcity-badge pdp-scarcity-badge--low">Only {stock} left! Hurry up!</span>
+                        );
+                        return null;
+                      })()}
+                      <span className="pdp-delivery-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px', color: '#16a34a' }}><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8h4l3 5v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
+                        Delivered by <strong>Tuesday, April 14</strong>
+                      </span>
+                    </div>
+                    {/* Purchasing block */}
+                    <div className="product-detail-purchasing-block">
+                      <div className="product-detail-price-group">
+                        <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
+                        <span className="product-detail-tax">All taxes included</span>
+                      </div>
+                      <div className="product-card-actions detail-page-buttons">
+                        <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+                        <button className="btn-card-buy-now">Buy Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Right: Details & Actions */}
+              <div className="product-detail-info-col">
+                <div className="product-detail-header-row">
+                  <p className="product-detail-brand">{product.brand}</p>
+                  <div className="product-detail-rating">
+                    <span className="star full">&#9733;</span>
+                    <span className="star full">&#9733;</span>
+                    <span className="star full">&#9733;</span>
+                    <span className="star full">&#9733;</span>
+                    <span className="star half">&#9733;</span>
+                    <span className="rating-value">4.5</span>
+                  </div>
+                </div>
+
+                <h2 className="product-detail-title">{product.name}</h2>
+                <div className="product-detail-desc-preview" ref={descriptionInlineRef}>
+                  <p className="product-detail-desc">
+                    <span className="product-detail-desc-inline-text">
+                      {showInlineReadMore ? inlineDescription : descriptionText}
+                    </span>
+                    {showInlineReadMore && (
+                      <span className="product-detail-desc-inline-cta">
+                        <span className="product-detail-read-more-ellipsis">... </span>
+                        <button
+                          type="button"
+                          className="product-detail-read-more product-detail-read-more-inline"
+                          onClick={() => setShowDescriptionModal(true)}
+                        >
+                          Read More
+                        </button>
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
+                  <svg
+                    className="btn-specifications-icon btn-specifications-icon-leading"
+                    viewBox="0 0 20 20"
+                    width="16"
+                    height="16"
+                    aria-hidden="true"
                   >
-                    Read More
-                  </button>
-                </span>
-              )}
-            </p>
-          </div>
-          <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
-            <svg
-              className="btn-specifications-icon btn-specifications-icon-leading"
-              viewBox="0 0 20 20"
-              width="16"
-              height="16"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M10 1.75A8.25 8.25 0 1 0 18.25 10 8.26 8.26 0 0 0 10 1.75Zm0 1.5A6.75 6.75 0 1 1 3.25 10 6.76 6.76 0 0 1 10 3.25Zm0 2.85a1 1 0 1 0 1 1 1 1 0 0 0-1-1Zm-.75 3.3a.75.75 0 0 0 0 1.5h.25v3a.75.75 0 0 0 1.5 0V9.4a.75.75 0 0 0-.75-.75h-1Z"
-              />
-            </svg>
-            <span className="btn-specifications-text">Product Specifications & Features</span>
-            <svg
-              className="btn-specifications-icon btn-specifications-icon-cta"
-              viewBox="0 0 20 20"
-              width="14"
-              height="14"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M7.25 4.5a.75.75 0 0 1 1.06 0l4.97 4.97a.75.75 0 0 1 0 1.06L8.31 15.5a.75.75 0 0 1-1.06-1.06L11.69 10 7.25 5.56a.75.75 0 0 1 0-1.06Z"
-              />
-            </svg>
-          </button>
-          
-          <div className="product-detail-trust-icons">
-            <div className="trust-icon-item">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-              <span>Pay on Delivery</span>
-            </div>
-            <div className="trust-icon-item">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.2 14.2L11 11V7h1.5v3.4l4.3 4.3z"/></svg>
-              <span>10 days Replacement</span>
-            </div>
-            <div className="trust-icon-item">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 8l-4 4h3c0 3.31-2.69 6-6 6a5.87 5.87 0 0 1-2.8-.7l-1.46 1.46A7.93 7.93 0 0 0 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46A7.93 7.93 0 0 0 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
-              <span>ShopEase Delivered</span>
-            </div>
-            <div className="trust-icon-item">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-              <span>Top Brand</span>
-            </div>
-            <div className="trust-icon-item">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-              <span>Secure Transaction</span>
+                    <path
+                      fill="currentColor"
+                      d="M10 1.75A8.25 8.25 0 1 0 18.25 10 8.26 8.26 0 0 0 10 1.75Zm0 1.5A6.75 6.75 0 1 1 3.25 10 6.76 6.76 0 0 1 10 3.25Zm0 2.85a1 1 0 1 0 1 1 1 1 0 0 0-1-1Zm-.75 3.3a.75.75 0 0 0 0 1.5h.25v3a.75.75 0 0 0 1.5 0V9.4a.75.75 0 0 0-.75-.75h-1Z"
+                    />
+                  </svg>
+                  <span className="btn-specifications-text">Product Specifications & Features</span>
+                  <svg
+                    className="btn-specifications-icon btn-specifications-icon-cta"
+                    viewBox="0 0 20 20"
+                    width="14"
+                    height="14"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M7.25 4.5a.75.75 0 0 1 1.06 0l4.97 4.97a.75.75 0 0 1 0 1.06L8.31 15.5a.75.75 0 0 1-1.06-1.06L11.69 10 7.25 5.56a.75.75 0 0 1 0-1.06Z"
+                    />
+                  </svg>
+                </button>
+
+                <div className="product-detail-trust-icons">
+                  <div className="trust-icon-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
+                    <span>Pay on Delivery</span>
+                  </div>
+                  <div className="trust-icon-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.2 14.2L11 11V7h1.5v3.4l4.3 4.3z" /></svg>
+                    <span>10 days Replacement</span>
+                  </div>
+                  <div className="trust-icon-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 8l-4 4h3c0 3.31-2.69 6-6 6a5.87 5.87 0 0 1-2.8-.7l-1.46 1.46A7.93 7.93 0 0 0 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46A7.93 7.93 0 0 0 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z" /></svg>
+                    <span>ShopEase Delivered</span>
+                  </div>
+                  <div className="trust-icon-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" /></svg>
+                    <span>Top Brand</span>
+                  </div>
+                  <div className="trust-icon-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" /></svg>
+                    <span>Secure Transaction</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-          </div>
-        </div>
         </div>
 
         {/* Right: Placeholder (4 cols) */}
         <div className="pdp-right-col">
           <div className="pdp-right-placeholder">
-            <p className="pdp-placeholder-text">Reserved for Future Content<br/>(Add to Cart / Offers)</p>
+            <p className="pdp-placeholder-text">Reserved for Future Content<br />(Add to Cart / Offers)</p>
           </div>
         </div>
       </div>
@@ -675,7 +727,7 @@ const ProductDetail = () => {
               </table>
               {/* Fallback details if fields are empty */}
               {!product?.brand && specificationRows.length === 0 && (
-                 <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
+                <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
               )}
             </div>
           </div>
@@ -703,24 +755,21 @@ const ProductDetail = () => {
       )}
 
       {/* Lightbox Modal */}
-      {showLightbox && galleryItems[currentImageIndex]?.type !== 'video' && (
-        <div className="pdp-lightbox-overlay" onClick={() => setShowLightbox(false)}>
-          <button
-            className="pdp-lightbox-close"
-            onClick={() => setShowLightbox(false)}
-            aria-label="Close image preview"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          <div className="pdp-lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={galleryItems[currentImageIndex]?.url}
-              alt={product?.name || 'Product image'}
-              className="pdp-lightbox-img"
-            />
-          </div>
-        </div>
-      )}
+      {showLightbox && (() => {
+        const imageItems = galleryItems.filter(item => item.type === 'image');
+        const activeItem = galleryItems[currentImageIndex];
+        const activeIndexInImages = imageItems.findIndex(item => item.url === activeItem?.url);
+        
+        if (activeIndexInImages === -1) return null;
+        
+        return (
+          <LightboxModal 
+            images={imageItems} 
+            currentIndex={activeIndexInImages} 
+            onClose={() => setShowLightbox(false)} 
+          />
+        );
+      })()}
     </>
   );
 };
