@@ -22,6 +22,7 @@ const ProductDetail = () => {
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
@@ -208,16 +209,23 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages]);
 
-  // Handle auto-advance for the image carousel
+  // Handle auto-advance for the image carousel — pauses when lightbox is open
   useEffect(() => {
-    if (galleryItems.length <= 1) return;
+    if (galleryItems.length <= 1 || showLightbox) return;
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [galleryItems.length]);
+  }, [galleryItems.length, showLightbox]);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const onKeyDown = (e) => { if (e.key === 'Escape') setShowLightbox(false); };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   // Reset index when gallery changes
   useEffect(() => {
@@ -403,7 +411,13 @@ const ProductDetail = () => {
         {/* Left: Images */}
         <div className="product-detail-images-col">
           <div className="product-detail-main-display">
-            <div className="product-detail-main-media-box" style={{ position: 'relative', overflow: 'hidden', padding: 0 }}>
+            <div className="product-detail-main-media-box"
+              style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in' }}
+              onClick={() => {
+                const current = galleryItems[currentImageIndex];
+                if (current && current.type !== 'video') setShowLightbox(true);
+              }}
+            >
               <div 
                 className="carousel-track" 
                 style={{ 
@@ -684,6 +698,26 @@ const ProductDetail = () => {
             <div className="description-modal-body">
               <p>{descriptionText}</p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {showLightbox && galleryItems[currentImageIndex]?.type !== 'video' && (
+        <div className="pdp-lightbox-overlay" onClick={() => setShowLightbox(false)}>
+          <button
+            className="pdp-lightbox-close"
+            onClick={() => setShowLightbox(false)}
+            aria-label="Close image preview"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div className="pdp-lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={galleryItems[currentImageIndex]?.url}
+              alt={product?.name || 'Product image'}
+              className="pdp-lightbox-img"
+            />
           </div>
         </div>
       )}
