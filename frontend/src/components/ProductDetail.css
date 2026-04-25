@@ -405,9 +405,9 @@
   gap: 0.75rem;
 }
 .size-chip {
-  height: 40px;
-  min-width: 40px;
-  padding: 0 10px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -415,7 +415,7 @@
   border: 1.5px solid #d1d5db;
   background: #fff;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -431,6 +431,43 @@
   background: #fdf2f8;
   color: #db2777;
   box-shadow: 0 0 0 1px #ec4899;
+}
+
+/* Stock + Delivery inline row */
+.pdp-stock-delivery-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.pdp-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.pdp-stock-badge--in {
+  background: #f0fdf4;
+  color: #15803d;
+}
+.pdp-stock-badge--out {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.pdp-delivery-text {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #374151;
+}
+.pdp-delivery-text strong {
+  font-weight: 700;
+  color: #111827;
 }
 
 .product-detail-color-selector {

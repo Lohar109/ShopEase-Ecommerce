@@ -491,17 +491,21 @@ const ProductDetail = () => {
                   </div>
                 </div>
               )}
-              {/* Stock */}
-              {selectedVariant && (
-                <div className="product-detail-meta">
-                  {selectedVariant.stock > 0 ? (
-                    <span className="stock-badge in-stock">In Stock</span>
+              {/* Stock + Delivery — combined inline row */}
+              <div className="pdp-stock-delivery-row">
+                {selectedVariant && (
+                  selectedVariant.stock > 0 ? (
+                    <span className="pdp-stock-badge pdp-stock-badge--in">In Stock</span>
                   ) : (
-                    <span className="stock-badge out-of-stock">Out of Stock</span>
-                  )}
-                </div>
-              )}
-              <p className="product-detail-delivery">Delivered by Tuesday, April 14</p>
+                    <span className="pdp-stock-badge pdp-stock-badge--out">Out of Stock</span>
+                  )
+                )}
+                <span className="pdp-delivery-text">
+                  {/* Truck icon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline',verticalAlign:'middle',marginRight:'4px',color:'#16a34a'}}><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  Delivered by <strong>Tuesday, April 14</strong>
+                </span>
+              </div>
               {/* Purchasing block */}
               <div className="product-detail-purchasing-block">
                 <div className="product-detail-price-group">
