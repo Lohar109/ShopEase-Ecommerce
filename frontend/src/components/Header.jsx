@@ -93,8 +93,8 @@ const Header = () => {
         <ul className="nav-links">
           <li>
             <a href="/" className={`nav-link-for-you ${isHomeRoute ? "active" : ""}`}>
-              <Sparkles size={16} className="for-you-icon" />
-              <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent font-bold">For You</span>
+              {isHomeRoute && <Sparkles size={16} className="for-you-icon" />}
+              <span className={isHomeRoute ? "bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent font-bold" : ""}>For You</span>
             </a>
           </li>
           <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>

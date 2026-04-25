@@ -193,6 +193,10 @@ nav {
     text-decoration: none !important;
 }
 
+.nav-link-for-you span {
+    transition: all 0.3s ease-in-out;
+}
+
 .for-you-icon {
     color: #f43f5e;
 }
