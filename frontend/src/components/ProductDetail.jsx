@@ -393,8 +393,13 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="product-detail-container">
-      <div className="product-detail-main">
+    <>
+      {/* Master split layout */}
+      <div className="pdp-master-grid">
+        {/* Left: Product Card (8 cols) */}
+        <div className="pdp-left-col">
+          <div className="product-detail-container">
+            <div className="product-detail-main">
         {/* Left: Images */}
         <div className="product-detail-images-col">
           <div className="product-detail-main-display">
@@ -596,6 +601,16 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+          </div>
+        </div>
+        </div>
+
+        {/* Right: Placeholder (4 cols) */}
+        <div className="pdp-right-col">
+          <div className="pdp-right-placeholder">
+            <p className="pdp-placeholder-text">Reserved for Future Content<br/>(Add to Cart / Offers)</p>
+          </div>
+        </div>
       </div>
 
       {/* Specifications Modal Overlay */}
@@ -657,7 +672,7 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
