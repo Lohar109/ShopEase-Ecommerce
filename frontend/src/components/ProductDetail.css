@@ -387,31 +387,44 @@
 /* Size Selector */
 .product-detail-size-selector {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 .size-chips {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  gap: 0.75rem;
 }
 .size-chip {
-  background: #e5e7eb;
-  border: 1.5px solid transparent;
-  border-radius: 20px;
-  padding: 7px 22px;
-  font-size: 1rem;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #333;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: none;
 }
-.size-chip.selected, .size-chip:hover {
-  border-color: #e33170;
-  background: #ffe4ef;
-  color: #e33170;
+.size-chip:hover:not(.selected) {
+  border-color: #111827;
+  color: #111827;
+}
+.size-chip.selected {
+  border-color: #ec4899;
+  background: #fdf2f8;
+  color: #db2777;
+  box-shadow: 0 0 0 1px #ec4899;
 }
 
 .product-detail-color-selector {

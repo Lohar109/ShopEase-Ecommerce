@@ -477,7 +477,7 @@ const ProductDetail = () => {
               {/* Size Selector */}
               {uniqueSizes.length > 0 && (
                 <div className="product-detail-size-selector">
-                  <span>Size:</span>
+                  <span>Size</span>
                   <div className="size-chips">
                     {uniqueSizes.map((size) => (
                       <button
