@@ -364,17 +364,27 @@ nav {
     box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.05);
 }
 
+.category-nav-marquee-viewport {
+    max-width: 1440px;
+    margin: 0 auto;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .category-nav-primary-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    max-width: 1440px;
-    margin: 0 auto;
+    width: max-content;
+    flex-wrap: nowrap;
     padding: 0.5rem 1rem;
+    will-change: transform;
+}
+
+.category-nav-marquee-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
 }
 
 .category-nav-primary-row::-webkit-scrollbar,
@@ -391,7 +401,7 @@ nav {
     display: none;
 }
 
-.category-nav-primary-row > div {
+.category-nav-marquee-item {
     min-width: 64px;
     display: flex;
     flex-direction: column;
@@ -402,18 +412,18 @@ nav {
     transition: all 0.3s ease-in-out;
 }
 
-.category-nav-primary-row > div img {
+.category-nav-marquee-item img {
     width: 1.75rem;
     height: 1.75rem;
     object-fit: contain;
     transition: all 0.3s ease-in-out;
 }
 
-.category-nav-primary-row > div:hover img {
+.category-nav-marquee-item:hover img {
     transform: translateY(-0.25rem) scale(1.05);
 }
 
-.category-nav-primary-row > div span {
+.category-nav-marquee-item span {
     font-size: 14px;
     line-height: 1.1;
     font-weight: 500;
@@ -423,7 +433,7 @@ nav {
     transition: all 0.3s ease-in-out;
 }
 
-.category-nav-primary-row > div:hover span {
+.category-nav-marquee-item:hover span {
     color: #c8507a;
 }
 
