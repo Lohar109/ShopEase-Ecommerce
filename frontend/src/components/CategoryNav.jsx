@@ -20,11 +20,11 @@ const CategoryNav = () => {
   );
 
   return (
-    <section className="category-nav-shell bg-white border-b border-zinc-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]" aria-label="Premium category navigation">
-      <div className="category-nav-primary-row flex flex-row items-center justify-center gap-6 overflow-x-auto scrollbar-hide py-2" role="list" aria-label="Primary categories">
-        {categories.map((category) => {
+    <section className="category-nav-shell bg-white border-b border-zinc-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] overflow-hidden whitespace-nowrap" aria-label="Premium category navigation">
+      <div className="category-nav-primary-row flex w-fit animate-marquee hover:[animation-play-state:paused] py-2" role="list" aria-label="Primary categories">
+        {[...categories, ...categories].map((category, index) => {
           return (
-            <div key={category._id || category.name} className="flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[64px] transition-all duration-300 ease-in-out">
+            <div key={`${category._id || category.name}-${index}`} className="flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[100px] transition-all duration-300 ease-in-out px-4">
               <img
                 src={`/category-icons/${category.name}.png`}
                 alt={category.name}
