@@ -8,17 +8,17 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
-const LightboxModal = ({ images, currentIndex, onClose }) => {
-  const [activeImageIndex, setActiveImageIndex] = useState(currentIndex);
+const LightboxModal = ({ items, currentIndex, onClose }) => {
+  const [activeIndex, setActiveIndex] = useState(currentIndex);
 
   const handlePrev = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
-    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
   };
 
   const handleNext = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
-    setActiveImageIndex((prev) => (prev + 1) % images.length);
+    setActiveIndex((prev) => (prev + 1) % items.length);
   };
 
   useEffect(() => {
@@ -31,12 +31,15 @@ const LightboxModal = ({ images, currentIndex, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  const activeItem = items[activeIndex];
+
   return (
     <div className="pdp-lightbox-overlay" onClick={onClose}>
       <button
         className="pdp-lightbox-close"
         onClick={onClose}
-        aria-label="Close image preview"
+        aria-label="Close preview"
+        style={{ zIndex: 10 }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -45,7 +48,7 @@ const LightboxModal = ({ images, currentIndex, onClose }) => {
 
       <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
         <div className="pdp-lightbox-content">
-          {images.length > 1 && (
+          {items.length > 1 && (
             <>
               <button className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
@@ -59,11 +62,24 @@ const LightboxModal = ({ images, currentIndex, onClose }) => {
               </button>
             </>
           )}
-          <img
-            src={images[activeImageIndex]?.url}
-            alt="Product image"
-            className="pdp-lightbox-img"
-          />
+          {activeItem?.type === 'video' ? (
+            <video
+              src={activeItem.url}
+              controls
+              autoPlay
+              loop
+              muted
+              controlsList="nodownload nofullscreen noplaybackrate"
+              className="pdp-lightbox-img"
+              style={{ maxHeight: '80vh', width: 'auto', margin: '0 auto', borderRadius: '0.5rem', background: '#000', display: 'block' }}
+            />
+          ) : (
+            <img
+              src={activeItem?.url}
+              alt="Product preview"
+              className="pdp-lightbox-img"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -493,7 +509,16 @@ const ProductDetail = () => {
                       {galleryItems.map((item, i) => (
                         <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', position: 'relative', width: '100%', height: '100%' }}>
                           {item.type === 'video' ? (
-                            <video src={item.url} controls className="product-detail-main-media" autoPlay={i === currentImageIndex} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+                            <video
+                              src={item.url}
+                              controls
+                              className="product-detail-main-media"
+                              autoPlay={i === currentImageIndex}
+                              muted
+                              loop
+                              controlsList="nodownload nofullscreen noplaybackrate"
+                              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                            />
                           ) : (
                             <img src={item.url} alt={`${product.name} gallery ${i + 1}`} className="product-detail-main-media" />
                           )}
@@ -765,21 +790,13 @@ const ProductDetail = () => {
       )}
 
       {/* Lightbox Modal */}
-      {showLightbox && (() => {
-        const imageItems = galleryItems.filter(item => item.type === 'image');
-        const activeItem = galleryItems[currentImageIndex];
-        const activeIndexInImages = imageItems.findIndex(item => item.url === activeItem?.url);
-        
-        if (activeIndexInImages === -1) return null;
-        
-        return (
-          <LightboxModal 
-            images={imageItems} 
-            currentIndex={activeIndexInImages} 
-            onClose={() => setShowLightbox(false)} 
-          />
-        );
-      })()}
+      {showLightbox && (
+        <LightboxModal
+          items={galleryItems}
+          currentIndex={currentImageIndex}
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
     </>
   );
 };
