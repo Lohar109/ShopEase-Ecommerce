@@ -117,7 +117,8 @@ exports.getProductById = async (req, res) => {
     res.json({
       product: {
         ...product,
-        created_at: product.created_at ? new Date(product.created_at).toISOString() : null
+        created_at: product.created_at ? new Date(product.created_at).toISOString() : null,
+        video_url: product.video_url || ''
       },
       variants: variantsResult.rows
     });
@@ -138,6 +139,7 @@ exports.updateProduct = async (req, res) => {
       description,
       category_id,
       main_image,
+      video_url = '',
       images = [],
       specifications = {},
       audience = 'unisex',
@@ -149,9 +151,9 @@ exports.updateProduct = async (req, res) => {
     // Update product
     const productResult = await client.query(
       `UPDATE product 
-       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, images = $7, specifications = $8, audience = $9 
-       WHERE id = $10 RETURNING id`,
-      [name, slug, brand, description, category_id, main_image, images, specifications, audience, id]
+       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10 
+       WHERE id = $11 RETURNING id`,
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, id]
     );
 
     if (productResult.rows.length === 0) {
