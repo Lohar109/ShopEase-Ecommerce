@@ -57,6 +57,7 @@ const ProductForm = () => {
 
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
   const [galleryImages, setGalleryImages] = useState(['']);
 
   // Design specific gallery state
@@ -129,6 +130,7 @@ const ProductForm = () => {
         setDescription(p?.description || '');
         setAudience(p?.audience || 'unisex');
         setMainImage(p?.main_image || '');
+        setVideoUrl(p?.video_url || '');
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
         const rawSpecs = p.specifications;
@@ -302,6 +304,7 @@ const ProductForm = () => {
       s: '',
       a: 'unisex',
       m: '',
+      vi: '',
       sp: [],
       g: [],
       v: [],
@@ -319,6 +322,7 @@ const ProductForm = () => {
     setSubSubcategoryId('');
     setAudience(f.a);
     setMainImage(f.m);
+    setVideoUrl(f.vi || '');
     setSpecs(f.sp);
     setGalleryImages(f.g);
     setVariantRows(f.v);
@@ -361,6 +365,7 @@ const ProductForm = () => {
         category_id: subSubcategoryId || subcategoryId || categoryId,
         audience,
         main_image: mainImage,
+        video_url: videoUrl,
         images: galleryImages.filter(Boolean),
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         variants: variantRows.map(v => ({
@@ -1395,17 +1400,102 @@ const ProductForm = () => {
                   </div>
                   <div style={{ marginBottom: 24 }}>
                     <label style={{ fontWeight: 500 }}>Main Image URL</label>
-                    <input
-                      className="custom-input"
-                      type="text"
-                      value={mainImage}
-                      onChange={e => setMainImage(e.target.value)}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                      placeholder="Paste Cloudinary main image URL"
-                      required
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={mainImage}
+                        onChange={e => setMainImage(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                        placeholder="Paste Cloudinary main image URL"
+                        required
+                      />
+                      {mainImage && (
+                        <button
+                          type="button"
+                          onClick={() => setMainImage('')}
+                          title="Clear image URL"
+                          style={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 'calc(50% + 2px)',
+                            transform: 'translateY(-50%)',
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            border: 'none',
+                            borderRadius: 6,
+                            padding: 6,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
                     {mainImage && (
                       <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={{ fontWeight: 500 }}>Product Video URL</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={videoUrl}
+                        onChange={e => setVideoUrl(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                        placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
+                      />
+                      {videoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setVideoUrl('')}
+                          title="Clear video URL"
+                          style={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 'calc(50% + 2px)',
+                            transform: 'translateY(-50%)',
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            border: 'none',
+                            borderRadius: 6,
+                            padding: 6,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                    {videoUrl && (
+                      <video
+                        src={videoUrl}
+                        controls
+                        muted
+                        playsInline
+                        className="w-full max-h-[300px] rounded-lg border border-gray-200 shadow-sm"
+                        style={{ marginTop: 10, width: '100%', maxHeight: 300, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                      />
+                    )}
+                    {videoUrl && !/\.(mp4|webm|mov)$/i.test(videoUrl) && (
+                      <div style={{ marginTop: 6, color: '#d97706', fontSize: 12 }}>
+                        Warning: URL does not end with a common video extension (.mp4, .webm, .mov)
+                      </div>
                     )}
                   </div>
 
