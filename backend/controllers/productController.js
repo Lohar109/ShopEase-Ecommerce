@@ -12,6 +12,16 @@ const pool = new Pool({
   ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
 });
 
+const isDuplicateSkuError = (err) => (
+  err?.code === '23505' &&
+  String(err?.constraint || '').toLowerCase().includes('sku')
+);
+
+const extractDuplicateSku = (err) => {
+  const match = String(err?.detail || '').match(/\(sku\)=\((.*?)\)/i);
+  return match?.[1] || null;
+};
+
 exports.getAllProducts = async (req, res) => {
   try {
     const { audience, category_id } = req.query;
@@ -92,6 +102,9 @@ exports.createProduct = async (req, res) => {
     res.status(201).json({ message: 'Product created', product_id: productId });
   } catch (err) {
     await client.query('ROLLBACK');
+    if (isDuplicateSkuError(err)) {
+      return res.status(409).json({ error: 'SKU already exists', sku: extractDuplicateSku(err) });
+    }
     res.status(500).json({ error: err.message });
   } finally {
     client.release();
@@ -175,6 +188,9 @@ exports.updateProduct = async (req, res) => {
     res.json({ message: 'Product updated', product_id: id });
   } catch (err) {
     await client.query('ROLLBACK');
+    if (isDuplicateSkuError(err)) {
+      return res.status(409).json({ error: 'SKU already exists', sku: extractDuplicateSku(err) });
+    }
     res.status(500).json({ error: err.message });
   } finally {
     client.release();

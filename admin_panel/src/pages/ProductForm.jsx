@@ -30,6 +30,7 @@ const ProductForm = () => {
   const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', stock: '', sku: '', image: img });
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
+  const [duplicateSkuError, setDuplicateSkuError] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(isEditMode);
   const [loadErr, setLoadErr] = useState('');
   const [editProductData, setEditProductData] = useState(null);
@@ -262,6 +263,7 @@ const ProductForm = () => {
 
   // Update variant row and always auto-generate SKU
   const handleVariantChange = (idx, field, value) => {
+    setDuplicateSkuError(null);
     setVariantRows(rows => rows.map((row, i) => {
       if (i !== idx) return row;
       let updated = { ...row, [field]: value };
@@ -272,6 +274,7 @@ const ProductForm = () => {
 
   // When brand or name changes, update all SKUs
   useEffect(() => {
+    setDuplicateSkuError(null);
     setVariantRows(rows => rows.map(row => ({
       ...row,
       sku: generateSKU(brand, name, row.color, row.size)
@@ -346,6 +349,7 @@ const ProductForm = () => {
   };
   // Mark SKU as manually edited
   const handleSkuManualEdit = (idx, value) => {
+    setDuplicateSkuError(null);
     setVariantRows(rows => rows.map((row, i) => i === idx ? { ...row, sku: value, skuManuallyEdited: true } : row));
   };
 
@@ -356,6 +360,7 @@ const ProductForm = () => {
     }
 
     setSaving(true);
+    setDuplicateSkuError(null);
     try {
       const productData = {
         name,
@@ -387,8 +392,15 @@ const ProductForm = () => {
       setSaving(false);
       navigate('/products');
     } catch (err) {
+      const message = err.message || 'Failed to save product';
+      if (err.sku || /duplicate|already exists|unique constraint/i.test(message)) {
+        setDuplicateSkuError(err.sku || variantRows.find(v => message.includes(v.sku))?.sku || variantRows.find(v => v.sku)?.sku || null);
+        setActiveTab('inventory');
+        setSaving(false);
+        return;
+      }
       setSaving(false);
-      alert(err.message || 'Failed to save product');
+      alert(message);
     }
   };
 
@@ -1585,9 +1597,14 @@ const ProductForm = () => {
                     </div>
 
                     <div style={{ display: 'grid', gap: 8 }}>
-                      {variantRows.map((variant, idx) => (
+                      {variantRows.map((variant, index) => {
+                        const currentSku = variant.sku.trim();
+                        const isLocalDuplicate = currentSku !== '' && variantRows.findIndex(v => v.sku.trim() === currentSku) !== index;
+                        const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
+
+                        return (
                         <div
-                          key={variant.vk || `var-${idx}`}
+                          key={variant.vk || `var-${index}`}
                           className="grid grid-cols-7 gap-4"
                           style={{
                             display: 'grid',
@@ -1598,18 +1615,55 @@ const ProductForm = () => {
                             padding: '5px 0',
                           }}
                         >
-                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(idx, 'stock', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={variant.sku}
-                            readOnly
-                            style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', color: '#888' }}
-                          />
-                          {idx === 0 ? (
+                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <div
+                            className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
+                            style={{
+                              position: 'relative',
+                              width: '100%',
+                              boxSizing: 'border-box',
+                              border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid transparent',
+                              borderRadius: 8,
+                              padding: 2,
+                              background: hasDuplicateSkuError ? '#fff7f7' : 'transparent',
+                            }}
+                          >
+                            <input
+                              className={`custom-input ${hasDuplicateSkuError ? 'border-red-500 focus:ring-red-500' : ''}`}
+                              type="text"
+                              value={variant.sku}
+                              readOnly
+                              style={{
+                                width: '100%',
+                                padding: 4,
+                                borderRadius: 12,
+                                border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
+                                background: '#f5f6fa',
+                                color: '#888'
+                              }}
+                            />
+                            {hasDuplicateSkuError && (
+                              <p
+                                className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap"
+                                style={{
+                                  position: 'absolute',
+                                  bottom: -18,
+                                  left: 2,
+                                  margin: 0,
+                                  fontSize: 11,
+                                  lineHeight: 1,
+                                  color: '#ef4444',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                SKU already exists
+                              </p>
+                            )}
+                          </div>
+                          {index === 0 ? (
                             <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
                               <input
                                 className="custom-input"
@@ -1637,7 +1691,7 @@ const ProductForm = () => {
                               className="custom-input"
                               type="text"
                               value={variant.image}
-                              onChange={e => handleVariantChange(idx, 'image', e.target.value)}
+                              onChange={e => handleVariantChange(index, 'image', e.target.value)}
                               style={{
                                 width: '100%',
                                 padding: 4,
@@ -1651,7 +1705,7 @@ const ProductForm = () => {
                           )}
                           <button
                             type="button"
-                            onClick={() => removeVariant(idx)}
+                            onClick={() => removeVariant(index)}
                             title="Remove variant"
                             style={{
                               background: '#fef2f2',
@@ -1672,7 +1726,8 @@ const ProductForm = () => {
                             <Trash2 size={14} />
                           </button>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                   <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>

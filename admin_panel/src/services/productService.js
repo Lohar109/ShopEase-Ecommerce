@@ -40,7 +40,10 @@ export async function saveProduct(productData) {
     });
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to save product');
+      const requestError = new Error(error.error || 'Failed to save product');
+      requestError.sku = error.sku;
+      requestError.status = response.status;
+      throw requestError;
     }
     return await response.json();
   } catch (error) {
@@ -57,7 +60,10 @@ export async function updateProduct(id, productData) {
     });
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to update product');
+      const requestError = new Error(error.error || 'Failed to update product');
+      requestError.sku = error.sku;
+      requestError.status = response.status;
+      throw requestError;
     }
     return await response.json();
   } catch (error) {
