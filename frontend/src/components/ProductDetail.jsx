@@ -516,13 +516,13 @@ const ProductDetail = () => {
                                 className="product-detail-main-media"
                                 autoPlay={i === currentImageIndex}
                                 muted
-                                loop
                                 controlsList="nodownload nofullscreen noplaybackrate"
                                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                                onEnded={() => setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length)}
                               />
-                              {/* Invisible overlay — sits above video controls and opens the lightbox on click */}
+                              {/* Overlay covers top 80% — leaves native controls accessible at bottom */}
                               <div
-                                style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer' }}
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '80%', zIndex: 10, cursor: 'pointer' }}
                                 onClick={() => setShowLightbox(true)}
                               />
                             </div>
