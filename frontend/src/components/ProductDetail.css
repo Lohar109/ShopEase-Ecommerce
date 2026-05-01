@@ -307,8 +307,9 @@
 }
 
 .product-detail-title {
+  font-family: 'Roboto', sans-serif;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: normal;
   line-height: 1.2;
   margin-bottom: 0.5rem;
 }

@@ -234,10 +234,11 @@ button:hover {
 }
 
 .product-title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: normal;
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
     color: var(--primary-color);
-    font-weight: 500;
 }
 
 .product-price {
@@ -499,3 +500,4 @@ button:hover {
             width: 100%;
         }
     }
+

@@ -1361,12 +1361,13 @@ button:hover {
 }
 
 .product-title {
+    font-family: 'Roboto', sans-serif;
     font-size: 1.15rem;
     line-height: 1.35;
     min-height: 3.1rem;
     margin-bottom: 0.2rem;
     color: var(--primary-color);
-    font-weight: 500;
+    font-weight: normal;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -2549,3 +2550,4 @@ button:hover {
 .category-skel-pulse {
   animation: navPulse 1.6s ease-in-out infinite;
 }
+
