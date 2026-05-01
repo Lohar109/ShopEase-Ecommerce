@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import CategorySkeleton from "./CategorySkeleton";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -6,18 +7,22 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const CategoryNav = () => {
   const [allCategories, setAllCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
       .then((response) => response.json())
       .then((data) => setAllCategories(Array.isArray(data) ? data : []))
-      .catch(() => setAllCategories([]));
+      .catch(() => setAllCategories([]))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const categories = useMemo(
     () => allCategories.filter((category) => category?.parent_id === null),
     [allCategories]
   );
+
+  if (isLoading) return <CategorySkeleton />;
 
   return (
     <section className="category-nav-shell bg-white border-b border-zinc-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]" aria-label="Premium category navigation">

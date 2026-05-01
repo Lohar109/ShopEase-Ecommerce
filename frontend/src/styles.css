@@ -2544,3 +2544,8 @@ button:hover {
   animation-play-state: paused;
 }
 
+
+/* Category skeleton shimmer */
+.category-skel-pulse {
+  animation: navPulse 1.6s ease-in-out infinite;
+}
