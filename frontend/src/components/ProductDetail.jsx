@@ -101,6 +101,7 @@ const ProductDetail = () => {
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
@@ -287,16 +288,16 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages]);
 
-  // Handle auto-advance for the image carousel — pauses when lightbox is open
+  // Handle auto-advance for the image carousel — pauses when lightbox is open or video is playing
   useEffect(() => {
-    if (galleryItems.length <= 1 || showLightbox) return;
+    if (galleryItems.length <= 1 || showLightbox || isVideoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [galleryItems.length, showLightbox]);
+  }, [galleryItems.length, showLightbox, isVideoPlaying]);
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -518,7 +519,12 @@ const ProductDetail = () => {
                                 muted
                                 controlsList="nodownload nofullscreen noplaybackrate"
                                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
-                                onEnded={() => setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length)}
+                                onPlay={() => setIsVideoPlaying(true)}
+                                onPause={() => setIsVideoPlaying(false)}
+                                onEnded={() => {
+                                  setIsVideoPlaying(false);
+                                  setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
+                                }}
                               />
                               {/* Overlay covers top 80% — leaves native controls accessible at bottom */}
                               <div
