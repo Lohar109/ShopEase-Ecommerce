@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const ADMIN_EMAIL = 'admin@example.com'; // Change to your desired admin email
-const ADMIN_PASSWORD = 'admin123'; // Change to your desired admin password
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
