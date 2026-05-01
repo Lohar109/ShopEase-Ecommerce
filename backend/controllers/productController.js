@@ -34,7 +34,15 @@ exports.getAllProducts = async (req, res) => {
     }
     if (category_id) {
       queryArgs.push(category_id);
-      whereClauses.push(`(p.category_id = $${queryArgs.length} OR c.parent_id = $${queryArgs.length})`);
+      whereClauses.push(`p.category_id IN (
+        WITH RECURSIVE category_tree AS (
+          SELECT id FROM category WHERE id = $${queryArgs.length}
+          UNION ALL
+          SELECT c.id FROM category c
+          INNER JOIN category_tree ct ON c.parent_id = ct.id
+        )
+        SELECT id FROM category_tree
+      )`);
     }
 
     const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
@@ -250,3 +258,5 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+

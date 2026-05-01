@@ -189,13 +189,13 @@ const Shop = () => {
     }
 
     return products.filter((product) => {
-      const productCategoryId = String(product?.category_id || "");
-      const directMatch = productCategoryId === String(selectedCategory);
-      const parentMatch =
-        categoryById[productCategoryId] &&
-        String(categoryById[productCategoryId].parent_id) === String(selectedCategory);
-
-      return directMatch || parentMatch;
+      let currentId = String(product?.category_id || "");
+      while (currentId) {
+        if (currentId === String(selectedCategory)) return true;
+        const currentCategory = categoryById[currentId];
+        currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
+      }
+      return false;
     });
   };
 

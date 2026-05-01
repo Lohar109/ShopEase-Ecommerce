@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import CategorySkeleton from "./CategorySkeleton";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
@@ -36,9 +37,11 @@ const CategoryNav = () => {
             >
               {categories.map((category, index) => {
                 return (
-                  <div
+                  <Link
+                    to={`/shop?category=${encodeURIComponent(category.name)}`}
                     key={`${loopIndex}-${category._id || category.name}-${index}`}
                     className="category-nav-marquee-item flex flex-col items-center justify-start gap-1 cursor-pointer group min-w-[100px] transition-all duration-300 ease-in-out px-4"
+                    style={{ textDecoration: 'none' }}
                   >
                     <img
                       src={`/category-icons/${category.name}.png`}
@@ -48,7 +51,7 @@ const CategoryNav = () => {
                     <span className="text-center text-xs font-medium text-zinc-800 whitespace-nowrap group-hover:text-[#c8507a] transition-all duration-300 ease-in-out">
                       {category.name}
                     </span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
