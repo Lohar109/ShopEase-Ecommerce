@@ -182,21 +182,18 @@ const Shop = () => {
   const getFilteredProducts = () => {
     if (!selectedCategory) return products;
 
-    if (selectedSubcategory) {
-      return products.filter(
-        (product) => String(product?.category_id) === String(selectedSubcategory)
-      );
-    }
-
-    return products.filter((product) => {
+    const checkMatch = (product, targetCatId) => {
       let currentId = String(product?.category_id || "");
       while (currentId) {
-        if (currentId === String(selectedCategory)) return true;
+        if (currentId === String(targetCatId)) return true;
         const currentCategory = categoryById[currentId];
         currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
       }
       return false;
-    });
+    };
+
+    const activeCatId = selectedSubcategory || selectedCategory;
+    return products.filter((product) => checkMatch(product, activeCatId));
   };
 
   const visibleProducts = getFilteredProducts();
@@ -206,9 +203,32 @@ const Shop = () => {
       {/* Category filter section removed per user request */}
 
       <section className="shop-product-grid max-w-7xl mx-auto px-4 w-full" aria-label="Products">
-        {!isLoading && (
-          <div className="shop-results-meta" aria-live="polite">
-            <span>Showing {visibleProducts.length} {visibleProducts.length === 1 ? "product" : "products"}</span>
+        {!isLoading && activeSubcategories.length > 0 && (
+          <div className="shop-subcategories-row flex overflow-x-auto gap-4 py-4 mb-6 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {activeSubcategories.map((subcat) => (
+              <button
+                key={subcat.id}
+                className={`flex flex-col items-center justify-start min-w-[84px] transition-all group ${
+                  selectedSubcategory === subcat.id ? 'opacity-100' : 'opacity-80 hover:opacity-100'
+                }`}
+                onClick={() => setSelectedSubcategory(selectedSubcategory === subcat.id ? null : subcat.id)}
+              >
+                <div className={`w-16 h-16 rounded-full overflow-hidden mb-2 bg-zinc-50 flex items-center justify-center border-2 transition-all ${
+                  selectedSubcategory === subcat.id ? 'border-rose-500 shadow-md' : 'border-transparent shadow-sm group-hover:border-rose-200 group-hover:shadow-md'
+                }`}>
+                  <img
+                    src={subcat.image || `/category-icons/${subcat.name}.png`}
+                    alt={subcat.name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                </div>
+                <span className={`text-[11px] text-center whitespace-nowrap overflow-hidden text-ellipsis w-full px-1 ${
+                  selectedSubcategory === subcat.id ? 'font-bold text-rose-600' : 'font-medium text-zinc-700'
+                }`}>
+                  {subcat.name}
+                </span>
+              </button>
+            ))}
           </div>
         )}
 
