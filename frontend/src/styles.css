@@ -2320,23 +2320,27 @@ button:hover {
     width: 100%;
     height: 8.25rem;
     border-radius: 3rem 3rem 0 0;
-    background: radial-gradient(circle at 45% 35%, #fafafa 0%, #f8f8f8 40%, #ffffff 100%);
+    background: transparent;
     border: none;
     box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     overflow: hidden;
     position: relative;
-    padding: 1rem;
+    padding: 0;
 }
 
 .shop-subcategory-card-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    object-position: center;
+    object-fit: cover;
+    object-position: top;
     display: block;
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+}
+
+.shop-subcategory-card:hover .shop-subcategory-card-image,
+.shop-subcategory-card.is-selected .shop-subcategory-card-image {
+    transform: scale(1.05);
 }
 
 .shop-subcategory-card-label {
@@ -2351,7 +2355,7 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 0.5rem 0.8rem;
+    padding: 0.9rem 0.5rem 1.1rem;
 }
 
 .shop-subcategory-card.is-selected .shop-subcategory-card-media {
