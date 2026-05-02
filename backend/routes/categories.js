@@ -61,6 +61,77 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /api/categories/:id - update a category
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, image, parent_id } = req.body;
+  const normalizedId = typeof id === 'string' ? id.trim() : '';
+  const normalizedName = typeof name === 'string' ? name.trim() : '';
+
+  if (!normalizedId) {
+    return res.status(400).json({ error: 'Category id is required' });
+  }
+  if (!normalizedName) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+
+  const imageValue = typeof image === 'string' && image.trim() ? image.trim() : null;
+  const normalizedParentId = typeof parent_id === 'string' ? parent_id.trim() : null;
+  const finalParentId = normalizedParentId ? normalizedParentId : null;
+
+  try {
+    // Check if category exists
+    const existsResult = await pool.query('SELECT id FROM category WHERE id = $1 LIMIT 1', [normalizedId]);
+    if (existsResult.rowCount === 0) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    // Check if parent exists (if provided and different from null)
+    if (finalParentId) {
+      const parentResult = await pool.query(
+        'SELECT id FROM category WHERE id = $1 LIMIT 1',
+        [finalParentId]
+      );
+      if (parentResult.rowCount === 0) {
+        return res.status(400).json({ error: 'Selected parent category does not exist' });
+      }
+    }
+
+    // Prevent circular parent relationships
+    if (finalParentId) {
+      const circularCheckResult = await pool.query(
+        `WITH RECURSIVE parent_tree AS (
+           SELECT id, parent_id
+           FROM category
+           WHERE id = $1
+           UNION ALL
+           SELECT c.id, c.parent_id
+           FROM category c
+           INNER JOIN parent_tree pt ON c.id = pt.parent_id
+         )
+         SELECT id FROM parent_tree WHERE id = $2 LIMIT 1`,
+        [finalParentId, normalizedId]
+      );
+      if (circularCheckResult.rowCount > 0) {
+        return res.status(400).json({ error: 'Cannot set parent to a descendant of this category' });
+      }
+    }
+
+    const result = await pool.query(
+      'UPDATE category SET name = $1, image = $2, parent_id = $3 WHERE id = $4 RETURNING id, name, image, parent_id',
+      [normalizedName, imageValue, finalParentId, normalizedId]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      res.status(409).json({ error: 'Category name already exists' });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
 // DELETE /api/categories/:id - delete category and all its descendant subcategories
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;

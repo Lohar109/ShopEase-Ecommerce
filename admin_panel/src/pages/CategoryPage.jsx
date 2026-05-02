@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
-import { addCategory, deleteCategory, fetchCategories } from '../services/categoryService';
+import { addCategory, deleteCategory, fetchCategories, updateCategory } from '../services/categoryService';
 
 const CategoryPage = () => {
   const [isNarrowScreen, setIsNarrowScreen] = useState(window.innerWidth < 1100);
@@ -24,6 +24,12 @@ const CategoryPage = () => {
   const [ssPId, setSsPId] = useState('');
   const [ssImg, setSsImg] = useState('');
   const [addingSubSubcategory, setAddingSubSubcategory] = useState(false);
+
+  // Edit mode state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingId, setEditingId] = useState('');
+  const [editingType, setEditingType] = useState(''); // 'main', 'sub', or 'subsub'
+  const [updatingCategory, setUpdatingCategory] = useState(false);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -186,6 +192,25 @@ const CategoryPage = () => {
       return;
     }
 
+    if (isEditMode && editingId) {
+      setUpdatingCategory(true);
+      try {
+        await updateCategory(editingId, {
+          name: newCategoryName.trim(),
+          parent_id: null,
+        });
+        toast.success('Category updated successfully!', { position: 'top-center' });
+        cancelEditMode();
+        setNewCategoryName('');
+        await loadCategories();
+      } catch (err) {
+        toast.error('Failed to update category.');
+      } finally {
+        setUpdatingCategory(false);
+      }
+      return;
+    }
+
     setAddingCategory(true);
     try {
       const res = await addCategory({
@@ -212,6 +237,28 @@ const CategoryPage = () => {
     }
     if (!sName.trim()) {
       toast.error('Failed to add category.');
+      return;
+    }
+
+    if (isEditMode && editingId && editingType === 'sub') {
+      setUpdatingCategory(true);
+      try {
+        await updateCategory(editingId, {
+          name: sName.trim(),
+          image: img.trim() || null,
+          parent_id: pId,
+        });
+        toast.success('Subcategory updated successfully!', { position: 'top-center' });
+        cancelEditMode();
+        setSName('');
+        setImg('');
+        setPId('');
+        await loadCategories();
+      } catch (err) {
+        toast.error('Failed to update subcategory.');
+      } finally {
+        setUpdatingCategory(false);
+      }
       return;
     }
 
@@ -248,6 +295,28 @@ const CategoryPage = () => {
       return;
     }
 
+    if (isEditMode && editingId && editingType === 'subsub') {
+      setUpdatingCategory(true);
+      try {
+        await updateCategory(editingId, {
+          name: ssName.trim(),
+          image: ssImg.trim() || null,
+          parent_id: ssPId,
+        });
+        toast.success('Sub-subcategory updated successfully!', { position: 'top-center' });
+        cancelEditMode();
+        setSsName('');
+        setSsImg('');
+        setSsPId('');
+        await loadCategories();
+      } catch (err) {
+        toast.error('Failed to update sub-subcategory.');
+      } finally {
+        setUpdatingCategory(false);
+      }
+      return;
+    }
+
     setAddingSubSubcategory(true);
     try {
       const res = await addCategory({
@@ -267,6 +336,43 @@ const CategoryPage = () => {
       toast.error('Failed to add sub-subcategory.');
     } finally {
       setAddingSubSubcategory(false);
+    }
+  };
+
+  const cancelEditMode = () => {
+    setIsEditMode(false);
+    setEditingId('');
+    setEditingType('');
+    setNewCategoryName('');
+    setSName('');
+    setSsName('');
+    setPId('');
+    setSsPId('');
+    setImg('');
+    setSsImg('');
+  };
+
+  const startEditCategory = (category, type) => {
+    const categoryId = String(category?.id || '');
+    if (!categoryId) return;
+
+    setEditingId(categoryId);
+    setEditingType(type);
+    setIsEditMode(true);
+
+    if (type === 'main') {
+      setNewCategoryName(category.name || '');
+      setActiveTab('main');
+    } else if (type === 'sub') {
+      setSName(category.name || '');
+      setImg(category.image || '');
+      setPId(String(category.parent_id || ''));
+      setActiveTab('sub');
+    } else if (type === 'subsub') {
+      setSsName(category.name || '');
+      setSsImg(category.image || '');
+      setSsPId(String(category.parent_id || ''));
+      setActiveTab('subsub');
     }
   };
 
@@ -547,9 +653,29 @@ const CategoryPage = () => {
               }}
             >
               {/* Heading */}
-              <h2 style={{ margin: '0 0 16px 0', fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                Create Category
-              </h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>
+                  {isEditMode ? `Edit ${editingType === 'main' ? 'Category' : editingType === 'sub' ? 'Subcategory' : 'Sub-Subcategory'}` : 'Create Category'}
+                </h2>
+                {isEditMode && (
+                  <button
+                    type="button"
+                    onClick={cancelEditMode}
+                    style={{
+                      background: '#f3f4f6',
+                      border: '1px solid #e5e7eb',
+                      color: '#6b7280',
+                      borderRadius: 8,
+                      padding: '6px 14px',
+                      fontWeight: 600,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
 
               {/* Tab bar */}
               <div className="cat-tabs">
@@ -582,7 +708,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={addingCategory}
+                    disabled={isEditMode ? updatingCategory : addingCategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -591,10 +717,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: addingCategory ? 'not-allowed' : 'pointer',
+                      cursor: (isEditMode ? updatingCategory : addingCategory) ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {addingCategory ? 'Saving...' : 'Save Category'}
+                    {isEditMode ? (updatingCategory ? 'Updating...' : 'Update Category') : (addingCategory ? 'Saving...' : 'Save Category')}
                   </button>
                 </form>
               )}
@@ -635,7 +761,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={addingSubcategory}
+                    disabled={isEditMode && editingType === 'sub' ? updatingCategory : addingSubcategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -644,10 +770,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: addingSubcategory ? 'not-allowed' : 'pointer',
+                      cursor: (isEditMode && editingType === 'sub' ? updatingCategory : addingSubcategory) ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
+                    {isEditMode && editingType === 'sub' ? (updatingCategory ? 'Updating...' : 'Update Subcategory') : (addingSubcategory ? 'Saving...' : 'Save Subcategory')}
                   </button>
                 </form>
               )}
@@ -688,7 +814,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={addingSubSubcategory}
+                    disabled={isEditMode && editingType === 'subsub' ? updatingCategory : addingSubSubcategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -697,10 +823,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
+                      cursor: (isEditMode && editingType === 'subsub' ? updatingCategory : addingSubSubcategory) ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
+                    {isEditMode && editingType === 'subsub' ? (updatingCategory ? 'Updating...' : 'Update Sub-Subcategory') : (addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory')}
                   </button>
                 </form>
               )}
@@ -810,7 +936,28 @@ const CategoryPage = () => {
                               </span>
                             </td>
                             <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>{parentPath}</td>
-                            <td style={{ padding: '12px 10px', textAlign: 'right' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'right', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                              <button
+                                type="button"
+                                onClick={() => startEditCategory(parent, 'main')}
+                                style={{
+                                  border: '1px solid #e5e7eb',
+                                  background: '#f9fafb',
+                                  color: '#374151',
+                                  borderRadius: 8,
+                                  padding: '6px 9px',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                }}
+                                title="Edit category"
+                              >
+                                <Edit2 size={14} />
+                                Edit
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => openDeleteModal(parent)}
@@ -906,7 +1053,28 @@ const CategoryPage = () => {
                                     </span>
                                   </td>
                                   <td style={{ padding: '12px 10px', color: '#71717a', fontSize: 13, verticalAlign: 'middle' }}>{childPath}</td>
-                                  <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
+                                  <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => startEditCategory(child, 'sub')}
+                                      style={{
+                                        border: '1px solid #e5e7eb',
+                                        background: '#f9fafb',
+                                        color: '#374151',
+                                        borderRadius: 8,
+                                        padding: '6px 9px',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        fontWeight: 600,
+                                        fontSize: 12,
+                                      }}
+                                      title="Edit category"
+                                    >
+                                      <Edit2 size={14} />
+                                      Edit
+                                    </button>
                                     <button
                                       type="button"
                                       onClick={() => openDeleteModal(child)}
@@ -979,7 +1147,28 @@ const CategoryPage = () => {
                                         </span>
                                       </td>
                                       <td style={{ padding: '10px 10px', color: '#7c3aed', fontSize: 12, verticalAlign: 'middle' }}>{gcPath}</td>
-                                      <td style={{ padding: '10px 10px', textAlign: 'right', verticalAlign: 'middle' }}>
+                                      <td style={{ padding: '10px 10px', textAlign: 'right', verticalAlign: 'middle', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                                        <button
+                                          type="button"
+                                          onClick={() => startEditCategory(gc, 'subsub')}
+                                          style={{
+                                            border: '1px solid #e5e7eb',
+                                            background: '#f9fafb',
+                                            color: '#374151',
+                                            borderRadius: 8,
+                                            padding: '6px 9px',
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            fontWeight: 600,
+                                            fontSize: 12,
+                                          }}
+                                          title="Edit category"
+                                        >
+                                          <Edit2 size={14} />
+                                          Edit
+                                        </button>
                                         <button
                                           type="button"
                                           onClick={() => openDeleteModal(gc)}

@@ -56,3 +56,26 @@ export async function deleteCategory(id) {
     throw error;
   }
 }
+
+// Update an existing category
+export async function updateCategory(id, { name, image = null, parent_id = null }) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, image, parent_id })
+    });
+    if (!response.ok) {
+      let parsed = null;
+      try {
+        parsed = await response.json();
+      } catch {
+        parsed = null;
+      }
+      throw new Error(parsed?.error || 'Failed to update category');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
