@@ -1810,41 +1810,26 @@ const ProductForm = () => {
                           placeholder="https://res.cloudinary.com/.../video.mp4"
                         />
                       </div>
-                      <button
-                        type="button"
-                        className="outline-btn"
-                        onClick={handleSaveDesignGallery}
-                        disabled={savingDesignGallery}
-                        style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
-                      >
-                        {savingDesignGallery ? (editingGalleryId ? 'Updating Gallery...' : 'Saving Gallery...') : (editingGalleryId ? 'Update Gallery' : 'Save Gallery')}
-                      </button>
-                      {editingGalleryId && (
+                      <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                           type="button"
-                          onClick={cancelEditGallery}
-                          style={{
-                            background: '#ffffff',
-                            border: '1px solid #e5e7eb',
-                            color: '#374151',
-                            borderRadius: 10,
-                            padding: '8px 14px',
-                            fontWeight: 600,
-                            fontSize: 14,
-                            cursor: 'pointer',
-                            fontFamily: 'Poppins, sans-serif',
-                            transition: 'all 0.2s ease',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = '#f9fafb';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#ffffff';
-                          }}
+                          className="outline-btn"
+                          onClick={handleSaveDesignGallery}
+                          disabled={savingDesignGallery}
+                          style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
                         >
-                          Cancel Edit
+                          {savingDesignGallery ? (editingGalleryId ? 'Updating Gallery...' : 'Saving Gallery...') : (editingGalleryId ? 'Update Gallery' : 'Save Gallery')}
                         </button>
-                      )}
+                        {editingGalleryId && (
+                          <button
+                            type="button"
+                            className="pf-ghost-action-btn"
+                            onClick={cancelEditGallery}
+                          >
+                            Cancel Edit
+                          </button>
+                        )}
+                      </div>
                       </div>
 
                       <div style={{ marginTop: 24 }}>
