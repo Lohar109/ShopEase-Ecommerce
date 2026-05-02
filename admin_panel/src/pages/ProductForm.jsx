@@ -1824,9 +1824,9 @@ const ProductForm = () => {
                           type="button"
                           onClick={cancelEditGallery}
                           style={{
-                            background: '#fff1f2',
-                            border: '1px solid #fecaca',
-                            color: '#b91c1c',
+                            background: '#ffffff',
+                            border: '1px solid #e5e7eb',
+                            color: '#374151',
                             borderRadius: 10,
                             padding: '8px 14px',
                             fontWeight: 600,
@@ -1836,10 +1836,10 @@ const ProductForm = () => {
                             transition: 'all 0.2s ease',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background = '#fee2e2';
+                            e.currentTarget.style.background = '#f9fafb';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#fff1f2';
+                            e.currentTarget.style.background = '#ffffff';
                           }}
                         >
                           Cancel Edit
@@ -1887,9 +1887,9 @@ const ProductForm = () => {
                                       onClick={() => startEditGallery(gallery)}
                                       title="Edit gallery"
                                       style={{
-                                        background: '#fef2f2',
-                                        color: '#ef4444',
-                                        border: 'none',
+                                        background: '#f9fafb',
+                                        color: '#374151',
+                                        border: '1px solid #e5e7eb',
                                         borderRadius: 8,
                                         padding: 8,
                                         display: 'inline-flex',
@@ -1898,8 +1898,8 @@ const ProductForm = () => {
                                         cursor: 'pointer',
                                         transition: 'background 0.15s ease',
                                       }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
                                     >
                                       <Edit2 size={14} />
                                     </button>
