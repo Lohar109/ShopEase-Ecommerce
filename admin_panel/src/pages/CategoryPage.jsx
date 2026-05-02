@@ -662,9 +662,9 @@ const CategoryPage = () => {
                     type="button"
                     onClick={cancelEditMode}
                     style={{
-                      background: '#f3f4f6',
-                      border: '1px solid #e5e7eb',
-                      color: '#6b7280',
+                      background: '#fff1f2',
+                      border: '1px solid #fecaca',
+                      color: '#b91c1c',
                       borderRadius: 8,
                       padding: '6px 14px',
                       fontWeight: 600,
