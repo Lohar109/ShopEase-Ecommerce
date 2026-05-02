@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -69,6 +69,7 @@ const ProductForm = () => {
   const [loadingDesignGalleries, setLoadingDesignGalleries] = useState(false);
   const [savingDesignGallery, setSavingDesignGallery] = useState(false);
   const [deletingDesignGalleryId, setDeletingDesignGalleryId] = useState('');
+  const [editingGalleryId, setEditingGalleryId] = useState('');
 
   // Gallery handlers
   const handleGalleryImageChange = (idx, value) => {
@@ -334,6 +335,7 @@ const ProductForm = () => {
     setDesignImagesInput(f.di);
     setDesignVideoInput('');
     setDesignGalleries(f.dg);
+    setEditingGalleryId('');
     setDeletingDesignGalleryId('');
     setEditProductData(null);
     setPId('');
@@ -406,6 +408,29 @@ const ProductForm = () => {
     }
   };
 
+  const startEditGallery = (gallery) => {
+    setEditingGalleryId(gallery.id);
+    setDesignColorName(gallery.color_name);
+    const imageUrls = Array.isArray(gallery.images) ? gallery.images.join('\n') : '';
+    setDesignImagesInput(imageUrls);
+    setDesignVideoInput(gallery.video_url || '');
+    
+    // Scroll to form
+    setTimeout(() => {
+      const formSection = document.querySelector('[data-gallery-form]');
+      if (formSection) {
+        formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
+  };
+
+  const cancelEditGallery = () => {
+    setEditingGalleryId('');
+    setDesignColorName('');
+    setDesignImagesInput('');
+    setDesignVideoInput('');
+  };
+
   const handleSaveDesignGallery = async () => {
     if (!isEditMode || !id) {
       alert('Please save the product first, then add design galleries.');
@@ -435,6 +460,7 @@ const ProductForm = () => {
       setDesignColorName('');
       setDesignImagesInput('');
       setDesignVideoInput('');
+      setEditingGalleryId('');
       await loadDesignGalleries(id);
     } catch (err) {
       alert(err.message || 'Failed to save design gallery');
@@ -1751,6 +1777,7 @@ const ProductForm = () => {
                     </div>
                   ) : (
                     <>
+                      <div data-gallery-form>
                       <div style={{ marginBottom: 12 }}>
                         <label style={{ fontWeight: 500 }}>Color Name</label>
                         <input
@@ -1790,8 +1817,35 @@ const ProductForm = () => {
                         disabled={savingDesignGallery}
                         style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
                       >
-                        {savingDesignGallery ? 'Saving Gallery...' : 'Save Gallery'}
+                        {savingDesignGallery ? (editingGalleryId ? 'Updating Gallery...' : 'Saving Gallery...') : (editingGalleryId ? 'Update Gallery' : 'Save Gallery')}
                       </button>
+                      {editingGalleryId && (
+                        <button
+                          type="button"
+                          onClick={cancelEditGallery}
+                          style={{
+                            background: '#fff1f2',
+                            border: '1px solid #fecaca',
+                            color: '#b91c1c',
+                            borderRadius: 10,
+                            padding: '8px 14px',
+                            fontWeight: 600,
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            fontFamily: 'Poppins, sans-serif',
+                            transition: 'all 0.2s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#fee2e2';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#fff1f2';
+                          }}
+                        >
+                          Cancel Edit
+                        </button>
+                      )}
+                      </div>
 
                       <div style={{ marginTop: 24 }}>
                         <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
@@ -1827,18 +1881,51 @@ const ProductForm = () => {
                                       </a>
                                     )}
                                   </div>
-                                  <button
-                                    type="button"
-                                    className="remove-tag-btn"
-                                    onClick={() => handleDeleteDesignGallery(gallery.id)}
-                                    disabled={deletingDesignGalleryId === gallery.id}
-                                    title="Delete gallery"
-                                  >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                  </button>
+                                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => startEditGallery(gallery)}
+                                      title="Edit gallery"
+                                      style={{
+                                        background: '#fef2f2',
+                                        color: '#ef4444',
+                                        border: 'none',
+                                        borderRadius: 8,
+                                        padding: 8,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.15s ease',
+                                      }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                    >
+                                      <Edit2 size={14} />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteDesignGallery(gallery.id)}
+                                      disabled={deletingDesignGalleryId === gallery.id}
+                                      title="Delete gallery"
+                                      style={{
+                                        background: '#fef2f2',
+                                        color: '#ef4444',
+                                        border: 'none',
+                                        borderRadius: 8,
+                                        padding: 8,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.15s ease',
+                                      }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
                                 </div>
                                 <div className="pf-preview-grid" style={{ marginTop: 12 }}>
                                   {(gallery.images || []).map((url, i) => (
