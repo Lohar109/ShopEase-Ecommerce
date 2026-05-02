@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -64,6 +64,7 @@ const ProductForm = () => {
   // Design specific gallery state
   const [designColorName, setDesignColorName] = useState('');
   const [designImagesInput, setDesignImagesInput] = useState('');
+  const [designVideoInput, setDesignVideoInput] = useState('');
   const [designGalleries, setDesignGalleries] = useState([]);
   const [loadingDesignGalleries, setLoadingDesignGalleries] = useState(false);
   const [savingDesignGallery, setSavingDesignGallery] = useState(false);
@@ -331,6 +332,7 @@ const ProductForm = () => {
     setVariantRows(f.v);
     setDesignColorName(f.dc);
     setDesignImagesInput(f.di);
+    setDesignVideoInput('');
     setDesignGalleries(f.dg);
     setDeletingDesignGalleryId('');
     setEditProductData(null);
@@ -415,6 +417,7 @@ const ProductForm = () => {
       .split(/\r?\n|,/) 
       .map((value) => value.trim())
       .filter(Boolean);
+    const normalizedVideoUrl = designVideoInput.trim();
 
     if (!normalizedColor || parsedImages.length === 0) {
       alert('Please provide color name and at least one image URL.');
@@ -427,9 +430,11 @@ const ProductForm = () => {
         product_id: id,
         color_name: normalizedColor,
         images: parsedImages,
+        video_url: normalizedVideoUrl || null,
       });
       setDesignColorName('');
       setDesignImagesInput('');
+      setDesignVideoInput('');
       await loadDesignGalleries(id);
     } catch (err) {
       alert(err.message || 'Failed to save design gallery');
@@ -1767,6 +1772,17 @@ const ProductForm = () => {
                           placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
                         />
                       </div>
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontWeight: 500 }}>Color Video URL (optional)</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={designVideoInput}
+                          onChange={(e) => setDesignVideoInput(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          placeholder="https://res.cloudinary.com/.../video.mp4"
+                        />
+                      </div>
                       <button
                         type="button"
                         className="outline-btn"
@@ -1788,7 +1804,29 @@ const ProductForm = () => {
                             {designGalleries.map((gallery) => (
                               <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 12 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                  <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                                    {gallery.video_url && (
+                                      <a
+                                        href={gallery.video_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="View Video"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, background: '#f0f0f0', color: '#555', textDecoration: 'none', fontSize: 12, fontWeight: 500, transition: 'all 0.2s ease' }}
+                                        onMouseEnter={(e) => {
+                                          e.currentTarget.style.background = '#e8e8e8';
+                                          e.currentTarget.style.color = '#333';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.currentTarget.style.background = '#f0f0f0';
+                                          e.currentTarget.style.color = '#555';
+                                        }}
+                                      >
+                                        <Video size={12} />
+                                        View Video
+                                      </a>
+                                    )}
+                                  </div>
                                   <button
                                     type="button"
                                     className="remove-tag-btn"

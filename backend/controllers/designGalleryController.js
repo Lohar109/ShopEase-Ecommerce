@@ -15,7 +15,7 @@ const pool = new Pool({
 });
 
 exports.upsertDesignGallery = async (req, res) => {
-  const { product_id, color_name, images } = req.body;
+  const { product_id, color_name, images, video_url } = req.body;
 
   if (!product_id || !color_name || !Array.isArray(images) || images.length === 0) {
     return res.status(400).json({ error: 'product_id, color_name, and images array are required' });
@@ -25,6 +25,8 @@ exports.upsertDesignGallery = async (req, res) => {
   if (!normalizedColor) {
     return res.status(400).json({ error: 'color_name cannot be empty' });
   }
+
+  const normalizedVideoUrl = video_url && String(video_url).trim() ? String(video_url).trim() : null;
 
   const client = await pool.connect();
   try {
@@ -43,9 +45,9 @@ exports.upsertDesignGallery = async (req, res) => {
 
       await client.query(
         `UPDATE product_design_gallery
-         SET color_name = $1, images = $2
-         WHERE id = $3`,
-        [normalizedColor, images, keepId]
+         SET color_name = $1, images = $2, video_url = $3
+         WHERE id = $4`,
+        [normalizedColor, images, normalizedVideoUrl, keepId]
       );
 
       if (existing.rowCount > 1) {
@@ -66,10 +68,10 @@ exports.upsertDesignGallery = async (req, res) => {
     }
 
     const inserted = await client.query(
-      `INSERT INTO product_design_gallery (product_id, color_name, images)
-       VALUES ($1, $2, $3)
+      `INSERT INTO product_design_gallery (product_id, color_name, images, video_url)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [product_id, normalizedColor, images]
+      [product_id, normalizedColor, images, normalizedVideoUrl]
     );
 
     await client.query('COMMIT');
