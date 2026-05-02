@@ -204,26 +204,55 @@ const Shop = () => {
 
       {/* Subcategory navigation row — outside product-grid to avoid CSS conflicts */}
       {!isLoading && activeSubcategories.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 w-full">
-          <div style={{ display: 'flex', overflowX: 'auto', gap: '16px', padding: '16px 0', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {activeSubcategories.map((sub) => (
-              <div
-                key={sub.id}
-                onClick={() => setSelectedSubcategory(selectedSubcategory === sub.id ? null : sub.id)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '72px', cursor: 'pointer' }}
-              >
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', overflow: 'hidden', border: selectedSubcategory === sub.id ? '2px solid #e11d48' : '1px solid #e5e7eb', background: '#f9fafb', flexShrink: 0 }}>
-                  <img
-                    src={sub.image || `/category-icons/${sub.name}.png`}
-                    alt={sub.name}
-                    style={{ width: '56px', height: '56px', objectFit: 'cover', display: 'block' }}
-                  />
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%' }}>
+          <div style={{ display: 'flex', overflowX: 'auto', gap: '20px', padding: '20px 4px 12px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {activeSubcategories.map((sub, i) => {
+              const isSelected = selectedSubcategory === sub.id;
+              // Cycle through soft pastel backgrounds
+              const pastels = ['#fce4ec','#f3e5f5','#e8eaf6','#e0f2f1','#fff8e1','#fbe9e7','#e8f5e9','#e3f2fd'];
+              const bg = pastels[i % pastels.length];
+              return (
+                <div
+                  key={sub.id}
+                  onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '100px', cursor: 'pointer' }}
+                >
+                  {/* Arch/dome container: fully rounded top, flat bottom */}
+                  <div style={{
+                    width: '100px',
+                    height: '120px',
+                    borderRadius: '50px 50px 12px 12px',
+                    overflow: 'hidden',
+                    background: bg,
+                    border: isSelected ? '2.5px solid #e11d48' : '2px solid transparent',
+                    boxShadow: isSelected ? '0 0 0 2px #fecdd3' : '0 2px 8px rgba(0,0,0,0.08)',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'box-shadow 0.2s, border 0.2s',
+                  }}>
+                    <img
+                      src={sub.image || `/category-icons/${sub.name}.png`}
+                      alt={sub.name}
+                      style={{ width: '90px', height: '110px', objectFit: 'cover', objectPosition: 'center top', display: 'block', flexShrink: 0 }}
+                    />
+                  </div>
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    textAlign: 'center',
+                    marginTop: '8px',
+                    color: isSelected ? '#e11d48' : '#1f2937',
+                    lineHeight: 1.3,
+                    wordBreak: 'break-word',
+                    maxWidth: '100px',
+                  }}>
+                    {sub.name}
+                  </span>
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 500, textAlign: 'center', marginTop: '6px', color: selectedSubcategory === sub.id ? '#e11d48' : '#374151', lineHeight: 1.3, wordBreak: 'break-word', maxWidth: '72px' }}>
-                  {sub.name}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
