@@ -2319,20 +2319,19 @@ button:hover {
     border: 1px solid rgba(200, 80, 122, 0.12);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
     display: flex;
-    align-items: flex-end;
+    align-items: stretch;
     justify-content: center;
     overflow: hidden;
     position: relative;
-    padding: 0.45rem 0.45rem 0;
+    padding: 0;
 }
 
 .shop-subcategory-card-image {
-    width: 84%;
-    height: 84%;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    object-position: center;
+    object-position: center bottom;
     display: block;
-    margin-bottom: 0.1rem;
 }
 
 .shop-subcategory-card-label {
