@@ -157,6 +157,7 @@ const Shop = () => {
   const activeSubcategories = selectedCategory
     ? subcategoriesByParent[selectedCategory] || []
     : [];
+  const selectedCategoryData = selectedCategory ? categoryById[String(selectedCategory)] : null;
 
   useEffect(() => {
     const requestedCategory = normalizeCategoryKey(searchParams.get("category"));
@@ -202,59 +203,48 @@ const Shop = () => {
     <main className="shop-page">
       {/* Category filter section removed per user request */}
 
-      {!isLoading && activeSubcategories.length > 0 && (
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%' }}>
-          <div style={{ display: 'flex', overflowX: 'auto', gap: '24px', padding: '20px 4px 20px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {activeSubcategories.map((sub) => {
-              const isSelected = selectedSubcategory === sub.id;
-              return (
-                <div
-                  key={sub.id}
-                  onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '112px', cursor: 'pointer' }}
-                >
-                  {/* Pro card — matches product card aesthetic */}
-                  <div style={{
-                    width: '112px',
-                    height: '112px',
-                    borderRadius: '20px',
-                    overflow: 'hidden',
-                    background: '#ffffff',
-                    border: isSelected ? '2px solid #e11d48' : '1px solid #f3f4f6',
-                    boxShadow: isSelected
-                      ? '0 6px 20px rgba(225,29,72,0.18)'
-                      : '0 1px 4px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '12px',
-                    flexShrink: 0,
-                    transition: 'box-shadow 0.22s ease, border-color 0.22s ease, transform 0.18s ease',
-                    transform: isSelected ? 'translateY(-2px)' : 'none',
-                    boxSizing: 'border-box',
-                  }}>
-                    <img
-                      src={sub.image || `/category-icons/${sub.name}.png`}
-                      alt={sub.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', flexShrink: 0 }}
-                    />
-                  </div>
-                  <span style={{
-                    fontSize: '11.5px',
-                    fontWeight: 500,
-                    textAlign: 'center',
-                    marginTop: '9px',
-                    color: isSelected ? '#e11d48' : '#6b7280',
-                    lineHeight: 1.4,
-                    wordBreak: 'break-word',
-                    maxWidth: '112px',
-                    fontFamily: "'Poppins', sans-serif",
-                  }}>
-                    {sub.name}
-                  </span>
-                </div>
-              );
-            })}
+      {!isLoading && selectedCategory && activeSubcategories.length > 0 && (
+        <div className="shop-subcategory-nav-wrap">
+          <div className="shop-subcategory-nav-shell">
+            <div className="shop-subcategory-nav-header">
+              <div>
+                <p className="shop-subcategory-nav-kicker">Subcategories</p>
+                <h2 className="shop-subcategory-nav-title">
+                  {selectedCategoryData?.name || 'Browse subcategories'}
+                </h2>
+              </div>
+              <button
+                type="button"
+                className={`shop-subcategory-reset ${selectedSubcategory ? 'is-active' : ''}`}
+                onClick={() => setSelectedSubcategory(null)}
+              >
+                All items
+              </button>
+            </div>
+
+            <div className="shop-subcategory-row" role="navigation" aria-label="Subcategory navigation">
+              {activeSubcategories.map((sub) => {
+                const isSelected = selectedSubcategory === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
+                    className={`shop-subcategory-card ${isSelected ? 'is-selected' : ''}`}
+                    aria-pressed={isSelected}
+                  >
+                    <span className="shop-subcategory-card-media" aria-hidden="true">
+                      <img
+                        src={sub.image || `/category-icons/${sub.name}.png`}
+                        alt=""
+                        className="shop-subcategory-card-image"
+                      />
+                    </span>
+                    <span className="shop-subcategory-card-label">{sub.name}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
