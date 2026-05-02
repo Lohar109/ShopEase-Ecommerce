@@ -202,33 +202,35 @@ const Shop = () => {
     <main className="shop-page">
       {/* Category filter section removed per user request */}
 
-      {/* Subcategory navigation row — outside product-grid to avoid CSS conflicts */}
       {!isLoading && activeSubcategories.length > 0 && (
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%' }}>
-          <div style={{ display: 'flex', overflowX: 'auto', gap: '16px', padding: '20px 4px 16px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div style={{ display: 'flex', overflowX: 'auto', gap: '24px', padding: '20px 4px 20px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {activeSubcategories.map((sub) => {
               const isSelected = selectedSubcategory === sub.id;
               return (
                 <div
                   key={sub.id}
                   onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '96px', cursor: 'pointer' }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: '112px', cursor: 'pointer' }}
                 >
-                  {/* Minimalist rounded-rectangle card */}
+                  {/* Pro card — matches product card aesthetic */}
                   <div style={{
-                    width: '96px',
-                    height: '96px',
-                    borderRadius: '16px',
+                    width: '112px',
+                    height: '112px',
+                    borderRadius: '20px',
                     overflow: 'hidden',
                     background: '#ffffff',
-                    border: isSelected ? '2px solid #e11d48' : '1.5px solid #f3f4f6',
-                    boxShadow: isSelected ? '0 4px 12px rgba(225,29,72,0.15)' : '0 2px 6px rgba(0,0,0,0.06)',
+                    border: isSelected ? '2px solid #e11d48' : '1px solid #f3f4f6',
+                    boxShadow: isSelected
+                      ? '0 6px 20px rgba(225,29,72,0.18)'
+                      : '0 1px 4px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: '12px',
                     flexShrink: 0,
-                    transition: 'box-shadow 0.2s, border-color 0.2s',
+                    transition: 'box-shadow 0.22s ease, border-color 0.22s ease, transform 0.18s ease',
+                    transform: isSelected ? 'translateY(-2px)' : 'none',
                     boxSizing: 'border-box',
                   }}>
                     <img
@@ -238,14 +240,15 @@ const Shop = () => {
                     />
                   </div>
                   <span style={{
-                    fontSize: '12px',
-                    fontWeight: 600,
+                    fontSize: '11.5px',
+                    fontWeight: 500,
                     textAlign: 'center',
-                    marginTop: '8px',
-                    color: isSelected ? '#e11d48' : '#374151',
-                    lineHeight: 1.3,
+                    marginTop: '9px',
+                    color: isSelected ? '#e11d48' : '#6b7280',
+                    lineHeight: 1.4,
                     wordBreak: 'break-word',
-                    maxWidth: '96px',
+                    maxWidth: '112px',
+                    fontFamily: "'Poppins', sans-serif",
                   }}>
                     {sub.name}
                   </span>
