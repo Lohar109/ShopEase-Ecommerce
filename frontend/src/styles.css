@@ -2363,6 +2363,31 @@ button:hover {
     box-shadow: 0 12px 28px rgba(200, 80, 122, 0.14);
 }
 
+/* Marquee (infinite loop) styles */
+.shop-subcategory-marquee {
+    width: 100%;
+    overflow: hidden;
+    padding-bottom: 2rem; /* keep breathing room */
+}
+
+.shop-subcategory-marquee-track {
+    display: flex;
+    gap: 1.5rem;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    will-change: transform;
+    animation: marquee 28s linear infinite;
+}
+
+.shop-subcategory-marquee:hover .shop-subcategory-marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
 .subcategory-pro-row::-webkit-scrollbar {
     display: none;
 }
