@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, X } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package, X, ChevronDown } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -680,7 +680,7 @@ const ProductDetail = () => {
                     )}
                   </p>
                 </div>
-                <div className="quick-glance-section">
+                <div className="specs-card bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
                   {(() => {
                     // Collect all specs dynamically (same logic as modal)
                     const allSpecs = [];
@@ -706,22 +706,27 @@ const ProductDetail = () => {
 
                     return (
                       <>
-                        <div className="quick-glance-heading">KEY SPECIFICATIONS</div>
+                        <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-4">Key Specifications</p>
                         <div className="quick-glance-list">
                           {quickGlanceSpecs.map(([key, value], idx) => (
-                            <div key={`${key}-${idx}`} className="quick-glance-row">
-                              <span className="quick-glance-label">{key}</span>
-                              <span className="quick-glance-value">{formatSpecificationValue(value)}</span>
+                            <div key={`${key}-${idx}`} className="flex justify-between items-center py-3 border-b border-gray-50 last:border-0">
+                              <div className="text-xs font-semibold text-gray-400 uppercase w-1/3">
+                                {key}
+                              </div>
+                              <div className="text-sm font-bold text-gray-900 w-2/3">
+                                {formatSpecificationValue(value)}
+                              </div>
                             </div>
                           ))}
                         </div>
                         {allSpecs.length > 3 && (
-                          <button 
-                            type="button" 
-                            className="view-all-specs-link" 
+                          <button
+                            type="button"
+                            className="view-all-btn w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-700 transition-all flex items-center justify-center gap-2 mt-4"
                             onClick={() => setShowModal(true)}
                           >
-                            + View all Specifications
+                            <span>View all Specifications</span>
+                            <ChevronDown size={16} />
                           </button>
                         )}
                       </>
