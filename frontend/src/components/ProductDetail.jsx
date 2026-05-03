@@ -104,6 +104,11 @@ const ProductDetail = () => {
   const [showLightbox, setShowLightbox] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [infoTab, setInfoTab] = useState('description');
+  const infoCardDescriptionMeasureRef = useRef(null);
+  const infoCardFeatureRowRefs = useRef([]);
+  const [infoCardDescriptionHeight, setInfoCardDescriptionHeight] = useState(0);
+  const [infoCardVisibleFeatureCount, setInfoCardVisibleFeatureCount] = useState(null);
+  const [infoCardHasMoreFeatures, setInfoCardHasMoreFeatures] = useState(false);
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
@@ -327,6 +332,70 @@ const ProductDetail = () => {
       return String(value).trim() !== "";
     });
   }, [product?.specifications]);
+
+  const infoCardAllSpecs = useMemo(() => {
+    const all = [];
+    if (product?.brand) all.push(['brand', product.brand]);
+    if (product?.specifications && typeof product.specifications === 'object') {
+      Object.entries(product.specifications).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') all.push([key, value]);
+      });
+    }
+    return all;
+  }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    const descEl = infoCardDescriptionMeasureRef.current;
+    const rows = infoCardFeatureRowRefs.current || [];
+    if (!descEl) return;
+
+    const measure = () => {
+      try {
+        const descRect = descEl.getBoundingClientRect();
+        const descHeight = Math.round(descRect.height);
+        setInfoCardDescriptionHeight(descHeight);
+
+        let cum = 0;
+        let visible = rows.length;
+
+        for (let i = 0; i < rows.length; i += 1) {
+          const el = rows[i];
+          if (!el) continue;
+          const h = Math.round(el.getBoundingClientRect().height);
+          if (cum + h > descHeight) {
+            visible = i;
+            break;
+          }
+          cum += h;
+        }
+
+        const bounded = Math.max(0, Math.min(visible, infoCardAllSpecs.length));
+        setInfoCardVisibleFeatureCount(bounded || 0);
+        setInfoCardHasMoreFeatures(infoCardAllSpecs.length > bounded);
+      } catch (e) {
+        // measurement failure - fall back to default
+        setInfoCardVisibleFeatureCount(Math.min(6, infoCardAllSpecs.length));
+        setInfoCardHasMoreFeatures(infoCardAllSpecs.length > 6);
+      }
+    };
+
+    measure();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(measure);
+      ro.observe(descEl);
+      window.addEventListener('resize', measure);
+      return () => {
+        ro.disconnect();
+        window.removeEventListener('resize', measure);
+      };
+    }
+
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [product, infoCardAllSpecs]);
 
   const descriptionText = String(product?.description || "").trim();
 
@@ -648,48 +717,71 @@ const ProductDetail = () => {
               </div>
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
-                <div className="product-detail-header-row gap-0">
-                  <p className="product-detail-brand leading-none mb-0">{product.brand}</p>
+                <div className="product-detail-header-stack flex flex-col gap-0">
+                  <p className="product-detail-brand text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-0 leading-none">{product.brand}</p>
+                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mt-[-4px]">{product.name}</h2>
                 </div>
 
-                <h2 className="product-detail-title leading-tight mt-0">{product.name}</h2>
-
-                <div className="info-box bg-white border border-gray-100 rounded-[32px] p-6">
-                  <div className="info-tabs-container bg-gray-100/50 p-1 rounded-2xl inline-flex mb-4">
-                    <button type="button" className={`info-tab ${infoTab === 'description' ? 'active' : ''}`} onClick={() => setInfoTab('description')}>Description</button>
-                    <button type="button" className={`info-tab ${infoTab === 'features' ? 'active' : ''}`} onClick={() => setInfoTab('features')}>Features</button>
+                <div className="product-detail-info-card bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                  <div className="product-detail-info-tabs flex items-stretch">
+                    <button type="button" className={`product-detail-info-tab ${infoTab === 'description' ? 'active' : 'inactive'}`} onClick={() => setInfoTab('description')}>Description</button>
+                    <button type="button" className={`product-detail-info-tab ${infoTab === 'features' ? 'active' : 'inactive'}`} onClick={() => setInfoTab('features')}>Features</button>
                   </div>
 
-                  <div className="info-tab-content">
+                  {/* Hidden measurement DOM (absolute & non-interactive) */}
+                  <div className="product-detail-info-measure" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0, pointerEvents: 'none' }}>
+                    <div className="product-detail-info-content p-8">
+                      <div className="product-detail-info-description" ref={infoCardDescriptionMeasureRef}>
+                        <p className="text-sm leading-relaxed text-gray-700">{product.description}</p>
+                      </div>
+
+                      <div className="product-detail-info-features">
+                        {(() => {
+                          const allSpecs = infoCardAllSpecs;
+                          infoCardFeatureRowRefs.current = [];
+                          return (
+                            <div className="product-detail-features-list">
+                              {allSpecs.map(([key, value], idx) => (
+                                <div
+                                  key={`${key}-${idx}`}
+                                  ref={(el) => (infoCardFeatureRowRefs.current[idx] = el)}
+                                  className="product-detail-feature-row flex items-center py-3 border-b border-gray-50 last:border-0"
+                                >
+                                  <div className="product-detail-feature-key w-40 text-[10px] font-bold uppercase text-gray-400">{key}</div>
+                                  <div className="product-detail-feature-value flex-1 text-sm font-bold text-gray-900">{formatSpecificationValue(value)}</div>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="product-detail-info-content p-8">
                     {infoTab === 'description' ? (
-                      <div className="info-description">
-                        <p className="text-sm leading-relaxed text-gray-600">{product.description}</p>
+                      <div className="product-detail-info-description">
+                        <p className="text-sm leading-relaxed text-gray-700">{product.description}</p>
                       </div>
                     ) : (
-                      <div className="info-features">
+                      <div className="product-detail-info-features">
                         {(() => {
-                          const allSpecs = [];
-                          if (product?.brand) allSpecs.push(['brand', product.brand]);
-                          if (product?.specifications && typeof product.specifications === 'object') {
-                            Object.entries(product.specifications).forEach(([key, value]) => {
-                              if (value !== null && value !== undefined && value !== '') allSpecs.push([key, value]);
-                            });
-                          }
-
-                          const features = allSpecs.slice(0, 6);
-                          if (features.length === 0) return null;
+                          const allSpecs = infoCardAllSpecs;
+                          const visible = typeof infoCardVisibleFeatureCount === 'number' ? infoCardVisibleFeatureCount : Math.min(6, allSpecs.length);
+                          if (visible === 0) return null;
+                          const features = allSpecs.slice(0, visible);
 
                           return (
-                            <div className="features-list">
+                            <div className="product-detail-features-list">
                               {features.map(([key, value], idx) => (
-                                <div key={`${key}-${idx}`} className="feature-row flex items-center py-2.5 border-b border-gray-50 last:border-0">
-                                  <div className="feature-key w-32 text-[11px] font-bold uppercase text-gray-400">{key}</div>
-                                  <div className="feature-value flex-1 text-sm font-semibold text-gray-900">
+                                <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-3 border-b border-gray-50 last:border-0">
+                                  <div className="product-detail-feature-key w-40 text-[10px] font-bold uppercase text-gray-400">{key}</div>
+                                  <div className="product-detail-feature-value flex-1 text-sm font-bold text-gray-900">
                                     {formatSpecificationValue(value)}
-                                    {idx === features.length - 1 && allSpecs.length > features.length && (
+                                    {idx === features.length - 1 && infoCardHasMoreFeatures && (
                                       <span className="ml-1">
-                                        <span className="product-detail-read-more-ellipsis">... </span>
-                                        <button type="button" className="product-detail-read-more" onClick={() => setShowModal(true)} style={{ color: '#D10049' }}>View all</button>
+                                        <span className="product-detail-feature-ellipsis">...</span>
+                                        <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
                                       </span>
                                     )}
                                   </div>
