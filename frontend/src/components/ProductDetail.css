@@ -322,11 +322,9 @@
 }
 
 .product-detail-tax {
-  font-size: 0.625rem;
-  color: #9ca3af;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -0.5px;
+  font-size: 0.82rem;
+  color: #374151;
+  font-weight: 500;
   font-family: 'Poppins', sans-serif;
   display: inline;
   white-space: nowrap;
@@ -970,32 +968,34 @@
 }
 
 .specs-drawer-close {
-  position: absolute;
-    top: 16px;
-    right: 16px;
-    background: transparent;
-    border: none;
-    color: #9ca3af;
+  border: none;
+  background: #111827;
+  color: #fff;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-    border-radius: 6px;
-  z-index: 10;
-  width: 40px;
-  height: 40px;
 }
 
 .specs-drawer-close:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #6b7280;
+  background: #1f2937;
+  color: #fff;
 }
 
 .specs-drawer-header {
-  padding: 24px 28px 16px;
-  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.specs-drawer-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
 }
 
 .specs-drawer-header h2 {

@@ -771,19 +771,17 @@ const ProductDetail = () => {
       {showModal && (
         <div className="specs-drawer-overlay" onClick={() => setShowModal(false)}>
           <div className="specs-drawer" onClick={e => e.stopPropagation()}>
-            {/* Close Button */}
-            <button
-              type="button"
-              className="specs-drawer-close"
-              onClick={() => setShowModal(false)}
-              aria-label="Close specifications"
-            >
-              <X size={20} />
-            </button>
-
             {/* Header */}
             <div className="specs-drawer-header">
               <h2>Specifications & Features</h2>
+              <button
+                type="button"
+                className="specs-drawer-close"
+                onClick={() => setShowModal(false)}
+                aria-label="Close specifications"
+              >
+                Close
+              </button>
             </div>
 
             {/* Content - Dynamic Specs */}
