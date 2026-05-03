@@ -648,22 +648,22 @@ const ProductDetail = () => {
               </div>
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
-                <div className="product-detail-header-row">
-                  <p className="product-detail-brand">{product.brand}</p>
+                <div className="product-detail-header-row gap-0">
+                  <p className="product-detail-brand leading-none mb-0">{product.brand}</p>
                 </div>
 
-                <h2 className="product-detail-title">{product.name}</h2>
+                <h2 className="product-detail-title leading-tight mt-0">{product.name}</h2>
 
-                <div className="info-box rounded-3xl border border-slate-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <div className="info-tabs" role="tablist">
+                <div className="info-box bg-white border border-gray-100 rounded-[32px] p-6">
+                  <div className="info-tabs-container bg-gray-100/50 p-1 rounded-2xl inline-flex mb-4">
                     <button type="button" className={`info-tab ${infoTab === 'description' ? 'active' : ''}`} onClick={() => setInfoTab('description')}>Description</button>
                     <button type="button" className={`info-tab ${infoTab === 'features' ? 'active' : ''}`} onClick={() => setInfoTab('features')}>Features</button>
                   </div>
 
-                  <div className="info-tab-content mt-4">
+                  <div className="info-tab-content">
                     {infoTab === 'description' ? (
                       <div className="info-description">
-                        <p>{product.description}</p>
+                        <p className="text-sm leading-relaxed text-gray-600">{product.description}</p>
                       </div>
                     ) : (
                       <div className="info-features">
@@ -680,17 +680,17 @@ const ProductDetail = () => {
                           if (features.length === 0) return null;
 
                           return (
-                            <div className="quick-glance-list">
+                            <div className="features-list">
                               {features.map(([key, value], idx) => (
-                                <div key={`${key}-${idx}`} className="quick-glance-row flex items-start py-2 border-b border-slate-50 last:border-0">
-                                  <div className="quick-glance-label text-[11px] font-bold uppercase tracking-widest text-slate-400 w-28 shrink-0">{key}</div>
-                                  <div className="quick-glance-value text-sm font-semibold text-slate-900 flex-1">
+                                <div key={`${key}-${idx}`} className="feature-row flex items-center py-2.5 border-b border-gray-50 last:border-0">
+                                  <div className="feature-key w-32 text-[11px] font-bold uppercase text-gray-400">{key}</div>
+                                  <div className="feature-value flex-1 text-sm font-semibold text-gray-900">
                                     {formatSpecificationValue(value)}
                                     {idx === features.length - 1 && allSpecs.length > features.length && (
-                                      <>
+                                      <span className="ml-1">
                                         <span className="product-detail-read-more-ellipsis">... </span>
-                                        <button type="button" className="product-detail-read-more quick-glance-view-all-trigger" onClick={() => setShowModal(true)}>View all</button>
-                                      </>
+                                        <button type="button" className="product-detail-read-more" onClick={() => setShowModal(true)} style={{ color: '#D10049' }}>View all</button>
+                                      </span>
                                     )}
                                   </div>
                                 </div>
