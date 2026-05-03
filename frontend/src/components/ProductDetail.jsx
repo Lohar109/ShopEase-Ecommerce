@@ -376,8 +376,8 @@ const ProductDetail = () => {
         setInfoCardHasMoreFeatures(infoCardAllSpecs.length > bounded);
       } catch (e) {
         // measurement failure - fall back to default
-        setInfoCardVisibleFeatureCount(Math.min(6, infoCardAllSpecs.length));
-        setInfoCardHasMoreFeatures(infoCardAllSpecs.length > 6);
+        setInfoCardVisibleFeatureCount(Math.min(8, infoCardAllSpecs.length));
+        setInfoCardHasMoreFeatures(infoCardAllSpecs.length > 8);
       }
     };
 
