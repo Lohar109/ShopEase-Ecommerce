@@ -1342,6 +1342,9 @@ button:hover {
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    /* Match product skeleton overall rhythm: constrain height so cards align with skeletons */
+    height: 340px;
+    overflow: hidden;
 }
 
 .product-card:hover {
@@ -1384,8 +1387,8 @@ button:hover {
 
 .product-card-info-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
     text-align: left;
 }
 
@@ -1402,6 +1405,13 @@ button:hover {
     align-items: center;
     justify-content: center;
     padding: 6px;
+}
+
+.product-card-price-heart-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .card-wishlist-btn svg {

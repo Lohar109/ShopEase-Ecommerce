@@ -30,31 +30,33 @@ const ProductCard = ({ product, deliveryText = "Delivered by Tuesday, April 14" 
       <img src={product.main_image} alt={product.name} className="product-image" />
       <h3 className="product-title">{product.name}</h3>
       <div className="product-card-info-row">
-        <div className="product-card-pricing-block">
+        <div className="product-card-price-heart-row">
           <span className="product-price">{price}</span>
-          <p className="product-card-delivery">{deliveryText}</p>
-        </div>
-        <button 
-          className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            toggleWishlist(product.id); 
-          }}
-          aria-label="Toggle wishlist"
-        >
-          <svg 
-            viewBox="0 0 24 24" 
-            width="22" 
-            height="22" 
-            fill={isWishlisted ? "#ff3885" : "none"}
-            stroke={isWishlisted ? "#ff3885" : "#333"}
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
+
+          <button 
+            className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleWishlist(product.id); 
+            }}
+            aria-label="Toggle wishlist"
           >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
+            <svg 
+              viewBox="0 0 24 24" 
+              width="22" 
+              height="22" 
+              fill={isWishlisted ? "#ff3885" : "none"}
+              stroke={isWishlisted ? "#ff3885" : "#333"}
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <p className="product-card-delivery">{deliveryText}</p>
       </div>
     </div>
   );
