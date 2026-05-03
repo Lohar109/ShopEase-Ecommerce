@@ -658,62 +658,71 @@
 }
 
 /* Specifications Button & Modal */
+.btn-specifications-wrapper {
+  display: inline-block;
+  margin-top: 0.35rem;
+  margin-bottom: 1.5rem; /* extra breathing space above trust badges */
+}
+
 .btn-specifications {
-  background: transparent;
-  border: none;
-  color: #4b5563; /* text-gray-600 neutral */
-  padding: 6px 10px;
+  /* Glasmorphism container */
+  background: rgba(255, 255, 255, 0.8); /* bg-white/80 */
+  backdrop-filter: blur(12px); /* backdrop-blur-md */
+  border: 1px solid #f3f4f6; /* border-gray-100 */
+  color: #1f2937; /* text-gray-800 */
+  padding: 10px 20px; /* generous padding for pill */
   appearance: none;
-  border-radius: 9999px; /* pill */
-  font-size: 1.05rem;
-  font-weight: 400; /* normal */
-  line-height: 1.2;
+  border-radius: 9999px; /* full rounded pill */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
+  line-height: 1.4;
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+  /* smooth transitions for all hover effects */
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   width: max-content;
-  margin-top: 0.35rem;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.06em; /* tracking-wide */
+  /* floating shadow */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .btn-specifications:hover {
-  background: #f3f4f6; /* hover:bg-gray-100 */
-  color: #111827; /* slightly darker on hover */
-  transform: translateY(-1px);
+  /* slightly deeper shadow on hover */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* subtle scale-up effect */
+  transform: scale(1.02);
 }
 
 .btn-specifications:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.06);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .btn-specifications-icon {
   color: currentColor;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1rem;
+  height: 1rem;
   flex: 0 0 auto;
   display: block;
-  transition: transform 0.12s ease, color 0.12s ease;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-specifications-icon-leading {
-  margin-top: 0;
+.btn-specifications-icon-trailing {
+  margin-left: 4px; /* slight spacing from text */
+}
+
+.btn-specifications:hover .btn-specifications-icon-trailing {
+  /* arrow moves right on hover */
+  transform: translateX(4px);
 }
 
 .btn-specifications-text {
   text-decoration: none;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
-  font-weight: 400;
+  font-weight: inherit;
   color: inherit;
-}
-
-.btn-specifications:hover .btn-specifications-icon,
-.btn-specifications:focus-visible .btn-specifications-icon {
-  transform: translateY(-1px);
+  transition: inherit;
 }
 
 .specs-modal-overlay {

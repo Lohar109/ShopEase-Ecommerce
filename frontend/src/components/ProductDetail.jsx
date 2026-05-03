@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, X, ArrowRight } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package, X, ChevronRight } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -680,10 +680,12 @@ const ProductDetail = () => {
                     )}
                   </p>
                 </div>
-                <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
-                  <ArrowRight size={18} className="btn-specifications-icon btn-specifications-icon-leading" />
-                  <span className="btn-specifications-text">Specifications & Features</span>
-                </button>
+                <div className="btn-specifications-wrapper">
+                  <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
+                    <span className="btn-specifications-text">Specifications & Features</span>
+                    <ChevronRight size={16} className="btn-specifications-icon btn-specifications-icon-trailing" />
+                  </button>
+                </div>
 
                 <div className="product-detail-trust-icons">
                   <div className="trust-icon-item">
