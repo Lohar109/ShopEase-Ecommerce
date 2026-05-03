@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
+import { Cpu, Monitor, Radio, Zap, Package, X } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -742,41 +743,95 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Specifications Modal Overlay */}
+      {/* Specifications Drawer */}
       {showModal && (
-        <div className="specs-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="specs-modal" onClick={e => e.stopPropagation()}>
-            <div className="specs-modal-header">
-              <h3>Product Specifications</h3>
-              <button
-                type="button"
-                className="description-modal-close"
-                onClick={() => setShowModal(false)}
-              >
-                Close
-              </button>
+        <div className="specs-drawer-overlay" onClick={() => setShowModal(false)}>
+          <div className="specs-drawer" onClick={e => e.stopPropagation()}>
+            {/* Close Button - Sleek X Icon */}
+            <button
+              type="button"
+              className="specs-drawer-close"
+              onClick={() => setShowModal(false)}
+              aria-label="Close specifications"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Header */}
+            <div className="specs-drawer-header">
+              <h2>Product Specifications</h2>
+              <p className="specs-drawer-subtitle">Complete details about this product</p>
             </div>
-            <div className="specs-modal-body">
-              <table className="specs-table">
-                <tbody>
-                  {product?.brand && (
-                    <tr>
-                      <th>Brand</th>
-                      <td>{product.brand}</td>
-                    </tr>
-                  )}
-                  {specificationRows.map(([key, value]) => (
-                    <tr key={key}>
-                      <th>{key}</th>
-                      <td>{formatSpecificationValue(value)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {/* Fallback details if fields are empty */}
-              {!product?.brand && specificationRows.length === 0 && (
-                <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
-              )}
+
+            {/* Content - Grouped by Category */}
+            <div className="specs-drawer-body">
+              {(() => {
+                const allSpecs = [];
+                if (product?.brand) allSpecs.push(['brand', product.brand]);
+                allSpecs.push(...specificationRows);
+
+                if (allSpecs.length === 0) {
+                  return (
+                    <p className="specs-fallback">Basic product information is currently available. Please contact support for detailed specifications.</p>
+                  );
+                }
+
+                // Categorize specifications
+                const specCategories = {
+                  general: { label: 'General', icon: Package, specs: [] },
+                  display: { label: 'Display & Audio', icon: Monitor, specs: [] },
+                  performance: { label: 'Performance', icon: Cpu, specs: [] },
+                  connectivity: { label: 'Connectivity', icon: Radio, specs: [] },
+                  power: { label: 'Power & Battery', icon: Zap, specs: [] },
+                };
+
+                // Map spec keys to categories
+                const categoryMap = {
+                  brand: 'general', model: 'general', type: 'general', sku: 'general', weight: 'general', dimensions: 'general',
+                  screen: 'display', resolution: 'display', 'refresh rate': 'display', speaker: 'display', audio: 'display', display: 'display',
+                  processor: 'performance', ram: 'performance', storage: 'performance', gpu: 'performance', chipset: 'performance', cpu: 'performance',
+                  wifi: 'connectivity', bluetooth: 'connectivity', usb: 'connectivity', network: 'connectivity', sim: 'connectivity', '4g': 'connectivity', '5g': 'connectivity',
+                  battery: 'power', 'battery capacity': 'power', charging: 'power', 'fast charge': 'power',
+                };
+
+                // Categorize each spec
+                allSpecs.forEach(([key, value]) => {
+                  const normalizedKey = String(key || '').toLowerCase().trim();
+                  let category = 'general';
+                  
+                  for (const [mapKey, mapCategory] of Object.entries(categoryMap)) {
+                    if (normalizedKey.includes(mapKey) || mapKey.includes(normalizedKey)) {
+                      category = mapCategory;
+                      break;
+                    }
+                  }
+                  
+                  specCategories[category].specs.push([key, value]);
+                });
+
+                // Render each category section
+                return Object.entries(specCategories).map(([catKey, category]) => {
+                  if (!category.specs || category.specs.length === 0) return null;
+                  const IconComponent = category.icon;
+                  
+                  return (
+                    <div key={catKey} className="specs-category-section">
+                      <div className="specs-category-header">
+                        <IconComponent size={18} />
+                        <h3>{category.label}</h3>
+                      </div>
+                      <div className="specs-category-rows">
+                        {category.specs.map(([key, value], idx) => (
+                          <div key={key} className={`specs-row ${idx % 2 === 0 ? 'zebra-even' : 'zebra-odd'}`}>
+                            <span className="specs-label">{key}</span>
+                            <span className="specs-value">{formatSpecificationValue(value)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }).filter(Boolean);
+              })()}
             </div>
           </div>
         </div>
