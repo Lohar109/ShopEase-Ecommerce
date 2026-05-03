@@ -160,10 +160,8 @@
   gap: 8px;
   justify-content: space-between;
   align-items: flex-start;
-  margin: 10px 0 20px;
-  border-top: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
-  padding: 16px 0;
+  margin: 8px 0 12px;
+  padding: 8px 0;
 }
 
 .trust-icon-item {
@@ -832,7 +830,7 @@
   border-radius: 1.5rem; /* rounded-3xl */
   border: 1px solid #e2e8f0; /* border-slate-200 */
   box-shadow: 0 1px 2px rgba(0,0,0,0.04); /* shadow-sm */
-  padding: 1.25rem; /* tighter internal padding */
+  padding: 1rem 1.25rem 0.75rem; /* tighter vertical padding */
   width: 100%;
   box-sizing: border-box;
 }
@@ -845,7 +843,7 @@
 .quick-glance-row {
   display: flex;
   align-items: flex-start;
-  padding: 8px 0; /* py-2 */
+  padding: 7px 0; /* tight spacing */
   border-bottom: 1px solid #f8fafc; /* border-slate-50 */
 }
 
