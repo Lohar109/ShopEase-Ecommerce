@@ -838,6 +838,34 @@
   box-sizing: border-box;
 }
 
+/* Info Box and Tabs (Poppins inside) */
+.info-box {
+  font-family: 'Poppins', sans-serif;
+}
+.info-tabs {
+  display: inline-flex;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 999px;
+}
+.info-tab {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: transparent;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+}
+.info-tab.active {
+  background: #111827;
+  color: #fff;
+}
+.info-tab:not(.active):hover {
+  background: #eef2f6;
+}
+.info-tab + .info-tab { margin-left: 6px; }
+.info-tab-content { font-family: 'Poppins', sans-serif; }
 
 .quick-glance-list {
   display: block;

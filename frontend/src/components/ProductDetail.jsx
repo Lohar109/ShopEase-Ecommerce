@@ -103,6 +103,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [infoTab, setInfoTab] = useState('description');
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
@@ -652,76 +653,54 @@ const ProductDetail = () => {
                 </div>
 
                 <h2 className="product-detail-title">{product.name}</h2>
-                <div className="product-detail-desc-preview" ref={descriptionInlineRef}>
-                  <p className="product-detail-desc">
-                    <span className="product-detail-desc-inline-text">
-                      {showInlineReadMore ? inlineDescription : descriptionText}
-                    </span>
-                    {showInlineReadMore && (
-                      <span className="product-detail-desc-inline-cta">
-                        <span className="product-detail-read-more-ellipsis">... </span>
-                        <button
-                          type="button"
-                          className="product-detail-read-more product-detail-read-more-inline"
-                          onClick={() => setShowDescriptionModal(true)}
-                        >
-                          Read More
-                        </button>
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="specs-card bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-                  {(() => {
-                    // Collect all specs dynamically (same logic as modal)
-                    const allSpecs = [];
-                    
-                    if (product?.brand) {
-                      allSpecs.push(['brand', product.brand]);
-                    }
-                    
-                    if (product?.specifications && typeof product.specifications === 'object') {
-                      Object.entries(product.specifications).forEach(([key, value]) => {
-                        if (value !== null && value !== undefined && value !== '') {
-                          allSpecs.push([key, value]);
-                        }
-                      });
-                    }
 
-                    // Take first 4 specs
-                    const quickGlanceSpecs = allSpecs.slice(0, 4);
+                <div className="info-box rounded-3xl border border-slate-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <div className="info-tabs" role="tablist">
+                    <button type="button" className={`info-tab ${infoTab === 'description' ? 'active' : ''}`} onClick={() => setInfoTab('description')}>Description</button>
+                    <button type="button" className={`info-tab ${infoTab === 'features' ? 'active' : ''}`} onClick={() => setInfoTab('features')}>Features</button>
+                  </div>
 
-                    if (quickGlanceSpecs.length === 0) {
-                      return null; // No specs to show
-                    }
+                  <div className="info-tab-content mt-4">
+                    {infoTab === 'description' ? (
+                      <div className="info-description">
+                        <p>{product.description}</p>
+                      </div>
+                    ) : (
+                      <div className="info-features">
+                        {(() => {
+                          const allSpecs = [];
+                          if (product?.brand) allSpecs.push(['brand', product.brand]);
+                          if (product?.specifications && typeof product.specifications === 'object') {
+                            Object.entries(product.specifications).forEach(([key, value]) => {
+                              if (value !== null && value !== undefined && value !== '') allSpecs.push([key, value]);
+                            });
+                          }
 
-                    return (
-                      <>
-                        <div className="quick-glance-list">
-                          {quickGlanceSpecs.map(([key, value], idx) => (
-                            <div key={`${key}-${idx}`} className="quick-glance-row flex items-start py-2 border-b border-slate-50 last:border-0">
-                              <div className="quick-glance-label text-[11px] font-bold uppercase tracking-widest text-slate-400 w-28 shrink-0">{key}</div>
-                              <div className="quick-glance-value text-sm font-semibold text-slate-900 flex-1">
-                                {formatSpecificationValue(value)}
-                                {idx === quickGlanceSpecs.length - 1 && allSpecs.length > quickGlanceSpecs.length && (
-                                  <>
-                                    <span className="product-detail-read-more-ellipsis">... </span>
-                                    <button
-                                      type="button"
-                                      className="product-detail-read-more product-detail-read-more-inline quick-glance-view-all-trigger"
-                                      onClick={() => setShowModal(true)}
-                                    >
-                                      View all
-                                    </button>
-                                  </>
-                                )}
-                              </div>
+                          const features = allSpecs.slice(0, 6);
+                          if (features.length === 0) return null;
+
+                          return (
+                            <div className="quick-glance-list">
+                              {features.map(([key, value], idx) => (
+                                <div key={`${key}-${idx}`} className="quick-glance-row flex items-start py-2 border-b border-slate-50 last:border-0">
+                                  <div className="quick-glance-label text-[11px] font-bold uppercase tracking-widest text-slate-400 w-28 shrink-0">{key}</div>
+                                  <div className="quick-glance-value text-sm font-semibold text-slate-900 flex-1">
+                                    {formatSpecificationValue(value)}
+                                    {idx === features.length - 1 && allSpecs.length > features.length && (
+                                      <>
+                                        <span className="product-detail-read-more-ellipsis">... </span>
+                                        <button type="button" className="product-detail-read-more quick-glance-view-all-trigger" onClick={() => setShowModal(true)}>View all</button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </>
-                    );
-                  })()}
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="product-detail-trust-icons">
