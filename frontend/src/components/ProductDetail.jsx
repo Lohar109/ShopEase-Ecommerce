@@ -718,7 +718,6 @@ const ProductDetail = () => {
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
                 <div className="product-detail-header-stack flex flex-col gap-0">
-                  <p className="product-detail-brand text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-0 leading-none">{product.brand}</p>
                   <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mt-[-4px]">{product.name}</h2>
                 </div>
 

@@ -312,13 +312,6 @@
   margin: 0 0 0.5rem 0;
 }
 
-.product-detail-brand {
-  margin: 0;
-  text-align: left;
-  font-weight: 600;
-  line-height: 1;
-}
-
 .product-detail-price {
   font-size: 1.6rem;
   color: #000;
@@ -865,6 +858,8 @@
   color: #9ca3af;
   padding: 0.875rem 1rem;
   cursor: pointer;
+  box-shadow: none;
+  transition: none;
 }
 
 .product-detail-info-tab:last-child {
@@ -874,16 +869,24 @@
 .product-detail-info-tab.active {
   color: #D10049;
   border-top-color: #D10049;
+  background: transparent;
+  box-shadow: none;
 }
 
 .product-detail-info-tab.inactive {
   border-top-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
-.product-detail-info-tab:hover:not(.active) {
-  /* Intentionally blank: no visual change on hover to keep tabs static */
-  background-color: transparent;
-  color: #9ca3af;
+.product-detail-info-tab:hover,
+.product-detail-info-tab:focus,
+.product-detail-info-tab:focus-visible,
+.product-detail-info-tab:active {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  border-color: #e5e7eb;
 }
 
 .product-detail-info-content {
@@ -943,13 +946,6 @@
   cursor: pointer;
   padding: 0;
   text-decoration: none; /* keep plain text */
-}
-
-.product-detail-feature-view-all:hover {
-  /* No visual change on hover — remain static */
-  text-decoration: none;
-  background: transparent;
-  box-shadow: none;
 }
 
 .product-detail-feature-ellipsis {
@@ -1023,10 +1019,6 @@
   text-transform: uppercase;
   letter-spacing: 0.06em; /* tracking-wide */
   transition: background-color 200ms ease, color 200ms ease;
-}
-
-.view-all-btn:hover {
-  background: #f1f5f9; /* hover:bg-slate-100 */
 }
 
 .view-all-btn svg {
