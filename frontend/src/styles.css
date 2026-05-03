@@ -1335,7 +1335,7 @@ button:hover {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--card-border);
     border-radius: 16px;
-    padding: 1rem;
+    padding: 0.75rem;
     text-align: center;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -1343,7 +1343,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     /* Match product skeleton overall rhythm: constrain height so cards align with skeletons */
-    height: 340px;
+    height: 320px;
     overflow: hidden;
 }
 
@@ -1354,12 +1354,12 @@ button:hover {
 
 .product-image {
     width: 100%;
-    height: 200px;
+    height: 180px;
     object-fit: contain;
-    padding: 10px;
+    padding: 8px;
     box-sizing: border-box;
     border-radius: 12px;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
     background-color: #f9f9f9;
 }
 
@@ -1367,8 +1367,8 @@ button:hover {
     font-family: 'Roboto', sans-serif;
     font-size: 1.15rem;
     line-height: 1.35;
-    min-height: 3.1rem;
-    margin-bottom: 0.2rem;
+    min-height: 2.8rem;
+    margin-bottom: 0.15rem;
     color: var(--primary-color);
     font-weight: normal;
     overflow: hidden;
@@ -1388,7 +1388,7 @@ button:hover {
 .product-card-info-row {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px; /* tightened vertical gaps */
     text-align: left;
 }
 
@@ -1424,10 +1424,10 @@ button:hover {
 
 .product-card-delivery {
     font-family: 'Poppins', sans-serif;
-    font-size: 11px;
+    font-size: 11px; /* kept compact for single-line fit */
     color: #1e8e3e;
     font-weight: 500;
-    margin: 4px 0 12px;
+    margin: 2px 0 6px; /* reduced bottom margin so it sits higher */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
