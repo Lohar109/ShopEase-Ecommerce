@@ -759,7 +759,7 @@ const ProductDetail = () => {
 
             {/* Header */}
             <div className="specs-drawer-header">
-              <h2>Technical Specifications</h2>
+              <h2>Specifications & Features</h2>
             </div>
 
             {/* Content - Dynamic Specs */}

@@ -870,11 +870,12 @@
 /* Specification Items - Compact Pro Style */
 .specs-item {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* fixed key column + flexible value column */
+  grid-template-columns: 8rem 1fr;
   gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f9fafb;
-  align-items: start;
+  padding: 12px 0; /* py-3 */
+  border-bottom: 1px solid #f9fafb; /* subtle divider */
+  align-items: start; /* ensure key is top-aligned for multiline values */
   break-inside: avoid;
 }
 
@@ -883,18 +884,19 @@
 }
 
 .specs-label {
-  font-size: 0.625rem;
-  color: #9ca3af;
-  font-weight: 700;
+  font-size: 11px; /* text-[11px] */
+  color: #6b7280; /* muted slate */
+  font-weight: 700; /* bold */
   text-transform: uppercase;
-  letter-spacing: -0.5px;
+  letter-spacing: 1px; /* tracking-wider */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  align-self: start; /* keep top aligned */
 }
 
 .specs-value {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* medium */
+  color: #1f2937; /* text-gray-800 for high contrast */
   text-align: left;
   word-break: break-word;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1112,16 +1114,16 @@
   }
 
   .specs-item {
-    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-columns: 5.5rem 1fr; /* slightly narrower on small screens */
     padding: 10px 0;
   }
 
   .specs-label {
-    font-size: 0.6rem;
+    font-size: 11px;
   }
 
   .specs-value {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
   }
 }
 
