@@ -661,15 +661,15 @@
 .btn-specifications {
   background: transparent;
   border: none;
-  color: #111827;
+  color: #e33170; /* match Read More */
   padding: 0;
   appearance: none;
   border-radius: 0;
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 1.05rem;
+  font-weight: 500; /* font-medium */
   line-height: 1.2;
   cursor: pointer;
-  transition: none;
+  transition: color 0.18s ease, text-decoration 0.18s ease;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -679,11 +679,9 @@
 }
 
 .btn-specifications:hover {
-  background: transparent;
-  color: #111827;
-  border: none;
-  box-shadow: none;
-  text-decoration: none;
+  color: #c0265f; /* darker on hover */
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .btn-specifications:focus-visible {
@@ -697,12 +695,12 @@
 }
 
 .btn-specifications-icon {
-  color: #6b7280;
+  color: currentColor;
   width: 1.125rem;
   height: 1.125rem;
   flex: 0 0 auto;
   display: block;
-  transition: none;
+  transition: transform 0.12s ease, color 0.12s ease;
 }
 
 .btn-specifications-icon-leading {
@@ -719,16 +717,13 @@
   text-decoration: none;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
-}
-
-.btn-specifications:hover .btn-specifications-text,
-.btn-specifications:focus-visible .btn-specifications-text {
-  text-decoration: none;
+  font-weight: 500;
+  color: inherit;
 }
 
 .btn-specifications:hover .btn-specifications-icon,
 .btn-specifications:focus-visible .btn-specifications-icon {
-  color: #6b7280;
+  transform: translateY(-1px);
 }
 
 .specs-modal-overlay {
@@ -831,8 +826,8 @@
 .specs-drawer-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
+  font-weight: 500; /* medium to match button */
+  color: #e33170; /* sync with button/read-more */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   letter-spacing: -0.3px;
 }
