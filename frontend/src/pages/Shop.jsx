@@ -157,7 +157,6 @@ const Shop = () => {
   const activeSubcategories = selectedCategory
     ? subcategoriesByParent[selectedCategory] || []
     : [];
-  const selectedCategoryData = selectedCategory ? categoryById[String(selectedCategory)] : null;
 
   useEffect(() => {
     const requestedCategory = normalizeCategoryKey(searchParams.get("category"));
@@ -207,11 +206,6 @@ const Shop = () => {
         <div className="shop-subcategory-nav-wrap">
           <div className="shop-subcategory-nav-shell">
             <div className="shop-subcategory-nav-header">
-              <div>
-                <h2 className="shop-subcategory-nav-title">
-                  {selectedCategoryData?.name || 'Browse subcategories'}
-                </h2>
-              </div>
               <button
                 type="button"
                 className={`shop-subcategory-reset ${selectedSubcategory ? 'is-active' : ''}`}

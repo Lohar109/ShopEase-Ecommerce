@@ -2241,10 +2241,10 @@ button:hover {
 
 .shop-subcategory-nav-header {
     display: flex;
-    align-items: end;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: flex-end;
     gap: 1rem;
-    margin-bottom: 0.9rem;
+    margin-bottom: 0.6rem;
 }
 
 .shop-subcategory-nav-kicker {
@@ -2289,7 +2289,7 @@ button:hover {
 
 .shop-subcategory-row {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.1rem;
     overflow-x: auto;
     padding-bottom: 2rem;
     scrollbar-width: none;
@@ -2302,8 +2302,8 @@ button:hover {
 
 .shop-subcategory-card {
     flex: 0 0 auto;
-    width: 8rem;
-    height: 11rem;
+    width: 10.5rem;
+    height: 13.5rem;
     border: 1px solid #f0f0f0;
     background: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
@@ -2316,6 +2316,7 @@ button:hover {
     justify-content: flex-end;
     border-radius: 3rem;
     overflow: hidden;
+    position: relative;
 }
 
 .shop-subcategory-card:hover {
@@ -2331,8 +2332,8 @@ button:hover {
 
 .shop-subcategory-card-media {
     width: 100%;
-    height: 8.25rem;
-    border-radius: 3rem 3rem 0 0;
+    height: 100%;
+    border-radius: 3rem;
     background: transparent;
     border: none;
     box-shadow: none;
@@ -2357,23 +2358,26 @@ button:hover {
 }
 
 .shop-subcategory-card-label {
+    position: absolute;
+    left: 0.55rem;
+    right: 0.55rem;
+    bottom: 0.65rem;
     text-align: center;
-    color: #111827;
-    font-size: 0.75rem;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    min-height: 2.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.9rem 0.5rem 1.1rem;
+    min-height: 0;
+    display: block;
+    padding: 0;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
-.shop-subcategory-card.is-selected .shop-subcategory-card-media {
-    border-color: rgba(200, 80, 122, 0.3);
-    box-shadow: 0 12px 28px rgba(200, 80, 122, 0.14);
+.shop-subcategory-card.is-selected {
+    border-color: rgba(200, 80, 122, 0.42);
 }
 
 /* Marquee (infinite loop) styles */
@@ -2385,7 +2389,7 @@ button:hover {
 
 .shop-subcategory-marquee-track {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.1rem;
     align-items: stretch;
     flex-wrap: nowrap;
     will-change: transform;
