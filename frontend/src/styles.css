@@ -2258,6 +2258,8 @@ button:hover {
 
 .shop-subcategory-nav-title {
     margin: 0;
+    /* add slight top spacing now that kicker is removed */
+    margin-top: 0.35rem;
     color: #111827;
     font-size: 1rem;
     line-height: 1.2;

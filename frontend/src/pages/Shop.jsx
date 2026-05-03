@@ -208,7 +208,6 @@ const Shop = () => {
           <div className="shop-subcategory-nav-shell">
             <div className="shop-subcategory-nav-header">
               <div>
-                <p className="shop-subcategory-nav-kicker">Subcategories</p>
                 <h2 className="shop-subcategory-nav-title">
                   {selectedCategoryData?.name || 'Browse subcategories'}
                 </h2>
