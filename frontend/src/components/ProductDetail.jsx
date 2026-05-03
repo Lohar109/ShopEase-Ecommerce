@@ -708,9 +708,9 @@ const ProductDetail = () => {
                       <>
                         <div className="quick-glance-list">
                           {quickGlanceSpecs.map(([key, value], idx) => (
-                            <div key={`${key}-${idx}`} className="quick-glance-row flex justify-between items-start py-1.5 border-b border-slate-50 last:border-0">
-                              <div className="quick-glance-label text-sm font-bold uppercase tracking-widest text-slate-400 w-1/2">{key}</div>
-                              <div className="quick-glance-value text-sm font-semibold text-slate-900 w-1/2 text-right">
+                            <div key={`${key}-${idx}`} className="quick-glance-row flex items-start py-2 border-b border-slate-50 last:border-0">
+                              <div className="quick-glance-label text-[11px] font-bold uppercase tracking-widest text-slate-400 w-28 shrink-0">{key}</div>
+                              <div className="quick-glance-value text-sm font-semibold text-slate-900 flex-1">
                                 {formatSpecificationValue(value)}
                                 {idx === quickGlanceSpecs.length - 1 && allSpecs.length > quickGlanceSpecs.length && (
                                   <>
