@@ -649,14 +649,6 @@ const ProductDetail = () => {
               <div className="product-detail-info-col">
                 <div className="product-detail-header-row">
                   <p className="product-detail-brand">{product.brand}</p>
-                  <div className="product-detail-rating">
-                    <span className="star full">&#9733;</span>
-                    <span className="star full">&#9733;</span>
-                    <span className="star full">&#9733;</span>
-                    <span className="star full">&#9733;</span>
-                    <span className="star half">&#9733;</span>
-                    <span className="rating-value">4.5</span>
-                  </div>
                 </div>
 
                 <h2 className="product-detail-title">{product.name}</h2>
