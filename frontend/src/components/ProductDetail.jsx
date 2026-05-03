@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, X, ChevronRight } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package, X } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -680,11 +680,53 @@ const ProductDetail = () => {
                     )}
                   </p>
                 </div>
-                <div className="btn-specifications-wrapper">
-                  <button type="button" className="btn-specifications" onClick={() => setShowModal(true)}>
-                    <span className="btn-specifications-text">Specifications & Features</span>
-                    <ChevronRight size={16} className="btn-specifications-icon btn-specifications-icon-trailing" />
-                  </button>
+                <div className="quick-glance-section">
+                  {(() => {
+                    // Collect all specs dynamically (same logic as modal)
+                    const allSpecs = [];
+                    
+                    if (product?.brand) {
+                      allSpecs.push(['brand', product.brand]);
+                    }
+                    
+                    if (product?.specifications && typeof product.specifications === 'object') {
+                      Object.entries(product.specifications).forEach(([key, value]) => {
+                        if (value !== null && value !== undefined && value !== '') {
+                          allSpecs.push([key, value]);
+                        }
+                      });
+                    }
+
+                    // Take first 3 specs
+                    const quickGlanceSpecs = allSpecs.slice(0, 3);
+
+                    if (quickGlanceSpecs.length === 0) {
+                      return null; // No specs to show
+                    }
+
+                    return (
+                      <>
+                        <div className="quick-glance-heading">KEY SPECIFICATIONS</div>
+                        <div className="quick-glance-list">
+                          {quickGlanceSpecs.map(([key, value], idx) => (
+                            <div key={`${key}-${idx}`} className="quick-glance-row">
+                              <span className="quick-glance-label">{key}</span>
+                              <span className="quick-glance-value">{formatSpecificationValue(value)}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {allSpecs.length > 3 && (
+                          <button 
+                            type="button" 
+                            className="view-all-specs-link" 
+                            onClick={() => setShowModal(true)}
+                          >
+                            + View all Specifications
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div className="product-detail-trust-icons">
