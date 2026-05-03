@@ -845,8 +845,8 @@
 .quick-glance-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 0; /* py-3 */
+  align-items: flex-start;
+  padding: 6px 0; /* py-1.5 */
   border-bottom: 1px solid #f8fafc; /* border-slate-50 */
 }
 

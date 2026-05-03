@@ -706,10 +706,9 @@ const ProductDetail = () => {
 
                     return (
                       <>
-                        <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-4">Key Specifications</p>
                         <div className="quick-glance-list">
                           {quickGlanceSpecs.map(([key, value], idx) => (
-                            <div key={`${key}-${idx}`} className="quick-glance-row flex justify-between items-center py-3 border-b border-slate-50 last:border-0">
+                            <div key={`${key}-${idx}`} className="quick-glance-row flex justify-between items-start py-1.5 border-b border-slate-50 last:border-0">
                               <div className="quick-glance-label text-[10px] font-bold uppercase tracking-widest text-slate-400 w-1/2">{key}</div>
                               <div className="quick-glance-value text-sm font-semibold text-slate-900 w-1/2 text-right">{formatSpecificationValue(value)}</div>
                             </div>
@@ -718,7 +717,7 @@ const ProductDetail = () => {
                         {allSpecs.length > 3 && (
                           <button
                             type="button"
-                            className="view-all-btn mt-4 w-full py-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-[11px] font-bold text-slate-500 uppercase tracking-wide transition-colors"
+                            className="view-all-btn mt-2 w-full py-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-[11px] font-bold text-slate-500 uppercase tracking-wide transition-colors"
                             onClick={() => setShowModal(true)}
                           >
                             + View all
