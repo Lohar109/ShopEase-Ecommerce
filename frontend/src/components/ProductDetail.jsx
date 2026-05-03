@@ -759,8 +759,8 @@ const ProductDetail = () => {
 
             {/* Header */}
             <div className="specs-drawer-header">
-              <h2>Product Specifications</h2>
-              <p className="specs-drawer-subtitle">Complete details about this product</p>
+              <h2>Technical Specifications</h2>
+              <p className="specs-drawer-subtitle">Complete product details and features</p>
             </div>
 
             {/* Content - Grouped by Category */}

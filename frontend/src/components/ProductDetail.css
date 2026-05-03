@@ -759,21 +759,19 @@
 /* Backward compatibility - rename to drawer */
 .specs-drawer-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
-  animation: drawerOverlayFadeIn 0.3s ease-out;
+  animation: specOverlayFadeIn 0.3s ease-out;
+  padding: 16px;
 }
 
-@keyframes drawerOverlayFadeIn {
+@keyframes specOverlayFadeIn {
   from {
     background: rgba(0, 0, 0, 0);
     backdrop-filter: blur(0px);
@@ -781,75 +779,79 @@
   }
   to {
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 }
 
 .specs-drawer {
   background: #ffffff;
-  width: 100%;
-  max-width: 480px;
-  height: 100%;
-  max-height: 100vh;
+  width: 90%;
+  max-width: 64rem; /* max-w-5xl */
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
   position: relative;
-  animation: drawerSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: specModalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
-@keyframes drawerSlideIn {
+@keyframes specModalSlideIn {
   from {
-    transform: translateX(100%);
+    transform: scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: scale(1);
     opacity: 1;
   }
 }
 
 .specs-drawer-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
+  top: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   color: #6b7280;
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  border-radius: 6px;
+  border-radius: 8px;
   z-index: 10;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 }
 
 .specs-drawer-close:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: rgba(200, 80, 122, 0.1);
+  color: #c8507a;
+  border-color: rgba(200, 80, 122, 0.2);
+  transform: scale(1.05);
 }
 
 .specs-drawer-header {
-  padding: 28px 24px 16px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 32px 36px 24px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .specs-drawer-header h2 {
-  margin: 0 0 6px;
-  font-size: 1.5rem;
+  margin: 0 0 8px;
+  font-size: 1.875rem;
   font-weight: 700;
   color: #111827;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.5px;
 }
 
 .specs-drawer-subtitle {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: #9ca3af;
   font-weight: 500;
 }
@@ -857,31 +859,54 @@
 .specs-drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px;
+  padding: 32px 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
 }
 
-/* Specifications Category Sections */
+@media (min-width: 768px) {
+  .specs-drawer-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .specs-drawer-body {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Specifications Category Sections (Now as Cards) */
 .specs-category-section {
-  margin-bottom: 28px;
+  margin-bottom: 0;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fafbfc;
+  transition: all 0.2s ease;
 }
 
-.specs-category-section:last-child {
-  margin-bottom: 12px;
+.specs-category-section:hover {
+  border-color: #e5e7eb;
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .specs-category-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  color: #111827;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(200, 80, 122, 0.15);
 }
 
 .specs-category-header h3 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: #111827;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -896,57 +921,50 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #f3f4f6;
 }
 
 /* Individual spec row */
 .specs-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.15s ease;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
 }
 
 .specs-row:last-child {
   border-bottom: none;
 }
 
-/* Zebra striping */
-.specs-row.zebra-even {
-  background: #ffffff;
-}
-
-.specs-row.zebra-odd {
-  background: #f9fafb;
-}
-
 .specs-row:hover {
-  background: #f3f4f6;
+  background: rgba(200, 80, 122, 0.02);
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 0 -8px;
+  border-radius: 6px;
 }
 
 .specs-label {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #6b7280;
-  font-weight: 500;
+  font-weight: 600;
   flex-shrink: 0;
   text-transform: capitalize;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  min-width: 140px;
+  letter-spacing: 0.2px;
 }
 
 .specs-value {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #111827;
   text-align: right;
   flex: 1;
   word-break: break-word;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.4;
 }
 
 /* Legacy modal classes for backward compat */
@@ -1136,32 +1154,56 @@
   border: 1px solid #e5e7eb;
 }
 
-/* Mobile responsive drawer */
+/* Mobile responsive modal */
 @media (max-width: 768px) {
+  .specs-drawer-overlay {
+    padding: 12px;
+  }
+
   .specs-drawer {
-    max-width: 100%;
     width: 100%;
-    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 12px;
   }
 
   .specs-drawer-header {
-    padding: 24px 20px 12px;
+    padding: 24px 20px 16px;
   }
 
   .specs-drawer-header h2 {
-    font-size: 1.375rem;
+    font-size: 1.5rem;
   }
 
   .specs-drawer-body {
-    padding: 16px 20px;
+    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .specs-category-section {
+    padding: 16px;
+  }
+
+  .specs-row {
+    padding: 8px 0;
+    font-size: 0.85rem;
   }
 
   .specs-label {
-    min-width: 110px;
+    font-size: 0.75rem;
   }
 
   .specs-value {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    text-align: left;
+  }
+
+  .specs-drawer-close {
+    width: 36px;
+    height: 36px;
+    top: 16px;
+    right: 16px;
   }
 }
 
