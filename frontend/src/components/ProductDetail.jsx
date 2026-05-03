@@ -639,8 +639,9 @@ const ProductDetail = () => {
                     {/* Color Selector */}
                     {filteredColors.length > 0 && (
                       <div className="product-detail-color-selector" aria-label="Color variants">
-                        <p className="product-detail-color-label text-sm font-semibold text-gray-700">
-                          Color: <span>{selectedColor || filteredColors[0]}</span>
+                        <p className="product-detail-color-label">
+                          <span className="product-detail-color-label-text">Selected color:</span>
+                          <span className="product-detail-color-label-value">{selectedColor || filteredColors[0]}</span>
                         </p>
                         <div className="product-color-thumbs-row">
                           {filteredColors.map((color) => (
