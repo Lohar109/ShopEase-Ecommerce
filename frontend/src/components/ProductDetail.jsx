@@ -635,8 +635,7 @@ const ProductDetail = () => {
                     {/* Purchasing block */}
                     <div className="product-detail-purchasing-block">
                       <div className="product-detail-price-group">
-                        <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}</div>
-                        <span className="product-detail-tax">All taxes included</span>
+                        <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}<span className="product-detail-tax">All taxes included</span></div>
                       </div>
                       <div className="product-card-actions detail-page-buttons">
                         <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>

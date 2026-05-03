@@ -316,6 +316,9 @@
   font-size: 1.6rem;
   color: #000;
   font-weight: 700;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px; /* ml-2 equivalent for spacing */
 }
 
 .product-detail-tax {
@@ -324,9 +327,9 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.5px;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: baseline;
+  font-family: 'Poppins', sans-serif;
+  display: inline;
+  white-space: nowrap;
 }
 
 .product-detail-rating {
@@ -592,7 +595,7 @@
 
 .product-detail-purchasing-block {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 6px; /* reduced spacing between delivery info and price */
 }
 
 /* Action Buttons */
