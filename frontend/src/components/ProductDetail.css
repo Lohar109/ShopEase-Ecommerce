@@ -321,24 +321,14 @@
 }
 
 .product-detail-tax {
-  font-size: 0.8rem;
-  color: #888;
-  margin-left: 8px;
-}
-
-.product-detail-price-group {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: baseline;
-}
-
-.product-detail-brand {
-  color: #888;
-  font-size: 16px;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
 }
 
 .product-detail-rating {
@@ -787,12 +777,12 @@
 .specs-drawer {
   background: #ffffff;
   width: 90%;
-  max-width: 64rem; /* max-w-5xl */
+    max-width: 42rem; /* max-w-2xl */
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
-  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   position: relative;
   animation: specModalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
@@ -811,160 +801,104 @@
 
 .specs-drawer-close {
   position: absolute;
-  top: 24px;
-  right: 24px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: #6b7280;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
   cursor: pointer;
   padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  border-radius: 8px;
+    border-radius: 6px;
   z-index: 10;
   width: 40px;
   height: 40px;
 }
 
 .specs-drawer-close:hover {
-  background: rgba(200, 80, 122, 0.1);
-  color: #c8507a;
-  border-color: rgba(200, 80, 122, 0.2);
-  transform: scale(1.05);
+    background: rgba(0, 0, 0, 0.05);
+    color: #6b7280;
 }
 
 .specs-drawer-header {
-  padding: 32px 36px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .specs-drawer-header h2 {
-  margin: 0 0 8px;
-  font-size: 1.875rem;
+  margin: 0;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
 }
 
 .specs-drawer-subtitle {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #9ca3af;
-  font-weight: 500;
+  display: none;
 }
 
 .specs-drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 32px 36px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-@media (min-width: 768px) {
-  .specs-drawer-body {
-    grid-template-columns: repeat(2, 1fr);
+    padding: 24px 28px;
   }
-}
 
-@media (min-width: 1024px) {
-  .specs-drawer-body {
-    grid-template-columns: repeat(3, 1fr);
+  .specs-list {
+    column-count: 1;
+    column-gap: 28px;
   }
-}
+
+  @media (min-width: 768px) {
+    .specs-list {
+      column-count: 2;
+    }
+  }
+
+  .specs-no-data {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 32px 0;
+    margin: 0;
+  }
 
 /* Specifications Category Sections (Now as Cards) */
-.specs-category-section {
-  margin-bottom: 0;
-  border: 1px solid #f3f4f6;
-  border-radius: 12px;
-  padding: 20px;
-  background: #fafbfc;
-  transition: all 0.2s ease;
-}
-
-.specs-category-section:hover {
-  border-color: #e5e7eb;
-  background: #f9fafb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.specs-category-header {
-  display: flex;
-  align-items: center;
+/* Specification Items - Compact Pro Style */
+.specs-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid rgba(200, 80, 122, 0.15);
+  padding: 12px 0;
+  border-bottom: 1px solid #f9fafb;
+  align-items: start;
+  break-inside: avoid;
 }
 
-.specs-category-header h3 {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: #111827;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-.specs-category-header svg {
-  color: #c8507a;
-  flex-shrink: 0;
-}
-
-.specs-category-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* Individual spec row */
-.specs-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  transition: all 0.15s ease;
-}
-
-.specs-row:last-child {
+.specs-item:last-child {
   border-bottom: none;
 }
 
-.specs-row:hover {
-  background: rgba(200, 80, 122, 0.02);
-  padding-left: 8px;
-  padding-right: 8px;
-  margin: 0 -8px;
-  border-radius: 6px;
-}
-
 .specs-label {
-  font-size: 0.8rem;
-  color: #6b7280;
-  font-weight: 600;
-  flex-shrink: 0;
-  text-transform: capitalize;
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  letter-spacing: 0.2px;
 }
 
 .specs-value {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #111827;
-  text-align: right;
-  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  text-align: left;
   word-break: break-word;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 /* Legacy modal classes for backward compat */
@@ -1156,54 +1090,38 @@
 
 /* Mobile responsive modal */
 @media (max-width: 768px) {
-  .specs-drawer-overlay {
-    padding: 12px;
-  }
-
   .specs-drawer {
-    width: 100%;
     max-width: 100%;
     max-height: 85vh;
-    border-radius: 12px;
   }
 
   .specs-drawer-header {
-    padding: 24px 20px 16px;
+    padding: 20px 20px 12px;
   }
 
   .specs-drawer-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .specs-drawer-body {
-    padding: 20px;
-    grid-template-columns: 1fr;
-    gap: 16px;
+    padding: 16px 20px;
   }
 
-  .specs-category-section {
-    padding: 16px;
+  .specs-list {
+    column-count: 1;
   }
 
-  .specs-row {
-    padding: 8px 0;
-    font-size: 0.85rem;
+  .specs-item {
+    grid-template-columns: 0.8fr 1.2fr;
+    padding: 10px 0;
   }
 
   .specs-label {
-    font-size: 0.75rem;
+    font-size: 0.6rem;
   }
 
   .specs-value {
-    font-size: 0.85rem;
-    text-align: left;
-  }
-
-  .specs-drawer-close {
-    width: 36px;
-    height: 36px;
-    top: 16px;
-    right: 16px;
+    font-size: 0.8rem;
   }
 }
 
