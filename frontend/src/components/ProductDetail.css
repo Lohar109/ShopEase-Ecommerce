@@ -861,9 +861,7 @@
   border-radius: 1rem; /* rounded-2xl */
   overflow: hidden;
   position: relative;
-  min-height: 440px;
-  display: flex;
-  flex-direction: column;
+  height: auto;
 }
 
 .product-detail-info-tabs {
@@ -907,7 +905,6 @@
 
 .product-detail-info-content {
   padding: 2rem; /* p-8 */
-  flex: 1;
 }
 
 .product-detail-info-description p {
