@@ -830,20 +830,44 @@
 .specs-card {
   background: #ffffff;
   border-radius: 1.5rem; /* rounded-3xl */
-  border: 1px solid #f3f4f6; /* border-gray-100 */
+  border: 1px solid #f9fafb; /* border-gray-50 */
   box-shadow: 0 1px 2px rgba(0,0,0,0.04); /* shadow-sm */
-  padding: 1.25rem; /* p-5 */
+  padding: 1.5rem; /* p-6 for generous padding */
   width: 100%;
   box-sizing: border-box;
 }
+
 
 .quick-glance-list {
   display: block;
 }
 
-.quick-glance-list .flex {
-  /* ensure rows occupy full width inside the card */
-  width: 100%;
+.quick-glance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0; /* py-3 */
+  border-bottom: 1px solid #f9fafb;
+}
+
+.quick-glance-row:last-child {
+  border-bottom: 0;
+}
+
+.quick-glance-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #9ca3af; /* text-gray-400 */
+  width: 50%;
+}
+
+.quick-glance-value {
+  font-size: 14px; /* text-sm */
+  font-weight: 600;
+  color: #111827; /* text-gray-900 */
+  width: 50%;
+  text-align: right;
 }
 
 .view-all-btn {
