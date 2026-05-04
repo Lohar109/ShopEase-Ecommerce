@@ -820,11 +820,19 @@ const ProductDetail = () => {
                               {/* Overlay covers top 80% — leaves native controls accessible at bottom */}
                               <div
                                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '80%', zIndex: 10, cursor: 'pointer' }}
-                                onClick={() => setShowLightbox(true)}
+                                onClick={() => { setCurrentImageIndex(i); setShowLightbox(true); }}
                               />
                             </div>
                           ) : (
-                            <img src={item.url} alt={`${product.name} gallery ${i + 1}`} className="product-detail-main-media" />
+                            <img
+                              src={item.url}
+                              alt={`${product.name} gallery ${i + 1}`}
+                              className="product-detail-main-media"
+                              onClick={() => {
+                                setCurrentImageIndex(i);
+                                setShowLightbox(true);
+                              }}
+                            />
                           )}
                         </div>
                       ))}
@@ -1050,6 +1058,15 @@ const ProductDetail = () => {
           <RateProductForm product={product} />
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {showLightbox && (
+        <LightboxModal
+          items={galleryItems}
+          currentIndex={currentImageIndex}
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
 
       {/* Specifications Modal - Dynamic & Compact */}
       {showModal && (
