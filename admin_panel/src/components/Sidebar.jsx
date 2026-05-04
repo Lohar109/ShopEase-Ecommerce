@@ -22,7 +22,10 @@ const Sidebar = () => {
         padding: '20px 12px',
         borderRadius: 12,
         boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-        height: 'fit-content',
+        height: '100%',
+        position: 'sticky',
+        top: 0,
+        alignSelf: 'flex-start',
       }}
     >
       <div

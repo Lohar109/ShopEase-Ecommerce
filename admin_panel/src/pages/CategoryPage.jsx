@@ -435,7 +435,7 @@ const CategoryPage = () => {
   };
 
   return (
-    <div>
+    <div style={{ height: '100%', minHeight: 0, display: 'flex' }}>
       <style>{`
         .category-form {
           display: grid;
@@ -557,6 +557,33 @@ const CategoryPage = () => {
           background: rgba(244, 244, 245, 0.5);
         }
 
+        .category-management-scroll {
+          overflow-y: auto;
+          overflow-x: hidden;
+          flex: 1;
+          min-height: 0;
+          scrollbar-width: thin;
+          scrollbar-color: #d1d5db #f3f4f6;
+        }
+
+        .category-management-scroll::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+
+        .category-management-scroll::-webkit-scrollbar-track {
+          background: #f3f4f6;
+        }
+
+        .category-management-scroll::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 999px;
+        }
+
+        .category-management-scroll::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
+
         .category-parent-toggle {
           border: none;
           outline: none;
@@ -632,6 +659,8 @@ const CategoryPage = () => {
           gridTemplateColumns: isNarrowScreen ? '1fr' : 'minmax(320px, 1fr) minmax(720px, 2fr)',
           gap: 20,
           alignItems: 'start',
+          height: '100%',
+          minHeight: 0,
         }}
       >
           <section
@@ -639,6 +668,7 @@ const CategoryPage = () => {
               position: isNarrowScreen ? 'static' : 'sticky',
               top: 24,
               alignSelf: 'start',
+              height: isNarrowScreen ? 'auto' : '100%',
             }}
           >
             {/* ── Single unified tabbed card ── */}
@@ -840,7 +870,11 @@ const CategoryPage = () => {
               boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
               border: '1px solid rgba(228,228,231,0.5)',
               padding: 22,
-              minHeight: 520,
+              minHeight: 0,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -866,7 +900,7 @@ const CategoryPage = () => {
                 {normalizedSearchTerm ? 'No categories found.' : 'No categories yet.'}
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
+              <div className="category-management-scroll">
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
