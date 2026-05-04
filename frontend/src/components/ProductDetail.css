@@ -911,7 +911,7 @@
 .product-detail-info-content {
   padding: 2rem; /* p-8 */
   height: 280px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .product-detail-info-description p {

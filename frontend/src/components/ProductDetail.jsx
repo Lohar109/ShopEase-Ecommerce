@@ -777,8 +777,8 @@ const ProductDetail = () => {
                             <div className="product-detail-features-list">
                               {features.map(([key, value], idx) => (
                                 <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-2 border-b border-gray-50 last:border-0">
-                                  <div className="product-detail-feature-key w-40 text-[10px] font-bold uppercase text-gray-400">{key}</div>
-                                  <div className="product-detail-feature-value flex-1 text-sm font-bold text-gray-900">
+                                  <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-400">{key}</div>
+                                  <div className="product-detail-feature-value flex-1 text-sm font-medium text-gray-900">
                                     <span className="product-detail-feature-value-text">{formatSpecificationValue(value)}</span>
                                     {idx === 5 && allSpecs.length > 6 && (
                                       <>
