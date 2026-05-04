@@ -309,7 +309,7 @@
   font-size: 1.25rem;
   font-weight: normal;
   line-height: 1.2;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.15rem 0;
 }
 
 .product-detail-price {
@@ -894,10 +894,10 @@
   border: 1px solid #eaeaec;
   border-radius: 2px;
   padding: 2px 8px;
-  height: 30px;
+  height: 26px;
   width: fit-content;
-  margin-top: 4px;
-  margin-bottom: 12px;
+  margin-top: 0;
+  margin-bottom: 8px;
   line-height: 1;
   font-family: 'Poppins', sans-serif;
 }
@@ -907,7 +907,8 @@
   align-items: center;
   color: #14cda8;
   font-size: 20px;
-  line-height: 8;
+  line-height: 2
+  margin: 0;
 }
 
 .rating-divider {
