@@ -1899,30 +1899,42 @@
   }
 }
 
-.pdp-lightbox-close {
+.lightbox-controls {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1001;
+}
+
+.lightbox-controls .pdp-lightbox-close {
   background: #1a202c;
   color: #fff;
   border: none;
-  padding: 6px 16px;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 2010;
-  font-size: 14px;
+  transition: all 0.2s ease;
+  z-index: 1001;
+  font-size: 13px;
   font-weight: 600;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-.pdp-lightbox-close:hover {
-  background: #111827;
+.lightbox-controls .pdp-lightbox-close:hover {
+  background: #2d3748;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
   transform: translateY(-1px);
+}
+
+.lightbox-controls .pdp-lightbox-close:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .pdp-lightbox-content {
@@ -1930,12 +1942,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Maintain a gap for the arrows on wide screens */
-  margin: 0 120px;
+  width: min(90vw, 1200px);
+  max-width: 90vw;
 }
 
 .pdp-lightbox-img {
-  max-width: 100%;
+  max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
   border-radius: 12px;
@@ -1968,8 +1980,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(80vw, 1100px);
-  max-width: 80vw;
+  width: min(90vw, 1200px);
+  max-width: 90vw;
 }
 
 .pdp-lightbox-arrow {

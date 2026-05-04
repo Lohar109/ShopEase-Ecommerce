@@ -36,31 +36,19 @@ const LightboxModal = ({ items, currentIndex, onClose }) => {
 
   return (
     <div className="pdp-lightbox-overlay" onClick={onClose}>
-      <button
-        className="pdp-lightbox-close"
-        type="button"
-        onClick={onClose}
-        aria-label="Close preview"
-      >
-        Close
-      </button>
-
-      {items.length > 1 && (
-        <>
-          <button type="button" className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-          <button type="button" className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </>
-      )}
-
       <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
+        <div className="lightbox-controls">
+          <button type="button" className="pdp-lightbox-close" onClick={handlePrev} aria-label="Previous image" disabled={items.length <= 1}>
+            Previous
+          </button>
+          <button type="button" className="pdp-lightbox-close" onClick={handleNext} aria-label="Next image" disabled={items.length <= 1}>
+            Next
+          </button>
+          <button type="button" className="pdp-lightbox-close" onClick={onClose} aria-label="Close preview">
+            Close
+          </button>
+        </div>
+
         <div className="pdp-lightbox-content">
           {activeItem?.type === 'video' ? (
             <video
