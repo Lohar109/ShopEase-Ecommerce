@@ -1884,6 +1884,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   animation: pdp-lightbox-in 0.2s ease-out;
 }
 
@@ -1965,8 +1966,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Maintain a gap for the arrows on wide screens */
-  margin: 0 120px;
+  width: min(80vw, 1100px);
+  max-width: 80vw;
 }
 
 .pdp-lightbox-arrow {
@@ -1994,11 +1995,11 @@
 }
 
 .pdp-lightbox-arrow--left {
-  left: 20px;
+  left: 5vw;
 }
 
 .pdp-lightbox-arrow--right {
-  right: 20px;
+  right: 5vw;
 }
 
 .pdp-lightbox-arrow,
@@ -2017,7 +2018,7 @@
 
 @media (max-width: 768px) {
   .pdp-lightbox-content { margin: 0; width: 100%; }
-  .pdp-lightbox-arrow--left { left: 20px; background: rgba(0,0,0,0.4); }
-  .pdp-lightbox-arrow--right { right: 20px; background: rgba(0,0,0,0.4); }
+  .pdp-lightbox-arrow--left { left: 5vw; background: rgba(0,0,0,0.4); }
+  .pdp-lightbox-arrow--right { right: 5vw; background: rgba(0,0,0,0.4); }
   .pdp-lightbox-arrow { width: 40px; height: 40px; }
 }
