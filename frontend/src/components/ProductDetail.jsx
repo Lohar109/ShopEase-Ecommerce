@@ -90,12 +90,14 @@ const LightboxModal = ({ items, currentIndex, onClose }) => {
 const RateProductForm = ({ product }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [hoverLabel, setHoverLabel] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [photoFiles, setPhotoFiles] = useState([]);
   const [videoFiles, setVideoFiles] = useState([]);
   const photoInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const mediaPreviewUrlsRef = useRef([]);
+  const starLabels = { 1: 'Bad', 2: 'Poor', 3: 'Average', 4: 'Good', 5: 'Great' };
 
   const handleStarClick = (value) => {
     setRating(value);
@@ -185,13 +187,22 @@ const RateProductForm = ({ product }) => {
           <button
             key={star}
             onClick={() => handleStarClick(star)}
-            onMouseEnter={() => setHoverRating(star)}
-            onMouseLeave={() => setHoverRating(0)}
+            onMouseEnter={() => {
+              setHoverRating(star);
+              setHoverLabel(starLabels[star]);
+            }}
+            onMouseLeave={() => {
+              setHoverRating(0);
+              setHoverLabel("");
+            }}
             className={star <= (hoverRating || rating) ? "active" : ""}
           >
             ★
           </button>
         ))}
+        <span className={`rating-label ${hoverLabel ? 'is-visible' : ''}`}>
+          {hoverLabel}
+        </span>
       </div>
 
       {/* Compact Media Bar */}
