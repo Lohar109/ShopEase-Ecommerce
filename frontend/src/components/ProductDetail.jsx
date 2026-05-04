@@ -729,8 +729,10 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="rating-badge-container">
-                  <span className="rating-val">{product.rating || '4.4'}</span>
-                  <span className="rating-star">★</span>
+                  <span className="rating-val">
+                    {product.rating || '4.4'}
+                    <span className="rating-star">★</span>
+                  </span>
                   <div className="rating-divider" />
                   <span className="rating-count-text">{product.ratingCount || '13'} Ratings</span>
                 </div>

@@ -893,17 +893,21 @@
   align-items: center;
   border: 1px solid #eaeaec;
   border-radius: 2px;
-  padding: 4px 8px;
+  padding: 2px 8px;
+  height: 30px;
   width: fit-content;
   margin-top: 4px;
   margin-bottom: 12px;
+  line-height: 1;
   font-family: 'Poppins', sans-serif;
 }
 
 .rating-star {
+  display: inline-flex;
+  align-items: center;
   color: #14cda8;
-  font-size: 24px;
-  margin-right: 4
+  font-size: 20px;
+  line-height: 8;
 }
 
 .rating-divider {
@@ -915,6 +919,9 @@
 }
 
 .rating-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   color: #282c3f;
   font-weight: 700;
   font-size: 14px;
