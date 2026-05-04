@@ -1288,6 +1288,17 @@
   padding: 0;
 }
 
+.features-view-all-inline:hover,
+.features-view-all-inline:focus,
+.features-view-all-inline:focus-visible,
+.features-view-all-inline:active {
+  background: none;
+  box-shadow: none;
+  color: #ed5191;
+  opacity: 0.85;
+  outline: none;
+}
+
 .product-detail-feature-row {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -1890,25 +1901,25 @@
   position: absolute;
   top: 24px;
   right: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #1a202c;
   color: #fff;
-  padding: 10px;
-  border-radius: 50%;
-  display: flex;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2010;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .pdp-lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg) scale(1.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #111827;
+  box-shadow: none;
+  transform: translateY(-1px);
 }
 
 .pdp-lightbox-content {
@@ -1983,23 +1994,30 @@
 }
 
 .pdp-lightbox-arrow--left {
-  left: -96px;
+  left: 20px;
 }
 
 .pdp-lightbox-arrow--right {
-  right: -96px;
+  right: 20px;
+}
+
+.pdp-lightbox-arrow,
+.pdp-lightbox-arrow:hover {
+  transform: translateY(-50%);
+}
+
+.pdp-lightbox-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
 }
 
 @media (max-width: 1024px) {
-  .pdp-lightbox-content { margin: 0 80px; }
-  .pdp-lightbox-arrow--left { left: -70px; }
-  .pdp-lightbox-arrow--right { right: -70px; }
   .pdp-lightbox-arrow { width: 44px; height: 44px; }
 }
 
 @media (max-width: 768px) {
   .pdp-lightbox-content { margin: 0; width: 100%; }
-  .pdp-lightbox-arrow--left { left: 12px; background: rgba(0,0,0,0.4); }
-  .pdp-lightbox-arrow--right { right: 12px; background: rgba(0,0,0,0.4); }
+  .pdp-lightbox-arrow--left { left: 20px; background: rgba(0,0,0,0.4); }
+  .pdp-lightbox-arrow--right { right: 20px; background: rgba(0,0,0,0.4); }
   .pdp-lightbox-arrow { width: 40px; height: 40px; }
 }

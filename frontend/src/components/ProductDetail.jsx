@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, X } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -38,25 +38,23 @@ const LightboxModal = ({ items, currentIndex, onClose }) => {
     <div className="pdp-lightbox-overlay" onClick={onClose}>
       <button
         className="pdp-lightbox-close"
+        type="button"
         onClick={onClose}
         aria-label="Close preview"
-        style={{ zIndex: 10 }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        Close
       </button>
 
       <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
         <div className="pdp-lightbox-content">
           {items.length > 1 && (
             <>
-              <button className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
+              <button type="button" className="pdp-lightbox-arrow pdp-lightbox-arrow--left" onClick={handlePrev}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
               </button>
-              <button className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
+              <button type="button" className="pdp-lightbox-arrow pdp-lightbox-arrow--right" onClick={handleNext}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: '28px', height: '28px' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
