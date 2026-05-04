@@ -932,16 +932,7 @@ const ProductDetail = () => {
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
                 <div className="product-detail-header-stack flex flex-col gap-0">
-                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-[4px]">{product.name}</h2>
-                </div>
-
-                <div className="rating-badge-container mb-2">
-                  <span className="rating-val">
-                    {product.rating || '4.4'}
-                    <span className="rating-star">★</span>
-                  </span>
-                  <div className="rating-divider" />
-                  <span className="rating-count-text">{product.ratingCount || '13'} Ratings</span>
+                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-[12px]">{product.name}</h2>
                 </div>
 
                 <div className="product-detail-info-card bg-white border border-gray-200 rounded-2xl overflow-hidden">
