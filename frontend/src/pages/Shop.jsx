@@ -205,16 +205,6 @@ const Shop = () => {
       {!isLoading && selectedCategory && activeSubcategories.length > 0 && (
         <div className="shop-subcategory-nav-wrap">
           <div className="shop-subcategory-nav-shell">
-            <div className="shop-subcategory-nav-header">
-              <button
-                type="button"
-                className={`shop-subcategory-reset ${selectedSubcategory ? 'is-active' : ''}`}
-                onClick={() => setSelectedSubcategory(null)}
-              >
-                All items
-              </button>
-            </div>
-
             {/* Subcategory navigation - static or marquee when > 8 items */}
             {activeSubcategories.length > 8 ? (
               <div className="shop-subcategory-marquee" role="navigation" aria-label="Subcategory navigation">

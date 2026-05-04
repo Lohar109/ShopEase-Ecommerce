@@ -2240,11 +2240,7 @@ button:hover {
 }
 
 .shop-subcategory-nav-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-bottom: 0.6rem;
+    display: none;
 }
 
 .shop-subcategory-nav-kicker {
@@ -2289,11 +2285,13 @@ button:hover {
 
 .shop-subcategory-row {
     display: flex;
-    gap: 1.1rem;
+    gap: 1.8rem;
     overflow-x: auto;
-    padding-bottom: 2rem;
+    padding: 1.5rem 0 2rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .shop-subcategory-row::-webkit-scrollbar {
@@ -2302,41 +2300,42 @@ button:hover {
 
 .shop-subcategory-card {
     flex: 0 0 auto;
-    width: 10.5rem;
-    height: 13.5rem;
-    border: 1px solid #f0f0f0;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    width: 11rem;
+    height: auto;
+    border: none;
+    background: transparent;
+    box-shadow: none;
     padding: 0;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-end;
-    border-radius: 3rem;
-    overflow: hidden;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    border-radius: 0;
+    overflow: visible;
     position: relative;
 }
 
 .shop-subcategory-card:hover {
-    transform: translateY(-2px) scale(1.03);
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: scale(1.02);
+    background: transparent;
+    box-shadow: none;
 }
 
 .shop-subcategory-card.is-selected {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    transform: scale(1.02);
+    box-shadow: none;
 }
 
 .shop-subcategory-card-media {
     width: 100%;
-    height: 100%;
-    border-radius: 3rem;
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    height: 10.5rem;
+    border-radius: 1.25rem;
+    background: #f0f0f0;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: block;
     overflow: hidden;
     position: relative;
@@ -2358,22 +2357,24 @@ button:hover {
 }
 
 .shop-subcategory-card-label {
-    position: absolute;
-    left: 0.55rem;
-    right: 0.55rem;
-    bottom: 0.65rem;
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
     text-align: center;
-    color: #ffffff;
+    color: #374151;
     font-family: 'Poppins', sans-serif;
     font-size: 11px;
-    line-height: 1.2;
+    line-height: 1.3;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     min-height: 0;
     display: block;
     padding: 0;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+    text-shadow: none;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
 .shop-subcategory-card.is-selected {
@@ -2389,8 +2390,8 @@ button:hover {
 
 .shop-subcategory-marquee-track {
     display: flex;
-    gap: 1.1rem;
-    align-items: stretch;
+    gap: 1.8rem;
+    align-items: flex-start;
     flex-wrap: nowrap;
     will-change: transform;
     animation: marquee 28s linear infinite;
