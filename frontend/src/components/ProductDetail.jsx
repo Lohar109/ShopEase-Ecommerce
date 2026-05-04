@@ -91,16 +91,41 @@ const RateProductForm = ({ product }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [mediaFiles, setMediaFiles] = useState([]);
-  const fileInputRef = useRef(null);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [videoFiles, setVideoFiles] = useState([]);
+  const photoInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const mediaPreviewUrlsRef = useRef([]);
 
   const handleStarClick = (value) => {
     setRating(value);
   };
 
-  const handleMediaUpload = (e) => {
+  const addMediaFiles = (files, setFiles) => {
+    const mediaItems = files.map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      mediaPreviewUrlsRef.current.push(previewUrl);
+      return { file, previewUrl };
+    });
+
+    setFiles((prev) => [...prev, ...mediaItems]);
+  };
+
+  const handlePhotoUpload = (e) => {
     const files = Array.from(e.target.files || []);
-    setMediaFiles((prev) => [...prev, ...files]);
+    addMediaFiles(files, setPhotoFiles);
+    e.target.value = "";
+  };
+
+  const handleVideoUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    addMediaFiles(files, setVideoFiles);
+    e.target.value = "";
+  };
+
+  const clearMediaPreviews = () => {
+    mediaPreviewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    mediaPreviewUrlsRef.current = [];
   };
 
   const handleSubmitReview = () => {
@@ -115,8 +140,16 @@ const RateProductForm = ({ product }) => {
     toast.success("Review submitted successfully!");
     setRating(0);
     setReviewText("");
-    setMediaFiles([]);
+    setPhotoFiles([]);
+    setVideoFiles([]);
+    clearMediaPreviews();
   };
+
+  useEffect(() => {
+    return () => {
+      clearMediaPreviews();
+    };
+  }, []);
 
   return (
     <div className="review-card">
@@ -137,35 +170,65 @@ const RateProductForm = ({ product }) => {
         ))}
       </div>
 
-        {/* Compact Media Bar */}
-        <div className="media-bar">
+      {/* Compact Media Bar */}
+      <div className="media-upload-stack">
+        <div className="media-row">
+          <div className="preview-list">
+            {photoFiles.map((item, index) => (
+              <img
+                key={`${item.file.name}-${index}`}
+                src={item.previewUrl}
+                alt={item.file.name}
+                className="preview-thumbnail"
+              />
+            ))}
+          </div>
           <button
             type="button"
-            className="media-icon-btn"
-            onClick={() => fileInputRef.current?.click()}
-            title="Add a photo"
+            className="upload-btn-small"
+            onClick={() => photoInputRef.current?.click()}
           >
-            <span>📷</span>
-            <span>Add Photo</span>
+            Add Photo
           </button>
-          <button
-            type="button"
-            className="media-icon-btn"
-            onClick={() => fileInputRef.current?.click()}
-            title="Add a video"
-          >
-            <span>📹</span>
-            <span>Add Video</span>
-          </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*,video/*"
-          onChange={handleMediaUpload}
+          <input
+            ref={photoInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handlePhotoUpload}
             className="custom-file-upload"
-        />
+          />
         </div>
+
+        <div className="media-row">
+          <div className="preview-list">
+            {videoFiles.map((item, index) => (
+              <video
+                key={`${item.file.name}-${index}`}
+                src={item.previewUrl}
+                className="preview-thumbnail"
+                muted
+                playsInline
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="upload-btn-small"
+            onClick={() => videoInputRef.current?.click()}
+          >
+            Add Video
+          </button>
+          <input
+            ref={videoInputRef}
+            type="file"
+            multiple
+            accept="video/*"
+            onChange={handleVideoUpload}
+            className="custom-file-upload"
+          />
+        </div>
+      </div>
 
       {/* Written Review */}
       <textarea
@@ -177,11 +240,11 @@ const RateProductForm = ({ product }) => {
 
       {/* Submit Button */}
       <button
-          type="button"
+        type="button"
         onClick={handleSubmitReview}
         className="submit-review-btn w-full"
       >
-          Submit
+        Submit
       </button>
     </div>
   );
