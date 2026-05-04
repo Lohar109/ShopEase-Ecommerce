@@ -2304,7 +2304,7 @@ button:hover {
 
 .shop-subcategory-card {
     flex: 0 0 auto;
-    width: 11rem;
+    width: 9rem;
     height: auto;
     border: none;
     background: transparent;
@@ -2316,7 +2316,7 @@ button:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     border-radius: 0;
     overflow: visible;
     position: relative;
@@ -2335,16 +2335,16 @@ button:hover {
 
 .shop-subcategory-card-media {
     width: 100%;
-    height: 11.5rem;
+    height: 9.5rem;
     aspect-ratio: 3/4;
-    border-radius: 999px 999px 18px 18px;
+    border-radius: 999px 999px 16px 16px;
     background: #fdecf4;
     border: none;
     box-shadow: none;
     display: block;
     overflow: hidden;
     position: relative;
-    padding: 0.5rem;
+    padding: 0.4rem;
 }
 
 .shop-subcategory-card-image {
@@ -2369,7 +2369,7 @@ button:hover {
     text-align: center;
     color: #374151;
     font-family: 'Poppins', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.3;
     font-weight: 700;
     letter-spacing: 0.05em;
