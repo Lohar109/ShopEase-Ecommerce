@@ -34,13 +34,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   width: 100%;
 }
 
 .admin-logo-img {
-  width: 56px;
-  height: 56px;
+  width: 250px;
+  height: auto;
   object-fit: contain;
   display: block;
 }
@@ -133,8 +133,8 @@
 
 @media (max-width: 640px) {
   .admin-logo-img {
-    width: 52px;
-    height: 52px;
+    width: 192px;
+    height: auto;
   }
 
   .login-card {
