@@ -91,18 +91,21 @@
   color: #FFB400;
 }
 
-.media-upload-stack {
+.media-selection-area {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
 }
 
-.media-row {
+.upload-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-bottom: 12px;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
 }
 
 .preview-container {
@@ -110,6 +113,14 @@
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
+  flex: 1;
+}
+
+.preview-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
   flex: 1;
 }
 
@@ -130,21 +141,21 @@
   border-radius: 4px;
 }
 
-.upload-btn-premium {
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  background-color: #ffffff;
-  color: #282c3f;
+.btn-premium-small {
+  width: fit-content;
+  padding: 5px 15px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
   border: 1px solid #d4d5d9;
   border-radius: 4px;
+  background: #fff;
+  color: #282c3f;
+  cursor: pointer;
   transition: all 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-.upload-btn-premium:hover {
+.btn-premium-small:hover {
   background-color: #f9f9f9;
   border-color: #282c3f;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -202,10 +213,10 @@
   justify-content: flex-start;
 }
 
-.submit-review-btn {
+.submit-review-pink {
   width: fit-content;
-  padding: 8px 24px;
-  background: #ed5191;
+  padding: 8px 25px;
+  background-color: #ed5191;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -217,11 +228,11 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.submit-review-btn:hover {
+.submit-review-pink:hover {
   opacity: 0.92;
 }
 
-.submit-review-btn:active {
+.submit-review-pink:active {
   transform: scale(0.98);
 }
 

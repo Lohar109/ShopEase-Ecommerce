@@ -195,9 +195,16 @@ const RateProductForm = ({ product }) => {
       </div>
 
       {/* Compact Media Bar */}
-      <div className="media-upload-stack">
-        <div className="media-row">
-          <div className="preview-container">
+      <div className="media-selection-area">
+        <div className="upload-row">
+          <button
+            type="button"
+            className="btn-premium-small"
+            onClick={() => photoInputRef.current?.click()}
+          >
+            Add Photo
+          </button>
+          <div className="preview-list">
             {photoFiles.map((item, index) => (
               <div key={`${item.file.name}-${index}`} className="thumb-wrapper">
                 <img
@@ -216,13 +223,6 @@ const RateProductForm = ({ product }) => {
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            className="upload-btn-premium"
-            onClick={() => photoInputRef.current?.click()}
-          >
-            Add Photo
-          </button>
           <input
             ref={photoInputRef}
             type="file"
@@ -233,8 +233,15 @@ const RateProductForm = ({ product }) => {
           />
         </div>
 
-        <div className="media-row">
-          <div className="preview-container">
+        <div className="upload-row">
+          <button
+            type="button"
+            className="btn-premium-small"
+            onClick={() => videoInputRef.current?.click()}
+          >
+            Add Video
+          </button>
+          <div className="preview-list">
             {videoFiles.map((item, index) => (
               <div key={`${item.file.name}-${index}`} className="thumb-wrapper">
                 <video
@@ -254,13 +261,6 @@ const RateProductForm = ({ product }) => {
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            className="upload-btn-premium"
-            onClick={() => videoInputRef.current?.click()}
-          >
-            Add Video
-          </button>
           <input
             ref={videoInputRef}
             type="file"
@@ -285,7 +285,7 @@ const RateProductForm = ({ product }) => {
         <button
           type="button"
           onClick={handleSubmitReview}
-          className="submit-review-btn"
+          className="submit-review-pink"
         >
           Submit
         </button>
