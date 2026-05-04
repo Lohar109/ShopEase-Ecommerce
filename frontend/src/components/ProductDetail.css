@@ -911,7 +911,29 @@
 .product-detail-info-content {
   padding: 2rem; /* p-8 */
   height: 280px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Hide scrollbar while allowing scroll */
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
+}
+
+/* Webkit scrollbar styling */
+.product-detail-info-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.product-detail-info-content::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.product-detail-info-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.product-detail-info-content::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
 .product-detail-info-description p {
