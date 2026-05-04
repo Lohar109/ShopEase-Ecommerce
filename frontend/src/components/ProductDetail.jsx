@@ -791,13 +791,13 @@ const ProductDetail = () => {
                                     <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-500">{key}</div>
                                     {isLast && hasMore ? (
                                       <div className="flex items-center justify-between w-full">
-                                        <span className="truncate flex-1 text-[10px] font-medium text-gray-900">{displayValue}</span>
-                                        <span className="whitespace-nowrap shrink-0 text-[#D10049] font-medium text-[10px] ml-2">
+                                        <span className="truncate flex-1 text-[9px] font-medium text-gray-900">{displayValue}</span>
+                                        <span className="whitespace-nowrap shrink-0 text-[#D10049] font-medium text-[9px] ml-2">
                                           <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
                                         </span>
                                       </div>
                                     ) : (
-                                      <div className="text-[10px] font-medium text-gray-900">{displayValue}</div>
+                                      <div className="text-[9px] font-medium text-gray-900">{displayValue}</div>
                                     )}
                                   </div>
                                 );
