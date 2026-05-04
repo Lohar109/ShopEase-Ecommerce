@@ -770,18 +770,17 @@ const ProductDetail = () => {
                       <div className="product-detail-info-features">
                         {(() => {
                           const allSpecs = infoCardAllSpecs;
-                          const visible = typeof infoCardVisibleFeatureCount === 'number' ? infoCardVisibleFeatureCount : Math.min(6, allSpecs.length);
-                          if (visible === 0) return null;
-                          const features = allSpecs.slice(0, visible);
+                          const features = allSpecs.slice(0, 6);
+                          if (features.length === 0) return null;
 
                           return (
                             <div className="product-detail-features-list">
                               {features.map(([key, value], idx) => (
-                                <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-3 border-b border-gray-50 last:border-0">
+                                <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-2 border-b border-gray-50 last:border-0">
                                   <div className="product-detail-feature-key w-40 text-[10px] font-bold uppercase text-gray-400">{key}</div>
                                   <div className="product-detail-feature-value flex-1 text-sm font-bold text-gray-900">
                                     <span className="product-detail-feature-value-text">{formatSpecificationValue(value)}</span>
-                                    {idx === features.length - 1 && infoCardHasMoreFeatures && (
+                                    {idx === 5 && allSpecs.length > 6 && (
                                       <>
                                         <span className="product-detail-feature-ellipsis">...</span>
                                         <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
