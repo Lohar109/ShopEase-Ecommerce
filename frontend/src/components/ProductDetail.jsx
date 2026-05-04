@@ -787,14 +787,18 @@ const ProductDetail = () => {
                                 }
 
                                 return (
-                                  <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-2 border-b border-gray-50 last:border-0">
-                                    <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-400">{key}</div>
-                                    <div className="product-detail-feature-value flex-1 text-sm font-medium text-gray-900 flex items-center gap-1">
-                                      <span className="product-detail-feature-value-text">{displayValue}</span>
-                                      {isLast && hasMore && (
-                                        <button type="button" className="product-detail-feature-view-all whitespace-nowrap" onClick={() => setShowModal(true)}>View all</button>
-                                      )}
-                                    </div>
+                                  <div key={`${key}-${idx}`} className="product-detail-feature-row" style={{ display: 'grid', gridTemplateColumns: '130px 1fr', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f9fafb', gap: '1rem' }}>
+                                    <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-500">{key}</div>
+                                    {isLast && hasMore ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="truncate flex-1 text-[11px] font-medium text-gray-900">{displayValue}</span>
+                                        <span className="whitespace-nowrap shrink-0 text-[#D10049] font-medium text-[11px] ml-2">
+                                          <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <div className="text-[11px] font-medium text-gray-900">{displayValue}</div>
+                                    )}
                                   </div>
                                 );
                               })}
