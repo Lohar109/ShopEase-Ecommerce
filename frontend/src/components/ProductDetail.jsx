@@ -725,7 +725,7 @@ const ProductDetail = () => {
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
                 <div className="product-detail-header-stack flex flex-col gap-0">
-                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mt-[-4px]">{product.name}</h2>
+                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-1">{product.name}</h2>
                 </div>
 
                 <div className="rating-badge-container">
