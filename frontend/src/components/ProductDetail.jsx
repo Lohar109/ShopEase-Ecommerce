@@ -147,10 +147,7 @@ const RateProductForm = ({ product }) => {
           accept="image/*,video/*"
           onChange={handleMediaUpload}
         />
-        <div className="text-center">
-          <p className="text-sm font-medium text-[#282c3f]">📷 📹 Add Media</p>
-          <p className="text-xs text-[#6c757d] mt-1">Drag or click to upload photos/videos</p>
-        </div>
+        <p className="media-content">Add Photos or Videos</p>
       </label>
       {mediaFiles.length > 0 && (
         <div className="flex flex-wrap gap-2">
