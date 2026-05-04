@@ -111,6 +111,30 @@ const RateProductForm = ({ product }) => {
     setFiles((prev) => [...prev, ...mediaItems]);
   };
 
+  const handleRemovePhoto = (indexToRemove) => {
+    setPhotoFiles((prev) => {
+      const nextFiles = [...prev];
+      const [removed] = nextFiles.splice(indexToRemove, 1);
+      if (removed?.previewUrl) {
+        URL.revokeObjectURL(removed.previewUrl);
+        mediaPreviewUrlsRef.current = mediaPreviewUrlsRef.current.filter((url) => url !== removed.previewUrl);
+      }
+      return nextFiles;
+    });
+  };
+
+  const handleRemoveVideo = (indexToRemove) => {
+    setVideoFiles((prev) => {
+      const nextFiles = [...prev];
+      const [removed] = nextFiles.splice(indexToRemove, 1);
+      if (removed?.previewUrl) {
+        URL.revokeObjectURL(removed.previewUrl);
+        mediaPreviewUrlsRef.current = mediaPreviewUrlsRef.current.filter((url) => url !== removed.previewUrl);
+      }
+      return nextFiles;
+    });
+  };
+
   const handlePhotoUpload = (e) => {
     const files = Array.from(e.target.files || []);
     addMediaFiles(files, setPhotoFiles);
@@ -175,17 +199,26 @@ const RateProductForm = ({ product }) => {
         <div className="media-row">
           <div className="preview-list">
             {photoFiles.map((item, index) => (
-              <img
-                key={`${item.file.name}-${index}`}
-                src={item.previewUrl}
-                alt={item.file.name}
-                className="preview-thumbnail"
-              />
+              <div key={`${item.file.name}-${index}`} className="preview-item">
+                <img
+                  src={item.previewUrl}
+                  alt={item.file.name}
+                  className="preview-thumbnail"
+                />
+                <button
+                  type="button"
+                  className="remove-btn"
+                  onClick={() => handleRemovePhoto(index)}
+                  aria-label={`Remove photo ${index + 1}`}
+                >
+                  ×
+                </button>
+              </div>
             ))}
           </div>
           <button
             type="button"
-            className="upload-btn-small"
+            className="upload-btn-minimal"
             onClick={() => photoInputRef.current?.click()}
           >
             Add Photo
@@ -203,18 +236,27 @@ const RateProductForm = ({ product }) => {
         <div className="media-row">
           <div className="preview-list">
             {videoFiles.map((item, index) => (
-              <video
-                key={`${item.file.name}-${index}`}
-                src={item.previewUrl}
-                className="preview-thumbnail"
-                muted
-                playsInline
-              />
+              <div key={`${item.file.name}-${index}`} className="preview-item">
+                <video
+                  src={item.previewUrl}
+                  className="preview-thumbnail"
+                  muted
+                  playsInline
+                />
+                <button
+                  type="button"
+                  className="remove-btn"
+                  onClick={() => handleRemoveVideo(index)}
+                  aria-label={`Remove video ${index + 1}`}
+                >
+                  ×
+                </button>
+              </div>
             ))}
           </div>
           <button
             type="button"
-            className="upload-btn-small"
+            className="upload-btn-minimal"
             onClick={() => videoInputRef.current?.click()}
           >
             Add Video
