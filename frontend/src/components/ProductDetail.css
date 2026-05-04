@@ -888,6 +888,41 @@
   height: auto;
 }
 
+.rating-badge-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eaeaec;
+  border-radius: 2px;
+  padding: 4px 8px;
+  width: fit-content;
+  font-family: 'Poppins', sans-serif;
+}
+
+.rating-star {
+  color: #14cda8;
+  font-size: 12px;
+}
+
+.rating-divider {
+  width: 1px;
+  height: 14px;
+  background-color: #d4d5d9;
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+.rating-val {
+  color: #282c3f;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rating-count-text {
+  color: #535766;
+  font-weight: 500;
+  font-size: 14px;
+}
+
 .product-detail-info-tabs {
   display: flex;
   align-items: stretch;

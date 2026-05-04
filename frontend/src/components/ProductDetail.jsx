@@ -728,14 +728,11 @@ const ProductDetail = () => {
                   <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mt-[-4px]">{product.name}</h2>
                 </div>
 
-                <div className="flex items-center gap-3 my-2">
-                  <span className="inline-flex items-center gap-1 rounded-md bg-[#23BB75] px-1.5 py-0.5 text-[13px] font-semibold text-white">
-                    <span>{product.rating || '3.8'}</span>
-                    <span>★</span>
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {product.ratingCount || '13,870'} Ratings, {product.reviewCount || '4,668'} Reviews
-                  </span>
+                <div className="rating-badge-container">
+                  <span className="rating-val">{product.rating || '4.4'}</span>
+                  <span className="rating-star">★</span>
+                  <div className="rating-divider" />
+                  <span className="rating-count-text">{product.ratingCount || '13'} Ratings</span>
                 </div>
 
                 <div className="product-detail-info-card bg-white border border-gray-200 rounded-2xl overflow-hidden">
