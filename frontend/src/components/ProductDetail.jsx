@@ -199,7 +199,7 @@ const RateProductForm = ({ product }) => {
         <div className="upload-row">
           <button
             type="button"
-            className="btn-premium-small"
+            className="btn-media-premium"
             onClick={() => photoInputRef.current?.click()}
           >
             Add Photo
@@ -236,7 +236,7 @@ const RateProductForm = ({ product }) => {
         <div className="upload-row">
           <button
             type="button"
-            className="btn-premium-small"
+            className="btn-media-premium"
             onClick={() => videoInputRef.current?.click()}
           >
             Add Video
