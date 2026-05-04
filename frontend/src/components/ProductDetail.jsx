@@ -1084,31 +1084,18 @@ const ProductDetail = () => {
             {/* Content - Dynamic Specs */}
             <div className="specs-drawer-body">
               {(() => {
-                // Collect all specs dynamically
-                const allSpecs = [];
-                
+                if (!product?.specifications || Object.keys(product.specifications).length === 0) {
+                  return <p style={{ color: '#9ca3af', fontSize: '0.9rem', textAlign: 'center' }}>No specifications available</p>;
+                }
+
                 return (
-                  <div className="specs-table">
-                    {product && (
-                      <>
-                        <div className="spec-row">
-                          <span className="spec-label">Brand</span>
-                          <span className="spec-value">{product.brand || 'N/A'}</span>
-                        </div>
-                        <div className="spec-row">
-                          <span className="spec-label">Material</span>
-                          <span className="spec-value">{product.material || 'N/A'}</span>
-                        </div>
-                        <div className="spec-row">
-                          <span className="spec-label">Color</span>
-                          <span className="spec-value">{selectedColor || 'N/A'}</span>
-                        </div>
-                        <div className="spec-row">
-                          <span className="spec-label">Size</span>
-                          <span className="spec-value">{selectedSize || 'N/A'}</span>
-                        </div>
-                      </>
-                    )}
+                  <div className="specs-grid">
+                    {Object.entries(product.specifications).map(([key, value]) => (
+                      <div key={key} className="spec-item">
+                        <span className="spec-label">{key.toUpperCase()}</span>
+                        <span className="spec-value">{String(value || 'N/A')}</span>
+                      </div>
+                    ))}
                   </div>
                 );
               })()}

@@ -1596,6 +1596,38 @@
   font-family: inherit;
 }
 
+.specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.spec-item:last-child {
+  border-bottom: none;
+}
+
+.spec-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #878787;
+  letter-spacing: 0.5px;
+}
+
+.spec-value {
+  font-size: 13px;
+  font-weight: 400;
+  color: #212121;
+}
+
 .specs-table {
   width: 100%;
   border-collapse: collapse;
