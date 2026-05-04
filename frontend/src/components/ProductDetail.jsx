@@ -181,25 +181,27 @@ const RateProductForm = ({ product }) => {
     <div className="review-card">
       <h3>Rate this Product</h3>
 
-      {/* Star Rating */}
-      <div className="star-rating-container">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => handleStarClick(star)}
-            onMouseEnter={() => {
-              setHoverRating(star);
-              setHoverLabel(starLabels[star]);
-            }}
-            onMouseLeave={() => {
-              setHoverRating(0);
-              setHoverLabel("");
-            }}
-            className={star <= (hoverRating || rating) ? "active" : ""}
-          >
-            ★
-          </button>
-        ))}
+      {/* Star Rating Box */}
+      <div className="rating-stars-box">
+        <div className="star-rating-container">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onClick={() => handleStarClick(star)}
+              onMouseEnter={() => {
+                setHoverRating(star);
+                setHoverLabel(starLabels[star]);
+              }}
+              onMouseLeave={() => {
+                setHoverRating(0);
+                setHoverLabel("");
+              }}
+              className={star <= (hoverRating || rating) ? "active" : ""}
+            >
+              ★
+            </button>
+          ))}
+        </div>
         <span className={`rating-label ${hoverLabel ? 'is-visible' : ''}`}>
           {hoverLabel}
         </span>
