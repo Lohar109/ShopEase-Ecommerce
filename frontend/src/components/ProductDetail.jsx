@@ -728,6 +728,16 @@ const ProductDetail = () => {
                   <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mt-[-4px]">{product.name}</h2>
                 </div>
 
+                <div className="flex items-center gap-3 my-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-[#23BB75] px-1.5 py-0.5 text-[13px] font-semibold text-white">
+                    <span>{product.rating || '3.8'}</span>
+                    <span>★</span>
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {product.ratingCount || '13,870'} Ratings, {product.reviewCount || '4,668'} Reviews
+                  </span>
+                </div>
+
                 <div className="product-detail-info-card bg-white border border-gray-200 rounded-2xl overflow-hidden">
                   <div className="product-detail-info-tabs flex items-stretch">
                     <button type="button" className={`product-detail-info-tab ${infoTab === 'description' ? 'active' : 'inactive'}`} onClick={() => setInfoTab('description')}>Description</button>
