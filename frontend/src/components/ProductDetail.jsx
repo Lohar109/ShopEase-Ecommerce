@@ -281,13 +281,15 @@ const RateProductForm = ({ product }) => {
       />
 
       {/* Submit Button */}
-      <button
-        type="button"
-        onClick={handleSubmitReview}
-        className="submit-review-btn w-full"
-      >
-        Submit
-      </button>
+      <div className="submit-review-wrapper">
+        <button
+          type="button"
+          onClick={handleSubmitReview}
+          className="submit-review-btn"
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

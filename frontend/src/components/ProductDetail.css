@@ -197,36 +197,32 @@
   color: #a6a8b3;
 }
 
+.submit-review-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .submit-review-btn {
-  background: #1f2937;
+  width: fit-content;
+  padding: 8px 24px;
+  background: #ed5191;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.3px;
+  font-size: 13px;
+  letter-spacing: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Poppins', sans-serif;
 }
 
 .submit-review-btn:hover {
-  background: #111827;
+  opacity: 0.92;
 }
 
 .submit-review-btn:active {
   transform: scale(0.98);
-}
-
-.submit-review-btn:hover {
-  background: #B8003D;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(209, 0, 73, 0.2);
-}
-
-.submit-review-btn:active {
-  transform: translateY(0);
 }
 
 .pdp-placeholder-text {
