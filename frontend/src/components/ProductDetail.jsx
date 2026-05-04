@@ -761,7 +761,7 @@ const ProductDetail = () => {
                     </div>
                   </div>
 
-                  <div className="product-detail-info-content p-8">
+                  <div className="product-detail-info-content p-8" style={{ height: '280px' }}>
                     {infoTab === 'description' ? (
                       <div className="product-detail-info-description">
                         <p className="text-sm leading-relaxed text-gray-700">{product.description}</p>
@@ -780,12 +780,12 @@ const ProductDetail = () => {
                                 <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-3 border-b border-gray-50 last:border-0">
                                   <div className="product-detail-feature-key w-40 text-[10px] font-bold uppercase text-gray-400">{key}</div>
                                   <div className="product-detail-feature-value flex-1 text-sm font-bold text-gray-900">
-                                    {formatSpecificationValue(value)}
+                                    <span className="product-detail-feature-value-text">{formatSpecificationValue(value)}</span>
                                     {idx === features.length - 1 && infoCardHasMoreFeatures && (
-                                      <span className="ml-1">
+                                      <>
                                         <span className="product-detail-feature-ellipsis">...</span>
                                         <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
-                                      </span>
+                                      </>
                                     )}
                                   </div>
                                 </div>
