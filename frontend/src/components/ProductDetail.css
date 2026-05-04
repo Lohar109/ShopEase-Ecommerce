@@ -949,7 +949,7 @@
 
 .product-detail-feature-row {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 100px 1fr;
   align-items: center;
   padding: 0.5rem 0; /* py-2 */
   border-bottom: 1px solid #f9fafb;
