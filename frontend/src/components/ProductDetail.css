@@ -967,7 +967,7 @@
 }
 
 .product-detail-feature-key {
-  width: 5rem; /* 80px */
+  width: 9.375rem; /* 150px */
   font-size: 12px; /* text-[10px] */
   font-weight: 700;
   text-transform: uppercase;
