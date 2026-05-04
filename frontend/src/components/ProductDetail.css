@@ -49,6 +49,105 @@
   top: 6rem;
 }
 
+/* Premium Review Card Styles */
+.review-card {
+  background: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f3f5;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.star-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+}
+
+.star-rating-container button {
+  font-size: 1.75rem;
+  color: #e4e5e9;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  line-height: 1;
+}
+
+.star-rating-container button:hover,
+.star-rating-container button.active {
+  color: #FFB400;
+}
+
+.custom-file-upload {
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  background: #fafbfc;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.custom-file-upload:hover {
+  border-color: #c4b5fd;
+  background: #f8f4ff;
+}
+
+.custom-file-upload input[type="file"] {
+  display: none;
+}
+
+.review-textarea {
+  border: 1px solid #eaeaec;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  color: #282c3f;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.review-textarea:focus {
+  border-color: #D10049;
+  box-shadow: 0 0 0 3px rgba(209, 0, 73, 0.08);
+}
+
+.review-textarea::placeholder {
+  color: #a6a8b3;
+}
+
+.submit-review-btn {
+  background: #D10049;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.submit-review-btn:hover {
+  background: #B8003D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(209, 0, 73, 0.2);
+}
+
+.submit-review-btn:active {
+  transform: translateY(0);
+}
+
 .pdp-placeholder-text {
   color: #9ca3af;
   font-weight: 500;

@@ -87,6 +87,107 @@ const LightboxModal = ({ items, currentIndex, onClose }) => {
   );
 };
 
+const RateProductForm = ({ product }) => {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const fileInputRef = useRef(null);
+
+  const handleStarClick = (value) => {
+    setRating(value);
+  };
+
+  const handleMediaUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    setMediaFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleSubmitReview = () => {
+    if (rating === 0) {
+      toast.error("Please select a rating");
+      return;
+    }
+    if (reviewText.trim() === "") {
+      toast.error("Please write a review");
+      return;
+    }
+    toast.success("Review submitted successfully!");
+    setRating(0);
+    setReviewText("");
+    setMediaFiles([]);
+  };
+
+  return (
+    <div className="review-card">
+      <h3 className="text-lg font-semibold text-[#282c3f]">Rate this Product</h3>
+
+      {/* Star Rating */}
+      <div className="star-rating-container">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => handleStarClick(star)}
+            onMouseEnter={() => setHoverRating(star)}
+            onMouseLeave={() => setHoverRating(0)}
+            className={star <= (hoverRating || rating) ? "active" : ""}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Media Upload Section */}
+      <label htmlFor="media-upload" className="custom-file-upload">
+        <input
+          id="media-upload"
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,video/*"
+          onChange={handleMediaUpload}
+        />
+        <div className="text-center">
+          <p className="text-sm font-medium text-[#282c3f]">📷 📹 Add Media</p>
+          <p className="text-xs text-[#6c757d] mt-1">Drag or click to upload photos/videos</p>
+        </div>
+      </label>
+      {mediaFiles.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {mediaFiles.map((file, idx) => (
+            <div key={idx} className="text-xs bg-[#f8f9fa] px-2 py-1 rounded flex items-center gap-1 border border-[#eaeaec]">
+              {file.name}
+              <button
+                onClick={() => setMediaFiles((prev) => prev.filter((_, i) => i !== idx))}
+                className="ml-1 text-[#d10049] hover:text-[#a80039] font-bold"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Written Review */}
+      <textarea
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="How was your experience?"
+        className="review-textarea"
+        rows="4"
+      />
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmitReview}
+        className="submit-review-btn w-full"
+      >
+        Submit Review
+      </button>
+    </div>
+  );
+};
+
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
@@ -849,11 +950,9 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Right: Placeholder (4 cols) */}
+        {/* Right: Rate this Product (4 cols) */}
         <div className="pdp-right-col">
-          <div className="pdp-right-placeholder">
-            <p className="pdp-placeholder-text">Reserved for Future Content<br />(Add to Cart / Offers)</p>
-          </div>
+          <RateProductForm product={product} />
         </div>
       </div>
 
