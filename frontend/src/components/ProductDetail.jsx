@@ -197,17 +197,17 @@ const RateProductForm = ({ product }) => {
       {/* Compact Media Bar */}
       <div className="media-upload-stack">
         <div className="media-row">
-          <div className="preview-list">
+          <div className="preview-container">
             {photoFiles.map((item, index) => (
-              <div key={`${item.file.name}-${index}`} className="preview-item">
+              <div key={`${item.file.name}-${index}`} className="thumb-wrapper">
                 <img
                   src={item.previewUrl}
                   alt={item.file.name}
-                  className="preview-thumbnail"
+                  className="thumb-img"
                 />
                 <button
                   type="button"
-                  className="remove-btn"
+                  className="delete-x"
                   onClick={() => handleRemovePhoto(index)}
                   aria-label={`Remove photo ${index + 1}`}
                 >
@@ -218,7 +218,7 @@ const RateProductForm = ({ product }) => {
           </div>
           <button
             type="button"
-            className="upload-btn-minimal"
+            className="upload-btn-premium"
             onClick={() => photoInputRef.current?.click()}
           >
             Add Photo
@@ -234,18 +234,18 @@ const RateProductForm = ({ product }) => {
         </div>
 
         <div className="media-row">
-          <div className="preview-list">
+          <div className="preview-container">
             {videoFiles.map((item, index) => (
-              <div key={`${item.file.name}-${index}`} className="preview-item">
+              <div key={`${item.file.name}-${index}`} className="thumb-wrapper">
                 <video
                   src={item.previewUrl}
-                  className="preview-thumbnail"
+                  className="thumb-img"
                   muted
                   playsInline
                 />
                 <button
                   type="button"
-                  className="remove-btn"
+                  className="delete-x"
                   onClick={() => handleRemoveVideo(index)}
                   aria-label={`Remove video ${index + 1}`}
                 >
@@ -256,7 +256,7 @@ const RateProductForm = ({ product }) => {
           </div>
           <button
             type="button"
-            className="upload-btn-minimal"
+            className="upload-btn-premium"
             onClick={() => videoInputRef.current?.click()}
           >
             Add Video
