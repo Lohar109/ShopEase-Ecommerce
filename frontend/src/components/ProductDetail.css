@@ -984,7 +984,7 @@
   background: transparent !important;
   color: #D10049;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   padding: 0 !important;
   text-decoration: none;
@@ -992,7 +992,7 @@
   transition: none !important;
   transform: none !important;
   display: inline !important;
-  margin-left: 0.25rem;
+  margin: 0 !important;
 }
 
 .product-detail-feature-view-all:hover,

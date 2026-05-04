@@ -772,23 +772,32 @@ const ProductDetail = () => {
                           const allSpecs = infoCardAllSpecs;
                           const features = allSpecs.slice(0, 6);
                           if (features.length === 0) return null;
+                          const hasMore = allSpecs.length > 6;
 
                           return (
                             <div className="product-detail-features-list">
-                              {features.map(([key, value], idx) => (
-                                <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-2 border-b border-gray-50 last:border-0">
-                                  <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-400">{key}</div>
-                                  <div className="product-detail-feature-value flex-1 text-sm font-medium text-gray-900">
-                                    <span className="product-detail-feature-value-text">{formatSpecificationValue(value)}</span>
-                                    {idx === 5 && allSpecs.length > 6 && (
-                                      <>
-                                        <span className="product-detail-feature-ellipsis">...</span>
-                                        <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
-                                      </>
-                                    )}
+                              {features.map(([key, value], idx) => {
+                                const isLast = idx === 5;
+                                let displayValue = formatSpecificationValue(value);
+                                
+                                // Truncate to 2 words on 6th item if there are more specs
+                                if (isLast && hasMore) {
+                                  const words = displayValue.split(' ').slice(0, 2).join(' ');
+                                  displayValue = words + '...';
+                                }
+
+                                return (
+                                  <div key={`${key}-${idx}`} className="product-detail-feature-row flex items-center py-2 border-b border-gray-50 last:border-0">
+                                    <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-400">{key}</div>
+                                    <div className="product-detail-feature-value flex-1 text-sm font-medium text-gray-900 flex items-center gap-1">
+                                      <span className="product-detail-feature-value-text">{displayValue}</span>
+                                      {isLast && hasMore && (
+                                        <button type="button" className="product-detail-feature-view-all whitespace-nowrap" onClick={() => setShowModal(true)}>View all</button>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           );
                         })()}
