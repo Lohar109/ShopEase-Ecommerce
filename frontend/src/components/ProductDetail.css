@@ -49,16 +49,23 @@
   top: 6rem;
 }
 
-/* Premium Review Card Styles */
+/* Premium Review Card Styles - Minimalist */
 .review-card {
   background: #ffffff;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f3f5;
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 12px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.875rem;
+}
+
+.review-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #282c3f;
+  margin: 0;
 }
 
 .star-rating-container {
@@ -69,7 +76,7 @@
 }
 
 .star-rating-container button {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: #e4e5e9;
   transition: color 0.2s ease;
   cursor: pointer;
@@ -84,22 +91,43 @@
   color: #FFB400;
 }
 
-.custom-file-upload {
-  border: 1px solid #d1d5db;
+.media-bar {
+  border: 1px solid #eaeaec;
   border-radius: 8px;
-  padding: 0.75rem;
-  height: 50px;
-  background: #fafbfc;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  padding: 0.5rem 0.75rem;
   display: flex;
-  align-items: center;
   justify-content: center;
+  gap: 1.25rem;
+  background: #fafbfc;
 }
 
-.custom-file-upload:hover {
-  border-color: #a6a8b3;
-  background: #f0f1f3;
+.media-icon-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.media-icon-btn:hover {
+  opacity: 0.7;
+}
+
+.media-icon-btn span:first-child {
+  font-size: 1rem;
+}
+
+.media-icon-btn span:last-child {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #535766;
+}
+
+.custom-file-upload {
+  display: none;
 }
 
 .custom-file-upload input[type="file"] {
@@ -107,27 +135,25 @@
 }
 
 .media-content {
-  font-size: 0.8125rem;
-  color: #535766;
-  font-weight: 500;
-  margin: 0;
+  display: none;
 }
 
 .review-textarea {
   border: 1px solid #eaeaec;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 0.625rem;
   font-family: 'Poppins', sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #282c3f;
   resize: none;
   outline: none;
   transition: border-color 0.2s ease;
+  height: 60px;
 }
 
 .review-textarea:focus {
   border-color: #D10049;
-  box-shadow: 0 0 0 3px rgba(209, 0, 73, 0.08);
+  box-shadow: 0 0 0 2px rgba(209, 0, 73, 0.04);
 }
 
 .review-textarea::placeholder {
@@ -135,17 +161,25 @@
 }
 
 .submit-review-btn {
-  background: #D10049;
+  background: #1f2937;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   font-weight: 600;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Poppins', sans-serif;
+}
+
+.submit-review-btn:hover {
+  background: #111827;
+}
+
+.submit-review-btn:active {
+  transform: scale(0.98);
 }
 
 .submit-review-btn:hover {

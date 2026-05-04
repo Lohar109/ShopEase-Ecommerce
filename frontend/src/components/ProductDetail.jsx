@@ -120,7 +120,7 @@ const RateProductForm = ({ product }) => {
 
   return (
     <div className="review-card">
-      <h3 className="text-lg font-semibold text-[#282c3f]">Rate this Product</h3>
+      <h3>Rate this Product</h3>
 
       {/* Star Rating */}
       <div className="star-rating-container">
@@ -137,33 +137,35 @@ const RateProductForm = ({ product }) => {
         ))}
       </div>
 
-      {/* Media Upload Section */}
-      <label htmlFor="media-upload" className="custom-file-upload">
+        {/* Compact Media Bar */}
+        <div className="media-bar">
+          <button
+            type="button"
+            className="media-icon-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Add a photo"
+          >
+            <span>📷</span>
+            <span>Add Photo</span>
+          </button>
+          <button
+            type="button"
+            className="media-icon-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Add a video"
+          >
+            <span>📹</span>
+            <span>Add Video</span>
+          </button>
         <input
-          id="media-upload"
           ref={fileInputRef}
           type="file"
           multiple
           accept="image/*,video/*"
           onChange={handleMediaUpload}
+            className="custom-file-upload"
         />
-        <p className="media-content">Add Photos or Videos</p>
-      </label>
-      {mediaFiles.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {mediaFiles.map((file, idx) => (
-            <div key={idx} className="text-xs bg-[#f8f9fa] px-2 py-1 rounded flex items-center gap-1 border border-[#eaeaec]">
-              {file.name}
-              <button
-                onClick={() => setMediaFiles((prev) => prev.filter((_, i) => i !== idx))}
-                className="ml-1 text-[#d10049] hover:text-[#a80039] font-bold"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
         </div>
-      )}
 
       {/* Written Review */}
       <textarea
@@ -171,15 +173,15 @@ const RateProductForm = ({ product }) => {
         onChange={(e) => setReviewText(e.target.value)}
         placeholder="How was your experience?"
         className="review-textarea"
-        rows="4"
       />
 
       {/* Submit Button */}
       <button
+          type="button"
         onClick={handleSubmitReview}
         className="submit-review-btn w-full"
       >
-        Submit Review
+          Submit
       </button>
     </div>
   );
@@ -823,10 +825,10 @@ const ProductDetail = () => {
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
                 <div className="product-detail-header-stack flex flex-col gap-0">
-                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-0">{product.name}</h2>
+                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-[4px]">{product.name}</h2>
                 </div>
 
-                <div className="rating-badge-container">
+                <div className="rating-badge-container mb-2">
                   <span className="rating-val">
                     {product.rating || '4.4'}
                     <span className="rating-star">★</span>
@@ -976,37 +978,28 @@ const ProductDetail = () => {
                 // Collect all specs dynamically
                 const allSpecs = [];
                 
-                // Add brand if available
-                if (product?.brand) {
-                  allSpecs.push(['brand', product.brand]);
-                }
-                
-                // Add all product specifications from database
-                if (product?.specifications && typeof product.specifications === 'object') {
-                  Object.entries(product.specifications).forEach(([key, value]) => {
-                    // Only include non-empty, non-null values
-                    if (value !== null && value !== undefined && value !== '') {
-                      allSpecs.push([key, value]);
-                    }
-                  });
-                }
-
-                // If no specs available, show fallback
-                if (allSpecs.length === 0) {
-                  return (
-                    <p className="specs-no-data">No detailed specifications available for this product.</p>
-                  );
-                }
-
-                // Render all specs in a clean, dynamic list
                 return (
-                  <div className="specs-list">
-                    {allSpecs.map(([key, value], idx) => (
-                      <div key={`${key}-${idx}`} className="specs-item">
-                        <span className="specs-label">{key}</span>
-                        <span className="specs-value">{formatSpecificationValue(value)}</span>
-                      </div>
-                    ))}
+                  <div className="specs-table">
+                    {product && (
+                      <>
+                        <div className="spec-row">
+                          <span className="spec-label">Brand</span>
+                          <span className="spec-value">{product.brand || 'N/A'}</span>
+                        </div>
+                        <div className="spec-row">
+                          <span className="spec-label">Material</span>
+                          <span className="spec-value">{product.material || 'N/A'}</span>
+                        </div>
+                        <div className="spec-row">
+                          <span className="spec-label">Color</span>
+                          <span className="spec-value">{selectedColor || 'N/A'}</span>
+                        </div>
+                        <div className="spec-row">
+                          <span className="spec-label">Size</span>
+                          <span className="spec-value">{selectedSize || 'N/A'}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 );
               })()}
@@ -1015,34 +1008,6 @@ const ProductDetail = () => {
         </div>
       )}
 
-      {showDescriptionModal && (
-        <div className="description-modal-overlay" onClick={() => setShowDescriptionModal(false)}>
-          <div className="description-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="description-modal-header">
-              <h3>Product Description</h3>
-              <button
-                type="button"
-                className="description-modal-close"
-                onClick={() => setShowDescriptionModal(false)}
-              >
-                Close
-              </button>
-            </div>
-            <div className="description-modal-body">
-              <p>{descriptionText}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Lightbox Modal */}
-      {showLightbox && (
-        <LightboxModal
-          items={galleryItems}
-          currentIndex={currentImageIndex}
-          onClose={() => setShowLightbox(false)}
-        />
-      )}
     </>
   );
 };
