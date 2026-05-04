@@ -992,39 +992,24 @@ const ProductDetail = () => {
                     ) : (
                       <div className="product-detail-info-features">
                         {(() => {
-                          const allSpecs = infoCardAllSpecs;
-                          const features = allSpecs.slice(0, 6);
+                          const allSpecs = infoCardAllSpecs || [];
+                          const features = allSpecs.slice(0, 5);
                           if (features.length === 0) return null;
-                          const hasMore = allSpecs.length > 6;
+                          const hasMore = allSpecs.length > 5;
 
                           return (
-                            <div className="product-detail-features-list">
-                              {features.map(([key, value], idx) => {
-                                const isLast = idx === 5;
-                                let displayValue = formatSpecificationValue(value);
-                                
-                                // Truncate to 2 words on 6th item if there are more specs
-                                if (isLast && hasMore) {
-                                  const words = displayValue.split(' ').slice(0, 2).join(' ');
-                                  displayValue = words + '...';
-                                }
-
-                                return (
-                                  <div key={`${key}-${idx}`} className="product-detail-feature-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f9fafb', gap: '1rem' }}>
-                                    <div className="product-detail-feature-key text-[10px] font-bold uppercase text-gray-500">{key}</div>
-                                    {isLast && hasMore ? (
-                                      <div className="flex items-center justify-between w-full">
-                                        <span className="truncate flex-1 text-[9px] font-medium text-gray-900">{displayValue}</span>
-                                        <span className="whitespace-nowrap shrink-0 text-[#D10049] font-medium text-[9px] ml-2">
-                                          <button type="button" className="product-detail-feature-view-all" onClick={() => setShowModal(true)}>View all</button>
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <div className="text-[9px] font-medium text-gray-900">{displayValue}</div>
+                            <div className="features-compact-container">
+                              {features.map(([key, value], idx) => (
+                                <div key={`${key}-${idx}`} className="features-compact-row">
+                                  <div className="features-compact-key">{String(key).toUpperCase()}</div>
+                                  <div className="features-compact-value">
+                                    <span className="features-compact-value-text">{formatSpecificationValue(value)}</span>
+                                    {idx === 4 && hasMore && (
+                                      <button type="button" className="features-view-all-inline" onClick={() => setShowModal(true)}>View All...</button>
                                     )}
                                   </div>
-                                );
-                              })}
+                                </div>
+                              ))}
                             </div>
                           );
                         })()}
