@@ -665,8 +665,11 @@ const ProductDetail = () => {
                     )}
                     {/* Size Selector */}
                     {uniqueSizes.length > 0 && (
-                      <div className="product-detail-size-selector">
-                        <span>Size</span>
+                      <div className="product-detail-size-selector" aria-label="Size variants">
+                        <p className="product-detail-size-label">
+                          <span className="product-detail-size-label-text">Selected size:</span>
+                          <span className="product-detail-size-label-value">{selectedSize || uniqueSizes[0]}</span>
+                        </p>
                         <div className="size-chips">
                           {uniqueSizes.map((size) => {
                             const sizeVariant = variants.find(

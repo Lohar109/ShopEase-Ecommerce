@@ -416,18 +416,38 @@
 /* Size Selector */
 .product-detail-size-selector {
   margin: 0;
+  font-size: 1.1rem;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.85rem;
+  flex-direction: column;
+  gap: 0;
 }
 
-.product-detail-size-selector>span {
-  font-size: 0.9rem;
-  font-weight: 600;
+.product-detail-size-label {
+  margin: 0;
+  /* Match Delivered by vertical rhythm */
+  margin-bottom: 0.875rem; /* 14px to align with Delivered by */
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* gap-1.5 */
+  font-family: 'Poppins', sans-serif;
+}
+
+.product-detail-size-label-text {
+  font-family: 'Poppins', sans-serif;
+  /* Match Delivered by text (label) */
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #374151;
+  text-transform: none;
+}
+
+.product-detail-size-label-value {
+  font-family: 'Poppins', sans-serif;
+  /* Match Delivered by strong (date) */
+  font-size: 0.82rem;
+  font-weight: 700;
   color: #111827;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .size-chips {
@@ -437,9 +457,8 @@
 }
 
 .size-chip {
-  height: 34px;
-  min-width: 34px;
-  padding: 0 8px;
+  width: 80px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
