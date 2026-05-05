@@ -178,7 +178,7 @@ const Cart = () => {
                 </div>
 
                 <div className="cart-savings-box" role="status" aria-live="polite">
-                  <ShieldCheck size={18} aria-hidden="true" />
+                  <ShieldCheck size={22} aria-hidden="true" />
                   <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
                 </div>
 
