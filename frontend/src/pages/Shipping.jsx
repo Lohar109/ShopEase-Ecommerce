@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { ChevronDown, ShieldCheck, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 import './Shipping.css';
@@ -12,7 +12,6 @@ const Shipping = () => {
   const { cartItems: cartItemsFromContext } = useCart();
 
   const cartItems = state?.cartItems?.length ? state.cartItems : cartItemsFromContext;
-  const total = Number(state?.total || 0);
   const [formData, setFormData] = useState({
     fullName: '',
     mobileNumber: '',
@@ -43,8 +42,10 @@ const Shipping = () => {
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0),
     [cartItems]
   );
-  const deliveryFee = 0;
-  const grandTotal = total || subtotal + deliveryFee;
+  const platformFee = 250;
+  const memberDiscount = -5000;
+  const newGrandTotal = subtotal + platformFee + memberDiscount;
+  const savingsAmount = Math.abs(memberDiscount) - platformFee;
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -78,7 +79,7 @@ const Shipping = () => {
     navigate('/checkout/payment', {
       state: {
         cartItems,
-        total: grandTotal,
+        total: newGrandTotal,
         shippingAddress: formData,
       },
     });
@@ -244,12 +245,25 @@ const Shipping = () => {
               <strong>₹ {subtotal.toFixed(2)}</strong>
             </div>
             <div className="cart-summary-row">
-              <span>Delivery Fee</span>
-              <span>Free</span>
+              <span className="cart-summary-title">
+                Platform Fee <ChevronDown size={14} aria-hidden="true" />
+              </span>
+              <span>₹ {platformFee.toFixed(2)}</span>
+            </div>
+            <div className="cart-summary-row">
+              <span className="cart-summary-title">
+                Discount <ChevronDown size={14} aria-hidden="true" />
+              </span>
+              <strong className="cart-summary-discount">-₹ {Math.abs(memberDiscount).toFixed(2)}</strong>
             </div>
             <div className="cart-summary-row grand-total">
               <span>Grand Total</span>
-              <strong>₹ {grandTotal.toFixed(2)}</strong>
+              <strong>₹ {newGrandTotal.toFixed(2)}</strong>
+            </div>
+
+            <div className="cart-savings-box" role="status" aria-live="polite">
+              <ShieldCheck size={16} aria-hidden="true" />
+              <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
             </div>
 
             <button type="button" className="cart-checkout-btn shipping-payment-btn" onClick={handleSidebarAction}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Trash2 } from 'lucide-react';
+import { ChevronDown, ShieldCheck, ShoppingBag, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
@@ -15,12 +15,14 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
-  const deliveryFee = 0;
-  const grandTotal = subtotal + deliveryFee;
+  const platformFee = 250;
+  const memberDiscount = -5000;
+  const newGrandTotal = subtotal + platformFee + memberDiscount;
+  const savingsAmount = Math.abs(memberDiscount) - platformFee;
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    navigate('/checkout/shipping', { state: { cartItems, total: grandTotal } });
+    navigate('/checkout/shipping', { state: { cartItems, total: newGrandTotal } });
   };
 
   const handleDecrease = (item) => {
@@ -159,12 +161,25 @@ const Cart = () => {
                   <strong>₹ {subtotal.toFixed(2)}</strong>
                 </div>
                 <div className="cart-summary-row">
-                  <span>Delivery Fee</span>
-                  <span>Free</span>
+                  <span className="cart-summary-title">
+                    Platform Fee <ChevronDown size={14} aria-hidden="true" />
+                  </span>
+                  <span>₹ {platformFee.toFixed(2)}</span>
+                </div>
+                <div className="cart-summary-row">
+                  <span className="cart-summary-title">
+                    Discount <ChevronDown size={14} aria-hidden="true" />
+                  </span>
+                  <strong className="cart-summary-discount">-₹ {Math.abs(memberDiscount).toFixed(2)}</strong>
                 </div>
                 <div className="cart-summary-row grand-total">
                   <span>Grand Total</span>
-                  <strong>₹ {grandTotal.toFixed(2)}</strong>
+                  <strong>₹ {newGrandTotal.toFixed(2)}</strong>
+                </div>
+
+                <div className="cart-savings-box" role="status" aria-live="polite">
+                  <ShieldCheck size={16} aria-hidden="true" />
+                  <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
                 </div>
 
                 <button

@@ -126,6 +126,34 @@
   transform: translateY(-2px);
 }
 
+/* Keep receipt price rows consistent on Shipping sidebar */
+.cart-summary-row {
+  margin-bottom: 15px;
+}
+
+.cart-summary-row.grand-total {
+  border-top: 1px dotted #eee;
+}
+
+.cart-summary-discount {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.cart-savings-box {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
 /* Order Summary styles */
 .shipping-order-summary {
   margin-top: 18px;
