@@ -206,11 +206,7 @@ const Shipping = () => {
                   <p className="shipping-address-line">{formattedAddress}</p>
                 </div>
 
-                <div className="shipping-address-actions shipping-field-full">
-                  <button type="button" className="shipping-submit-btn shipping-submit-btn--secondary" onClick={() => setIsAddressSaved(false)}>
-                    Change
-                  </button>
-                </div>
+                
               </div>
             )}
           </div>

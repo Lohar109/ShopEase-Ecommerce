@@ -104,6 +104,28 @@
   box-shadow: 0 10px 22px rgba(227, 49, 112, 0.18);
 }
 
+/* Premium styling for Proceed to Payment sidebar button */
+.cart-checkout-btn.shipping-payment-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: #111111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 200ms ease, box-shadow 200ms ease, transform 120ms ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.cart-checkout-btn.shipping-payment-btn:hover:not(:disabled) {
+  background-color: #2c2c2c;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
 .shipping-payment-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
