@@ -129,7 +129,10 @@
 /* Order Summary styles */
 .shipping-order-summary {
   margin-top: 18px;
-  padding: 14px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .order-items-list {
@@ -142,23 +145,23 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #f3f4f6;
 }
 
 .order-item-thumb {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
-  border-radius: 8px;
-  background: #f9fafb;
+  border-radius: 12px;
+  background: #f8f8f8;
 }
 
 .order-item-thumb--empty {
   display: inline-block;
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
   background: linear-gradient(90deg, #f3f4f6, #ffffff);
 }
 
@@ -170,12 +173,12 @@
 .order-item-name {
   font-weight: 600;
   color: #111827;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .order-item-qty-price {
-  color: #6b7280;
-  font-size: 0.9rem;
+  color: #777777;
+  font-size: 13px;
 }
 
 .shipping-payment-btn:disabled {
