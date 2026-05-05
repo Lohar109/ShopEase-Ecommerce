@@ -40,8 +40,9 @@
 }
 
 .step.completed .step-circle {
-  background: #fff;
-  border-color: transparent;
+  background: #f0fff4;
+  border: 2px solid #28a745;
+  box-sizing: border-box;
 }
 
 .step.active .step-circle {

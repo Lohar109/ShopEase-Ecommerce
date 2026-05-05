@@ -14,7 +14,7 @@ const Stepper = ({ steps = ['Cart', 'Shipping', 'Order Summary', 'Payment'], cur
           <React.Fragment key={label}>
             <div className={`step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}>
               <span className="step-circle" aria-hidden>
-                {isCompleted ? <Check size={14} color="#16a34a" /> : <span className="step-number">{stepIndex}</span>}
+                {isCompleted ? <Check size={14} color="#28a745" /> : <span className="step-number">{stepIndex}</span>}
               </span>
               <span className="step-label">{label}</span>
             </div>
