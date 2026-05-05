@@ -65,11 +65,11 @@ const Cart = () => {
               justifyContent: 'center',
               minHeight: '70vh',
               textAlign: 'center',
-              gap: '12px',
+              gap: '0px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
-            <div className="cart-empty-lottie" aria-hidden="true">
+            <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(25px)' }}>
               <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 300 }} />
             </div>
             <h1
@@ -79,7 +79,7 @@ const Cart = () => {
                 fontWeight: '700',
                 color: '#1a1a1a',
                 textAlign: 'center',
-                marginTop: '16px',
+                marginTop: '0px',
                 marginBottom: '2px'
               }}
             >
