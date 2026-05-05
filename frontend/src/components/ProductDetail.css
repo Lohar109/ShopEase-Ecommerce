@@ -1127,7 +1127,7 @@
   align-items: center;
   color: #14cda8;
   font-size: 20px;
-  line-height: 2
+  line-height: 2;
   margin: 0;
 }
 
@@ -1203,6 +1203,12 @@
   scrollbar-color: #d1d5db #f3f4f6;
 }
 
+/* When the Features tab is active we remove the right padding
+   so the features scrollbar sits flush against the white card edge */
+.product-detail-info-content.features-mode {
+  padding-right: 0;
+}
+
 .product-detail-info-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -1235,11 +1241,13 @@
 /* Compact Features List (Premium) */
 .features-compact-container {
   max-height: 220px;
+  width: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-right: 12px;
+  padding-right: 0;
+  box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: #d1d5db #f3f4f6;
 }
@@ -1264,7 +1272,7 @@
 .features-compact-row {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: 6px 12px 6px 0;
   border-bottom: 1px solid #f5f5f6;
   align-items: center;
 }

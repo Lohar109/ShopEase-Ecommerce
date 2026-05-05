@@ -979,7 +979,7 @@ const ProductDetail = () => {
                     </div>
                   </div>
 
-                  <div className="product-detail-info-content p-8" style={{ height: '280px' }}>
+                  <div className={`product-detail-info-content p-8 ${infoTab === 'features' ? 'features-mode' : ''}`} style={{ height: '280px' }}>
                     {infoTab === 'description' ? (
                       <div className="product-detail-info-description">
                         <p className="text-sm leading-relaxed text-gray-700">{product.description}</p>
