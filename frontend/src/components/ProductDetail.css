@@ -1239,20 +1239,26 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-right: 8px;
+  padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
 }
 
 .features-compact-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.features-compact-container::-webkit-scrollbar-thumb {
-  background: #282c3f;
-  border-radius: 10px;
+  width: 6px;
 }
 
 .features-compact-container::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f3f4f6;
+}
+
+.features-compact-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.features-compact-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
 .features-compact-row {
