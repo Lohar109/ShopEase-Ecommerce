@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
@@ -35,7 +35,7 @@ const Shipping = () => {
     setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSaveAddress = (event) => {
     event.preventDefault();
     if (cartItems.length === 0) return;
     setIsAddressSaved(true);
@@ -123,7 +123,7 @@ const Shipping = () => {
                   <p>Enter your delivery address to continue to payment.</p>
                 </div>
 
-                <form className="shipping-form-grid" onSubmit={handleSubmit}>
+                <form className="shipping-form-grid" onSubmit={handleSaveAddress}>
                   <div className="shipping-field shipping-field-full">
                     <label htmlFor="fullName">Full Name</label>
                     <input id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder="Enter your full name" required />
@@ -211,7 +211,7 @@ const Shipping = () => {
               <strong>₹ {grandTotal.toFixed(2)}</strong>
             </div>
 
-            <button type="button" className="cart-checkout-btn" onClick={handleSidebarAction} disabled={!isAddressSaved}>
+            <button type="button" className="cart-checkout-btn shipping-payment-btn" onClick={handleSidebarAction} disabled={!isAddressSaved}>
               Proceed to Payment
             </button>
           </aside>

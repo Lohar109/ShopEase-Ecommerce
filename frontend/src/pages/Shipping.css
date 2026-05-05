@@ -104,6 +104,12 @@
   box-shadow: 0 10px 22px rgba(227, 49, 112, 0.18);
 }
 
+.shipping-payment-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .shipping-address-card {
   display: flex;
   flex-direction: column;
