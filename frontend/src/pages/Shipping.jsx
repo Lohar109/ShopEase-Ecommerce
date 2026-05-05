@@ -4,6 +4,7 @@ import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 import './Shipping.css';
+import Stepper from '../components/Stepper';
 
 const Shipping = () => {
   const navigate = useNavigate();
@@ -129,27 +130,7 @@ const Shipping = () => {
   return (
     <div className="cart-page-shell block w-full min-h-screen">
       <div className="cart-page-inner block max-w-7xl mx-auto">
-        <div className="cart-checkout-stepper flex flex-row justify-center items-center w-full" aria-label="Checkout progress">
-          <div className="cart-step cart-step-complete flex items-center" style={{ minWidth: '120px' }}>
-            <span className="cart-step-circle">1</span>
-            <span className="cart-step-label">Cart</span>
-          </div>
-          <span className="cart-step-connector" aria-hidden="true" />
-          <div className="cart-step cart-step-active flex items-center" aria-current="step" style={{ minWidth: '132px' }}>
-            <span className="cart-step-circle">2</span>
-            <span className="cart-step-label">Shipping</span>
-          </div>
-          <span className="cart-step-connector" aria-hidden="true" />
-          <div className="cart-step flex items-center" style={{ minWidth: '150px' }}>
-            <span className="cart-step-circle">3</span>
-            <span className="cart-step-label">Order Summary</span>
-          </div>
-          <span className="cart-step-connector" aria-hidden="true" />
-          <div className="cart-step flex items-center" style={{ minWidth: '130px' }}>
-            <span className="cart-step-circle">4</span>
-            <span className="cart-step-label">Payment</span>
-          </div>
-        </div>
+        <Stepper currentStep={2} />
 
         <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="shipping-form-shell cart-list block lg:col-span-2">

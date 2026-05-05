@@ -1,0 +1,87 @@
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+}
+
+.step-circle {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 120ms ease;
+}
+
+.step-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.step.completed .step-circle {
+  background: #fff;
+  border-color: transparent;
+}
+
+.step.active .step-circle {
+  background: #e33170; /* theme pink */
+  border-color: #e33170;
+}
+
+.step.active .step-number {
+  color: #fff;
+}
+
+.step.completed .step-number { /* hide the number when completed, icon shown */
+  display: none;
+}
+
+.step-connector {
+  width: 44px;
+  height: 4px;
+  border-radius: 4px;
+  background: #f3f4f6;
+  transition: background-color 220ms ease, box-shadow 220ms ease;
+}
+
+.step-connector.connector-complete {
+  background: #e33170;
+}
+
+.step-connector.connector-active {
+  background: linear-gradient(90deg, #e33170, #f9c6d6);
+}
+
+.step-connector.connector-upcoming {
+  background: #fde8ef;
+}
+
+/* compact responsive adjustments */
+@media (max-width: 640px) {
+  .stepper { gap: 8px; padding: 8px 0; }
+  .step-circle { width: 24px; height: 24px; min-width: 24px; min-height: 24px; }
+  .step-number { font-size: 11px; }
+  .step-label { font-size: 12px; }
+  .step-connector { width: 30px; height: 3px; }
+}

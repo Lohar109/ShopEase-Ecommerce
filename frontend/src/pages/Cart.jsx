@@ -4,6 +4,7 @@ import { ShoppingBag, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
+import Stepper from '../components/Stepper';
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
@@ -104,22 +105,7 @@ const Cart = () => {
           </div>
         ) : (
           <>
-            <div className="cart-checkout-stepper flex flex-row justify-center items-center w-full" aria-label="Checkout progress">
-              <div className="cart-step cart-step-active flex items-center" aria-current="step" style={{ minWidth: '132px' }}>
-                <span className="cart-step-circle">1</span>
-                <span className="cart-step-label">Cart</span>
-              </div>
-              <span className="cart-step-connector" aria-hidden="true" />
-              <div className="cart-step flex items-center" style={{ minWidth: '148px' }}>
-                <span className="cart-step-circle">2</span>
-                <span className="cart-step-label">Shipping</span>
-              </div>
-              <span className="cart-step-connector" aria-hidden="true" />
-              <div className="cart-step flex items-center" style={{ minWidth: '146px' }}>
-                <span className="cart-step-circle">3</span>
-                <span className="cart-step-label">Payment</span>
-              </div>
-            </div>
+            <Stepper currentStep={1} />
             <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="cart-list block lg:col-span-2">
               {cartItems.map(item => (
