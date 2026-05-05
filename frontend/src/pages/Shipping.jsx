@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -12,8 +12,6 @@ const Shipping = () => {
 
   const cartItems = state?.cartItems?.length ? state.cartItems : cartItemsFromContext;
   const total = Number(state?.total || 0);
-  const shippingFormRef = useRef(null);
-
   const [formData, setFormData] = useState({
     fullName: '',
     mobileNumber: '',
@@ -44,11 +42,6 @@ const Shipping = () => {
   };
 
   const handleSidebarAction = () => {
-    if (!isAddressSaved) {
-      shippingFormRef.current?.requestSubmit();
-      return;
-    }
-
     navigate('/checkout/payment', {
       state: {
         cartItems,
@@ -130,7 +123,7 @@ const Shipping = () => {
                   <p>Enter your delivery address to continue to payment.</p>
                 </div>
 
-                <form ref={shippingFormRef} className="shipping-form-grid" onSubmit={handleSubmit}>
+                <form className="shipping-form-grid" onSubmit={handleSubmit}>
                   <div className="shipping-field shipping-field-full">
                     <label htmlFor="fullName">Full Name</label>
                     <input id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder="Enter your full name" required />
@@ -168,7 +161,7 @@ const Shipping = () => {
 
                   <div className="shipping-form-actions shipping-field-full">
                     <button type="submit" className="shipping-submit-btn">
-                      Deliver Here
+                      Save Address
                     </button>
                   </div>
                 </form>
@@ -194,15 +187,9 @@ const Shipping = () => {
                   <p className="shipping-address-line">{formattedAddress}</p>
                 </div>
 
-                <div className="shipping-form-actions shipping-field-full">
-                  <button type="button" className="shipping-submit-btn" onClick={() => navigate('/checkout', {
-                    state: {
-                      cartItems,
-                      total: grandTotal,
-                      shippingAddress: formData,
-                    },
-                  })}>
-                    Proceed to Payment
+                <div className="shipping-address-actions shipping-field-full">
+                  <button type="button" className="shipping-submit-btn shipping-submit-btn--secondary" onClick={() => setIsAddressSaved(false)}>
+                    Change
                   </button>
                 </div>
               </div>
@@ -224,8 +211,8 @@ const Shipping = () => {
               <strong>₹ {grandTotal.toFixed(2)}</strong>
             </div>
 
-            <button type="button" className="cart-checkout-btn" onClick={handleSidebarAction}>
-              {isAddressSaved ? 'Proceed to Payment' : 'Deliver Here'}
+            <button type="button" className="cart-checkout-btn" onClick={handleSidebarAction} disabled={!isAddressSaved}>
+              Proceed to Payment
             </button>
           </aside>
         </div>
