@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -12,6 +12,7 @@ const Shipping = () => {
 
   const cartItems = state?.cartItems?.length ? state.cartItems : cartItemsFromContext;
   const total = Number(state?.total || 0);
+  const shippingFormRef = useRef(null);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -22,6 +23,7 @@ const Shipping = () => {
     houseNo: '',
     roadName: '',
   });
+  const [isAddressSaved, setIsAddressSaved] = useState(false);
 
   const subtotal = useMemo(
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0),
@@ -38,8 +40,16 @@ const Shipping = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (cartItems.length === 0) return;
+    setIsAddressSaved(true);
+  };
 
-    navigate('/checkout', {
+  const handleSidebarAction = () => {
+    if (!isAddressSaved) {
+      shippingFormRef.current?.requestSubmit();
+      return;
+    }
+
+    navigate('/checkout/payment', {
       state: {
         cartItems,
         total: grandTotal,
@@ -47,6 +57,16 @@ const Shipping = () => {
       },
     });
   };
+
+  const formattedAddress = [
+    formData.houseNo,
+    formData.roadName,
+    formData.city,
+    formData.stateName,
+    formData.pincode,
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   if (cartItems.length === 0) {
     return (
@@ -103,55 +123,90 @@ const Shipping = () => {
 
         <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="shipping-form-shell cart-list block lg:col-span-2">
-            <div className="shipping-form-card">
-              <div className="shipping-form-header">
-                <h1>Shipping Details</h1>
-                <p>Enter your delivery address to continue to payment.</p>
+            {!isAddressSaved ? (
+              <div className="shipping-form-card">
+                <div className="shipping-form-header">
+                  <h1>Shipping Details</h1>
+                  <p>Enter your delivery address to continue to payment.</p>
+                </div>
+
+                <form ref={shippingFormRef} className="shipping-form-grid" onSubmit={handleSubmit}>
+                  <div className="shipping-field shipping-field-full">
+                    <label htmlFor="fullName">Full Name</label>
+                    <input id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder="Enter your full name" required />
+                  </div>
+
+                  <div className="shipping-field">
+                    <label htmlFor="mobileNumber">Mobile Number</label>
+                    <input id="mobileNumber" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} type="tel" placeholder="10-digit mobile number" required />
+                  </div>
+
+                  <div className="shipping-field">
+                    <label htmlFor="pincode">Pincode</label>
+                    <input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} type="text" placeholder="Pincode" required />
+                  </div>
+
+                  <div className="shipping-field">
+                    <label htmlFor="stateName">State</label>
+                    <input id="stateName" name="stateName" value={formData.stateName} onChange={handleChange} type="text" placeholder="State" required />
+                  </div>
+
+                  <div className="shipping-field">
+                    <label htmlFor="city">City</label>
+                    <input id="city" name="city" value={formData.city} onChange={handleChange} type="text" placeholder="City" required />
+                  </div>
+
+                  <div className="shipping-field shipping-field-full">
+                    <label htmlFor="houseNo">House No./Building</label>
+                    <input id="houseNo" name="houseNo" value={formData.houseNo} onChange={handleChange} type="text" placeholder="House no. / Building / Apartment" required />
+                  </div>
+
+                  <div className="shipping-field shipping-field-full">
+                    <label htmlFor="roadName">Road Name/Area</label>
+                    <textarea id="roadName" name="roadName" value={formData.roadName} onChange={handleChange} placeholder="Road name, area, landmark" rows="3" required />
+                  </div>
+
+                  <div className="shipping-form-actions shipping-field-full">
+                    <button type="submit" className="shipping-submit-btn">
+                      Deliver Here
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <form className="shipping-form-grid" onSubmit={handleSubmit}>
-                <div className="shipping-field shipping-field-full">
-                  <label htmlFor="fullName">Full Name</label>
-                  <input id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder="Enter your full name" required />
+            ) : (
+              <div className="shipping-form-card shipping-address-card">
+                <div className="shipping-form-header">
+                  <h1>Delivery Address</h1>
+                  <p>Your saved shipping details for this order.</p>
                 </div>
 
-                <div className="shipping-field">
-                  <label htmlFor="mobileNumber">Mobile Number</label>
-                  <input id="mobileNumber" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} type="tel" placeholder="10-digit mobile number" required />
-                </div>
+                <div className="shipping-address-summary">
+                  <div className="shipping-address-top">
+                    <div>
+                      <h2>{formData.fullName}</h2>
+                      <p>{formData.mobileNumber}</p>
+                    </div>
+                    <button type="button" className="shipping-change-btn" onClick={() => setIsAddressSaved(false)}>
+                      Change
+                    </button>
+                  </div>
 
-                <div className="shipping-field">
-                  <label htmlFor="pincode">Pincode</label>
-                  <input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} type="text" placeholder="Pincode" required />
-                </div>
-
-                <div className="shipping-field">
-                  <label htmlFor="stateName">State</label>
-                  <input id="stateName" name="stateName" value={formData.stateName} onChange={handleChange} type="text" placeholder="State" required />
-                </div>
-
-                <div className="shipping-field">
-                  <label htmlFor="city">City</label>
-                  <input id="city" name="city" value={formData.city} onChange={handleChange} type="text" placeholder="City" required />
-                </div>
-
-                <div className="shipping-field shipping-field-full">
-                  <label htmlFor="houseNo">House No./Building</label>
-                  <input id="houseNo" name="houseNo" value={formData.houseNo} onChange={handleChange} type="text" placeholder="House no. / Building / Apartment" required />
-                </div>
-
-                <div className="shipping-field shipping-field-full">
-                  <label htmlFor="roadName">Road Name/Area</label>
-                  <textarea id="roadName" name="roadName" value={formData.roadName} onChange={handleChange} placeholder="Road name, area, landmark" rows="3" required />
+                  <p className="shipping-address-line">{formattedAddress}</p>
                 </div>
 
                 <div className="shipping-form-actions shipping-field-full">
-                  <button type="submit" className="shipping-submit-btn">
+                  <button type="button" className="shipping-submit-btn" onClick={() => navigate('/checkout', {
+                    state: {
+                      cartItems,
+                      total: grandTotal,
+                      shippingAddress: formData,
+                    },
+                  })}>
                     Proceed to Payment
                   </button>
                 </div>
-              </form>
-            </div>
+              </div>
+            )}
           </div>
 
           <aside className="cart-summary-card block lg:col-span-1">
@@ -169,8 +224,8 @@ const Shipping = () => {
               <strong>₹ {grandTotal.toFixed(2)}</strong>
             </div>
 
-            <button type="button" className="cart-checkout-btn" onClick={handleSubmit}>
-              Deliver Here
+            <button type="button" className="cart-checkout-btn" onClick={handleSidebarAction}>
+              {isAddressSaved ? 'Proceed to Payment' : 'Deliver Here'}
             </button>
           </aside>
         </div>
