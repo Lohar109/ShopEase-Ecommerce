@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -23,6 +23,21 @@ const Shipping = () => {
   });
   const [isAddressSaved, setIsAddressSaved] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const savedAddress = window.localStorage.getItem('shopease_address');
+    if (!savedAddress) return;
+
+    try {
+      const parsedAddress = JSON.parse(savedAddress);
+      setFormData((current) => ({ ...current, ...parsedAddress }));
+      setIsAddressSaved(true);
+    } catch {
+      window.localStorage.removeItem('shopease_address');
+    }
+  }, []);
+
   const subtotal = useMemo(
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0),
     [cartItems]
@@ -38,10 +53,14 @@ const Shipping = () => {
   const handleSaveAddress = (event) => {
     event.preventDefault();
     if (cartItems.length === 0) return;
+    const addressData = formData;
+    window.localStorage.setItem('shopease_address', JSON.stringify(addressData));
     setIsAddressSaved(true);
   };
 
   const handleSidebarAction = () => {
+    if (!isAddressSaved) return;
+
     navigate('/checkout/payment', {
       state: {
         cartItems,
