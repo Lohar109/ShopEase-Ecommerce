@@ -59,8 +59,21 @@ const Shipping = () => {
   };
 
   const handleSidebarAction = () => {
-    if (!isAddressSaved) return;
+    // If address isn't saved yet, validate and save it from the left form.
+    if (!isAddressSaved) {
+      const required = ['fullName', 'mobileNumber', 'pincode', 'stateName', 'city', 'houseNo', 'roadName'];
+      const isFormValid = required.every((k) => formData[k] && String(formData[k]).trim() !== '');
+      if (!isFormValid) {
+        alert('Please complete all address fields before saving.');
+        return;
+      }
+      const addressData = formData;
+      window.localStorage.setItem('shopease_address', JSON.stringify(addressData));
+      setIsAddressSaved(true);
+      return;
+    }
 
+    // Address is saved — proceed to Payment step.
     navigate('/checkout/payment', {
       state: {
         cartItems,
@@ -117,18 +130,23 @@ const Shipping = () => {
     <div className="cart-page-shell block w-full min-h-screen">
       <div className="cart-page-inner block max-w-7xl mx-auto">
         <div className="cart-checkout-stepper flex flex-row justify-center items-center w-full" aria-label="Checkout progress">
-          <div className="cart-step cart-step-complete flex items-center" style={{ minWidth: '132px' }}>
+          <div className="cart-step cart-step-complete flex items-center" style={{ minWidth: '120px' }}>
             <span className="cart-step-circle">1</span>
             <span className="cart-step-label">Cart</span>
           </div>
           <span className="cart-step-connector" aria-hidden="true" />
-          <div className="cart-step cart-step-active flex items-center" aria-current="step" style={{ minWidth: '148px' }}>
+          <div className="cart-step cart-step-active flex items-center" aria-current="step" style={{ minWidth: '132px' }}>
             <span className="cart-step-circle">2</span>
             <span className="cart-step-label">Shipping</span>
           </div>
           <span className="cart-step-connector" aria-hidden="true" />
-          <div className="cart-step flex items-center" style={{ minWidth: '146px' }}>
+          <div className="cart-step flex items-center" style={{ minWidth: '150px' }}>
             <span className="cart-step-circle">3</span>
+            <span className="cart-step-label">Order Summary</span>
+          </div>
+          <span className="cart-step-connector" aria-hidden="true" />
+          <div className="cart-step flex items-center" style={{ minWidth: '130px' }}>
+            <span className="cart-step-circle">4</span>
             <span className="cart-step-label">Payment</span>
           </div>
         </div>
@@ -186,7 +204,8 @@ const Shipping = () => {
                 </form>
               </div>
             ) : (
-              <div className="shipping-form-card shipping-address-card">
+              <>
+                <div className="shipping-form-card shipping-address-card">
                 <div className="shipping-form-header">
                   <h1>Delivery Address</h1>
                   <p>Your saved shipping details for this order.</p>
@@ -203,11 +222,37 @@ const Shipping = () => {
                     </button>
                   </div>
 
-                  <p className="shipping-address-line">{formattedAddress}</p>
-                </div>
+                      <p className="shipping-address-line">{formattedAddress}</p>
+                    </div>
+                  </div>
 
-                
-              </div>
+                  <div className="shipping-form-card shipping-order-summary">
+                    <div className="shipping-form-header">
+                      <h3>Order Summary</h3>
+                    </div>
+
+                    <div className="order-items-list">
+                      {cartItems.map((item, idx) => {
+                        const src = item.image || item.thumbnail || (item.images && item.images[0]);
+                        const key = item.id || item._id || item.sku || item.name || idx;
+                        return (
+                          <div className="order-item-row" key={key}>
+                            {src ? (
+                              <img src={src} alt={item.name} className="order-item-thumb" />
+                            ) : (
+                              <div className="order-item-thumb order-item-thumb--empty" />
+                            )}
+
+                            <div className="order-item-meta">
+                              <div className="order-item-name">{item.name && item.name.length > 48 ? `${item.name.slice(0, 45)}...` : item.name}</div>
+                              <div className="order-item-qty-price">Qty: {item.quantity} • ₹{(Number(item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+              </>
             )}
           </div>
 
@@ -226,8 +271,8 @@ const Shipping = () => {
               <strong>₹ {grandTotal.toFixed(2)}</strong>
             </div>
 
-            <button type="button" className="cart-checkout-btn shipping-payment-btn" onClick={handleSidebarAction} disabled={!isAddressSaved}>
-              Proceed to Payment
+            <button type="button" className="cart-checkout-btn shipping-payment-btn" onClick={handleSidebarAction}>
+              {!isAddressSaved ? 'Save Address' : 'Continue to Payment'}
             </button>
           </aside>
         </div>
