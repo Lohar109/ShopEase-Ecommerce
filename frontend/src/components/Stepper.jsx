@@ -29,4 +29,5 @@ const Stepper = ({ steps = ['Cart', 'Shipping', 'Order Summary', 'Payment'], cur
   );
 };
 
+export { Stepper };
 export default Stepper;

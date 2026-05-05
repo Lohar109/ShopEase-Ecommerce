@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, ShieldCheck, ShoppingBag, Trash2 } from 'lucide-react';
+import Lottie from 'lottie-react';
+import emptyCartData from '../assets/empty-cart.json';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
-import Stepper from '../components/Stepper';
+import { Stepper } from '../components/Stepper';
+
+const CartLottie = Lottie?.default ?? Lottie;
+const CartStepper = Stepper?.default ?? Stepper;
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
@@ -64,15 +69,9 @@ const Cart = () => {
               fontFamily: "Poppins, sans-serif"
             }}
           >
-            <ShoppingBag
-              size={82}
-              strokeWidth={1.5}
-              color="#d1d5db"
-              aria-hidden="true"
-              style={{
-                marginBottom: '6px'
-              }}
-            />
+            <div className="cart-empty-lottie" aria-hidden="true">
+              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 300 }} />
+            </div>
             <h1
               className="cart-title"
               style={{
@@ -80,6 +79,7 @@ const Cart = () => {
                 fontWeight: '700',
                 color: '#1a1a1a',
                 textAlign: 'center',
+                marginTop: '16px',
                 marginBottom: '2px'
               }}
             >
@@ -107,7 +107,7 @@ const Cart = () => {
           </div>
         ) : (
           <>
-            <Stepper currentStep={1} />
+            <CartStepper currentStep={1} />
             <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="cart-list block lg:col-span-2">
               {cartItems.map(item => (
