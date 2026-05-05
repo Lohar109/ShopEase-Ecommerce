@@ -47,7 +47,7 @@
 
 .cart-remove-btn:hover,
 .cart-remove-btn:focus {
-  color: #ef4444;
+  opacity: 0.7;
 }
 
 .cart-step-circle {
@@ -144,17 +144,18 @@
 .cart-item-details h3 {
   font-size: 1.05rem;
   margin-bottom: 6px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .cart-item-title-link {
   font-family: 'Roboto', sans-serif;
   color: #111827;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .cart-item-title-link:hover {
   text-decoration: underline;
+  opacity: 0.8;
 }
 
 .cart-item-details p {
