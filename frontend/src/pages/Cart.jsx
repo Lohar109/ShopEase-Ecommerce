@@ -19,7 +19,7 @@ const Cart = () => {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    navigate('/checkout', { state: { cartItems, total: grandTotal } });
+    navigate('/checkout/shipping', { state: { cartItems, total: grandTotal } });
   };
 
   const handleDecrease = (item) => {
