@@ -1929,6 +1929,21 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
+.lightbox-controls .pdp-lightbox-arrow-btn {
+  min-width: 40px;
+  padding: 8px 12px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.lightbox-controls .pdp-lightbox-arrow-btn span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transform: translateY(-1px);
+}
+
 .lightbox-controls .pdp-lightbox-close:hover {
   background: #2d3748;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);

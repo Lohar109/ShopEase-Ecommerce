@@ -38,11 +38,11 @@ const LightboxModal = ({ items, currentIndex, onClose }) => {
     <div className="pdp-lightbox-overlay" onClick={onClose}>
       <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
         <div className="lightbox-controls">
-          <button type="button" className="pdp-lightbox-close" onClick={handlePrev} aria-label="Previous image" disabled={items.length <= 1}>
-            Previous
+          <button type="button" className="pdp-lightbox-close pdp-lightbox-arrow-btn" onClick={handlePrev} aria-label="Previous image" disabled={items.length <= 1}>
+            <span aria-hidden="true">&lt;</span>
           </button>
-          <button type="button" className="pdp-lightbox-close" onClick={handleNext} aria-label="Next image" disabled={items.length <= 1}>
-            Next
+          <button type="button" className="pdp-lightbox-close pdp-lightbox-arrow-btn" onClick={handleNext} aria-label="Next image" disabled={items.length <= 1}>
+            <span aria-hidden="true">&gt;</span>
           </button>
           <button type="button" className="pdp-lightbox-close" onClick={onClose} aria-label="Close preview">
             Close
