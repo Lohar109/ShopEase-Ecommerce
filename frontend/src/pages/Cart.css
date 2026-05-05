@@ -296,24 +296,27 @@
 
 .cart-checkout-btn {
   width: 100%;
-  margin-top: 24px;
-  padding: 14px 16px;
+  margin-top: 18px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 12px;
-  background: #111827;
+  border-radius: 8px;
+  background: #1a1a1a;
   color: #fff;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+  text-align: center;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 200ms ease, background-color 200ms ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 .cart-checkout-btn:hover,
 .cart-checkout-btn:focus {
-  background: #2c2c2c;
+  background: #333;
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 900px) {
