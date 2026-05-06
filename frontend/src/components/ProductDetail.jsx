@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package, Flame, Truck } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -915,13 +915,18 @@ const ProductDetail = () => {
                           <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
                         );
                         if (stock > 0 && stock <= 10) return (
-                          <span className="pdp-scarcity-badge pdp-scarcity-badge--low">Only {stock} left! Hurry up!</span>
+                          <div className="pdp-scarcity-alert" aria-live="polite">
+                            <span className="pdp-scarcity-badge pdp-scarcity-badge--low">
+                              <Flame size={14} strokeWidth={2.2} aria-hidden="true" />
+                              <span>Only {stock} left! Hurry up!</span>
+                            </span>
+                          </div>
                         );
                         return null;
                       })()}
                       <span className="pdp-delivery-text">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px', color: '#16a34a' }}><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8h4l3 5v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
-                        Delivered by <strong>Tuesday, April 14</strong>
+                        <Truck size={14} strokeWidth={2.1} aria-hidden="true" />
+                        <span>Delivered by <strong>Tuesday, April 14</strong></span>
                       </span>
                     </div>
                     {/* Purchasing block */}
