@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Truck, MapPin } from 'lucide-react';
+import { ShoppingBag, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 import './Shipping.css';
@@ -197,9 +197,8 @@ const Shipping = () => {
                 </div>
 
                 <div className="shipping-form-card shipping-delivery-card">
-                  <div className="shipping-form-header">
+                  <div className="shipping-form-header shipping-form-header-compact">
                     <h3>Delivery Method</h3>
-                    <p>Choose how quickly you want your order delivered.</p>
                   </div>
 
                   <div className="delivery-method-list" role="radiogroup" aria-label="Delivery method">
@@ -208,9 +207,14 @@ const Shipping = () => {
                       className={`delivery-method-option${deliveryMethod === 'standard' ? ' selected' : ''}`}
                       onClick={() => setDeliveryMethod('standard')}
                     >
-                      <div className="delivery-method-top">
-                        <strong>Standard</strong>
-                        <span>5-7 business days</span>
+                      <div className="delivery-method-left">
+                        <span className="delivery-radio" aria-hidden="true">
+                          <span className="delivery-radio-inner" />
+                        </span>
+                        <div className="delivery-method-top">
+                          <strong>Standard</strong>
+                          <span>5-7 business days</span>
+                        </div>
                       </div>
                       <div className="delivery-method-price">Free</div>
                     </button>
@@ -220,18 +224,18 @@ const Shipping = () => {
                       className={`delivery-method-option${deliveryMethod === 'express' ? ' selected' : ''}`}
                       onClick={() => setDeliveryMethod('express')}
                     >
-                      <div className="delivery-method-top">
-                        <strong>Express</strong>
-                        <span>2-3 business days</span>
+                      <div className="delivery-method-left">
+                        <span className="delivery-radio" aria-hidden="true">
+                          <span className="delivery-radio-inner" />
+                        </span>
+                        <div className="delivery-method-top">
+                          <strong>Express</strong>
+                          <span>2-3 business days</span>
+                        </div>
                       </div>
                       <div className="delivery-method-price">₹149</div>
                     </button>
                   </div>
-
-                  <p className="delivery-method-note">
-                    <Truck size={14} strokeWidth={2.1} aria-hidden="true" />
-                    <span>Delivery speed can be changed before payment on the review page.</span>
-                  </p>
                 </div>
               </>
             )}
