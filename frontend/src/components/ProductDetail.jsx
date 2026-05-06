@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
@@ -320,7 +320,18 @@ const ProductDetail = () => {
   const descriptionInlineRef = useRef(null);
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
-  const { addToCart } = useCart();
+  const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
+  const redirectTimerRef = useRef(null);
+  const navigate = useNavigate();
+  const { cartItems, addToCart } = useCart();
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        window.clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setShowStockProgress(false);
@@ -742,10 +753,10 @@ const ProductDetail = () => {
   // Unique sizes for selector
   const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
 
-  const handleAddToCart = () => {
+  const resolveVariantToAdd = () => {
     if (uniqueSizes.length > 0 && !selectedSize) {
       toast.error("Please select a size");
-      return;
+      return null;
     }
 
     const variantToAdd =
@@ -754,12 +765,70 @@ const ProductDetail = () => {
           v.size === selectedSize &&
           String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
       ) || selectedVariant;
+
     if (!variantToAdd?.id) {
       toast.error("Please select a size");
-      return;
+      return null;
     }
 
+    return variantToAdd;
+  };
+
+  const handleAddToCart = () => {
+    const variantToAdd = resolveVariantToAdd();
+    if (!variantToAdd) return;
     addToCart(product, variantToAdd);
+  };
+
+  const handleBuyNow = () => {
+    const variantToAdd = resolveVariantToAdd();
+    if (!variantToAdd) return;
+
+    const normalizedSize = variantToAdd.size || null;
+    const normalizedColor = variantToAdd.color || null;
+    const existsInCart = cartItems.some(
+      (item) =>
+        item.productId === product.id &&
+        (item.size || null) === normalizedSize &&
+        (item.color || null) === normalizedColor
+    );
+
+    const nextCartItem = {
+      cartItemId: `${product.id}-${variantToAdd.id}`,
+      productId: product.id,
+      variantId: variantToAdd.id,
+      productName: product.name,
+      image: variantToAdd.image || product.main_image || '',
+      size: normalizedSize,
+      color: normalizedColor,
+      price: variantToAdd.price ?? null,
+      quantity: 1,
+    };
+
+    const nextCartItems = existsInCart ? cartItems : [...cartItems, nextCartItem];
+    const nextTotal = nextCartItems.reduce(
+      (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+      0
+    );
+    const platformFee = 250;
+    const memberDiscount = -5000;
+    const nextGrandTotal = nextTotal + platformFee + memberDiscount;
+
+    addToCart(product, variantToAdd);
+    setIsRedirectingToCheckout(true);
+
+    if (redirectTimerRef.current) {
+      window.clearTimeout(redirectTimerRef.current);
+    }
+
+    redirectTimerRef.current = window.setTimeout(() => {
+      navigate('/checkout/shipping', {
+        state: {
+          cartItems: nextCartItems,
+          total: nextGrandTotal,
+        },
+      });
+    }, 250);
   };
 
   const formatSpecificationValue = (value) => {
@@ -952,7 +1021,9 @@ const ProductDetail = () => {
                       </div>
                       <div className="product-card-actions detail-page-buttons">
                         <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
-                        <button className="btn-card-buy-now">Buy Now</button>
+                        <button className="btn-card-buy-now" onClick={handleBuyNow} disabled={isRedirectingToCheckout}>
+                          {isRedirectingToCheckout ? 'Redirecting to checkout...' : 'Buy Now'}
+                        </button>
                       </div>
                     </div>
                   </div>
