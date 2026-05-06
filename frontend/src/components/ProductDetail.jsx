@@ -297,6 +297,7 @@ const RateProductForm = ({ product }) => {
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [showStockProgress, setShowStockProgress] = useState(false);
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
@@ -320,6 +321,12 @@ const ProductDetail = () => {
   const [inlineDescription, setInlineDescription] = useState("");
   const [showInlineReadMore, setShowInlineReadMore] = useState(false);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    setShowStockProgress(false);
+    const frame = window.requestAnimationFrame(() => setShowStockProgress(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [id, selectedSize, selectedColor]);
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/products/${id}`)
@@ -915,11 +922,18 @@ const ProductDetail = () => {
                           <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
                         );
                         if (stock > 0 && stock <= 10) return (
-                          <div className="pdp-scarcity-alert" aria-live="polite">
-                            <span className="pdp-scarcity-badge pdp-scarcity-badge--low">
-                              <span className="pdp-scarcity-status-dot" aria-hidden="true" />
-                              <span>Only {stock} left</span>
-                            </span>
+                          <div className="pdp-stock-progress-block" aria-live="polite">
+                            <div className="pdp-stock-progress-label">
+                              <span className="pdp-stock-progress-text">
+                                Only <strong>{stock}</strong> left
+                              </span>
+                            </div>
+                            <div className="pdp-stock-progress-track" aria-hidden="true">
+                              <div
+                                className="pdp-stock-progress-fill"
+                                style={{ width: showStockProgress ? `${Math.min(100, (stock / 20) * 100)}%` : '0%' }}
+                              />
+                            </div>
                           </div>
                         );
                         return null;
