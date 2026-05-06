@@ -63,22 +63,22 @@ const Cart = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '70vh',
-              gap: '30px',
+              minHeight: '78vh',
+              gap: '20px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
             <div className="cart-empty-lottie" aria-hidden="true">
               <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 250 }} />
             </div>
-            <div className="cart-empty-content" style={{ textAlign: 'left' }}>
+            <div className="cart-empty-content" style={{ textAlign: 'left', maxWidth: 'none', width: 'auto' }}>
               <h1
                 className="cart-title"
                 style={{
                   fontSize: '2rem',
                   fontWeight: '700',
                   color: '#1a1a1a',
-                  marginTop: '0px',
+                  margin: '0',
                   marginBottom: '2px'
                 }}
               >
@@ -90,6 +90,7 @@ const Cart = () => {
                   color: '#4b5563',
                   maxWidth: '100%',
                   lineHeight: 1.6,
+                  whiteSpace: 'nowrap',
                   marginBottom: '1.6rem'
                 }}
               >

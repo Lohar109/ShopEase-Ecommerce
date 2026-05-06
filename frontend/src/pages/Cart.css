@@ -338,6 +338,10 @@
   .cart-empty-content {
     text-align: center !important;
   }
+
+  .cart-empty-content p {
+    white-space: normal !important;
+  }
 }
 
 @media (max-width: 640px) {
