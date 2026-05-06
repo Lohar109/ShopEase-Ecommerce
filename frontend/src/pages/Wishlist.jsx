@@ -152,7 +152,7 @@ const Wishlist = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '40px',
+              gap: '0px',
               fontFamily: 'Poppins, sans-serif'
             }}
           >
