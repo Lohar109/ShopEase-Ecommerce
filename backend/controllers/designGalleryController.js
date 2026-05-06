@@ -14,8 +14,15 @@ const pool = new Pool({
   ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
 });
 
+const normalizeUuidOrNull = (value) => {
+  const normalized = String(value || '').trim();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalized)
+    ? normalized
+    : null;
+};
+
 exports.upsertDesignGallery = async (req, res) => {
-  const { product_id, color_name, images, video_url } = req.body;
+  const { id, product_id, color_name, images, video_url, variant_id } = req.body;
 
   if (!product_id || !color_name || !Array.isArray(images) || images.length === 0) {
     return res.status(400).json({ error: 'product_id, color_name, and images array are required' });
@@ -27,27 +34,62 @@ exports.upsertDesignGallery = async (req, res) => {
   }
 
   const normalizedVideoUrl = video_url && String(video_url).trim() ? String(video_url).trim() : null;
+  const galleryVariantId = normalizeUuidOrNull(variant_id);
+
+  if (id) {
+    try {
+      const updated = await pool.query(
+        `UPDATE product_design_gallery
+         SET color_name = $1, images = $2, video_url = $3, variant_id = $4, updated_at = now()
+         WHERE id = $5 AND product_id = $6
+         RETURNING *`,
+        [normalizedColor, images, normalizedVideoUrl, galleryVariantId, id, product_id]
+      );
+
+      if (updated.rowCount === 0) {
+        return res.status(404).json({ error: 'Design gallery not found' });
+      }
+
+      return res.json(updated.rows[0]);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    const existing = await client.query(
-      `SELECT id
+    // Query for existing gallery based on variant_id
+    let existingQuery;
+    let existingParams;
+    
+    if (galleryVariantId) {
+      // Variant-specific gallery lookup
+      existingQuery = `SELECT id
        FROM product_design_gallery
-       WHERE product_id = $1 AND lower(color_name) = lower($2)
-       ORDER BY created_at ASC`,
-      [product_id, normalizedColor]
-    );
+       WHERE product_id = $1 AND variant_id = $2
+       ORDER BY created_at ASC`;
+      existingParams = [product_id, galleryVariantId];
+    } else {
+      // Shared gallery lookup (color-based)
+      existingQuery = `SELECT id
+       FROM product_design_gallery
+       WHERE product_id = $1 AND lower(color_name) = lower($2) AND variant_id IS NULL
+       ORDER BY created_at ASC`;
+      existingParams = [product_id, normalizedColor];
+    }
+
+    const existing = await client.query(existingQuery, existingParams);
 
     if (existing.rowCount > 0) {
       const keepId = existing.rows[0].id;
 
       await client.query(
         `UPDATE product_design_gallery
-         SET color_name = $1, images = $2, video_url = $3
-         WHERE id = $4`,
-        [normalizedColor, images, normalizedVideoUrl, keepId]
+         SET color_name = $1, images = $2, video_url = $3, variant_id = $4, updated_at = now()
+         WHERE id = $5`,
+        [normalizedColor, images, normalizedVideoUrl, galleryVariantId, keepId]
       );
 
       if (existing.rowCount > 1) {
@@ -68,10 +110,10 @@ exports.upsertDesignGallery = async (req, res) => {
     }
 
     const inserted = await client.query(
-      `INSERT INTO product_design_gallery (product_id, color_name, images, video_url)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO product_design_gallery (product_id, color_name, images, video_url, variant_id)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [product_id, normalizedColor, images, normalizedVideoUrl]
+      [product_id, normalizedColor, images, normalizedVideoUrl, galleryVariantId]
     );
 
     await client.query('COMMIT');
@@ -104,16 +146,32 @@ exports.getGalleriesByProduct = async (req, res) => {
 
 exports.getGalleryByProductAndColor = async (req, res) => {
   const { product_id, color_name } = req.params;
+  const { variant_id } = req.query;
+  const galleryVariantId = normalizeUuidOrNull(variant_id);
 
   try {
-    const result = await pool.query(
-      `SELECT *
+    let query;
+    let params;
+
+    if (galleryVariantId) {
+      // Fetch variant-specific gallery
+      query = `SELECT *
        FROM product_design_gallery
-       WHERE product_id = $1 AND lower(color_name) = lower($2)
+       WHERE product_id = $1 AND variant_id = $2
        ORDER BY created_at ASC
-       LIMIT 1`,
-      [product_id, color_name]
-    );
+       LIMIT 1`;
+      params = [product_id, galleryVariantId];
+    } else {
+      // Fetch shared gallery (color-based)
+      query = `SELECT *
+       FROM product_design_gallery
+       WHERE product_id = $1 AND lower(color_name) = lower($2) AND variant_id IS NULL
+       ORDER BY created_at ASC
+       LIMIT 1`;
+      params = [product_id, color_name];
+    }
+
+    const result = await pool.query(query, params);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Design gallery not found' });

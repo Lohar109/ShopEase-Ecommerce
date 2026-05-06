@@ -22,6 +22,13 @@ const extractDuplicateSku = (err) => {
   return match?.[1] || null;
 };
 
+const normalizeUuidOrNull = (value) => {
+  const normalized = String(value || '').trim();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalized)
+    ? normalized
+    : null;
+};
+
 exports.getAllProducts = async (req, res) => {
   try {
     const { audience, category_id } = req.query;
@@ -100,9 +107,9 @@ exports.createProduct = async (req, res) => {
     // Insert variants
     for (const v of variants) {
       await client.query(
-        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)` ,
-        [productId, v.size, v.color, v.price, v.stock, v.sku, v.image]
+        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)` ,
+        [productId, v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false]
       );
     }
 
@@ -182,13 +189,40 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    // Replace variants (delete old, insert new)
-    await client.query(`DELETE FROM product_variant WHERE product_id = $1`, [id]);
+    const existingVariantsResult = await client.query(
+      `SELECT id FROM product_variant WHERE product_id = $1`,
+      [id]
+    );
+    const existingVariantIds = new Set(existingVariantsResult.rows.map((row) => row.id));
+    const incomingVariantIds = new Set();
+
     for (const v of variants) {
+      const variantId = normalizeUuidOrNull(v.id);
+
+      if (variantId && existingVariantIds.has(variantId)) {
+        incomingVariantIds.add(variantId);
+        await client.query(
+          `UPDATE product_variant
+           SET size = $1, color = $2, price = $3, stock = $4, sku = $5, image = $6, use_separate_gallery = $7
+           WHERE id = $8 AND product_id = $9`,
+          [v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false, variantId, id]
+        );
+      } else {
+        const insertedVariant = await client.query(
+          `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           RETURNING id`,
+          [id, v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false]
+        );
+        incomingVariantIds.add(insertedVariant.rows[0].id);
+      }
+    }
+
+    const variantIdsToDelete = [...existingVariantIds].filter((variantId) => !incomingVariantIds.has(variantId));
+    if (variantIdsToDelete.length > 0) {
       await client.query(
-        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [id, v.size, v.color, v.price, v.stock, v.sku, v.image]
+        `DELETE FROM product_variant WHERE id = ANY($1::uuid[]) AND product_id = $2`,
+        [variantIdsToDelete, id]
       );
     }
 

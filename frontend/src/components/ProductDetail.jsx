@@ -402,7 +402,15 @@ const ProductDetail = () => {
       return;
     }
 
-    fetch(`${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`)
+    const variantId = selectedVariant?.id;
+    let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`;
+    
+    // If we have a variant ID, try fetching variant-specific gallery first
+    if (variantId) {
+      url += `?variant_id=${encodeURIComponent(variantId)}`;
+    }
+
+    fetch(url)
       .then(async (res) => {
         if (res.ok) {
           const data = await res.json();
@@ -410,7 +418,7 @@ const ProductDetail = () => {
           return;
         }
 
-        // No design-specific gallery for this color, fallback to default product images
+        // No design-specific gallery for this variant/color, fallback to default product images
         if (res.status === 404) {
           setDesignGalleryImages([]);
           return;
@@ -421,7 +429,7 @@ const ProductDetail = () => {
       .catch(() => {
         setDesignGalleryImages([]);
       });
-  }, [id, selectedColor]);
+  }, [id, selectedColor, selectedVariant?.id]);
 
   const getVariantColorImage = (colorName) => {
     const normalized = String(colorName || '').toLowerCase();
@@ -454,7 +462,17 @@ const ProductDetail = () => {
           let thumbnail = '';
 
           try {
-            const res = await fetch(`${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`);
+            // Try variant-specific gallery first if we have a variant for this color
+            const variantForColor = variants.find(
+              (v) => String(v.color || '').toLowerCase() === String(color).toLowerCase()
+            );
+            
+            let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`;
+            if (variantForColor?.id) {
+              url += `?variant_id=${encodeURIComponent(variantForColor.id)}`;
+            }
+            
+            const res = await fetch(url);
             if (res.ok) {
               const data = await res.json();
               if (Array.isArray(data?.images) && data.images.length > 0) {

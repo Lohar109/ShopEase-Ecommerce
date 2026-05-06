@@ -21,13 +21,14 @@ const STEPS = [
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
+const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalizeId(value));
 
 const ProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
   const mk = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const newSpec = () => ({ sk: mk(), key: '', value: '' });
-  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', stock: '', sku: '', image: img });
+  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', stock: '', sku: '', image: img, use_separate_gallery: false });
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [duplicateSkuError, setDuplicateSkuError] = useState(null);
@@ -70,6 +71,7 @@ const ProductForm = () => {
   const [savingDesignGallery, setSavingDesignGallery] = useState(false);
   const [deletingDesignGalleryId, setDeletingDesignGalleryId] = useState('');
   const [editingGalleryId, setEditingGalleryId] = useState('');
+  const [selectedGalleryVariantId, setSelectedGalleryVariantId] = useState(null);
 
   // Gallery handlers
   const handleGalleryImageChange = (idx, value) => {
@@ -145,13 +147,15 @@ const ProductForm = () => {
         setVariantRows(
           vs.length > 0
             ? vs.map(v => ({
+                id: v.id || '',
                 vk: mk(),
                 size: v.size || '',
                 color: v.color || '',
                 price: v.price ?? '',
                 stock: v.stock ?? '',
                 sku: v.sku || '',
-                image: v.image || ''
+                image: v.image || '',
+                use_separate_gallery: v.use_separate_gallery ?? false
               }))
             : [newVar(p?.main_image || '')]
         );
@@ -300,6 +304,17 @@ const ProductForm = () => {
   const addVariant = () => setVariantRows([...variantRows, newVar()]);
   const removeVariant = idx => setVariantRows(rows => rows.filter((_, i) => i !== idx));
 
+  const getVariantLabelById = (variantId) => {
+    if (!variantId) return 'Shared Gallery';
+
+    const matchedVariant = variantRows.find((variant) => normalizeId(variant.id) === normalizeId(variantId));
+    if (!matchedVariant) return 'Variant Gallery';
+
+    const size = matchedVariant.size || 'Size';
+    const color = matchedVariant.color || 'Color';
+    return `${size} + ${color}`;
+  };
+
   const rem = () => {
     const f = {
       n: '',
@@ -378,12 +393,14 @@ const ProductForm = () => {
         images: galleryImages.filter(Boolean),
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         variants: variantRows.map(v => ({
+          id: v.id || null,
           size: v.size,
           color: v.color,
           price: v.price,
           stock: v.stock,
           sku: v.sku,
-          image: v.image
+          image: v.image,
+          use_separate_gallery: v.use_separate_gallery || false
         }))
       };
 
@@ -411,6 +428,7 @@ const ProductForm = () => {
   const startEditGallery = (gallery) => {
     setEditingGalleryId(gallery.id);
     setDesignColorName(gallery.color_name);
+    setSelectedGalleryVariantId(isUuid(gallery.variant_id) ? String(gallery.variant_id) : null);
     const imageUrls = Array.isArray(gallery.images) ? gallery.images.join('\n') : '';
     setDesignImagesInput(imageUrls);
     setDesignVideoInput(gallery.video_url || '');
@@ -429,6 +447,7 @@ const ProductForm = () => {
     setDesignColorName('');
     setDesignImagesInput('');
     setDesignVideoInput('');
+    setSelectedGalleryVariantId(null);
   };
 
   const handleSaveDesignGallery = async () => {
@@ -452,15 +471,18 @@ const ProductForm = () => {
     setSavingDesignGallery(true);
     try {
       await saveDesignGallery({
+        id: editingGalleryId || null,
         product_id: id,
         color_name: normalizedColor,
         images: parsedImages,
         video_url: normalizedVideoUrl || null,
+        variant_id: isUuid(selectedGalleryVariantId) ? selectedGalleryVariantId : null,
       });
       setDesignColorName('');
       setDesignImagesInput('');
       setDesignVideoInput('');
       setEditingGalleryId('');
+      setSelectedGalleryVariantId(null);
       await loadDesignGalleries(id);
     } catch (err) {
       alert(err.message || 'Failed to save design gallery');
@@ -588,7 +610,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '1fr 1fr 1fr 1fr 1fr 1.5fr auto';
+  const variantCols = '1fr 1fr 1fr 1fr 1fr 1.5fr auto 100px';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -1624,6 +1646,7 @@ const ProductForm = () => {
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
+                      <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Separate<br/>Gallery</div>
                       <div />
                     </div>
 
@@ -1734,6 +1757,15 @@ const ProductForm = () => {
                               }}
                             />
                           )}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <input
+                              type="checkbox"
+                              checked={variant.use_separate_gallery || false}
+                              onChange={e => handleVariantChange(index, 'use_separate_gallery', e.target.checked)}
+                              title="Use separate gallery images for this variant"
+                              style={{ width: 18, height: 18, cursor: 'pointer' }}
+                            />
+                          </div>
                           <button
                             type="button"
                             onClick={() => removeVariant(index)}
@@ -1778,6 +1810,23 @@ const ProductForm = () => {
                   ) : (
                     <>
                       <div data-gallery-form>
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontWeight: 500 }}>Variant Selection</label>
+                        <select
+                          value={selectedGalleryVariantId || ''}
+                          onChange={(e) => setSelectedGalleryVariantId(e.target.value || null)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <option value="">All Variants (Shared Gallery)</option>
+                          {variantRows.length > 0 && variantRows
+                            .filter((variant) => Boolean(variant.id))
+                            .map((variant) => (
+                              <option key={variant.id} value={variant.id}>
+                                {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
                       <div style={{ marginBottom: 12 }}>
                         <label style={{ fontWeight: 500 }}>Color Name</label>
                         <input
@@ -1845,6 +1894,7 @@ const ProductForm = () => {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                     <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                                    <div style={{ fontSize: 12, color: '#6b7280' }}>{getVariantLabelById(gallery.variant_id)}</div>
                                     {gallery.video_url && (
                                       <a
                                         href={gallery.video_url}
