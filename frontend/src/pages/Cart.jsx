@@ -60,50 +60,50 @@ const Cart = () => {
             className="cart-empty-state flex"
             style={{
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
               minHeight: '70vh',
-              textAlign: 'center',
-              gap: '0px',
+              gap: '20px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
             <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(20px)' }}>
-              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 300 }} />
+              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 400 }} />
             </div>
-            <h1
-              className="cart-title"
-              style={{
-                fontSize: '2rem',
-                fontWeight: '700',
-                color: '#1a1a1a',
-                textAlign: 'center',
-                marginTop: '0px',
-                marginBottom: '2px'
-              }}
-            >
-              Your shopping bag is empty
-            </h1>
-            <p
-              style={{
-                fontSize: '1rem',
-                color: '#4b5563',
-                maxWidth: '460px',
-                lineHeight: 1.6,
-                marginBottom: '1.6rem'
-              }}
-            >
-              Looks like you have not added anything yet. Explore our latest collection and find pieces worth carrying home.
-            </p>
-            <button
-              type="button"
-              className="cart-continue-btn"
-              style={{ marginTop: '4px', width: '230px' }}
-              onClick={() => navigate('/')}
-            >
-              Continue Shopping
-            </button>
+            <div className="cart-empty-content" style={{ textAlign: 'left' }}>
+              <h1
+                className="cart-title"
+                style={{
+                  fontSize: '2rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  marginTop: '0px',
+                  marginBottom: '2px'
+                }}
+              >
+                Your shopping bag is empty
+              </h1>
+              <p
+                style={{
+                  fontSize: '1rem',
+                  color: '#4b5563',
+                  maxWidth: '460px',
+                  lineHeight: 1.6,
+                  marginBottom: '1.6rem'
+                }}
+              >
+                Looks like you have not added anything yet. Explore our latest collection and find pieces worth carrying home.
+              </p>
+              <button
+                type="button"
+                className="cart-continue-btn"
+                style={{ marginTop: '4px', width: '230px' }}
+                onClick={() => navigate('/')}
+              >
+                Continue Shopping
+              </button>
+            </div>
           </div>
         ) : (
           <>

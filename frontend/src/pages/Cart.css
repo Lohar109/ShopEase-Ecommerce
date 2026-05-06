@@ -330,6 +330,16 @@
   }
 }
 
+@media (max-width: 768px) {
+  .cart-empty-state {
+    flex-direction: column !important;
+  }
+
+  .cart-empty-content {
+    text-align: center !important;
+  }
+}
+
 @media (max-width: 640px) {
   .cart-page-shell {
     padding: 0 0.75rem;
