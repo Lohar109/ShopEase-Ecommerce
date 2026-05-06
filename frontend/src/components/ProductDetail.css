@@ -730,15 +730,15 @@
   font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.02em;
   color: #374151;
   line-height: 1.2;
 }
 
 .pdp-stock-progress-text strong {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  color: #374151;
+  color: #B91C1C;
 }
 
 .pdp-stock-progress-track {
