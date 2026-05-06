@@ -69,7 +69,7 @@ const Cart = () => {
             }}
           >
             <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(20px)' }}>
-              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 400 }} />
+              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 250 }} />
             </div>
             <div className="cart-empty-content" style={{ textAlign: 'left' }}>
               <h1
