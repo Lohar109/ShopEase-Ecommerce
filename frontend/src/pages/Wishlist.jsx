@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Heart } from "lucide-react";
+import Lottie from 'lottie-react';
+import emptyWishlistData from '../assets/empty-wishlist.json';
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import ProductCard from "../components/ProductCard";
@@ -11,6 +13,8 @@ import "../styles.css";
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
+
+const WishlistLottie = Lottie?.default ?? Lottie;
 
 const Wishlist = () => {
   const { wishlist, clearWishlist, syncWishlistFromStorage } = useContext(WishlistContext);
@@ -138,17 +142,13 @@ const Wishlist = () => {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            gap: '12px',
+            gap: '4px',
             fontFamily: 'Poppins, sans-serif'
           }}
         >
-          <Heart
-            size={82}
-            strokeWidth={1.5}
-            color="#d1d5db"
-            aria-hidden="true"
-            style={{ marginBottom: '6px' }}
-          />
+          <div className="wishlist-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(-20px)' }}>
+            <WishlistLottie animationData={emptyWishlistData} autoPlay={true} loop={true} style={{ width: 250 }} />
+          </div>
           <h1
             className="cart-title"
             style={{
@@ -156,6 +156,7 @@ const Wishlist = () => {
               fontWeight: '700',
               color: '#1a1a1a',
               textAlign: 'center',
+              marginTop: '0',
               marginBottom: '2px'
             }}
           >

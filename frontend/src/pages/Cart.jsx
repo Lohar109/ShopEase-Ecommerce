@@ -69,7 +69,7 @@ const Cart = () => {
               fontFamily: "Poppins, sans-serif"
             }}
           >
-            <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(25px)' }}>
+            <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(20px)' }}>
               <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 300 }} />
             </div>
             <h1
