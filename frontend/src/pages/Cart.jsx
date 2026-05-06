@@ -64,11 +64,11 @@ const Cart = () => {
               alignItems: 'center',
               justifyContent: 'center',
               minHeight: '70vh',
-              gap: '20px',
+              gap: '30px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
-            <div className="cart-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(20px)' }}>
+            <div className="cart-empty-lottie" aria-hidden="true">
               <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 250 }} />
             </div>
             <div className="cart-empty-content" style={{ textAlign: 'left' }}>
@@ -88,7 +88,7 @@ const Cart = () => {
                 style={{
                   fontSize: '1rem',
                   color: '#4b5563',
-                  maxWidth: '460px',
+                  maxWidth: '100%',
                   lineHeight: 1.6,
                   marginBottom: '1.6rem'
                 }}
