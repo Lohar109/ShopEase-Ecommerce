@@ -227,7 +227,22 @@ exports.updateProduct = async (req, res) => {
     }
 
     await client.query('COMMIT');
-    res.json({ message: 'Product updated', product_id: id });
+
+    // Fetch updated product and variants to return to client
+    const productResult2 = await pool.query(
+      `SELECT p.*, c.name AS category_name FROM product p LEFT JOIN category c ON p.category_id = c.id WHERE p.id = $1`,
+      [id]
+    );
+    const variantsResult2 = await pool.query(
+      `SELECT * FROM product_variant WHERE product_id = $1 ORDER BY created_at ASC`,
+      [id]
+    );
+
+    res.json({
+      message: 'Product updated',
+      product: productResult2.rows[0] || null,
+      variants: variantsResult2.rows
+    });
   } catch (err) {
     await client.query('ROLLBACK');
     if (isDuplicateSkuError(err)) {

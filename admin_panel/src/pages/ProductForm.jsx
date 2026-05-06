@@ -405,7 +405,27 @@ const ProductForm = () => {
       };
 
       if (isEditMode) {
-        await updateProduct(id, productData);
+        const updated = await updateProduct(id, productData);
+        // If backend returned updated product and variants, refresh local state so UI reflects persisted flags
+        if (updated && updated.variants) {
+          const vs = Array.isArray(updated.variants) ? updated.variants : [];
+          setVariantRows(
+            vs.length > 0
+              ? vs.map(v => ({
+                  id: v.id || '',
+                  vk: mk(),
+                  size: v.size || '',
+                  color: v.color || '',
+                  price: v.price ?? '',
+                  stock: v.stock ?? '',
+                  sku: v.sku || '',
+                  image: v.image || '',
+                  use_separate_gallery: v.use_separate_gallery ?? false
+                }))
+              : [newVar(mainImage || '')]
+          );
+          setEditProductData(updated.product || editProductData);
+        }
       } else {
         await saveProduct(productData);
       }
@@ -1819,7 +1839,7 @@ const ProductForm = () => {
                         >
                           <option value="">All Variants (Shared Gallery)</option>
                           {variantRows.length > 0 && variantRows
-                            .filter((variant) => Boolean(variant.id))
+                            .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
                             .map((variant) => (
                               <option key={variant.id} value={variant.id}>
                                 {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
