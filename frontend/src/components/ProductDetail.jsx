@@ -380,6 +380,10 @@ const ProductDetail = () => {
     variants[0] ||
     {};
 
+  const stockCount = Number(selectedVariant?.stock || 0);
+  const stockBarWidth = Math.min(100, Math.max(0, (stockCount / 10) * 100));
+  const stockBarColor = stockCount <= 5 ? '#dc2626' : '#f59e0b';
+
   // Fetch design-specific gallery when color changes
   useEffect(() => {
     if (!id || !selectedColor) {
@@ -916,28 +920,26 @@ const ProductDetail = () => {
                     )}
                     {/* Scarcity + Delivery row */}
                     <div className="pdp-stock-delivery-row">
-                      {selectedVariant && (() => {
-                        const stock = selectedVariant.stock;
-                        if (stock === 0) return (
-                          <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
-                        );
-                        if (stock > 0 && stock <= 10) return (
-                          <div className="pdp-stock-progress-block" aria-live="polite">
-                            <div className="pdp-stock-progress-label">
-                              <span className="pdp-stock-progress-text">
-                                Only <strong>{stock}</strong> left
-                              </span>
-                            </div>
-                            <div className="pdp-stock-progress-track" aria-hidden="true">
-                              <div
-                                className="pdp-stock-progress-fill"
-                                style={{ width: showStockProgress ? `${Math.min(100, (stock / 20) * 100)}%` : '0%' }}
-                              />
-                            </div>
+                      {stockCount === 0 ? (
+                        <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
+                      ) : stockCount > 0 && stockCount <= 10 ? (
+                        <div className="pdp-stock-progress-block" aria-live="polite">
+                          <div className="pdp-stock-progress-label">
+                            <span className="pdp-stock-progress-text">
+                              Only <strong>{stockCount}</strong> left
+                            </span>
                           </div>
-                        );
-                        return null;
-                      })()}
+                          <div className="pdp-stock-progress-track" aria-hidden="true">
+                            <div
+                              className="pdp-stock-progress-fill"
+                              style={{
+                                width: showStockProgress ? `${stockBarWidth}%` : '0%',
+                                backgroundColor: stockBarColor,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
                       <span className="pdp-delivery-text">
                         <Truck size={14} strokeWidth={2.1} aria-hidden="true" />
                         <span>Delivered by <strong>Tuesday, April 14</strong></span>
