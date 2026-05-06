@@ -63,13 +63,14 @@ const Cart = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '78vh',
-              gap: '20px',
+              width: '100%',
+              minHeight: 'calc(100vh - 150px)',
+              gap: '40px',
               fontFamily: "Poppins, sans-serif"
             }}
           >
             <div className="cart-empty-lottie" aria-hidden="true">
-              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 250 }} />
+              <CartLottie animationData={emptyCartData} autoPlay={true} loop={true} style={{ width: 350 }} />
             </div>
             <div className="cart-empty-content" style={{ textAlign: 'left', maxWidth: 'none', width: 'auto' }}>
               <h1
@@ -79,7 +80,7 @@ const Cart = () => {
                   fontWeight: '700',
                   color: '#1a1a1a',
                   margin: '0',
-                  marginBottom: '2px'
+                  marginBottom: '12px'
                 }}
               >
                 Your shopping bag is empty
@@ -88,7 +89,6 @@ const Cart = () => {
                 style={{
                   fontSize: '1rem',
                   color: '#4b5563',
-                  maxWidth: '100%',
                   lineHeight: 1.6,
                   whiteSpace: 'nowrap',
                   marginBottom: '1.6rem'
