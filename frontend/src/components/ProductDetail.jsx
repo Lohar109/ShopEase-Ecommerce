@@ -402,10 +402,10 @@ const ProductDetail = () => {
       return;
     }
 
-    const variantId = selectedVariant?.id;
+    // Only pass variant_id if this variant is marked for separate gallery
+    const variantId = selectedVariant?.use_separate_gallery ? selectedVariant?.id : null;
     let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`;
     
-    // If we have a variant ID, try fetching variant-specific gallery first
     if (variantId) {
       url += `?variant_id=${encodeURIComponent(variantId)}`;
     }
@@ -462,13 +462,13 @@ const ProductDetail = () => {
           let thumbnail = '';
 
           try {
-            // Try variant-specific gallery first if we have a variant for this color
+            // Try variant-specific gallery first if variant has use_separate_gallery enabled
             const variantForColor = variants.find(
               (v) => String(v.color || '').toLowerCase() === String(color).toLowerCase()
             );
             
             let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`;
-            if (variantForColor?.id) {
+            if (variantForColor?.use_separate_gallery && variantForColor?.id) {
               url += `?variant_id=${encodeURIComponent(variantForColor.id)}`;
             }
             
