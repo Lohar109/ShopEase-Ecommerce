@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Truck } from 'lucide-react';
+import { ShoppingBag, Truck, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 import './Shipping.css';
@@ -179,23 +179,19 @@ const Shipping = () => {
             ) : (
               <>
                 <div className="shipping-form-card shipping-address-card">
-                  <div className="shipping-form-header">
-                    <h1>Delivery Address</h1>
-                    <p>Your saved shipping details for this order.</p>
-                  </div>
-
-                  <div className="shipping-address-summary">
-                    <div className="shipping-address-top">
-                      <div>
-                        <h2>{formData.fullName}</h2>
-                        <p>{formData.mobileNumber}</p>
+                  <div className="shipping-address-compact">
+                    <div className="shipping-address-row">
+                      <div className="shipping-address-left">
+                        <span className="deliver-to">Deliver to:&nbsp;</span>
+                        <span className="address-name-pincode"><strong>{formData.fullName} {formData.pincode}</strong></span>
                       </div>
+
                       <button type="button" className="shipping-change-btn" onClick={() => setIsAddressSaved(false)}>
-                        Change
+                        CHANGE ADDRESS
                       </button>
                     </div>
 
-                    <p className="shipping-address-line">{formattedAddress}</p>
+                    <p className="shipping-address-line shipping-address-truncated">{formattedAddress}</p>
                   </div>
 
                 </div>
