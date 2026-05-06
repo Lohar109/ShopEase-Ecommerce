@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 import './Shipping.css';
@@ -21,6 +21,7 @@ const Shipping = () => {
     houseNo: '',
     roadName: '',
   });
+  const [deliveryMethod, setDeliveryMethod] = useState('standard');
   const [isAddressSaved, setIsAddressSaved] = useState(false);
 
   useEffect(() => {
@@ -37,15 +38,6 @@ const Shipping = () => {
       window.localStorage.removeItem('shopease_address');
     }
   }, []);
-
-  const subtotal = useMemo(
-    () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0),
-    [cartItems]
-  );
-  const platformFee = 250;
-  const memberDiscount = -5000;
-  const newGrandTotal = subtotal + platformFee + memberDiscount;
-  const savingsAmount = Math.abs(memberDiscount) - platformFee;
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -75,12 +67,11 @@ const Shipping = () => {
       return;
     }
 
-    // Address is saved — proceed to Payment step.
-    navigate('/checkout/payment', {
+    navigate('/checkout/summary', {
       state: {
         cartItems,
-        total: newGrandTotal,
         shippingAddress: formData,
+        deliveryMethod,
       },
     });
   };
@@ -139,7 +130,7 @@ const Shipping = () => {
               <div className="shipping-form-card">
                 <div className="shipping-form-header">
                   <h1>Shipping Details</h1>
-                  <p>Enter your delivery address to continue to payment.</p>
+                  <p>Enter your delivery address to continue to order review.</p>
                 </div>
 
                 <form className="shipping-form-grid" onSubmit={handleSaveAddress}>
@@ -188,86 +179,76 @@ const Shipping = () => {
             ) : (
               <>
                 <div className="shipping-form-card shipping-address-card">
-                <div className="shipping-form-header">
-                  <h1>Delivery Address</h1>
-                  <p>Your saved shipping details for this order.</p>
+                  <div className="shipping-form-header">
+                    <h1>Delivery Address</h1>
+                    <p>Your saved shipping details for this order.</p>
+                  </div>
+
+                  <div className="shipping-address-summary">
+                    <div className="shipping-address-top">
+                      <div>
+                        <h2>{formData.fullName}</h2>
+                        <p>{formData.mobileNumber}</p>
+                      </div>
+                      <button type="button" className="shipping-change-btn" onClick={() => setIsAddressSaved(false)}>
+                        Change
+                      </button>
+                    </div>
+
+                    <p className="shipping-address-line">{formattedAddress}</p>
+                  </div>
+
                 </div>
 
-                <div className="shipping-address-summary">
-                  <div className="shipping-address-top">
-                    <div>
-                      <h2>{formData.fullName}</h2>
-                      <p>{formData.mobileNumber}</p>
-                    </div>
-                    <button type="button" className="shipping-change-btn" onClick={() => setIsAddressSaved(false)}>
-                      Change
+                <div className="shipping-form-card shipping-delivery-card">
+                  <div className="shipping-form-header">
+                    <h3>Delivery Method</h3>
+                    <p>Choose how quickly you want your order delivered.</p>
+                  </div>
+
+                  <div className="delivery-method-list" role="radiogroup" aria-label="Delivery method">
+                    <button
+                      type="button"
+                      className={`delivery-method-option${deliveryMethod === 'standard' ? ' selected' : ''}`}
+                      onClick={() => setDeliveryMethod('standard')}
+                    >
+                      <div className="delivery-method-top">
+                        <strong>Standard</strong>
+                        <span>5-7 business days</span>
+                      </div>
+                      <div className="delivery-method-price">Free</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`delivery-method-option${deliveryMethod === 'express' ? ' selected' : ''}`}
+                      onClick={() => setDeliveryMethod('express')}
+                    >
+                      <div className="delivery-method-top">
+                        <strong>Express</strong>
+                        <span>2-3 business days</span>
+                      </div>
+                      <div className="delivery-method-price">₹149</div>
                     </button>
                   </div>
 
-                      <p className="shipping-address-line">{formattedAddress}</p>
-                    </div>
-                  </div>
-
-                  <div className="shipping-form-card shipping-order-summary">
-                    <div className="shipping-form-header">
-                      <h3>Order Summary</h3>
-                    </div>
-
-                    <div className="order-items-list">
-                      {cartItems.map((item, idx) => {
-                        const src = item.image || item.thumbnail || (item.images && item.images[0]);
-                        const key = item.id || item._id || item.sku || item.name || idx;
-                        return (
-                          <div className="order-item-row" key={key}>
-                            {src ? (
-                              <img src={src} alt={item.name} className="order-item-thumb" />
-                            ) : (
-                              <div className="order-item-thumb order-item-thumb--empty" />
-                            )}
-
-                            <div className="order-item-meta">
-                              <div className="order-item-name">{item.name && item.name.length > 48 ? `${item.name.slice(0, 45)}...` : item.name}</div>
-                              <div className="order-item-qty-price">Qty: {item.quantity} • ₹{(Number(item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <p className="delivery-method-note">
+                    <Truck size={14} strokeWidth={2.1} aria-hidden="true" />
+                    <span>Delivery speed can be changed before payment on the review page.</span>
+                  </p>
+                </div>
               </>
             )}
           </div>
 
           <aside className="cart-summary-card block lg:col-span-1">
-            <h3>Price Details</h3>
-            <div className="cart-summary-row">
-              <span>Subtotal</span>
-              <strong>₹ {subtotal.toFixed(2)}</strong>
-            </div>
-            <div className="cart-summary-row">
-              <span className="cart-summary-title">
-                Platform Fee <ChevronDown size={14} aria-hidden="true" />
-              </span>
-              <span>₹ {platformFee.toFixed(2)}</span>
-            </div>
-            <div className="cart-summary-row">
-              <span className="cart-summary-title">
-                Discount <ChevronDown size={14} aria-hidden="true" />
-              </span>
-              <strong className="cart-summary-discount">-₹ {Math.abs(memberDiscount).toFixed(2)}</strong>
-            </div>
-            <div className="cart-summary-row grand-total">
-              <span>Grand Total</span>
-              <strong>₹ {newGrandTotal.toFixed(2)}</strong>
-            </div>
-
-            <div className="cart-savings-box" role="status" aria-live="polite">
-              <ShieldCheck size={22} aria-hidden="true" />
-              <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
-            </div>
+            <h3>Next Step</h3>
+            <p style={{ margin: 0, color: '#6b7280', lineHeight: 1.6 }}>
+              Review your items and pricing on the order summary page before proceeding to payment.
+            </p>
 
             <button type="button" className="cart-checkout-btn shipping-payment-btn" onClick={handleSidebarAction}>
-              {!isAddressSaved ? 'Save Address' : 'Continue to Payment'}
+              {!isAddressSaved ? 'Save Address' : 'Continue to Order Summary'}
             </button>
           </aside>
         </div>
