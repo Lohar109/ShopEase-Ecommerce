@@ -132,59 +132,69 @@ const Wishlist = () => {
           </div>
         </section>
       ) : !hasWishlistItems ? (
-        <section
-          className="wishlist-empty-state"
-          aria-live="polite"
-          style={{
-            minHeight: '70vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            gap: '4px',
-            fontFamily: 'Poppins, sans-serif'
-          }}
-        >
-          <div className="wishlist-empty-lottie" aria-hidden="true" style={{ transform: 'translateY(-20px)' }}>
-            <WishlistLottie animationData={emptyWishlistData} autoPlay={true} loop={true} style={{ width: 250 }} />
-          </div>
-          <h1
-            className="cart-title"
+        <>
+          <style>{`
+            @media (max-width: 768px) {
+              .wishlist-empty-state {
+                flex-direction: column !important;
+              }
+              .wishlist-empty-content {
+                text-align: center !important;
+              }
+            }
+          `}</style>
+          <section
+            className="wishlist-empty-state"
+            aria-live="polite"
             style={{
-              fontSize: '2rem',
-              fontWeight: '700',
-              color: '#1a1a1a',
-              textAlign: 'center',
-              marginTop: '0',
-              marginBottom: '2px'
+              minHeight: '70vh',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '40px',
+              fontFamily: 'Poppins, sans-serif'
             }}
           >
-            Your wishlist is lonely
-          </h1>
-          <p
-            style={{
-              fontSize: '1rem',
-              color: '#4b5563',
-              maxWidth: '460px',
-              lineHeight: 1.6,
-              marginBottom: '1.6rem'
-            }}
-          >
-            Your wishlist is feeling a bit empty. Explore our unique designs and add products that tell your story!
-          </p>
-          <button
-            type="button"
-            className="cart-continue-btn"
-            style={{
-              marginTop: '4px',
-              width: '230px'
-            }}
-            onClick={() => navigate("/shop")}
-          >
-            Explore Shop
-          </button>
-        </section>
+            <div className="wishlist-empty-lottie" aria-hidden="true">
+              <WishlistLottie animationData={emptyWishlistData} autoPlay={true} loop={true} style={{ width: 350 }} />
+            </div>
+            <div className="wishlist-empty-content" style={{ textAlign: 'left', minWidth: '400px' }}>
+              <h1
+                className="cart-title"
+                style={{
+                  fontSize: '2rem',
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  marginTop: '0',
+                  marginBottom: '12px'
+                }}
+              >
+                Your wishlist is lonely
+              </h1>
+              <p
+                style={{
+                  fontSize: '1rem',
+                  color: '#4b5563',
+                  lineHeight: 1.6,
+                  marginBottom: '1.6rem'
+                }}
+              >
+                Your wishlist is feeling a bit empty. Explore our unique designs and add products that tell your story!
+              </p>
+              <button
+                type="button"
+                className="cart-continue-btn"
+                style={{
+                  width: '230px'
+                }}
+                onClick={() => navigate("/shop")}
+              >
+                Explore Shop
+              </button>
+            </div>
+          </section>
+        </>
       ) : (
         <section className="shop-product-grid">
           <div className="wishlist-header-bar">
