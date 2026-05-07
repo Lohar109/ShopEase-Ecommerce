@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, ShieldCheck, ShoppingBag, Trash2 } from 'lucide-react';
+import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
 import toast from 'react-hot-toast';
@@ -18,6 +18,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
+  const [showOffersModal, setShowOffersModal] = React.useState(false);
 
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
   const platformFee = 250;
@@ -51,6 +52,26 @@ const Cart = () => {
     if (src.startsWith('/')) return `${API_ORIGIN}${src}`;
     return `${API_ORIGIN}/${src}`;
   };
+
+  const availableOffers = [
+    '7.5% Cashback on select prepaid orders via partner wallets. T&C',
+    'Up to 10% off with Axis Bank Credit Cards on minimum spend. T&C',
+    'Flat 15% instant discount on HSBC Bank Cards, up to a capped value. T&C',
+    'Get 5% off on Mobikwik wallet payments with eligible orders. T&C',
+    'Save extra on UPI checkout with limited-time bank and wallet offers. T&C',
+    'Flat Rs. 300 off on orders above a minimum cart value with select cards. T&C',
+    'Additional 10% off on first payment using eligible digital wallets. T&C',
+    'Free shipping on prepaid orders during the current offer window. T&C',
+    'Extra Rs. 200 cashback on orders using partner bank payment methods. T&C',
+    'Up to 12% off on selected categories with co-branded bank offers. T&C',
+    'Weekend special: 7% instant discount on cart totals above threshold. T&C',
+    'Flat Rs. 150 off when paying through supported wallet checkout. T&C',
+    'Get bonus cashback on recurring prepaid purchases. T&C',
+    'Extra 5% off on app-exclusive payment offers. T&C',
+    'Limited-time festive offer: additional savings on eligible payment methods. T&C'
+  ];
+
+  const previewOffers = availableOffers.slice(0, 2);
 
   return (
     <div className="cart-page-shell block w-full min-h-screen">
@@ -155,7 +176,37 @@ const Cart = () => {
               ))}
               </div>
 
-              <aside className="cart-summary-card block lg:col-span-1">
+              <aside className="cart-summary-column block lg:col-span-1">
+                <section className="cart-offers-card" aria-label="Available offers">
+                  <div className="cart-offers-header">
+                    <span className="cart-offers-icon" aria-hidden="true">
+                      <Percent size={16} strokeWidth={2.25} />
+                    </span>
+                    <h3>Available Offers</h3>
+                  </div>
+
+                  <div className="cart-offers-preview" aria-label="Offer preview">
+                    {previewOffers.map((offer) => (
+                      <div className="cart-offer-row" key={offer}>
+                        <span className="cart-offer-dot" aria-hidden="true" />
+                        <p>
+                          {offer.split(' T&C')[0]}
+                          <span className="cart-offer-tc"> T&amp;C</span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="cart-offers-toggle"
+                    onClick={() => setShowOffersModal(true)}
+                  >
+                    Show More
+                  </button>
+                </section>
+
+                <aside className="cart-summary-card">
                 <h3>Price Details</h3>
                 <div className="cart-summary-row">
                   <span>Subtotal</span>
@@ -190,8 +241,41 @@ const Cart = () => {
                 >
                   Proceed to Checkout
                 </button>
+                </aside>
               </aside>
             </div>
+
+            {showOffersModal && (
+              <div className="cart-offers-modal-overlay" onClick={() => setShowOffersModal(false)}>
+                <div className="cart-offers-modal" onClick={(event) => event.stopPropagation()}>
+                  <div className="cart-offers-modal-header">
+                    <h2>Available Offers</h2>
+                    <button
+                      type="button"
+                      className="cart-offers-modal-close"
+                      onClick={() => setShowOffersModal(false)}
+                      aria-label="Close available offers"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div className="cart-offers-modal-body">
+                    <div className="cart-offers-modal-grid">
+                      {availableOffers.map((offer) => (
+                        <div className="cart-offers-modal-item" key={offer}>
+                          <span className="cart-offers-modal-dot" aria-hidden="true" />
+                          <p>
+                            {offer.split(' T&C')[0]}
+                            <span className="cart-offer-tc"> T&amp;C</span>
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
