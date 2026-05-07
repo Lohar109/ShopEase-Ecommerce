@@ -3,6 +3,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { deleteCoupon, fetchCoupons, updateCouponStatus } from '../services/couponService';
+import ConfirmModal from '../components/ConfirmModal';
 
 const ToggleSwitch = ({ value, onToggle, disabled }) => {
   const trackStyle = {
@@ -57,6 +58,8 @@ const CouponsPage = () => {
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [targetCouponId, setTargetCouponId] = useState('');
 
   const sortedCoupons = useMemo(() => (
     [...coupons].sort((a, b) => new Date(a.expiry_date) - new Date(b.expiry_date))
@@ -95,19 +98,44 @@ const CouponsPage = () => {
     }
   };
 
-  const handleDelete = async (couponId) => {
-    const confirmed = window.confirm('Delete this coupon?');
-    if (!confirmed) return;
+  const openDeleteModal = (couponId) => {
+    setTargetCouponId(String(couponId || ''));
+    setIsModalOpen(true);
+  };
 
+  const closeDeleteModal = () => {
+    if (deletingId) return;
+    setIsModalOpen(false);
+    setTargetCouponId('');
+  };
+
+  const handleDeleteCoupon = async () => {
+    if (!targetCouponId) return;
+
+    setDeletingId(targetCouponId);
     try {
-      setDeletingId(couponId);
-      await deleteCoupon(couponId);
-      setCoupons((prev) => prev.filter((coupon) => coupon.id !== couponId));
-      toast.success('Coupon deleted');
+      await deleteCoupon(targetCouponId);
+      setCoupons((prev) => prev.filter((coupon) => coupon.id !== targetCouponId));
+      setIsModalOpen(false);
+      setTargetCouponId('');
+      toast.success('Coupon deleted successfully', {
+        position: 'top-center',
+        icon: <Trash2 size={15} color="#dc2626" />,
+        className: 'toast-pop',
+        style: {
+          border: '1px solid #fecaca',
+          borderLeft: '4px solid #dc2626',
+          background: '#ffffff',
+          color: '#111827',
+          borderRadius: '12px',
+          boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
+          padding: '10px 12px',
+        },
+      });
     } catch (err) {
       toast.error(err.message || 'Failed to delete coupon');
     } finally {
-      setDeletingId(null);
+      setDeletingId('');
     }
   };
 
@@ -208,7 +236,7 @@ const CouponsPage = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(coupon.id)}
+                      onClick={() => openDeleteModal(coupon.id)}
                       style={deleteIconButtonStyle}
                       aria-label="Delete coupon"
                       disabled={deletingId === coupon.id}
@@ -232,6 +260,17 @@ const CouponsPage = () => {
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        title="Are you sure?"
+        message="This action cannot be undone. This coupon will be permanently removed from the system."
+        cancelLabel="Cancel"
+        confirmLabel={deletingId ? 'Deleting...' : 'Delete'}
+        onCancel={closeDeleteModal}
+        onConfirm={handleDeleteCoupon}
+        isConfirming={Boolean(deletingId)}
+      />
     </div>
   );
 };
