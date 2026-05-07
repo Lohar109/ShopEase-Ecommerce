@@ -572,7 +572,7 @@
   flex-direction: column;
   gap: 12px;
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .cart-coupons-input-row {
@@ -632,18 +632,19 @@
   flex-direction: column;
   gap: 8px;
   flex: 1;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 4px;
   padding-bottom: 8px;
+  padding-top: 16px;
 }
 
-.cart-coupons-list::-webkit-scrollbar {
+.cart-coupons-modal-body::-webkit-scrollbar {
   width: 4px;
 }
-.cart-coupons-list::-webkit-scrollbar-track {
+.cart-coupons-modal-body::-webkit-scrollbar-track {
   background: transparent;
 }
-.cart-coupons-list::-webkit-scrollbar-thumb {
+.cart-coupons-modal-body::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }

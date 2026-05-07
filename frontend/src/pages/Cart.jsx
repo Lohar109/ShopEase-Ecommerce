@@ -762,26 +762,27 @@ const Cart = () => {
                                       BEST VALUE
                                     </span>
                                   )}
-                                  <div style={{ display: 'flex', alignItems: 'center', height: '36px' }}>
-                                    <input
-                                      type="checkbox"
-                                      checked={isSelected}
-                                      onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
-                                    />
-                                  </div>
-                                  <div className="cart-coupon-item-content" style={{ display: 'flex', flexDirection: 'column', width: '100%', paddingLeft: '4px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                    <div style={{ flexShrink: 0, marginRight: '16px', display: 'flex', alignItems: 'center' }}>
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
+                                      />
+                                    </div>
                                     <div 
                                       className="cart-coupon-code-box" 
                                       style={{ 
-                                        display: 'inline-flex', 
+                                        display: 'flex', 
                                         alignItems: 'center', 
+                                        justifyContent: 'center',
                                         height: '36px', 
-                                        marginBottom: '16px', 
-                                        alignSelf: 'flex-start',
+                                        width: '120px',
+                                        flexShrink: 0,
+                                        marginRight: '24px',
                                         background: 'repeating-linear-gradient(45deg, #fdfbf7, #fdfbf7 2px, #f4f1eb 2px, #f4f1eb 4px)',
                                         border: '1px solid #e6e2d8',
                                         borderRadius: '6px',
-                                        padding: '0 14px',
                                         boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.04)'
                                       }}
                                     >
@@ -789,18 +790,12 @@ const Cart = () => {
                                         {coupon.code}
                                       </span>
                                     </div>
-                                    <div className="cart-coupon-meta" style={{ width: '100%', textAlign: 'left' }}>
-                                      <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '15px', color: '#111827', marginBottom: '10px' }}>
+                                    <div className="cart-coupon-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '280px' }}>
+                                      <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '15px', color: '#111827', margin: 0, fontWeight: '800' }}>
                                         Save ₹{coupon.savings.toFixed(0)}
                                       </p>
-                                      <p className="cart-coupon-policy" style={{ textAlign: 'left', marginBottom: '8px' }}>
-                                        Once you apply this coupon, items will be non-returnable.
-                                      </p>
-                                      <p className="cart-coupon-desc" style={{ textAlign: 'left', marginBottom: '8px', lineHeight: '1.5' }}>
+                                      <p className="cart-coupon-desc" style={{ textAlign: 'left', margin: 0, lineHeight: '1.4', fontSize: '12px', color: '#6b7280' }}>
                                         {coupon.description}
-                                      </p>
-                                      <p className="cart-coupon-expiry" style={{ textAlign: 'left' }}>
-                                        Expires on: {expiryDate} · {tc}
                                       </p>
                                     </div>
                                   </div>
@@ -817,17 +812,43 @@ const Cart = () => {
                                   const tc = coupon.tc || 'T&C Apply';
                                   
                                   return (
-                                    <div className="cart-coupon-item is-locked" key={coupon.code} style={{ opacity: 0.6, cursor: 'not-allowed', filter: 'grayscale(1)', marginBottom: '12px', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                                      <div className="cart-coupon-item-content" style={{ paddingLeft: '8px' }}>
-                                        <div className="cart-coupon-code-box" style={{ background: '#f3f4f6', color: '#9ca3af', display: 'inline-block', padding: '4px 8px', borderRadius: '4px', fontWeight: 600 }}>{coupon.code}</div>
-                                        <div className="cart-coupon-meta" style={{ marginTop: '8px' }}>
+                                    <div className="cart-coupon-item is-locked" key={coupon.code} style={{ opacity: 0.6, cursor: 'not-allowed', filter: 'grayscale(1)', marginBottom: '12px', padding: '20px', border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                        <div style={{ flexShrink: 0, marginRight: '16px', display: 'flex', alignItems: 'center' }}>
+                                          <input type="checkbox" disabled />
+                                        </div>
+                                        <div 
+                                          className="cart-coupon-code-box" 
+                                          style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center',
+                                            height: '36px', 
+                                            width: '120px',
+                                            flexShrink: 0,
+                                            marginRight: '24px',
+                                            background: '#f3f4f6', 
+                                            color: '#9ca3af',
+                                            border: '1px dashed #d1d5db',
+                                            borderRadius: '6px',
+                                            fontWeight: 600
+                                          }}
+                                        >
+                                          {coupon.code}
+                                        </div>
+                                        <div className="cart-coupon-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '280px' }}>
                                           {coupon.eligibility.lockedReason === 'targetMismatch' ? (
-                                            <p className="cart-coupon-title" style={{ color: '#6b7280', fontSize: '12px', fontWeight: 600 }}>Not applicable on current cart items</p>
+                                            <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '13px', color: '#6b7280', margin: 0, fontWeight: '800' }}>
+                                              Not applicable on current cart items
+                                            </p>
                                           ) : (
-                                            <p className="cart-coupon-title" style={{ color: '#ef4444', fontSize: '12px', fontWeight: 600 }}>Add ₹{coupon.eligibility.diff.toFixed(0)} more to unlock this offer</p>
+                                            <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '13px', color: '#ef4444', margin: 0, fontWeight: '800' }}>
+                                              Add ₹{coupon.eligibility.diff.toFixed(0)} more to unlock this offer
+                                            </p>
                                           )}
-                                          <p className="cart-coupon-desc" style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>{coupon.description}</p>
-                                          <p className="cart-coupon-expiry" style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px' }}>Expires on: {expiryDate} · {tc}</p>
+                                          <p className="cart-coupon-desc" style={{ textAlign: 'left', margin: 0, lineHeight: '1.4', fontSize: '12px', color: '#6b7280' }}>
+                                            {coupon.description}
+                                          </p>
                                         </div>
                                       </div>
                                     </div>
