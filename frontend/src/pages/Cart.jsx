@@ -27,55 +27,28 @@ const Cart = () => {
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
   const platformFee = 250;
   const memberDiscount = -5000;
-  const availableCoupons = [
-    {
-      code: 'SAVE100',
-      title: 'Instant Rs. 100 off',
-      discountValue: { type: 'fixed', value: 100 },
-      description: 'Save instantly on this order',
-      tc: 'Applicable on prepaid checkout only',
-      expiry: 'Valid till 31 May 2026'
-    },
-    {
-      code: 'FESTIVE10',
-      title: '10% off up to Rs. 250',
-      discountValue: { type: 'percentage', value: 10 },
-      description: 'A clean boost for your cart total',
-      tc: 'Minimum order value applies',
-      expiry: 'Valid till 15 May 2026'
-    },
-    {
-      code: 'PREMIUM150',
-      title: 'Flat Rs. 150 discount',
-      discountValue: { type: 'fixed', value: 150 },
-      description: 'Best for smaller carts',
-      tc: 'Can be used once per user',
-      expiry: 'Valid till 7 Jun 2026'
-    },
-    {
-      code: 'STYLE15',
-      title: '15% off on fashion picks',
-      discountValue: { type: 'percentage', value: 15 },
-      description: 'Premium style savings on eligible items',
-      tc: 'Maximum discount capped at Rs. 300',
-      expiry: 'Valid till 20 May 2026'
-    },
-    {
-      code: 'BAG75',
-      title: 'Save Rs. 75 today',
-      discountValue: { type: 'fixed', value: 75 },
-      description: 'A quick win for your checkout',
-      tc: 'Limited-time coupon',
-      expiry: 'Valid till 10 May 2026'
-    }
-  ];
+  const [availableCoupons, setAvailableCoupons] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch(`${API_ORIGIN}/api/coupons`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setAvailableCoupons(data.filter(c => c.is_active));
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const getCouponSavings = (coupon) => {
     if (!coupon) return 0;
-    if (coupon.discountValue.type === 'fixed') {
-      return Math.min(coupon.discountValue.value, subtotal + platformFee + Math.abs(memberDiscount));
+    const dType = coupon.discount_type || (coupon.discountValue && coupon.discountValue.type);
+    const dValue = Number(coupon.discount_value) || (coupon.discountValue && Number(coupon.discountValue.value)) || 0;
+
+    if (dType === 'fixed' || dType === 'flat') {
+      return Math.min(dValue, subtotal + platformFee + Math.abs(memberDiscount));
     }
-    const rawSavings = (subtotal * coupon.discountValue.value) / 100;
+    const rawSavings = (subtotal * dValue) / 100;
     const cap = coupon.maxCap ?? rawSavings;
     return Math.min(rawSavings, cap);
   };
@@ -711,35 +684,103 @@ const Cart = () => {
                     </div>
 
                     <div className="cart-coupons-list" aria-label="Available coupons">
-                      {availableCoupons.map((coupon) => {
-                        const isSelected = selectedCouponCode === coupon.code;
-                        const savings = getCouponSavings(coupon);
+                      {(() => {
+                        const getCouponEligibility = (coupon) => {
+                          const minOrderValue = Number(coupon.min_order_value) || 0;
+                          
+                          if (cartTotal < minOrderValue) {
+                            return { eligible: false, diff: minOrderValue - cartTotal, lockedReason: 'minSpend' };
+                          }
+                          
+                          const applicableCategories = coupon.applicableCategories || [];
+                          const applicableProducts = coupon.applicableProducts || [];
+                          
+                          if (applicableCategories.length > 0 || applicableProducts.length > 0) {
+                            let matched = false;
+                            if (applicableProducts.length > 0) {
+                              matched = matched || cartItems.some(item => applicableProducts.includes(item.productId));
+                            }
+                            if (applicableCategories.length > 0) {
+                              matched = matched || cartItems.some(item => applicableCategories.includes(item.categoryId) || applicableCategories.includes(item.category));
+                            }
+                            if (!matched) return { eligible: false, diff: 0, lockedReason: 'targetMismatch' };
+                          }
 
-                        const expiryDate = coupon.expiry.replace(/Valid till\s*/i, '').trim();
-                        const expiryTime = coupon.expiryTime || '23:59';
+                          return { eligible: true, diff: 0 };
+                        };
 
+                        const processed = availableCoupons.map(coupon => {
+                          const eligibility = getCouponEligibility(coupon);
+                          return { ...coupon, savings: getCouponSavings(coupon), eligibility };
+                        });
+                        
+                        const eligible = processed.filter(c => c.eligibility.eligible).sort((a, b) => b.savings - a.savings);
+                        const locked = processed.filter(c => !c.eligibility.eligible).sort((a, b) => a.eligibility.diff - b.eligibility.diff);
+                        
                         return (
-                          <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code}>
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
-                            />
-                            <div className="cart-coupon-item-content">
-                              <div className="cart-coupon-code-box">{coupon.code}</div>
-                              <div className="cart-coupon-meta">
-                                <p className="cart-coupon-title">Save ₹{savings.toFixed(0)}</p>
-                                <p className="cart-coupon-policy">Once you apply this coupon, items will be non-returnable. You can still exchange items.</p>
-                                <p className="cart-coupon-desc">
-                                  {coupon.description} <span className="cart-coupon-more">more</span>
-                                </p>
-                                <p className="cart-coupon-note">Note: Review the non-returnable items in your bag</p>
-                                <p className="cart-coupon-expiry">Expires on: {expiryDate} | {expiryTime} · {coupon.tc}</p>
+                          <>
+                            {eligible.map((coupon, index) => {
+                              const isSelected = selectedCouponCode === coupon.code;
+                              const isBestValue = index === 0;
+                              const rawExpiry = coupon.expiry_date || coupon.expiry || '';
+                              const expiryDate = rawExpiry ? new Date(rawExpiry).toLocaleDateString() : 'N/A';
+                              const tc = coupon.tc || 'T&C Apply';
+                              
+                              return (
+                                <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code}>
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
+                                  />
+                                  <div className="cart-coupon-item-content">
+                                    <div className="cart-coupon-code-box" style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
+                                      {coupon.code}
+                                      {isBestValue && <span className="cart-coupon-best-badge" style={{background: '#e11d48', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', marginLeft: '6px'}}>BEST VALUE</span>}
+                                    </div>
+                                    <div className="cart-coupon-meta">
+                                      <p className="cart-coupon-title">Save ₹{coupon.savings.toFixed(0)}</p>
+                                      <p className="cart-coupon-policy">Once you apply this coupon, items will be non-returnable.</p>
+                                      <p className="cart-coupon-desc">
+                                        {coupon.description}
+                                      </p>
+                                      <p className="cart-coupon-expiry">Expires on: {expiryDate} · {tc}</p>
+                                    </div>
+                                  </div>
+                                </label>
+                              );
+                            })}
+
+                            {locked.length > 0 && (
+                              <div className="cart-coupons-locked-section" style={{ marginTop: '20px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
+                                <h4 style={{ fontSize: '14px', color: '#6b7280', marginBottom: '12px', fontWeight: 600 }}>Locked Offers</h4>
+                                {locked.map(coupon => {
+                                  const rawExpiry = coupon.expiry_date || coupon.expiry || '';
+                                  const expiryDate = rawExpiry ? new Date(rawExpiry).toLocaleDateString() : 'N/A';
+                                  const tc = coupon.tc || 'T&C Apply';
+                                  
+                                  return (
+                                    <div className="cart-coupon-item is-locked" key={coupon.code} style={{ opacity: 0.6, cursor: 'not-allowed', filter: 'grayscale(1)', marginBottom: '12px', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                                      <div className="cart-coupon-item-content" style={{ paddingLeft: '8px' }}>
+                                        <div className="cart-coupon-code-box" style={{ background: '#f3f4f6', color: '#9ca3af', display: 'inline-block', padding: '4px 8px', borderRadius: '4px', fontWeight: 600 }}>{coupon.code}</div>
+                                        <div className="cart-coupon-meta" style={{ marginTop: '8px' }}>
+                                          {coupon.eligibility.lockedReason === 'targetMismatch' ? (
+                                            <p className="cart-coupon-title" style={{ color: '#6b7280', fontSize: '12px', fontWeight: 600 }}>Not applicable on current cart items</p>
+                                          ) : (
+                                            <p className="cart-coupon-title" style={{ color: '#ef4444', fontSize: '12px', fontWeight: 600 }}>Add ₹{coupon.eligibility.diff.toFixed(0)} more to unlock this offer</p>
+                                          )}
+                                          <p className="cart-coupon-desc" style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>{coupon.description}</p>
+                                          <p className="cart-coupon-expiry" style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px' }}>Expires on: {expiryDate} · {tc}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
-                            </div>
-                          </label>
+                            )}
+                          </>
                         );
-                      })}
+                      })()}
                     </div>
                   </div>
 
