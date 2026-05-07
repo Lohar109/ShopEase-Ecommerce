@@ -30,6 +30,7 @@ const CouponForm = () => {
   const [loadError, setLoadError] = useState('');
   const [form, setForm] = useState(DEFAULT_FORM);
   const [categoryDraft, setCategoryDraft] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -63,6 +64,46 @@ const CouponForm = () => {
     rules: Boolean(form.discount_type && Number(form.discount_value) > 0 && Number(form.min_order_value) >= 0 && form.expiry_date),
     limits: true
   }), [form]);
+
+  const validateCurrentStep = () => {
+    if (currentStep === 1) {
+      if (!String(form.code || '').trim()) return 'Coupon code is required';
+      return null;
+    }
+
+    if (currentStep === 2) {
+      if (!Number.isFinite(Number(form.discount_value)) || Number(form.discount_value) <= 0) {
+        return 'Discount value must be greater than 0';
+      }
+      if (!Number.isFinite(Number(form.min_order_value)) || Number(form.min_order_value) < 0) {
+        return 'Minimum order value cannot be negative';
+      }
+      if (!form.expiry_date) return 'Expiry date is required';
+      return null;
+    }
+
+    return null;
+  };
+
+  const handleNext = () => {
+    const err = validateCurrentStep();
+    if (err) {
+      toast.error(err);
+      return;
+    }
+
+    if (currentStep < STEPS.length) {
+      setCurrentStep((s) => s + 1);
+      return;
+    }
+
+    // final step -> submit
+    handleSave({ preventDefault: () => {} });
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) setCurrentStep((s) => s - 1);
+  };
 
   const onChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -163,6 +204,55 @@ const CouponForm = () => {
         .cf-outline-accent-btn:hover {
           background: #fff1f6;
         }
+        .pf-ghost-action-btn {
+          height: 40px;
+          border: 1px solid #fecaca;
+          border-radius: 10px;
+          background: #fff1f2;
+          color: #dc2626;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 20px;
+          font-size: 15px;
+          font-weight: 600;
+          font-family: 'Poppins', sans-serif;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .pf-ghost-action-btn:hover {
+          background: #fee2e2;
+          color: #b91c1c;
+        }
+        .cf-form-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          margin-top: 18px;
+        }
+        .cf-back-btn {
+          height: 40px;
+          border-radius: 10px;
+          border: 1px solid #e6e7ea;
+          background: transparent;
+          color: #374151;
+          padding: 0 16px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .cf-next-btn {
+          height: 40px;
+          border-radius: 10px;
+          border: none;
+          background: #000;
+          color: #fff;
+          padding: 0 20px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+        }
       `}</style>
 
       <div
@@ -214,14 +304,8 @@ const CouponForm = () => {
             type="button"
             onClick={() => navigate('/coupons')}
             disabled={saving}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              color: '#dc2626',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: saving ? 'not-allowed' : 'pointer'
-            }}
+            className="pf-ghost-action-btn"
+            style={{ padding: '0 14px' }}
           >
             Discard
           </button>
@@ -264,6 +348,7 @@ const CouponForm = () => {
           >
             {STEPS.map((step, idx) => {
               const completed = Boolean(stepDone[step.key]);
+              const active = idx + 1 === currentStep;
               const lineColor = completed ? '#86efac' : '#e4e4e7';
 
               return (
@@ -291,9 +376,9 @@ const CouponForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: completed ? '1px solid #bbf7d0' : '1px solid #d4d4d8',
-                        background: completed ? '#f0fdf4' : '#f4f4f5',
-                        color: completed ? '#16a34a' : '#9ca3af',
+                        border: completed ? '1px solid #bbf7d0' : active ? '1px solid #111827' : '1px solid #d4d4d8',
+                        background: completed ? '#f0fdf4' : active ? '#111827' : '#f4f4f5',
+                        color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
                         fontWeight: 700,
                         fontSize: 12,
                         flexShrink: 0
@@ -302,7 +387,7 @@ const CouponForm = () => {
                       {completed ? <Check size={16} /> : idx + 1}
                     </span>
 
-                    <span style={{ fontSize: 14, fontWeight: completed ? 600 : 500, color: completed ? '#374151' : '#9ca3af' }}>
+                    <span style={{ fontSize: 14, fontWeight: active || completed ? 600 : 500, color: active || completed ? '#374151' : '#9ca3af' }}>
                       {step.label}
                     </span>
                   </div>
@@ -313,7 +398,7 @@ const CouponForm = () => {
 
           <section>
             <form id="coupon-form" onSubmit={handleSave} style={{ display: 'grid', gap: 16 }}>
-              <section style={sectionCardStyle}>
+              <section style={{ ...sectionCardStyle, display: currentStep === 1 ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>General Details</h4>
@@ -344,7 +429,7 @@ const CouponForm = () => {
                 </label>
               </section>
 
-              <section style={sectionCardStyle}>
+              <section style={{ ...sectionCardStyle, display: currentStep === 2 ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>Discount Rules</h4>
@@ -407,7 +492,7 @@ const CouponForm = () => {
                 </div>
               </section>
 
-              <section style={sectionCardStyle}>
+              <section style={{ ...sectionCardStyle, display: currentStep === 3 ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>Limits</h4>
@@ -448,6 +533,21 @@ const CouponForm = () => {
                 )}
               </section>
             </form>
+
+            <div className="cf-form-footer" style={{ maxWidth: 1120 }}>
+              <div />
+              <div style={{ display: 'flex', gap: 12 }}>
+                {currentStep > 1 && (
+                  <button type="button" className="cf-back-btn" onClick={handleBack}>
+                    Back
+                  </button>
+                )}
+
+                <button type="button" className="cf-next-btn" onClick={handleNext} disabled={saving}>
+                  {currentStep < STEPS.length ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
+                </button>
+              </div>
+            </div>
           </section>
         </div>
       </div>
