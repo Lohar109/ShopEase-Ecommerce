@@ -147,10 +147,13 @@ const CategoryMultiSelect = ({
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handlePointerDown = (event) => {
+      const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
       const target = event.target;
-      if (containerRef.current?.contains(target)) return;
-      if (menuRef.current?.contains(target)) return;
+      const isInsideTrigger = Boolean(containerRef.current && (containerRef.current.contains(target) || path.includes(containerRef.current)));
+      const isInsideMenu = Boolean(menuRef.current && (menuRef.current.contains(target) || path.includes(menuRef.current)));
+
+      if (isInsideTrigger || isInsideMenu) return;
       setIsOpen(false);
     };
 
@@ -158,10 +161,10 @@ const CategoryMultiSelect = ({
       if (event.key === 'Escape') setIsOpen(false);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleEscape);
     };
   }, []);
@@ -371,12 +374,12 @@ const CategoryMultiSelect = ({
       <button
         ref={triggerRef}
         type="button"
+        onMouseDown={(event) => {
+          event.preventDefault();
+        }}
         onClick={() => {
           if (loading) return;
           setIsOpen((prev) => !prev);
-        }}
-        onFocus={() => {
-          if (!loading) setIsOpen(true);
         }}
         style={triggerStyle}
         disabled={loading}
