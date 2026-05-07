@@ -8,6 +8,7 @@ import ProductList from './pages/ProductList';
 import ProductForm from './pages/ProductForm';
 import DashboardHome from './pages/DashboardHome';
 import CouponsPage from './pages/CouponsPage';
+import CouponForm from './pages/CouponForm';
 import AdminLayout from './components/AdminLayout';
 
 function App() {
@@ -51,6 +52,8 @@ function App() {
         </Route>
         <Route path="/products/new" element={<ProductForm />} />
         <Route path="/products/:id/edit" element={<ProductForm />} />
+        <Route path="/coupons/new" element={<CouponForm />} />
+        <Route path="/coupons/edit/:id" element={<CouponForm />} />
       </Routes>
     </Router>
   );

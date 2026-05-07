@@ -30,6 +30,15 @@ export async function createCoupon(payload) {
   return data;
 }
 
+export async function fetchCouponById(id) {
+  const response = await fetch(`${API_BASE_URL}/coupons/${id}`);
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error || 'Failed to fetch coupon details');
+  }
+  return data;
+}
+
 export async function updateCoupon(id, payload) {
   const response = await fetch(`${API_BASE_URL}/coupons/${id}`, {
     method: 'PUT',
