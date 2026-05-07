@@ -582,6 +582,7 @@ const CouponForm = () => {
                       onChange={(ids) => handleProductsChange(ids)}
                       placeholder="Search and select products..."
                       disabled={Boolean(form.applicable_categories && form.applicable_categories.length > 0)}
+                      open={activeTab === 'limits'}
                     />
                     <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
                       {form.applicable_categories && form.applicable_categories.length > 0 ? 'Disabled because categories are selected' : 'Choose either categories or products — selecting one clears the other.'}

@@ -8,11 +8,42 @@ const buildProductOptions = (productsInput) => {
   try {
     const products = Array.isArray(productsInput) ? productsInput.filter(Boolean) : [];
 
+    const guessId = (obj) => {
+      if (!obj || typeof obj !== 'object') return '';
+      const candidates = ['_id', 'id', 'product_id', 'productId', 'sku_id'];
+      for (const key of candidates) if (obj[key]) return normalizeId(obj[key]);
+      // try nested product object
+      if (obj.product && typeof obj.product === 'object') return guessId(obj.product);
+      // fallback: try first string/number prop
+      for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        if (typeof v === 'string' || typeof v === 'number') return normalizeId(v);
+      }
+      return '';
+    };
+
+    const guessName = (obj) => {
+      if (!obj || typeof obj !== 'object') return 'Unnamed';
+      const candidates = ['name', 'title', 'product_name', 'displayName', 'label'];
+      for (const key of candidates) if (obj[key]) return String(obj[key]);
+      if (obj.product && typeof obj.product === 'object') return guessName(obj.product);
+      // fallback to id
+      return guessId(obj) || 'Unnamed';
+    };
+
+    const guessSku = (obj) => {
+      if (!obj || typeof obj !== 'object') return '';
+      const candidates = ['sku', 'sku_code', 'variant_sku', 'product_sku'];
+      for (const key of candidates) if (obj[key]) return String(obj[key]).trim();
+      if (obj.product && typeof obj.product === 'object') return guessSku(obj.product);
+      return '';
+    };
+
     const options = products.map((p) => {
-      const id = normalizeId(p?.id ?? p?._id);
+      const id = guessId(p);
       if (!id) return null;
-      const name = String(p?.name || p?.title || 'Unnamed');
-      const sku = String(p?.sku || p?.sku_code || p?.variant_sku || '').trim();
+      const name = guessName(p);
+      const sku = guessSku(p);
       const label = sku ? `${name} (SKU: ${sku})` : name;
 
       return {
@@ -31,9 +62,30 @@ const buildProductOptions = (productsInput) => {
   }
 };
 
-const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select products...', loading: loadingProp = false, disabled = false }) => {
+// Try to find an array of objects anywhere inside the response object
+const extractListFromResponse = (data, depth = 0) => {
+  if (!data || depth > 4) return [];
+  if (Array.isArray(data)) return data;
+  if (typeof data !== 'object') return [];
+  for (const key of Object.keys(data)) {
+    const val = data[key];
+    if (Array.isArray(val)) return val;
+  }
+  // recurse one level deep
+  for (const key of Object.keys(data)) {
+    const val = data[key];
+    if (val && typeof val === 'object') {
+      const found = extractListFromResponse(val, depth + 1);
+      if (found && found.length) return found;
+    }
+  }
+  return [];
+};
+
+const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select products...', loading: loadingProp = false, disabled = false, open = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [fetchError, setFetchError] = useState('');
   const [loading, setLoading] = useState(Boolean(loadingProp));
   const [searchTerm, setSearchTerm] = useState('');
   const [hoveredValue, setHoveredValue] = useState('');
@@ -43,38 +95,61 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
   const menuRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => {
+  // fetch function exposed to multiple effects
+  const loadProducts = async () => {
     let mounted = true;
-    const load = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('/api/products');
-        if (!res.ok) {
-          console.error('Products API error', res.status);
-          setProducts([]);
-          return;
+    try {
+      setLoading(true);
+      const res = await fetch('/api/products');
+      let data = null;
+      const contentType = res.headers.get('content-type') || '';
+      setFetchError('');
+      if (contentType.includes('application/json')) {
+        try {
+          data = await res.json();
+        } catch (parseErr) {
+          console.error('Failed to parse products response', parseErr);
+          data = null;
+          setFetchError('Failed to parse JSON response from products API.');
         }
-        const data = await res.json();
-        if (!mounted) return;
-        // support multiple shapes: array, { products: [] }, { data: [] }, { items: [] }
-        let list = [];
-        if (Array.isArray(data)) list = data;
-        else if (Array.isArray(data.products)) list = data.products;
-        else if (Array.isArray(data.data)) list = data.data;
-        else if (Array.isArray(data.items)) list = data.items;
-        else list = [];
-        setProducts(list.map((p) => ({ ...p })));
-      } catch (err) {
-        console.error('Failed to load products', err);
-        setProducts([]);
-      } finally {
-        if (mounted) setLoading(false);
+      } else {
+        // Read raw text for debugging (likely HTML error page or redirect)
+        const raw = await res.text();
+        const snippet = String(raw || '').slice(0, 1000);
+        console.warn('Products API returned non-JSON response, skipping JSON parse', contentType, snippet);
+        setFetchError(`Products API returned non-JSON response (${contentType}). See console/network for details.`);
       }
-    };
+      console.log('Products API response', res.status, data);
+      if (!mounted) return;
+      if (!res.ok) {
+        setProducts([]);
+        return;
+      }
+      const list = extractListFromResponse(data);
+      setProducts(list.map((p) => ({ ...p })));
+      if (list.length === 0 && !fetchError && res.ok) {
+        // no items found but no explicit error
+        setFetchError('No products returned by the API.');
+      }
+    } catch (err) {
+      console.error('Failed to load products', err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    load();
-    return () => { mounted = false; };
+  useEffect(() => {
+    // initial mount fetch
+    loadProducts();
   }, []);
+
+  useEffect(() => {
+    // also fetch when dropdown is opened (e.g., Limits step active)
+    if (open && products.length === 0 && !loading) {
+      loadProducts();
+    }
+  }, [open]);
 
   const { options } = useMemo(() => ({ options: buildProductOptions(products) }), [products]);
 
@@ -185,7 +260,7 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
               );
             })
           ) : (
-            <div style={emptyStateStyle}>No products found</div>
+            <div style={emptyStateStyle}>{fetchError || 'No products found'}</div>
           )}
         </div>
       </div>,
@@ -197,7 +272,18 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
     <div style={containerStyle} ref={containerRef}>
       <button ref={triggerRef} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (loading || disabled) return; setIsOpen((p) => !p); }} style={triggerStyle} disabled={loading || disabled}>
         <div style={selectedTagsWrapStyle}>
-          {loading ? (<span style={{ color: '#9ca3af', display: 'inline-flex', alignItems: 'center', gap: 8 }}><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />Loading products...</span>) : selectedOptions.length > 0 ? (selectedOptions.map((opt) => (<div key={opt.value} style={tagStyle}><span>{opt.label}</span><button type="button" onClick={(e) => { e.stopPropagation(); onChange(value.filter((id) => id !== opt.value)); }} style={tagRemoveButtonStyle}><X size={14} /></button></div>))) : (<span style={{ color: '#9ca3af' }}>{placeholder}</span>) }
+          {loading ? (<span style={{ color: '#9ca3af', display: 'inline-flex', alignItems: 'center', gap: 8 }}><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />Loading products...</span>) : selectedOptions.length > 0 ? (selectedOptions.map((opt) => (
+            <div key={opt.value} style={tagStyle}>
+              <span>{opt.label}</span>
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => { e.stopPropagation(); onChange(value.filter((id) => id !== opt.value)); }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onChange(value.filter((id) => id !== opt.value)); } }}
+                style={tagRemoveButtonStyle}
+              ><X size={14} /></span>
+            </div>
+          ))) : (<span style={{ color: '#9ca3af' }}>{placeholder}</span>) }
         </div>
         <ChevronDown size={16} style={{ color: '#6b7280', flexShrink: 0, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
