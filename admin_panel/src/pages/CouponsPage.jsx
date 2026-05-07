@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pencil, Trash2, X } from 'lucide-react';
+import { CalendarDays, Info, Pencil, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   createCoupon,
@@ -15,7 +15,8 @@ const DEFAULT_FORM = {
   discount_value: '',
   min_order_value: '',
   expiry_date: '',
-  description: ''
+  description: '',
+  applicable_categories: []
 };
 
 const ToggleSwitch = ({ value, onToggle, disabled }) => {
@@ -64,7 +65,7 @@ const ToggleSwitch = ({ value, onToggle, disabled }) => {
   );
 };
 
-const Modal = ({ open, title, onClose, children }) => {
+const Modal = ({ open, title, onClose, onDiscard, saving, formId, children }) => {
   if (!open) return null;
 
   return (
@@ -83,45 +84,71 @@ const Modal = ({ open, title, onClose, children }) => {
     >
       <div
         style={{
-          width: 'min(720px, 96vw)',
+          width: 'min(920px, 96vw)',
+          maxHeight: '92vh',
           borderRadius: 16,
           background: '#fff',
           border: '1px solid #e5e7eb',
           boxShadow: '0 20px 60px rgba(15, 23, 42, 0.18)',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         }}
         onClick={(event) => event.stopPropagation()}
       >
         <div
           style={{
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto 1fr',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 16px',
-            borderBottom: '1px solid #f1f5f9'
+            padding: '12px 18px',
+            borderBottom: '1px solid #f1f5f9',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
           }}
         >
-          <h3 style={{ margin: 0, fontSize: 16, color: '#111827' }}>{title}</h3>
           <button
             type="button"
-            onClick={onClose}
+            onClick={onDiscard}
             style={{
               border: 'none',
-              background: '#f3f4f6',
-              color: '#374151',
-              borderRadius: 999,
-              width: 30,
-              height: 30,
+              background: 'transparent',
+              color: '#dc2626',
+              fontSize: 14,
+              fontWeight: 600,
               cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              justifySelf: 'start'
             }}
           >
-            <X size={16} />
+            Discard
+          </button>
+
+          <h3 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', justifySelf: 'center' }}>
+            {title}
+          </h3>
+
+          <button
+            type="submit"
+            form={formId}
+            disabled={saving}
+            style={{
+              border: 'none',
+              borderRadius: 12,
+              background: saving ? '#52525b' : '#000000',
+              color: '#ffffff',
+              padding: '10px 18px',
+              height: 40,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: saving ? 'not-allowed' : 'pointer',
+              justifySelf: 'end'
+            }}
+          >
+            {saving ? 'Saving...' : 'Save Coupon'}
           </button>
         </div>
-        <div style={{ padding: 16 }}>{children}</div>
+        <div style={{ padding: 20, background: '#f8fafc', overflowY: 'auto' }}>{children}</div>
       </div>
     </div>
   );
@@ -137,6 +164,7 @@ const CouponsPage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState({});
   const [form, setForm] = useState(DEFAULT_FORM);
+  const [categoryDraft, setCategoryDraft] = useState('');
 
   const sortedCoupons = useMemo(() => (
     [...coupons].sort((a, b) => new Date(a.expiry_date) - new Date(b.expiry_date))
@@ -163,11 +191,13 @@ const CouponsPage = () => {
     setShowModal(false);
     setEditingCoupon(null);
     setForm(DEFAULT_FORM);
+    setCategoryDraft('');
   };
 
   const openAddModal = () => {
     setEditingCoupon(null);
     setForm(DEFAULT_FORM);
+    setCategoryDraft('');
     setShowModal(true);
   };
 
@@ -179,13 +209,36 @@ const CouponsPage = () => {
       discount_value: Number(coupon.discount_value || 0),
       min_order_value: Number(coupon.min_order_value || 0),
       expiry_date: coupon.expiry_date ? new Date(coupon.expiry_date).toISOString().slice(0, 10) : '',
-      description: coupon.description || ''
+      description: coupon.description || '',
+      applicable_categories: Array.isArray(coupon.applicable_categories) ? coupon.applicable_categories : []
     });
+    setCategoryDraft('');
     setShowModal(true);
   };
 
   const onChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddApplicableCategory = () => {
+    const value = String(categoryDraft || '').trim();
+    if (!value) return;
+
+    setForm((prev) => {
+      if ((prev.applicable_categories || []).includes(value)) return prev;
+      return {
+        ...prev,
+        applicable_categories: [...(prev.applicable_categories || []), value]
+      };
+    });
+    setCategoryDraft('');
+  };
+
+  const handleRemoveApplicableCategory = (value) => {
+    setForm((prev) => ({
+      ...prev,
+      applicable_categories: (prev.applicable_categories || []).filter((item) => item !== value)
+    }));
   };
 
   const validateForm = () => {
@@ -392,88 +445,142 @@ const CouponsPage = () => {
 
       <Modal
         open={showModal}
-        title={editingCoupon ? 'Edit Coupon' : 'Add Coupon'}
+        title={editingCoupon ? 'Edit Coupon' : 'Add New Coupon'}
         onClose={resetAndClose}
+        onDiscard={resetAndClose}
+        saving={saving}
+        formId="coupon-form"
       >
-        <form onSubmit={handleSave} style={{ display: 'grid', gap: 14 }}>
-          <div style={fieldGridStyle}>
+        <form id="coupon-form" onSubmit={handleSave} style={{ display: 'grid', gap: 16 }}>
+          <section style={sectionCardStyle}>
+            <div style={sectionTitleWrapStyle}>
+              <span style={sectionIconStyle}><Info size={16} /></span>
+              <h4 style={sectionTitleStyle}>General Details</h4>
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <label style={labelStyle}>
+                Coupon Code
+                <input
+                  type="text"
+                  value={form.code}
+                  onChange={(event) => onChange('code', event.target.value.toUpperCase())}
+                  style={inputStyle}
+                  placeholder="SAVE100"
+                  required
+                />
+              </label>
+            </div>
+
             <label style={labelStyle}>
-              Coupon Code
-              <input
-                type="text"
-                value={form.code}
-                onChange={(event) => onChange('code', event.target.value.toUpperCase())}
-                style={inputStyle}
-                required
+              Description / Notes
+              <textarea
+                value={form.description}
+                onChange={(event) => onChange('description', event.target.value)}
+                style={textareaStyle}
+                placeholder="non-returnable"
               />
             </label>
-            <label style={labelStyle}>
-              Discount Type
-              <select
-                value={form.discount_type}
-                onChange={(event) => onChange('discount_type', event.target.value)}
-                style={inputStyle}
-              >
-                <option value="percentage">Percentage</option>
-                <option value="flat">Flat</option>
-              </select>
-            </label>
-          </div>
+          </section>
 
-          <div style={fieldGridStyle}>
-            <label style={labelStyle}>
-              Discount Value
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.discount_value}
-                onChange={(event) => onChange('discount_value', event.target.value)}
-                style={inputStyle}
-                required
-              />
-            </label>
-            <label style={labelStyle}>
-              Minimum Order Value
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.min_order_value}
-                onChange={(event) => onChange('min_order_value', event.target.value)}
-                style={inputStyle}
-                required
-              />
-            </label>
-          </div>
+          <section style={sectionCardStyle}>
+            <div style={sectionTitleWrapStyle}>
+              <span style={sectionIconStyle}><Info size={16} /></span>
+              <h4 style={sectionTitleStyle}>Discount Rules</h4>
+            </div>
 
-          <label style={labelStyle}>
-            Expiry Date
-            <input
-              type="date"
-              value={form.expiry_date}
-              onChange={(event) => onChange('expiry_date', event.target.value)}
-              style={inputStyle}
-              required
-            />
-          </label>
+            <div style={fieldGridStyle}>
+              <label style={labelStyle}>
+                Discount Type
+                <select
+                  value={form.discount_type}
+                  onChange={(event) => onChange('discount_type', event.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="percentage">Percentage</option>
+                  <option value="flat">Flat</option>
+                </select>
+              </label>
 
-          <label style={labelStyle}>
-            Description / Notes
-            <textarea
-              value={form.description}
-              onChange={(event) => onChange('description', event.target.value)}
-              style={{ ...inputStyle, minHeight: 92, resize: 'vertical' }}
-              placeholder="non-returnable"
-            />
-          </label>
+              <label style={labelStyle}>
+                Discount Value
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.discount_value}
+                  onChange={(event) => onChange('discount_value', event.target.value)}
+                  style={inputStyle}
+                  required
+                />
+              </label>
+            </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4 }}>
-            <button type="button" onClick={resetAndClose} style={secondaryBtnStyle}>Cancel</button>
-            <button type="submit" disabled={saving} style={primaryBtnStyle}>
-              {saving ? 'Saving...' : editingCoupon ? 'Update Coupon' : 'Create Coupon'}
-            </button>
-          </div>
+            <div style={fieldGridStyle}>
+              <label style={labelStyle}>
+                Min Order Value
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.min_order_value}
+                  onChange={(event) => onChange('min_order_value', event.target.value)}
+                  style={inputStyle}
+                  required
+                />
+              </label>
+
+              <label style={labelStyle}>
+                Expiry Date
+                <span style={{ position: 'relative' }}>
+                  <input
+                    type="date"
+                    value={form.expiry_date}
+                    onChange={(event) => onChange('expiry_date', event.target.value)}
+                    style={dateInputStyle}
+                    required
+                  />
+                  <CalendarDays size={16} style={calendarIconStyle} />
+                </span>
+              </label>
+            </div>
+
+            <div style={{ marginTop: 2 }}>
+              <label style={labelStyle}>
+                Applicable Categories (optional)
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="text"
+                    value={categoryDraft}
+                    onChange={(event) => setCategoryDraft(event.target.value)}
+                    style={inputStyle}
+                    placeholder="e.g. fashion, footwear"
+                  />
+                  <button type="button" style={miniPlusBtnStyle} onClick={handleAddApplicableCategory}>
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </label>
+
+              {(form.applicable_categories || []).length > 0 && (
+                <div style={chipWrapStyle}>
+                  {form.applicable_categories.map((item) => (
+                    <span key={item} style={chipStyle}>
+                      {item}
+                      <button
+                        type="button"
+                        style={chipRemoveBtnStyle}
+                        onClick={() => handleRemoveApplicableCategory(item)}
+                        aria-label={`Remove ${item}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
         </form>
       </Modal>
     </div>
@@ -519,7 +626,8 @@ const deleteIconButtonStyle = {
 const fieldGridStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: 12
+  gap: 14,
+  marginBottom: 14
 };
 
 const labelStyle = {
@@ -527,37 +635,117 @@ const labelStyle = {
   gap: 6,
   color: '#374151',
   fontSize: 13,
-  fontWeight: 600
+  fontWeight: 600,
+  fontFamily: 'Poppins, sans-serif'
 };
 
 const inputStyle = {
   width: '100%',
   boxSizing: 'border-box',
-  border: '1px solid #d1d5db',
-  borderRadius: 10,
-  padding: '10px 12px',
+  border: '1px solid #a0a0a0',
+  borderRadius: 12,
+  padding: '10px 14px',
   fontSize: 14,
+  fontFamily: 'Poppins, sans-serif',
   outline: 'none'
 };
 
-const primaryBtnStyle = {
-  border: 'none',
-  borderRadius: 10,
-  background: '#111827',
-  color: '#fff',
-  padding: '10px 14px',
+const textareaStyle = {
+  ...inputStyle,
+  minHeight: 120,
+  resize: 'vertical',
+  lineHeight: 1.5
+};
+
+const dateInputStyle = {
+  ...inputStyle,
+  paddingRight: 40
+};
+
+const calendarIconStyle = {
+  position: 'absolute',
+  right: 12,
+  top: '50%',
+  transform: 'translateY(-50%)',
+  color: '#6b7280',
+  pointerEvents: 'none'
+};
+
+const sectionCardStyle = {
+  background: '#ffffff',
+  border: '1px solid #eceff3',
+  borderRadius: 12,
+  boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+  padding: '24px 22px'
+};
+
+const sectionTitleWrapStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  marginBottom: 18
+};
+
+const sectionIconStyle = {
+  width: 30,
+  height: 30,
+  borderRadius: 8,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  border: '1px solid #f3d1dc',
+  background: '#fff1f6',
+  color: '#c8507a'
+};
+
+const sectionTitleStyle = {
+  margin: 0,
+  fontSize: 20,
   fontWeight: 600,
+  color: '#111'
+};
+
+const miniPlusBtnStyle = {
+  height: 42,
+  width: 42,
+  border: '1px solid #c8507a',
+  borderRadius: 10,
+  background: '#fff',
+  color: '#c8507a',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   cursor: 'pointer'
 };
 
-const secondaryBtnStyle = {
-  border: '1px solid #d1d5db',
-  borderRadius: 10,
-  background: '#fff',
-  color: '#111827',
-  padding: '10px 14px',
+const chipWrapStyle = {
+  marginTop: 10,
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 8
+};
+
+const chipStyle = {
+  border: '1px solid #f3d1dc',
+  background: '#fff1f6',
+  color: '#8b1e4b',
+  borderRadius: 999,
+  padding: '6px 10px',
+  fontSize: 12,
   fontWeight: 600,
-  cursor: 'pointer'
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8
+};
+
+const chipRemoveBtnStyle = {
+  border: 'none',
+  background: 'transparent',
+  color: '#8b1e4b',
+  fontSize: 16,
+  lineHeight: 1,
+  cursor: 'pointer',
+  padding: 0
 };
 
 export default CouponsPage;
