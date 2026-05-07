@@ -276,8 +276,15 @@
   transition: none;
 }
 
-.cart-coupon-trigger:hover {
+.cart-coupon-trigger:hover,
+.cart-coupon-trigger:focus,
+.cart-coupon-trigger:active {
   cursor: pointer;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  box-shadow: none;
+  transform: none;
+  outline: none;
 }
 
 .cart-coupon-trigger-icon {
