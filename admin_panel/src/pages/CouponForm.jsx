@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Check, CalendarDays, Info, Plus } from 'lucide-react';
+import { ArrowLeft, Check, CalendarDays, Info } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createCoupon, fetchCouponById, updateCoupon } from '../services/couponService';
+import { fetchCategories } from '../services/categoryService';
+import CategoryMultiSelect from '../components/CategoryMultiSelect';
 
 const STEPS = [
   { key: 'general', label: 'General' },
@@ -29,8 +31,25 @@ const CouponForm = () => {
   const [loadingCoupon, setLoadingCoupon] = useState(isEditMode);
   const [loadError, setLoadError] = useState('');
   const [form, setForm] = useState(DEFAULT_FORM);
-  const [categoryDraft, setCategoryDraft] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const data = await fetchCategories();
+        setCategories(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+        setCategories([]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -115,27 +134,6 @@ const CouponForm = () => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddApplicableCategory = () => {
-    const value = String(categoryDraft || '').trim();
-    if (!value) return;
-
-    setForm((prev) => {
-      if ((prev.applicable_categories || []).includes(value)) return prev;
-      return {
-        ...prev,
-        applicable_categories: [...(prev.applicable_categories || []), value]
-      };
-    });
-    setCategoryDraft('');
-  };
-
-  const handleRemoveApplicableCategory = (value) => {
-    setForm((prev) => ({
-      ...prev,
-      applicable_categories: (prev.applicable_categories || []).filter((item) => item !== value)
-    }));
-  };
-
   const validateForm = () => {
     if (!String(form.code || '').trim()) return 'Coupon code is required';
     if (!Number.isFinite(Number(form.discount_value)) || Number(form.discount_value) <= 0) {
@@ -178,7 +176,6 @@ const CouponForm = () => {
       // Reset form fields
       setForm(DEFAULT_FORM);
       setActiveTab('general');
-      setCategoryDraft('');
       navigate('/coupons');
     } catch (err) {
       toast.error(err.message || 'Failed to save coupon');
@@ -287,7 +284,6 @@ const CouponForm = () => {
             onClick={() => {
               setForm(DEFAULT_FORM);
               setActiveTab('general');
-              setCategoryDraft('');
               navigate('/coupons');
             }}
             disabled={saving}
@@ -504,37 +500,13 @@ const CouponForm = () => {
 
                   <label style={labelStyle}>
                     Applicable Categories (optional)
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <input
-                        type="text"
-                        value={categoryDraft}
-                        onChange={(event) => setCategoryDraft(event.target.value)}
-                        style={inputStyle}
-                        placeholder="e.g. fashion, footwear"
-                      />
-                      <button type="button" className="cf-outline-accent-btn" onClick={handleAddApplicableCategory}>
-                        <Plus size={14} />
-                      </button>
-                    </div>
+                    <CategoryMultiSelect
+                      categories={categories}
+                      value={form.applicable_categories || []}
+                      onChange={(ids) => onChange('applicable_categories', ids)}
+                      placeholder="Search and select categories..."
+                    />
                   </label>
-
-                  {(form.applicable_categories || []).length > 0 && (
-                    <div style={chipWrapStyle}>
-                      {form.applicable_categories.map((item) => (
-                        <span key={item} style={chipStyle}>
-                          {item}
-                          <button
-                            type="button"
-                            style={chipRemoveBtnStyle}
-                            onClick={() => handleRemoveApplicableCategory(item)}
-                            aria-label={`Remove ${item}`}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </section>
               </form>
 
