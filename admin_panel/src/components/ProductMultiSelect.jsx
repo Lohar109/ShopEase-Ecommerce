@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Loader2, X } from 'lucide-react';
+import { fetchProducts as fetchProductsApi } from '../services/productService';
 
 const normalizeId = (value) => String(value ?? '').trim();
 
 const buildProductOptions = (productsInput) => {
   try {
     const products = Array.isArray(productsInput) ? productsInput.filter(Boolean) : [];
-    console.log('[ProductMultiSelect] buildProductOptions input:', { count: products.length, firstProduct: products[0] });
 
     const guessId = (obj) => {
       if (!obj || typeof obj !== 'object') return '';
@@ -59,17 +59,12 @@ const buildProductOptions = (productsInput) => {
       return '';
     };
 
-    const options = products.map((p, idx) => {
+    const options = products.map((p) => {
       const id = guessId(p);
       if (!id) return null;
       const name = guessName(p);
       const sku = guessSku(p);
       const label = sku ? `${name} (SKU: ${sku})` : name;
-
-      // Log first few products for debugging
-      if (idx < 3) {
-        console.log(`[ProductMultiSelect] Product #${idx + 1}:`, { id, name, sku, label, rawProduct: p });
-      }
 
       return {
         value: id,
@@ -80,7 +75,6 @@ const buildProductOptions = (productsInput) => {
       };
     }).filter(Boolean);
 
-    console.log('[ProductMultiSelect] Built options:', { total: options.length, samples: options.slice(0, 3) });
     return options.sort((a, b) => a.label.localeCompare(b.label));
   } catch (err) {
     console.error('Failed to build product options', err, productsInput);
@@ -123,44 +117,19 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
 
   // fetch function exposed to multiple effects
   const loadProducts = async () => {
-    let mounted = true;
     try {
       setLoading(true);
-      const res = await fetch('/api/products');
-      let data = null;
-      const contentType = res.headers.get('content-type') || '';
       setFetchError('');
-      if (contentType.includes('application/json')) {
-        try {
-          data = await res.json();
-        } catch (parseErr) {
-          console.error('Failed to parse products response', parseErr);
-          data = null;
-          setFetchError('Failed to parse JSON response from products API.');
-        }
-      } else {
-        // Read raw text for debugging (likely HTML error page or redirect)
-        const raw = await res.text();
-        const snippet = String(raw || '').slice(0, 1000);
-        console.warn('Products API returned non-JSON response, skipping JSON parse', contentType, snippet);
-        setFetchError(`Products API returned non-JSON response (${contentType}). See console/network for details.`);
-      }
-      console.log('[ProductMultiSelect] API Response:', { status: res.status, contentType, dataType: typeof data, isArray: Array.isArray(data), dataLength: Array.isArray(data) ? data.length : 'N/A', firstItem: Array.isArray(data) ? data[0] : null, fullData: data });
-      if (!mounted) return;
-      if (!res.ok) {
-        setProducts([]);
-        return;
-      }
+      const data = await fetchProductsApi();
       const list = extractListFromResponse(data);
-      console.log('[ProductMultiSelect] Extracted list:', { count: list.length, firstItem: list[0] });
       setProducts(list.map((p) => ({ ...p })));
-      if (list.length === 0 && !fetchError && res.ok) {
-        // no items found but no explicit error
+      if (list.length === 0) {
         setFetchError('No products returned by the API.');
       }
     } catch (err) {
       console.error('Failed to load products', err);
       setProducts([]);
+      setFetchError('Failed to load products from API. Check VITE_API_BASE_URL and backend availability.');
     } finally {
       setLoading(false);
     }
