@@ -28,18 +28,21 @@
 }
 
 .cart-remove-btn {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: none;
   color: #6b7280;
-  padding: 0;
-  font-size: 0.92rem;
-  font-weight: 600;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
+  transition: opacity 160ms ease, color 160ms ease;
+  flex-shrink: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .cart-remove-btn svg {
@@ -50,12 +53,8 @@
 .cart-remove-btn:hover,
 .cart-remove-btn:focus,
 .cart-remove-btn:active {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
   opacity: 0.7;
-  cursor: pointer;
+  color: #ef4444;
 }
 
 .cart-step-circle {
@@ -110,10 +109,10 @@
 }
 
 .cart-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 96px 1fr 150px;
   gap: 16px;
   align-items: center;
-  justify-content: flex-start;
   background: #fff;
   border-radius: 12px;
   padding: 24px;
@@ -133,6 +132,7 @@
 .cart-item-image-link {
   line-height: 0;
   flex-shrink: 0;
+  grid-column: 1;
 }
 
 .cart-item-image-wrap {
@@ -149,16 +149,27 @@
   box-sizing: border-box;
 }
 
+.cart-item-details {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  grid-column: 2;
+  padding-right: 16px;
+}
+
 .cart-item-details h3 {
   font-size: 1.05rem;
   margin-bottom: 6px;
   font-weight: 500;
 }
+
 .cart-item-title-link {
   font-family: 'Roboto', sans-serif;
   color: #111827;
   text-decoration: none;
   font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .cart-item-title-link:hover {
@@ -169,17 +180,19 @@
 .cart-item-details p {
   color: #777777;
   font-size: 13px;
+  margin: 4px 0;
 }
 
 .cart-item-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
-  width: 128px;
-  min-width: 128px;
-  margin-left: 24px;
+  justify-content: flex-start;
+  width: 150px;
+  min-width: 150px;
+  flex-shrink: 0;
+  grid-column: 3;
 }
 
 .cart-qty-control {

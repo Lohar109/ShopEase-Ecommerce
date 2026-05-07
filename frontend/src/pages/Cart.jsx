@@ -112,8 +112,8 @@ const Cart = () => {
             <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="cart-list block lg:col-span-2">
               {cartItems.map(item => (
-                <div className="cart-item flex" key={item.cartItemId}>
-                  <Link to={`/product/${item.productId}`} className="cart-item-image-link block">
+                <div className="cart-item" key={item.cartItemId}>
+                  <Link to={`/product/${item.productId}`} className="cart-item-image-link">
                     <div className="cart-item-image-wrap">
                       <img
                         src={resolveImageSrc(item.image)}
@@ -123,7 +123,7 @@ const Cart = () => {
                     </div>
                   </Link>
 
-                  <div className="cart-item-details block">
+                  <div className="cart-item-details">
                     <h3>
                       <Link to={`/product/${item.productId}`} className="cart-item-title-link">
                         {item.productName}
@@ -134,9 +134,9 @@ const Cart = () => {
                     <p>Price: ₹ {item.price ?? 'N/A'}</p>
                   </div>
 
-                  <div className="cart-item-actions flex">
-                    <div className="cart-qty-control flex items-center">
-                      <button type="button" onClick={() => handleDecrease(item)}>-</button>
+                  <div className="cart-item-actions">
+                    <div className="cart-qty-control">
+                      <button type="button" onClick={() => handleDecrease(item)}>−</button>
                       <span>{item.quantity}</span>
                       <button type="button" onClick={() => handleIncrease(item)}>+</button>
                     </div>
