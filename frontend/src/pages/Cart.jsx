@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown } from 'lucide-react';
+import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
 import toast from 'react-hot-toast';
@@ -19,12 +19,73 @@ const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
   const [showOffersModal, setShowOffersModal] = React.useState(false);
+  const [showCouponsModal, setShowCouponsModal] = React.useState(false);
+  const [couponInput, setCouponInput] = React.useState('');
+  const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
+  const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
 
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
   const platformFee = 250;
   const memberDiscount = -5000;
-  const newGrandTotal = subtotal + platformFee + memberDiscount;
-  const savingsAmount = Math.abs(memberDiscount) - platformFee;
+  const availableCoupons = [
+    {
+      code: 'SAVE100',
+      title: 'Instant Rs. 100 off',
+      discountValue: { type: 'fixed', value: 100 },
+      description: 'Save instantly on this order',
+      tc: 'Applicable on prepaid checkout only',
+      expiry: 'Valid till 31 May 2026'
+    },
+    {
+      code: 'FESTIVE10',
+      title: '10% off up to Rs. 250',
+      discountValue: { type: 'percentage', value: 10 },
+      description: 'A clean boost for your cart total',
+      tc: 'Minimum order value applies',
+      expiry: 'Valid till 15 May 2026'
+    },
+    {
+      code: 'PREMIUM150',
+      title: 'Flat Rs. 150 discount',
+      discountValue: { type: 'fixed', value: 150 },
+      description: 'Best for smaller carts',
+      tc: 'Can be used once per user',
+      expiry: 'Valid till 7 Jun 2026'
+    },
+    {
+      code: 'STYLE15',
+      title: '15% off on fashion picks',
+      discountValue: { type: 'percentage', value: 15 },
+      description: 'Premium style savings on eligible items',
+      tc: 'Maximum discount capped at Rs. 300',
+      expiry: 'Valid till 20 May 2026'
+    },
+    {
+      code: 'BAG75',
+      title: 'Save Rs. 75 today',
+      discountValue: { type: 'fixed', value: 75 },
+      description: 'A quick win for your checkout',
+      tc: 'Limited-time coupon',
+      expiry: 'Valid till 10 May 2026'
+    }
+  ];
+
+  const getCouponSavings = (coupon) => {
+    if (!coupon) return 0;
+    if (coupon.discountValue.type === 'fixed') {
+      return Math.min(coupon.discountValue.value, subtotal + platformFee + Math.abs(memberDiscount));
+    }
+    const rawSavings = (subtotal * coupon.discountValue.value) / 100;
+    const cap = coupon.maxCap ?? rawSavings;
+    return Math.min(rawSavings, cap);
+  };
+
+  const appliedCoupon = availableCoupons.find((coupon) => coupon.code === appliedCouponCode) || null;
+  const selectedCoupon = availableCoupons.find((coupon) => coupon.code === selectedCouponCode) || null;
+  const appliedCouponSavings = getCouponSavings(appliedCoupon);
+  const selectedCouponSavings = getCouponSavings(selectedCoupon);
+  const newGrandTotal = subtotal + platformFee + memberDiscount - appliedCouponSavings;
+  const savingsAmount = Math.abs(memberDiscount) - platformFee + appliedCouponSavings;
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
@@ -44,6 +105,37 @@ const Cart = () => {
   const handleRemove = (item) => {
     removeFromCart(item.cartItemId);
     toast('Item removed', { icon: '🗑️' });
+  };
+
+  const handleOpenCouponsModal = () => {
+    setCouponInput('');
+    setSelectedCouponCode(appliedCouponCode);
+    setShowCouponsModal(true);
+  };
+
+  const handleCheckCoupon = () => {
+    const normalizedCode = couponInput.trim().toUpperCase();
+    const matchedCoupon = availableCoupons.find((coupon) => coupon.code === normalizedCode);
+
+    if (!matchedCoupon) {
+      toast.error('Coupon code not found');
+      return;
+    }
+
+    setSelectedCouponCode(matchedCoupon.code);
+    setCouponInput(matchedCoupon.code);
+    toast.success(`${matchedCoupon.code} selected`);
+  };
+
+  const handleApplySelectedCoupon = () => {
+    if (!selectedCoupon) {
+      toast.error('Please select a coupon first');
+      return;
+    }
+
+    setAppliedCouponCode(selectedCoupon.code);
+    setShowCouponsModal(false);
+    toast.success(`Applied ${selectedCoupon.code}`);
   };
 
   const resolveImageSrc = (src) => {
@@ -449,6 +541,18 @@ const Cart = () => {
               </div>
 
               <aside className="cart-summary-column">
+                <button
+                  type="button"
+                  className="cart-coupon-trigger"
+                  onClick={handleOpenCouponsModal}
+                >
+                  <span className="cart-coupon-trigger-icon" aria-hidden="true">
+                    <Tag size={16} strokeWidth={2.2} />
+                  </span>
+                  <span className="cart-coupon-trigger-label">Apply Coupons</span>
+                  <span className="cart-coupon-trigger-action">APPLY</span>
+                </button>
+
                 {/* NEW: Price Details moved to top */}
                 <aside className="cart-summary-card">
                   <h3>Price Details</h3>
@@ -468,6 +572,12 @@ const Cart = () => {
                     </span>
                     <strong className="cart-summary-discount">-₹ {Math.abs(memberDiscount).toFixed(2)}</strong>
                   </div>
+                  {appliedCoupon && (
+                    <div className="cart-summary-row cart-summary-coupon-row">
+                      <span className="cart-summary-title">Coupon ({appliedCoupon.code})</span>
+                      <strong className="cart-summary-coupon">-₹ {appliedCouponSavings.toFixed(2)}</strong>
+                    </div>
+                  )}
                   <div className="cart-summary-row grand-total">
                     <span>Grand Total</span>
                     <strong>₹ {newGrandTotal.toFixed(2)}</strong>
@@ -561,6 +671,84 @@ const Cart = () => {
                         );
                       })}
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showCouponsModal && (
+              <div className="cart-coupons-modal-overlay" onClick={() => setShowCouponsModal(false)}>
+                <div className="cart-coupons-modal" onClick={(event) => event.stopPropagation()}>
+                  <div className="cart-coupons-modal-header">
+                    <h2>APPLY COUPON</h2>
+                    <button
+                      type="button"
+                      className="cart-coupons-modal-close"
+                      onClick={() => setShowCouponsModal(false)}
+                      aria-label="Close coupon modal"
+                    >
+                      <X size={18} strokeWidth={2.25} />
+                    </button>
+                  </div>
+
+                  <div className="cart-coupons-modal-body">
+                    <div className="cart-coupons-input-row">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={(event) => setCouponInput(event.target.value)}
+                        placeholder="Enter coupon code"
+                        className="cart-coupons-input"
+                      />
+                      <button
+                        type="button"
+                        className="cart-coupons-check-btn"
+                        onClick={handleCheckCoupon}
+                        disabled={!couponInput.trim()}
+                      >
+                        CHECK
+                      </button>
+                    </div>
+
+                    <div className="cart-coupons-list" aria-label="Available coupons">
+                      {availableCoupons.map((coupon) => {
+                        const isSelected = selectedCouponCode === coupon.code;
+                        const savings = getCouponSavings(coupon);
+
+                        return (
+                          <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
+                            />
+                            <div className="cart-coupon-item-content">
+                              <div className="cart-coupon-code-box">{coupon.code}</div>
+                              <div className="cart-coupon-meta">
+                                <p className="cart-coupon-title">Save ₹{savings.toFixed(0)}</p>
+                                <p className="cart-coupon-desc">
+                                  {coupon.description} <span className="cart-coupon-more">more</span>
+                                </p>
+                                <p className="cart-coupon-expiry">{coupon.expiry} · {coupon.tc}</p>
+                              </div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="cart-coupons-modal-footer">
+                    <div className="cart-coupons-footer-copy">
+                      <span>Maximum savings: ₹{selectedCouponSavings.toFixed(0)}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="cart-coupons-apply-btn"
+                      onClick={handleApplySelectedCoupon}
+                    >
+                      APPLY
+                    </button>
                   </div>
                 </div>
               </div>
