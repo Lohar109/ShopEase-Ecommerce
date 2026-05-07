@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { createCoupon, fetchCouponById, updateCoupon } from '../services/couponService';
 import { fetchCategories } from '../services/categoryService';
 import CategoryMultiSelect from '../components/CategoryMultiSelect';
+import ProductMultiSelect from '../components/ProductMultiSelect';
 import ConfirmModal from '../components/ConfirmModal';
 
 const STEPS = [
@@ -20,7 +21,8 @@ const DEFAULT_FORM = {
   min_order_value: '',
   expiry_date: '',
   description: '',
-  applicable_categories: []
+  applicable_categories: [],
+  applicableProducts: []
 };
 
 const CouponForm = () => {
@@ -68,7 +70,8 @@ const CouponForm = () => {
           min_order_value: Number(coupon.min_order_value || 0),
           expiry_date: coupon.expiry_date ? new Date(coupon.expiry_date).toISOString().slice(0, 10) : '',
           description: coupon.description || '',
-          applicable_categories: Array.isArray(coupon.applicable_categories) ? coupon.applicable_categories : []
+          applicable_categories: Array.isArray(coupon.applicable_categories) ? coupon.applicable_categories : [],
+          applicableProducts: Array.isArray(coupon.applicable_products) ? coupon.applicable_products : []
         });
       } catch (err) {
         setLoadError(err.message || 'Failed to load coupon');
@@ -183,6 +186,14 @@ const CouponForm = () => {
       expiry_date: form.expiry_date,
       description: form.description || ''
     };
+
+    // include optional restrictions
+    if (Array.isArray(form.applicable_categories) && form.applicable_categories.length > 0) {
+      payload.applicable_categories = form.applicable_categories;
+    }
+    if (Array.isArray(form.applicableProducts) && form.applicableProducts.length > 0) {
+      payload.applicable_products = form.applicableProducts;
+    }
 
     try {
       setSaving(true);
@@ -547,6 +558,15 @@ const CouponForm = () => {
                       onChange={(ids) => onChange('applicable_categories', ids)}
                       placeholder="Search and select categories..."
                       loading={loadingCategories}
+                    />
+                  </label>
+
+                  <label style={{ ...labelStyle, marginTop: 12 }}>
+                    APPLICABLE PRODUCTS (OPTIONAL)
+                    <ProductMultiSelect
+                      value={form.applicableProducts || []}
+                      onChange={(ids) => onChange('applicableProducts', ids)}
+                      placeholder="Search and select products..."
                     />
                   </label>
                 </section>
