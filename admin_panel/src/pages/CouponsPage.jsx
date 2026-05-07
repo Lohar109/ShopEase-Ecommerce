@@ -366,9 +366,19 @@ const CouponsPage = () => {
                     <button
                       type="button"
                       onClick={() => handleDelete(coupon.id)}
-                      style={iconButtonStyle}
+                      style={deleteIconButtonStyle}
                       aria-label="Delete coupon"
                       disabled={deletingId === coupon.id}
+                      onMouseEnter={(event) => {
+                        event.currentTarget.style.background = '#fee2e2';
+                        event.currentTarget.style.borderColor = '#fca5a5';
+                        event.currentTarget.style.color = '#b91c1c';
+                      }}
+                      onMouseLeave={(event) => {
+                        event.currentTarget.style.background = '#fef2f2';
+                        event.currentTarget.style.borderColor = '#fecaca';
+                        event.currentTarget.style.color = '#dc2626';
+                      }}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -495,7 +505,15 @@ const iconButtonStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  cursor: 'pointer'
+  cursor: 'pointer',
+  transition: 'all 200ms ease'
+};
+
+const deleteIconButtonStyle = {
+  ...iconButtonStyle,
+  border: '1px solid #fecaca',
+  background: '#fef2f2',
+  color: '#dc2626'
 };
 
 const fieldGridStyle = {
