@@ -513,11 +513,11 @@
 }
 
 .cart-coupons-modal {
-  width: min(92vw, 720px);
+  width: min(92vw, 640px);
   max-height: 90vh;
-  border-radius: 20px;
+  border-radius: 18px;
   background: #fff;
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.24);
+  box-shadow: 0 28px 72px rgba(15, 23, 42, 0.18);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -527,21 +527,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid #f3f4f6;
 }
 
 .cart-coupons-modal-header h2 {
   margin: 0;
   color: #111827;
-  font-size: 1rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
 }
 
 .cart-coupons-modal-close {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 9999px;
   background: #f9fafb;
@@ -553,28 +553,28 @@
 }
 
 .cart-coupons-modal-body {
-  padding: 18px 20px 0;
+  padding: 14px 18px 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   overflow: hidden;
 }
 
 .cart-coupons-input-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
 .cart-coupons-input {
   flex: 1;
-  height: 48px;
-  border-radius: 12px;
+  height: 40px;
+  border-radius: 10px;
   border: 1px solid #e5e7eb;
   background: #fff;
-  padding: 0 14px;
+  padding: 0 12px;
   color: #111827;
-  font-size: 14px;
+  font-size: 12px;
   outline: none;
 }
 
@@ -584,16 +584,16 @@
 }
 
 .cart-coupons-check-btn {
-  height: 48px;
-  min-width: 96px;
-  padding: 0 18px;
-  border-radius: 12px;
-  border: 0;
-  background: #ff3f6c;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  height: 40px;
+  min-width: 78px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 63, 108, 0.28);
+  background: #fff;
+  color: #ff3f6c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   cursor: pointer;
 }
 
@@ -605,8 +605,8 @@
 .cart-coupons-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 46vh;
+  gap: 8px;
+  max-height: 44vh;
   overflow: auto;
   padding-right: 4px;
   padding-bottom: 8px;
@@ -614,11 +614,11 @@
 
 .cart-coupon-item {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
-  padding: 14px;
+  padding: 10px 11px;
   border: 1px solid #eef0f3;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
   cursor: pointer;
 }
@@ -629,13 +629,13 @@
 }
 
 .cart-coupon-item input {
-  margin-top: 8px;
+  margin-top: 6px;
   accent-color: #ff3f6c;
 }
 
 .cart-coupon-item-content {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   align-items: flex-start;
   width: 100%;
   min-width: 0;
@@ -643,15 +643,15 @@
 
 .cart-coupon-code-box {
   flex-shrink: 0;
-  min-width: 108px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  min-width: 92px;
+  padding: 9px 11px;
+  border-radius: 10px;
   border: 1px dashed rgba(255, 63, 108, 0.45);
   background: rgba(255, 63, 108, 0.04);
   color: #ff3f6c;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.7px;
   text-align: center;
 }
 
@@ -663,7 +663,7 @@
 .cart-coupon-title {
   margin: 0 0 4px;
   color: #111827;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -671,8 +671,8 @@
 .cart-coupon-expiry {
   margin: 0;
   color: #6b7280;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .cart-coupon-more {
@@ -682,31 +682,33 @@
 
 .cart-coupons-modal-footer {
   margin-top: auto;
-  padding: 16px 20px;
+  padding: 12px 18px;
   border-top: 1px solid #f3f4f6;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  position: sticky;
+  bottom: 0;
 }
 
 .cart-coupons-footer-copy {
   color: #111827;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .cart-coupons-apply-btn {
-  min-width: 150px;
-  height: 48px;
+  min-width: 120px;
+  height: 40px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 10px;
   background: #ff3f6c;
   color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   cursor: pointer;
 }
 
