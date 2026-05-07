@@ -1,82 +1,133 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, Loader2, X } from 'lucide-react';
 
-/**
- * Builds a flat list of options from hierarchical categories
- * Each option includes the full path and the original category object
- */
-const buildCategoryOptions = (categories) => {
-  const options = [];
-  
-  const findPath = (id, path = []) => {
-    const category = categories.find(c => c.id === id);
-    if (!category) return path;
-    
-    const newPath = [category, ...path];
-    if (!category.parent_id) return newPath;
-    return findPath(category.parent_id, newPath);
-  };
+const normalizeId = (value) => String(value ?? '').trim();
 
-  categories.forEach(cat => {
-    const path = findPath(cat.id);
-    const label = path.map(c => c.name).join(' > ');
-    options.push({
-      id: cat.id,
-      name: cat.name,
-      label,
-      category: cat
+const getCategoryId = (category) => normalizeId(category?._id ?? category?.id);
+
+const getCategoryName = (category) => String(category?.name || category?.label || 'Unknown');
+
+const buildCategoryOptions = (categoriesInput) => {
+  try {
+    const categories = Array.isArray(categoriesInput) ? categoriesInput.filter(Boolean) : [];
+    const categoryMap = new Map();
+
+    categories.forEach((category) => {
+      const categoryId = getCategoryId(category);
+      if (!categoryId) return;
+      categoryMap.set(categoryId, category);
     });
-  });
 
-  return options.sort((a, b) => a.label.localeCompare(b.label));
+    const buildPath = (category, visited = new Set()) => {
+      if (!category) return ['Unknown'];
+
+      const categoryId = getCategoryId(category);
+      const safeName = getCategoryName(category);
+
+      if (!categoryId || visited.has(categoryId)) {
+        return [safeName || 'Unknown'];
+      }
+
+      const nextVisited = new Set(visited);
+      nextVisited.add(categoryId);
+
+      const parentId = normalizeId(category?.parent_id ?? category?.parentId);
+      const parent = parentId ? categoryMap.get(parentId) : null;
+
+      if (!parent) {
+        return [safeName || 'Unknown'];
+      }
+
+      const parentPath = buildPath(parent, nextVisited);
+      return [...parentPath, safeName || 'Unknown'];
+    };
+
+    const options = categories.map((category) => {
+      const categoryId = getCategoryId(category);
+      if (!categoryId) return null;
+
+      const path = buildPath(category);
+      const label = path.filter(Boolean).join(' > ') || 'Unknown';
+
+      return {
+        value: categoryId,
+        label,
+        name: getCategoryName(category),
+        category,
+      };
+    }).filter(Boolean);
+
+    return options.sort((a, b) => a.label.localeCompare(b.label));
+  } catch (error) {
+    console.error('Failed to build category options:', error, categoriesInput);
+    return [];
+  }
 };
 
-const CategoryMultiSelect = ({ 
-  categories = [], 
-  value = [], 
-  onChange, 
-  placeholder = 'Select categories...' 
+const CategoryMultiSelect = ({
+  categories = [],
+  value = [],
+  onChange,
+  placeholder = 'Select categories...',
+  loading = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hoveredValue, setHoveredValue] = useState('');
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
-  const options = buildCategoryOptions(categories);
-  
-  const filteredOptions = searchTerm.trim() === '' 
-    ? options 
-    : options.filter(opt => 
-        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const { options, buildError } = useMemo(() => {
+    try {
+      return {
+        options: buildCategoryOptions(categories),
+        buildError: ''
+      };
+    } catch (error) {
+      console.error('Unexpected category option error:', error, categories);
+      return {
+        options: [],
+        buildError: 'Unable to load categories'
+      };
+    }
+  }, [categories]);
 
-  const selectedOptions = options.filter(opt => value.includes(opt.id));
+  const filteredOptions = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return options;
+    return options.filter((option) => String(option?.label || '').toLowerCase().includes(query));
+  }, [options, searchTerm]);
+
+  const selectedOptions = useMemo(
+    () => options.filter((option) => value.includes(option.value)),
+    [options, value]
+  );
 
   const handleSelect = (optionId) => {
     const newValue = value.includes(optionId)
-      ? value.filter(id => id !== optionId)
+      ? value.filter((id) => id !== optionId)
       : [...value, optionId];
     onChange(newValue);
   };
 
   const handleRemove = (optionId) => {
-    onChange(value.filter(id => id !== optionId));
-  };
-
-  const handleClickOutside = (event) => {
-    if (containerRef.current && !containerRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
+    onChange(value.filter((id) => id !== optionId));
   };
 
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const containerStyle = {
     position: 'relative',
-    width: '100%'
+    width: '100%',
   };
 
   const triggerStyle = {
@@ -90,9 +141,9 @@ const CategoryMultiSelect = ({
     border: '1px solid #d4d4d8',
     borderRadius: '8px',
     background: '#ffffff',
-    cursor: 'pointer',
+    cursor: loading ? 'not-allowed' : 'pointer',
     fontSize: '14px',
-    fontFamily: 'Poppins, sans-serif'
+    fontFamily: 'Poppins, sans-serif',
   };
 
   const selectedTagsWrapStyle = {
@@ -100,7 +151,7 @@ const CategoryMultiSelect = ({
     flexWrap: 'wrap',
     gap: '6px',
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
   };
 
   const tagStyle = {
@@ -114,7 +165,7 @@ const CategoryMultiSelect = ({
     fontSize: '13px',
     fontWeight: '500',
     color: '#374151',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   };
 
   const tagRemoveButtonStyle = {
@@ -126,7 +177,6 @@ const CategoryMultiSelect = ({
     background: 'transparent',
     border: 'none',
     color: '#6b7280',
-    transition: 'color 0.2s ease'
   };
 
   const dropdownStyle = {
@@ -139,9 +189,9 @@ const CategoryMultiSelect = ({
     border: '1px solid #e5e7eb',
     borderRadius: '8px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    zIndex: 1000,
+    zIndex: 9999,
     maxHeight: '300px',
-    overflowY: 'auto'
+    overflowY: 'auto',
   };
 
   const searchInputStyle = {
@@ -152,7 +202,7 @@ const CategoryMultiSelect = ({
     borderRadius: '8px 8px 0 0',
     fontSize: '14px',
     fontFamily: 'Poppins, sans-serif',
-    outline: 'none'
+    outline: 'none',
   };
 
   const optionItemStyle = (isSelected, isHovered) => ({
@@ -167,7 +217,7 @@ const CategoryMultiSelect = ({
     fontSize: '14px',
     color: isSelected ? '#c8507a' : '#374151',
     fontWeight: isSelected ? '600' : '500',
-    transition: 'background 0.15s ease'
+    transition: 'background 0.15s ease',
   });
 
   const checkboxStyle = {
@@ -179,38 +229,59 @@ const CategoryMultiSelect = ({
     alignItems: 'center',
     justifyContent: 'center',
     background: '#ffffff',
-    flexShrink: 0
+    flexShrink: 0,
   };
 
   const emptyStateStyle = {
     padding: '16px 12px',
     textAlign: 'center',
     color: '#9ca3af',
-    fontSize: '14px'
+    fontSize: '14px',
+  };
+
+  const loadingStateStyle = {
+    padding: '16px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    color: '#6b7280',
+    fontSize: '14px',
   };
 
   return (
     <div style={containerStyle} ref={containerRef}>
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (loading) return;
+          setIsOpen((prev) => !prev);
+        }}
         style={triggerStyle}
-        onFocus={() => setIsOpen(true)}
+        onFocus={() => {
+          if (!loading) setIsOpen(true);
+        }}
+        disabled={loading}
       >
         <div style={selectedTagsWrapStyle}>
-          {selectedOptions.length > 0 ? (
-            selectedOptions.map(opt => (
-              <div key={opt.id} style={tagStyle}>
-                <span>{opt.name}</span>
+          {loading ? (
+            <span style={{ color: '#9ca3af', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              Loading categories...
+            </span>
+          ) : buildError ? (
+            <span style={{ color: '#dc2626' }}>{buildError}</span>
+          ) : selectedOptions.length > 0 ? (
+            selectedOptions.map((opt) => (
+              <div key={opt.value} style={tagStyle}>
+                <span>{opt.label}</span>
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleRemove(opt.id);
+                    handleRemove(opt.value);
                   }}
                   style={tagRemoveButtonStyle}
-                  onMouseEnter={(e) => e.target.style.color = '#374151'}
-                  onMouseLeave={(e) => e.target.style.color = '#6b7280'}
                 >
                   <X size={14} />
                 </button>
@@ -220,18 +291,18 @@ const CategoryMultiSelect = ({
             <span style={{ color: '#9ca3af' }}>{placeholder}</span>
           )}
         </div>
-        <ChevronDown 
-          size={16} 
-          style={{ 
-            color: '#6b7280', 
+        <ChevronDown
+          size={16}
+          style={{
+            color: '#6b7280',
             flexShrink: 0,
             transition: 'transform 0.2s ease',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-          }} 
+          }}
         />
       </button>
 
-      {isOpen && (
+      {isOpen && !loading && !buildError && (
         <div style={dropdownStyle}>
           <input
             ref={inputRef}
@@ -245,16 +316,16 @@ const CategoryMultiSelect = ({
           <div style={{ maxHeight: '260px', overflowY: 'auto' }}>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => {
-                const isSelected = value.includes(opt.id);
-                const [isHovered, setIsHovered] = React.useState(false);
-                
+                const isSelected = value.includes(opt.value);
+                const isHovered = hoveredValue === opt.value;
+
                 return (
                   <div
-                    key={opt.id}
+                    key={opt.value}
                     style={optionItemStyle(isSelected, isHovered)}
-                    onClick={() => handleSelect(opt.id)}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
+                    onClick={() => handleSelect(opt.value)}
+                    onMouseEnter={() => setHoveredValue(opt.value)}
+                    onMouseLeave={() => setHoveredValue('')}
                   >
                     <div style={{
                       ...checkboxStyle,
@@ -272,6 +343,15 @@ const CategoryMultiSelect = ({
                 No categories found
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {isOpen && loading && (
+        <div style={dropdownStyle}>
+          <div style={loadingStateStyle}>
+            <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+            Loading categories...
           </div>
         </div>
       )}

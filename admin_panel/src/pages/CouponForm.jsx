@@ -505,6 +505,7 @@ const CouponForm = () => {
                       value={form.applicable_categories || []}
                       onChange={(ids) => onChange('applicable_categories', ids)}
                       placeholder="Search and select categories..."
+                      loading={loadingCategories}
                     />
                   </label>
                 </section>
