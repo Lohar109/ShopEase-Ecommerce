@@ -547,7 +547,7 @@ const Cart = () => {
                   onClick={handleOpenCouponsModal}
                 >
                   <span className="cart-coupon-trigger-icon" aria-hidden="true">
-                    <Tag size={16} strokeWidth={2.2} />
+                    <Tag size={14} strokeWidth={2.2} />
                   </span>
                   <span className="cart-coupon-trigger-label">Apply Coupons</span>
                   <span className="cart-coupon-trigger-action">APPLY</span>
