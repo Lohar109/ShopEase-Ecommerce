@@ -400,142 +400,143 @@ const CouponForm = () => {
           </aside>
 
           <section>
-            <form id="coupon-form" onSubmit={handleSave} style={{ display: 'grid', gap: 16 }}>
-              <section style={{ ...sectionCardStyle, display: activeTab === 'general' ? 'block' : 'none' }}>
-                <div style={sectionTitleWrapStyle}>
-                  <span style={sectionIconStyle}><Info size={16} /></span>
-                  <h4 style={sectionTitleStyle}>General Details</h4>
-                </div>
+            <div style={sectionCardStyle}>
+              <form id="coupon-form" onSubmit={handleSave} style={{ display: 'grid', gap: 16 }}>
+                <section style={{ display: activeTab === 'general' ? 'block' : 'none' }}>
+                  <div style={sectionTitleWrapStyle}>
+                    <span style={sectionIconStyle}><Info size={16} /></span>
+                    <h4 style={sectionTitleStyle}>General Details</h4>
+                  </div>
 
-                <div style={{ marginBottom: 16 }}>
-                  <label style={labelStyle}>
-                    Coupon Code
-                    <input
-                      type="text"
-                      value={form.code}
-                      onChange={(event) => onChange('code', event.target.value.toUpperCase())}
-                      style={inputStyle}
-                      placeholder="SAVE100"
-                      required
-                    />
-                  </label>
-                </div>
-
-                <label style={labelStyle}>
-                  Description / Notes
-                  <textarea
-                    value={form.description}
-                    onChange={(event) => onChange('description', event.target.value)}
-                    style={textareaStyle}
-                    placeholder="non-returnable"
-                  />
-                </label>
-              </section>
-
-              <section style={{ ...sectionCardStyle, display: activeTab === 'rules' ? 'block' : 'none' }}>
-                <div style={sectionTitleWrapStyle}>
-                  <span style={sectionIconStyle}><Info size={16} /></span>
-                  <h4 style={sectionTitleStyle}>Discount Rules</h4>
-                </div>
-
-                <div style={fieldGridStyle}>
-                  <label style={labelStyle}>
-                    Discount Type
-                    <select
-                      value={form.discount_type}
-                      onChange={(event) => onChange('discount_type', event.target.value)}
-                      style={inputStyle}
-                    >
-                      <option value="percentage">Percentage</option>
-                      <option value="flat">Flat</option>
-                    </select>
-                  </label>
-
-                  <label style={labelStyle}>
-                    Discount Value
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={form.discount_value}
-                      onChange={(event) => onChange('discount_value', event.target.value)}
-                      style={inputStyle}
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div style={fieldGridStyle}>
-                  <label style={labelStyle}>
-                    Min Order Value
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={form.min_order_value}
-                      onChange={(event) => onChange('min_order_value', event.target.value)}
-                      style={inputStyle}
-                      required
-                    />
-                  </label>
-
-                  <label style={labelStyle}>
-                    Expiry Date
-                    <span style={{ position: 'relative' }}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>
+                      Coupon Code
                       <input
-                        type="date"
-                        value={form.expiry_date}
-                        onChange={(event) => onChange('expiry_date', event.target.value)}
-                        style={dateInputStyle}
+                        type="text"
+                        value={form.code}
+                        onChange={(event) => onChange('code', event.target.value.toUpperCase())}
+                        style={inputStyle}
+                        placeholder="SAVE100"
                         required
                       />
-                      <CalendarDays size={16} style={calendarIconStyle} />
-                    </span>
-                  </label>
-                </div>
-              </section>
+                    </label>
+                  </div>
 
-              <section style={{ ...sectionCardStyle, display: activeTab === 'limits' ? 'block' : 'none' }}>
-                <div style={sectionTitleWrapStyle}>
-                  <span style={sectionIconStyle}><Info size={16} /></span>
-                  <h4 style={sectionTitleStyle}>Limits</h4>
-                </div>
-
-                <label style={labelStyle}>
-                  Applicable Categories (optional)
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input
-                      type="text"
-                      value={categoryDraft}
-                      onChange={(event) => setCategoryDraft(event.target.value)}
-                      style={inputStyle}
-                      placeholder="e.g. fashion, footwear"
+                  <label style={labelStyle}>
+                    Description / Notes
+                    <textarea
+                      value={form.description}
+                      onChange={(event) => onChange('description', event.target.value)}
+                      style={textareaStyle}
+                      placeholder="non-returnable"
                     />
-                    <button type="button" className="cf-outline-accent-btn" onClick={handleAddApplicableCategory}>
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                </label>
+                  </label>
+                </section>
 
-                {(form.applicable_categories || []).length > 0 && (
-                  <div style={chipWrapStyle}>
-                    {form.applicable_categories.map((item) => (
-                      <span key={item} style={chipStyle}>
-                        {item}
-                        <button
-                          type="button"
-                          style={chipRemoveBtnStyle}
-                          onClick={() => handleRemoveApplicableCategory(item)}
-                          aria-label={`Remove ${item}`}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                <section style={{ display: activeTab === 'rules' ? 'block' : 'none' }}>
+                  <div style={sectionTitleWrapStyle}>
+                    <span style={sectionIconStyle}><Info size={16} /></span>
+                    <h4 style={sectionTitleStyle}>Discount Rules</h4>
                   </div>
-                )}
-              </section>
-            </form>
+
+                  <div style={fieldGridStyle}>
+                    <label style={labelStyle}>
+                      Discount Type
+                      <select
+                        value={form.discount_type}
+                        onChange={(event) => onChange('discount_type', event.target.value)}
+                        style={inputStyle}
+                      >
+                        <option value="percentage">Percentage</option>
+                        <option value="flat">Flat</option>
+                      </select>
+                    </label>
+
+                    <label style={labelStyle}>
+                      Discount Value
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={form.discount_value}
+                        onChange={(event) => onChange('discount_value', event.target.value)}
+                        style={inputStyle}
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <div style={fieldGridStyle}>
+                    <label style={labelStyle}>
+                      Min Order Value
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={form.min_order_value}
+                        onChange={(event) => onChange('min_order_value', event.target.value)}
+                        style={inputStyle}
+                        required
+                      />
+                    </label>
+
+                    <label style={labelStyle}>
+                      Expiry Date
+                      <span style={{ position: 'relative' }}>
+                        <input
+                          type="date"
+                          value={form.expiry_date}
+                          onChange={(event) => onChange('expiry_date', event.target.value)}
+                          style={dateInputStyle}
+                          required
+                        />
+                        <CalendarDays size={16} style={calendarIconStyle} />
+                      </span>
+                    </label>
+                  </div>
+                </section>
+
+                <section style={{ display: activeTab === 'limits' ? 'block' : 'none' }}>
+                  <div style={sectionTitleWrapStyle}>
+                    <span style={sectionIconStyle}><Info size={16} /></span>
+                    <h4 style={sectionTitleStyle}>Limits</h4>
+                  </div>
+
+                  <label style={labelStyle}>
+                    Applicable Categories (optional)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <input
+                        type="text"
+                        value={categoryDraft}
+                        onChange={(event) => setCategoryDraft(event.target.value)}
+                        style={inputStyle}
+                        placeholder="e.g. fashion, footwear"
+                      />
+                      <button type="button" className="cf-outline-accent-btn" onClick={handleAddApplicableCategory}>
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </label>
+
+                  {(form.applicable_categories || []).length > 0 && (
+                    <div style={chipWrapStyle}>
+                      {form.applicable_categories.map((item) => (
+                        <span key={item} style={chipStyle}>
+                          {item}
+                          <button
+                            type="button"
+                            style={chipRemoveBtnStyle}
+                            onClick={() => handleRemoveApplicableCategory(item)}
+                            aria-label={`Remove ${item}`}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </form>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
                 <button
@@ -574,6 +575,7 @@ const CouponForm = () => {
                   {canNext ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
                 </button>
               </div>
+            </div>
           </section>
         </div>
       </div>
