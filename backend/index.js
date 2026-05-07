@@ -66,6 +66,10 @@ app.use('/api/wishlist', wishlistRoute);
 const designGalleryRoute = require('./routes/designGallery');
 app.use('/api/design-gallery', designGalleryRoute);
 
+// Coupon routes
+const couponsRoute = require('./routes/coupons');
+app.use('/api/coupons', couponsRoute);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
