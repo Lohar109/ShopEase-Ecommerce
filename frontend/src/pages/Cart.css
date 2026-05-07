@@ -312,6 +312,45 @@
   box-shadow: 0 0 0 4px rgba(255, 63, 108, 0.12);
 }
 
+/* Logo frames */
+.offer-logo-frame {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #f3f4f6;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.offer-logo {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  transition: filter 220ms ease, opacity 220ms ease, box-shadow 220ms ease;
+}
+
+.offer-logo--sidebar {
+  width: 24px;
+  height: 24px;
+}
+
+.offer-logo.is-locked {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.offer-logo-frame.is-best {
+  box-shadow: 0 6px 20px rgba(255, 63, 108, 0.18), 0 0 0 6px rgba(255, 63, 108, 0.06);
+  transform: translateY(-2px);
+}
+
 .cart-offer-row p {
   margin: 0;
   color: #374151;

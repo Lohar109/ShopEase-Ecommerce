@@ -62,6 +62,7 @@ const Cart = () => {
       description: 'Via partner wallets',
       bank: 'Wallets',
       bankLogo: 'wallet',
+      logoUrl: '/assets/logos/wallet.png',
       minSpend: 0,
       discountValue: { type: 'percentage', value: 7.5 },
       hasTC: true
@@ -72,6 +73,7 @@ const Cart = () => {
       description: 'Credit Cards on minimum spend',
       bank: 'Axis Bank',
       bankLogo: 'axis',
+      logoUrl: '/logos/axis.png',
       minSpend: 5000,
       discountValue: { type: 'percentage', value: 10 },
       hasTC: true
@@ -82,6 +84,7 @@ const Cart = () => {
       description: 'HSBC Bank Cards, up to capped value',
       bank: 'HSBC Bank',
       bankLogo: 'hsbc',
+      logoUrl: '/assets/logos/hsbc.png',
       minSpend: 8000,
       discountValue: { type: 'percentage', value: 15 },
       hasTC: true
@@ -92,6 +95,7 @@ const Cart = () => {
       description: 'Eligible orders',
       bank: 'Mobikwik',
       bankLogo: 'mobikwik',
+      logoUrl: '/assets/logos/mobikwik.png',
       minSpend: 2000,
       discountValue: { type: 'percentage', value: 5 },
       hasTC: true
@@ -102,6 +106,7 @@ const Cart = () => {
       description: 'Bank and wallet offers',
       bank: 'UPI',
       bankLogo: 'upi',
+      logoUrl: '/assets/logos/upi.png',
       minSpend: 1500,
       discountValue: { type: 'percentage', value: 8 },
       hasTC: true
@@ -112,6 +117,7 @@ const Cart = () => {
       description: 'On orders above minimum cart value',
       bank: 'Cards',
       bankLogo: 'card',
+      logoUrl: '/assets/logos/card.png',
       minSpend: 6000,
       discountValue: { type: 'fixed', value: 300 },
       hasTC: true
@@ -122,6 +128,7 @@ const Cart = () => {
       description: 'First payment with digital wallets',
       bank: 'Wallets',
       bankLogo: 'wallet',
+      logoUrl: '/assets/logos/wallet.png',
       minSpend: 3000,
       discountValue: { type: 'percentage', value: 10 },
       hasTC: true
@@ -132,6 +139,7 @@ const Cart = () => {
       description: 'During current offer window',
       bank: 'All',
       bankLogo: 'shipping',
+      logoUrl: '/assets/logos/shipping.png',
       minSpend: 2500,
       discountValue: { type: 'fixed', value: 150 },
       hasTC: true
@@ -142,6 +150,7 @@ const Cart = () => {
       description: 'Partner bank payment methods',
       bank: 'Banks',
       bankLogo: 'bank',
+      logoUrl: '/assets/logos/bank.png',
       minSpend: 4000,
       discountValue: { type: 'fixed', value: 200 },
       hasTC: true
@@ -152,6 +161,7 @@ const Cart = () => {
       description: 'Selected categories with bank offers',
       bank: 'Banks',
       bankLogo: 'bank',
+      logoUrl: '/assets/logos/bank.png',
       minSpend: 7000,
       discountValue: { type: 'percentage', value: 12 },
       hasTC: true
@@ -162,6 +172,7 @@ const Cart = () => {
       description: 'Instant discount on cart totals',
       bank: 'All',
       bankLogo: 'gift',
+      logoUrl: '/assets/logos/gift.png',
       minSpend: 3500,
       discountValue: { type: 'percentage', value: 7 },
       hasTC: true
@@ -172,6 +183,7 @@ const Cart = () => {
       description: 'Supported wallet checkout',
       bank: 'Wallets',
       bankLogo: 'wallet',
+      logoUrl: '/assets/logos/wallet.png',
       minSpend: 1200,
       discountValue: { type: 'fixed', value: 150 },
       hasTC: true
@@ -182,6 +194,7 @@ const Cart = () => {
       description: 'Recurring prepaid purchases',
       bank: 'All',
       bankLogo: 'repeat',
+      logoUrl: '/assets/logos/repeat.png',
       minSpend: 5000,
       discountValue: { type: 'percentage', value: 3 },
       hasTC: true
@@ -192,6 +205,7 @@ const Cart = () => {
       description: 'App-exclusive payment offers',
       bank: 'App',
       bankLogo: 'mobile',
+      logoUrl: '/assets/logos/mobile.png',
       minSpend: 0,
       discountValue: { type: 'percentage', value: 5 },
       hasTC: true
@@ -202,6 +216,7 @@ const Cart = () => {
       description: 'Additional savings on eligible payments',
       bank: 'All',
       bankLogo: 'gift',
+      logoUrl: '/assets/logos/gift.png',
       minSpend: 4000,
       discountValue: { type: 'percentage', value: 8 },
       hasTC: true
@@ -355,14 +370,22 @@ const Cart = () => {
                       const isEligible = getOfferEligibility(offer);
                       const savings = getOfferSavings(offer);
                       const spendMore = spendToUnlock(offer);
-                      const progress = isEligible ? 100 : (cartTotal / offer.minSpend) * 100;
+                      const progress = isEligible ? 100 : (offer.minSpend > 0 ? (cartTotal / offer.minSpend) * 100 : 100);
+                      const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
 
                       return (
                         <div className="cart-offer-row" key={offer.id}>
-                          <span className="cart-offer-dot" aria-hidden="true" />
+                          <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
+                            <img
+                              src={resolveImageSrc(offer.logoUrl)}
+                              alt={offer.bank}
+                              className={`offer-logo offer-logo--sidebar ${!isEligible ? 'is-locked' : ''}`}
+                              width={40}
+                              height={40}
+                            />
+                          </div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                              <span className="cart-offer-bank-badge">{offer.bank}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                               <p style={{ margin: 0, color: '#374151', fontSize: '13px', fontWeight: 500 }}>
                                 {offer.title}
                               </p>
@@ -466,11 +489,18 @@ const Cart = () => {
                                 <span>Best Deal</span>
                               </div>
                             )}
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%' }}>
-                              <span className="cart-offers-modal-dot" aria-hidden="true" />
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', width: '100%' }}>
+                              <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
+                                <img
+                                  src={resolveImageSrc(offer.logoUrl)}
+                                  alt={offer.bank}
+                                  className={`offer-logo ${!isEligible ? 'is-locked' : ''}`}
+                                  width={48}
+                                  height={48}
+                                />
+                              </div>
                               <div style={{ flex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                  <span className="cart-offer-bank-badge">{offer.bank}</span>
                                   <p style={{ margin: 0, color: '#1f2937', fontSize: '13px', fontWeight: 600 }}>
                                     {offer.title}
                                   </p>
