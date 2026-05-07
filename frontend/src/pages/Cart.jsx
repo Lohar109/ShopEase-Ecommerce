@@ -727,24 +727,30 @@ const Cart = () => {
                               const tc = coupon.tc || 'T&C Apply';
                               
                               return (
-                                <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code}>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                    onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
-                                  />
-                                  <div className="cart-coupon-item-content">
-                                    <div className="cart-coupon-code-box" style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
+                                <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code} style={{ position: 'relative' }}>
+                                  {isBestValue && (
+                                    <span style={{ position: 'absolute', top: '12px', right: '12px', background: '#ff3f6c', color: 'white', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', padding: '3px 8px', borderRadius: '9999px' }}>
+                                      BEST VALUE
+                                    </span>
+                                  )}
+                                  <div style={{ display: 'flex', alignItems: 'center', height: '32px' }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
+                                    />
+                                  </div>
+                                  <div className="cart-coupon-item-content" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                    <div className="cart-coupon-code-box" style={{ display: 'inline-flex', alignItems: 'center', height: '32px', marginBottom: '16px', alignSelf: 'flex-start' }}>
                                       {coupon.code}
-                                      {isBestValue && <span className="cart-coupon-best-badge" style={{background: '#e11d48', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', marginLeft: '6px'}}>BEST VALUE</span>}
                                     </div>
-                                    <div className="cart-coupon-meta">
-                                      <p className="cart-coupon-title">Save ₹{coupon.savings.toFixed(0)}</p>
-                                      <p className="cart-coupon-policy">Once you apply this coupon, items will be non-returnable.</p>
-                                      <p className="cart-coupon-desc">
+                                    <div className="cart-coupon-meta" style={{ width: '100%', textAlign: 'left' }}>
+                                      <p className="cart-coupon-title" style={{ textAlign: 'left' }}>Save ₹{coupon.savings.toFixed(0)}</p>
+                                      <p className="cart-coupon-policy" style={{ textAlign: 'left' }}>Once you apply this coupon, items will be non-returnable.</p>
+                                      <p className="cart-coupon-desc" style={{ textAlign: 'left' }}>
                                         {coupon.description}
                                       </p>
-                                      <p className="cart-coupon-expiry">Expires on: {expiryDate} · {tc}</p>
+                                      <p className="cart-coupon-expiry" style={{ textAlign: 'left' }}>Expires on: {expiryDate} · {tc}</p>
                                     </div>
                                   </div>
                                 </label>
