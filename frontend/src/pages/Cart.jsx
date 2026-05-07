@@ -28,8 +28,10 @@ const Cart = () => {
   const platformFee = 250;
   const memberDiscount = -5000;
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
+  const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
 
   React.useEffect(() => {
+    setIsLoadingCoupons(true);
     fetch(`${API_ORIGIN}/api/coupons`)
       .then(res => res.json())
       .then(data => {
@@ -37,7 +39,8 @@ const Cart = () => {
           setAvailableCoupons(data.filter(c => c.is_active));
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setIsLoadingCoupons(false));
   }, []);
 
   const getCouponSavings = (coupon) => {
@@ -683,8 +686,13 @@ const Cart = () => {
                       </button>
                     </div>
 
-                    <div className="cart-coupons-list" aria-label="Available coupons">
-                      {(() => {
+                    <div className="cart-coupons-list" aria-label="Available coupons" style={{ minHeight: '500px', position: 'relative' }}>
+                      {isLoadingCoupons ? (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTop: '3px solid #ff3f6c', borderRadius: '50%' }}></div>
+                        </div>
+                      ) : (
+                        (() => {
                         const getCouponEligibility = (coupon) => {
                           const minOrderValue = Number(coupon.min_order_value) || 0;
                           
@@ -743,10 +751,10 @@ const Cart = () => {
                                       position: 'absolute', 
                                       top: '-12px', 
                                       right: '16px', 
-                                      background: 'linear-gradient(135deg, #d4af37 0%, #f3e5ab 40%, #aa7c11 100%)', 
-                                      color: '#fff', 
+                                      background: 'linear-gradient(135deg, #dfbc50 0%, #fdf2c2 30%, #cd9f33 70%, #f3e5ab 100%)', 
+                                      color: '#082567', 
                                       fontSize: '10px', 
-                                      fontWeight: 'bold', 
+                                      fontWeight: '800', 
                                       fontFamily: '"Playfair Display", Georgia, serif',
                                       textTransform: 'uppercase', 
                                       padding: '4px 10px', 
@@ -754,11 +762,11 @@ const Cart = () => {
                                       display: 'flex',
                                       alignItems: 'center',
                                       gap: '4px',
-                                      boxShadow: '0 4px 10px rgba(212, 175, 55, 0.3)',
-                                      border: '1px solid #fff',
-                                      textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                                      boxShadow: '0 4px 10px rgba(212, 175, 55, 0.4), inset 0 1px 1px rgba(255,255,255,0.8)',
+                                      border: '1px solid #c5a017',
+                                      textShadow: 'none'
                                     }}>
-                                      <Crown size={12} color="#fff" strokeWidth={2.5} />
+                                      <Crown size={12} color="#082567" strokeWidth={2.5} />
                                       BEST VALUE
                                     </span>
                                   )}
@@ -858,11 +866,12 @@ const Cart = () => {
                             )}
                           </>
                         );
-                      })()}
+                      })()
+                      )}
                     </div>
                   </div>
 
-                  <div className="cart-coupons-modal-footer" style={{ padding: '20px 24px', background: '#fdfbf7', borderTop: '1px solid #e6e2d8' }}>
+                  <div className="cart-coupons-modal-footer" style={{ padding: '20px 24px', background: '#fdfbf7', borderTop: '1px solid #e6e2d8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div className="cart-coupons-footer-copy" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <span style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>
                         Maximum Savings
@@ -875,7 +884,7 @@ const Cart = () => {
                       type="button"
                       className="cart-coupons-apply-btn"
                       onClick={handleApplySelectedCoupon}
-                      style={{ padding: '0 24px', height: '44px', fontSize: '14px', borderRadius: '8px', background: '#ff3f6c', boxShadow: '0 4px 12px rgba(255, 63, 108, 0.3)' }}
+                      style={{ alignSelf: 'center', padding: '0 20px', height: '36px', fontSize: '12px', fontWeight: '700', borderRadius: '6px', background: '#ff3f6c', color: '#fff', boxShadow: '0 2px 8px rgba(255, 63, 108, 0.25)', letterSpacing: '0.5px' }}
                     >
                       APPLY COUPON
                     </button>
