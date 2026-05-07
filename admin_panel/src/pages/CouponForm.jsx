@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Check, CalendarDays, Info } from 'lucide-react';
+import { ArrowLeft, Check, CalendarDays, Info, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createCoupon, fetchCouponById, updateCoupon } from '../services/couponService';
 import { fetchCategories } from '../services/categoryService';
 import CategoryMultiSelect from '../components/CategoryMultiSelect';
+import ConfirmModal from '../components/ConfirmModal';
 
 const STEPS = [
   { key: 'general', label: 'General' },
@@ -34,6 +35,7 @@ const CouponForm = () => {
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -134,6 +136,24 @@ const CouponForm = () => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const resetForm = () => {
+    setForm(DEFAULT_FORM);
+    setActiveTab('general');
+    setIsDiscardModalOpen(false);
+  };
+
+  const openDiscardModal = () => {
+    setIsDiscardModalOpen(true);
+  };
+
+  const closeDiscardModal = () => {
+    setIsDiscardModalOpen(false);
+  };
+
+  const handleDiscardConfirm = () => {
+    resetForm();
+  };
+
   const validateForm = () => {
     if (!String(form.code || '').trim()) return 'Coupon code is required';
     if (!Number.isFinite(Number(form.discount_value)) || Number(form.discount_value) <= 0) {
@@ -168,15 +188,40 @@ const CouponForm = () => {
       setSaving(true);
       if (isEditMode) {
         await updateCoupon(id, payload);
-        toast.success('Coupon updated');
+        toast.success('Coupon updated successfully', {
+          position: 'top-center',
+          icon: <Trash2 size={15} color="#dc2626" />,
+          className: 'toast-pop',
+          style: {
+            border: '1px solid #fecaca',
+            borderLeft: '4px solid #dc2626',
+            background: '#ffffff',
+            color: '#111827',
+            borderRadius: '12px',
+            boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
+            padding: '10px 12px',
+          },
+        });
+        navigate('/coupons');
       } else {
         await createCoupon(payload);
-        toast.success('Coupon created');
+        toast.success('Coupon created successfully', {
+          position: 'top-center',
+          icon: <Trash2 size={15} color="#dc2626" />,
+          className: 'toast-pop',
+          style: {
+            border: '1px solid #fecaca',
+            borderLeft: '4px solid #dc2626',
+            background: '#ffffff',
+            color: '#111827',
+            borderRadius: '12px',
+            boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
+            padding: '10px 12px',
+          },
+        });
+        // Stay on page and reset form for next coupon
+        resetForm();
       }
-      // Reset form fields
-      setForm(DEFAULT_FORM);
-      setActiveTab('general');
-      navigate('/coupons');
     } catch (err) {
       toast.error(err.message || 'Failed to save coupon');
     } finally {
@@ -281,11 +326,7 @@ const CouponForm = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
-            onClick={() => {
-              setForm(DEFAULT_FORM);
-              setActiveTab('general');
-              navigate('/coupons');
-            }}
+            onClick={openDiscardModal}
             disabled={saving}
             className="pf-ghost-action-btn"
             style={{ padding: '0 14px' }}
@@ -552,6 +593,17 @@ const CouponForm = () => {
           </section>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isDiscardModalOpen}
+        title="Are you sure?"
+        message="This action cannot be undone. All form fields will be cleared."
+        cancelLabel="Cancel"
+        confirmLabel={saving ? 'Clearing...' : 'Discard'}
+        onCancel={closeDiscardModal}
+        onConfirm={handleDiscardConfirm}
+        isConfirming={saving}
+      />
     </div>
   );
 };
