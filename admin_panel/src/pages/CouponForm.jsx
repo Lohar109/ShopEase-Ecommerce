@@ -561,7 +561,8 @@ const sectionCardStyle = {
   borderRadius: 12,
   boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
   border: '1px solid #eceff3',
-  padding: '34px 36px'
+  padding: '34px 36px',
+  overflow: 'visible'
 };
 
 const sectionTitleWrapStyle = {

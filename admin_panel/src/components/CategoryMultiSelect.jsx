@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Loader2, X } from 'lucide-react';
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -74,7 +75,10 @@ const CategoryMultiSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [hoveredValue, setHoveredValue] = useState('');
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, width: 0, openUp: false });
   const containerRef = useRef(null);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
   const inputRef = useRef(null);
 
   const { options, buildError } = useMemo(() => {
@@ -103,6 +107,34 @@ const CategoryMultiSelect = ({
     [options, value]
   );
 
+  const updateMenuPosition = () => {
+    const triggerEl = triggerRef.current;
+    if (!triggerEl) return;
+
+    const rect = triggerEl.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const margin = 8;
+    const estimatedMenuHeight = 320;
+    const spaceBelow = viewportHeight - rect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+    const openUp = spaceBelow < estimatedMenuHeight && spaceAbove > spaceBelow;
+    const availableHeight = openUp ? Math.max(180, spaceAbove) : Math.max(180, spaceBelow);
+    const width = Math.max(280, Math.min(rect.width, viewportWidth - margin * 2));
+    const left = Math.max(margin, Math.min(rect.left, viewportWidth - width - margin));
+    const top = openUp
+      ? Math.max(margin, rect.top - Math.min(estimatedMenuHeight, availableHeight) - 4)
+      : Math.min(viewportHeight - margin, rect.bottom + 4);
+
+    setMenuPosition({
+      top,
+      left,
+      width,
+      openUp,
+      maxHeight: Math.min(estimatedMenuHeight, availableHeight),
+    });
+  };
+
   const handleSelect = (optionId) => {
     const newValue = value.includes(optionId)
       ? value.filter((id) => id !== optionId)
@@ -116,14 +148,43 @@ const CategoryMultiSelect = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
+      const target = event.target;
+      if (containerRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setIsOpen(false);
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const syncPosition = () => updateMenuPosition();
+    syncPosition();
+    window.addEventListener('resize', syncPosition);
+    window.addEventListener('scroll', syncPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', syncPosition);
+      window.removeEventListener('scroll', syncPosition, true);
+    };
+  }, [isOpen, options.length]);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
 
   const containerStyle = {
     position: 'relative',
@@ -179,19 +240,17 @@ const CategoryMultiSelect = ({
     color: '#6b7280',
   };
 
-  const dropdownStyle = {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    marginTop: '4px',
+  const menuShellStyle = {
+    position: 'fixed',
+    top: `${menuPosition.top}px`,
+    left: `${menuPosition.left}px`,
+    width: `${menuPosition.width}px`,
+    zIndex: 10000,
     background: '#ffffff',
     border: '1px solid #e5e7eb',
     borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    zIndex: 9999,
-    maxHeight: '300px',
-    overflowY: 'auto',
+    boxShadow: '0 10px 25px rgba(15, 23, 42, 0.16)',
+    overflow: 'hidden',
   };
 
   const searchInputStyle = {
@@ -203,6 +262,7 @@ const CategoryMultiSelect = ({
     fontSize: '14px',
     fontFamily: 'Poppins, sans-serif',
     outline: 'none',
+    background: '#ffffff',
   };
 
   const optionItemStyle = (isSelected, isHovered) => ({
@@ -249,18 +309,76 @@ const CategoryMultiSelect = ({
     fontSize: '14px',
   };
 
+  const renderMenu = () => {
+    if (!isOpen) return null;
+
+    return createPortal(
+      <div ref={menuRef} style={menuShellStyle}>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Search categories..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={searchInputStyle}
+        />
+
+        <div style={{ maxHeight: `${menuPosition.maxHeight || 300}px`, overflowY: 'auto' }}>
+          {loading ? (
+            <div style={loadingStateStyle}>
+              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              Loading categories...
+            </div>
+          ) : buildError ? (
+            <div style={emptyStateStyle}>{buildError}</div>
+          ) : filteredOptions.length > 0 ? (
+            filteredOptions.map((opt) => {
+              const isSelected = value.includes(opt.value);
+              const isHovered = hoveredValue === opt.value;
+
+              return (
+                <div
+                  key={opt.value}
+                  style={optionItemStyle(isSelected, isHovered)}
+                  onClick={() => handleSelect(opt.value)}
+                  onMouseEnter={() => setHoveredValue(opt.value)}
+                  onMouseLeave={() => setHoveredValue('')}
+                >
+                  <div style={{
+                    ...checkboxStyle,
+                    background: isSelected ? '#c8507a' : '#ffffff',
+                    borderColor: isSelected ? '#c8507a' : '#d4d4d8'
+                  }}>
+                    {isSelected && <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
+                  </div>
+                  <span style={{ flex: 1 }}>{opt.label}</span>
+                </div>
+              );
+            })
+          ) : (
+            <div style={emptyStateStyle}>
+              No categories found
+            </div>
+          )}
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
     <div style={containerStyle} ref={containerRef}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => {
           if (loading) return;
           setIsOpen((prev) => !prev);
         }}
-        style={triggerStyle}
         onFocus={() => {
           if (!loading) setIsOpen(true);
         }}
+        style={triggerStyle}
         disabled={loading}
       >
         <div style={selectedTagsWrapStyle}>
@@ -302,59 +420,7 @@ const CategoryMultiSelect = ({
         />
       </button>
 
-      {isOpen && !loading && !buildError && (
-        <div style={dropdownStyle}>
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Search categories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={searchInputStyle}
-            autoFocus
-          />
-          <div style={{ maxHeight: '260px', overflowY: 'auto' }}>
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => {
-                const isSelected = value.includes(opt.value);
-                const isHovered = hoveredValue === opt.value;
-
-                return (
-                  <div
-                    key={opt.value}
-                    style={optionItemStyle(isSelected, isHovered)}
-                    onClick={() => handleSelect(opt.value)}
-                    onMouseEnter={() => setHoveredValue(opt.value)}
-                    onMouseLeave={() => setHoveredValue('')}
-                  >
-                    <div style={{
-                      ...checkboxStyle,
-                      background: isSelected ? '#c8507a' : '#ffffff',
-                      borderColor: isSelected ? '#c8507a' : '#d4d4d8'
-                    }}>
-                      {isSelected && <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
-                    </div>
-                    <span style={{ flex: 1 }}>{opt.label}</span>
-                  </div>
-                );
-              })
-            ) : (
-              <div style={emptyStateStyle}>
-                No categories found
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {isOpen && loading && (
-        <div style={dropdownStyle}>
-          <div style={loadingStateStyle}>
-            <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
-            Loading categories...
-          </div>
-        </div>
-      )}
+      {renderMenu()}
     </div>
   );
 };
