@@ -30,7 +30,7 @@ const CouponForm = () => {
   const [loadError, setLoadError] = useState('');
   const [form, setForm] = useState(DEFAULT_FORM);
   const [categoryDraft, setCategoryDraft] = useState('');
-  const [currentStep, setCurrentStep] = useState(1);
+  const [activeTab, setActiveTab] = useState('general');
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -59,19 +59,23 @@ const CouponForm = () => {
     loadCoupon();
   }, [id, isEditMode]);
 
+  const activeIdx = Math.max(0, STEPS.findIndex((s) => s.key === activeTab));
+  const canPrev = activeIdx > 0;
+  const canNext = activeIdx < STEPS.length - 1;
+
   const stepDone = useMemo(() => ({
     general: Boolean(String(form.code || '').trim()),
     rules: Boolean(form.discount_type && Number(form.discount_value) > 0 && Number(form.min_order_value) >= 0 && form.expiry_date),
-    limits: true
+    limits: false
   }), [form]);
 
   const validateCurrentStep = () => {
-    if (currentStep === 1) {
+    if (activeTab === 'general') {
       if (!String(form.code || '').trim()) return 'Coupon code is required';
       return null;
     }
 
-    if (currentStep === 2) {
+    if (activeTab === 'rules') {
       if (!Number.isFinite(Number(form.discount_value)) || Number(form.discount_value) <= 0) {
         return 'Discount value must be greater than 0';
       }
@@ -92,8 +96,8 @@ const CouponForm = () => {
       return;
     }
 
-    if (currentStep < STEPS.length) {
-      setCurrentStep((s) => s + 1);
+    if (canNext) {
+      setActiveTab(STEPS[activeIdx + 1].key);
       return;
     }
 
@@ -102,7 +106,9 @@ const CouponForm = () => {
   };
 
   const handleBack = () => {
-    if (currentStep > 1) setCurrentStep((s) => s - 1);
+    if (canPrev) {
+      setActiveTab(STEPS[activeIdx - 1].key);
+    }
   };
 
   const onChange = (field, value) => {
@@ -171,7 +177,7 @@ const CouponForm = () => {
       }
       // Reset form fields
       setForm(DEFAULT_FORM);
-      setCurrentStep(1);
+      setActiveTab('general');
       setCategoryDraft('');
       navigate('/coupons');
     } catch (err) {
@@ -280,7 +286,7 @@ const CouponForm = () => {
             type="button"
             onClick={() => {
               setForm(DEFAULT_FORM);
-              setCurrentStep(1);
+              setActiveTab('general');
               setCategoryDraft('');
               navigate('/coupons');
             }}
@@ -329,7 +335,7 @@ const CouponForm = () => {
           >
             {STEPS.map((step, idx) => {
               const completed = Boolean(stepDone[step.key]);
-              const active = idx + 1 === currentStep;
+              const active = idx === activeIdx;
               const lineColor = completed ? '#86efac' : '#e4e4e7';
 
               return (
@@ -348,7 +354,22 @@ const CouponForm = () => {
                     />
                   )}
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(step.key)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      width: '100%',
+                      padding: 0,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span
                       style={{
                         width: 30,
@@ -368,10 +389,11 @@ const CouponForm = () => {
                       {completed ? <Check size={16} /> : idx + 1}
                     </span>
 
-                    <span style={{ fontSize: 14, fontWeight: active ? 700 : completed ? 600 : 500, color: active ? '#111827' : completed ? '#374151' : '#9ca3af' }}>
-                      {step.label}
-                    </span>
-                  </div>
+                      <span style={{ fontSize: 14, fontWeight: active ? 700 : completed ? 600 : 500, color: active ? '#111827' : completed ? '#374151' : '#9ca3af' }}>
+                        {step.label}
+                      </span>
+                    </div>
+                  </button>
                 </div>
               );
             })}
@@ -379,7 +401,7 @@ const CouponForm = () => {
 
           <section>
             <form id="coupon-form" onSubmit={handleSave} style={{ display: 'grid', gap: 16 }}>
-              <section style={{ ...sectionCardStyle, display: currentStep === 1 ? 'block' : 'none' }}>
+              <section style={{ ...sectionCardStyle, display: activeTab === 'general' ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>General Details</h4>
@@ -410,7 +432,7 @@ const CouponForm = () => {
                 </label>
               </section>
 
-              <section style={{ ...sectionCardStyle, display: currentStep === 2 ? 'block' : 'none' }}>
+              <section style={{ ...sectionCardStyle, display: activeTab === 'rules' ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>Discount Rules</h4>
@@ -473,7 +495,7 @@ const CouponForm = () => {
                 </div>
               </section>
 
-              <section style={{ ...sectionCardStyle, display: currentStep === 3 ? 'block' : 'none' }}>
+              <section style={{ ...sectionCardStyle, display: activeTab === 'limits' ? 'block' : 'none' }}>
                 <div style={sectionTitleWrapStyle}>
                   <span style={sectionIconStyle}><Info size={16} /></span>
                   <h4 style={sectionTitleStyle}>Limits</h4>
@@ -515,43 +537,43 @@ const CouponForm = () => {
               </section>
             </form>
 
-            <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
-              <button
-                type="button"
-                onClick={handleBack}
-                disabled={currentStep <= 1}
-                style={{
-                  background: '#ffffff',
-                  color: '#374151',
-                  border: '1px solid #d4d4d8',
-                  borderRadius: 8,
-                  padding: '8px 20px',
-                  fontWeight: 600,
-                  cursor: currentStep > 1 ? 'pointer' : 'not-allowed',
-                  opacity: currentStep > 1 ? 1 : 0.5,
-                }}
-              >
-                Back
-              </button>
+              <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  disabled={!canPrev}
+                  style={{
+                    background: '#ffffff',
+                    color: '#374151',
+                    border: '1px solid #d4d4d8',
+                    borderRadius: 8,
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    cursor: canPrev ? 'pointer' : 'not-allowed',
+                    opacity: canPrev ? 1 : 0.5,
+                  }}
+                >
+                  Back
+                </button>
 
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={saving}
-                style={{
-                  background: '#111827',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '8px 20px',
-                  fontWeight: 600,
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                  opacity: saving ? 0.5 : 1,
-                }}
-              >
-                {currentStep < STEPS.length ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={saving}
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    cursor: saving ? 'not-allowed' : 'pointer',
+                    opacity: saving ? 0.5 : 1,
+                  }}
+                >
+                  {canNext ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
+                </button>
+              </div>
           </section>
         </div>
       </div>
