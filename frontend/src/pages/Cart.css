@@ -595,11 +595,21 @@
   font-weight: 700;
   letter-spacing: 0.4px;
   cursor: pointer;
+  transition: color 160ms ease, transform 160ms ease, border-color 160ms ease;
 }
 
 .cart-coupons-check-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.cart-coupons-check-btn:hover:not(:disabled),
+.cart-coupons-check-btn:focus-visible:not(:disabled) {
+  background: #fff;
+  color: #e33170;
+  border-color: rgba(255, 63, 108, 0.36);
+  transform: scale(1.02);
+  outline: none;
 }
 
 .cart-coupons-list {
@@ -678,6 +688,11 @@
 .cart-coupon-more {
   color: #ff3f6c;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.cart-coupon-more:hover {
+  text-decoration: underline;
 }
 
 .cart-coupons-modal-footer {
@@ -695,19 +710,28 @@
 
 .cart-coupons-footer-copy {
   color: #111827;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cart-coupons-footer-text {
+  display: inline-flex;
+  align-items: center;
 }
 
 .cart-coupons-apply-btn {
-  min-width: 120px;
-  height: 40px;
+  min-width: 104px;
+  height: 36px;
+  padding: 0 18px;
   border: 0;
   border-radius: 10px;
   background: #ff3f6c;
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.4px;
   cursor: pointer;
 }

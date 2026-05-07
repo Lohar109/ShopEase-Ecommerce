@@ -740,7 +740,7 @@ const Cart = () => {
 
                   <div className="cart-coupons-modal-footer">
                     <div className="cart-coupons-footer-copy">
-                      <span>Maximum savings: ₹{selectedCouponSavings.toFixed(0)}</span>
+                      <span className="cart-coupons-footer-text">Maximum savings: ₹{selectedCouponSavings.toFixed(0)}</span>
                     </div>
                     <button
                       type="button"
