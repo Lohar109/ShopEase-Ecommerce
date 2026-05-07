@@ -169,6 +169,10 @@ const CouponForm = () => {
         await createCoupon(payload);
         toast.success('Coupon created');
       }
+      // Reset form fields
+      setForm(DEFAULT_FORM);
+      setCurrentStep(1);
+      setCategoryDraft('');
       navigate('/coupons');
     } catch (err) {
       toast.error(err.message || 'Failed to save coupon');
@@ -224,35 +228,7 @@ const CouponForm = () => {
           background: #fee2e2;
           color: #b91c1c;
         }
-        .cf-form-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-          margin-top: 18px;
-        }
-        .cf-back-btn {
-          height: 40px;
-          border-radius: 10px;
-          border: 1px solid #e6e7ea;
-          background: transparent;
-          color: #374151;
-          padding: 0 16px;
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-        }
-        .cf-next-btn {
-          height: 40px;
-          border-radius: 10px;
-          border: none;
-          background: #000;
-          color: #fff;
-          padding: 0 20px;
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-        }
+
       `}</style>
 
       <div
@@ -302,7 +278,12 @@ const CouponForm = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
-            onClick={() => navigate('/coupons')}
+            onClick={() => {
+              setForm(DEFAULT_FORM);
+              setCurrentStep(1);
+              setCategoryDraft('');
+              navigate('/coupons');
+            }}
             disabled={saving}
             className="pf-ghost-action-btn"
             style={{ padding: '0 14px' }}
@@ -367,7 +348,7 @@ const CouponForm = () => {
                     />
                   )}
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
                     <span
                       style={{
                         width: 30,
@@ -376,8 +357,8 @@ const CouponForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: completed ? '1px solid #bbf7d0' : active ? '1px solid #111827' : '1px solid #d4d4d8',
-                        background: completed ? '#f0fdf4' : active ? '#111827' : '#f4f4f5',
+                        border: completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8',
+                        background: completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5',
                         color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
                         fontWeight: 700,
                         fontSize: 12,
@@ -387,7 +368,7 @@ const CouponForm = () => {
                       {completed ? <Check size={16} /> : idx + 1}
                     </span>
 
-                    <span style={{ fontSize: 14, fontWeight: active || completed ? 600 : 500, color: active || completed ? '#374151' : '#9ca3af' }}>
+                    <span style={{ fontSize: 14, fontWeight: active ? 700 : completed ? 600 : 500, color: active ? '#111827' : completed ? '#374151' : '#9ca3af' }}>
                       {step.label}
                     </span>
                   </div>
@@ -534,19 +515,42 @@ const CouponForm = () => {
               </section>
             </form>
 
-            <div className="cf-form-footer" style={{ maxWidth: 1120 }}>
-              <div />
-              <div style={{ display: 'flex', gap: 12 }}>
-                {currentStep > 1 && (
-                  <button type="button" className="cf-back-btn" onClick={handleBack}>
-                    Back
-                  </button>
-                )}
+            <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={currentStep <= 1}
+                style={{
+                  background: '#ffffff',
+                  color: '#374151',
+                  border: '1px solid #d4d4d8',
+                  borderRadius: 8,
+                  padding: '8px 20px',
+                  fontWeight: 600,
+                  cursor: currentStep > 1 ? 'pointer' : 'not-allowed',
+                  opacity: currentStep > 1 ? 1 : 0.5,
+                }}
+              >
+                Back
+              </button>
 
-                <button type="button" className="cf-next-btn" onClick={handleNext} disabled={saving}>
-                  {currentStep < STEPS.length ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={saving}
+                style={{
+                  background: '#111827',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '8px 20px',
+                  fontWeight: 600,
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                  opacity: saving ? 0.5 : 1,
+                }}
+              >
+                {currentStep < STEPS.length ? 'Next' : saving ? 'Saving...' : 'Save Coupon'}
+              </button>
             </div>
           </section>
         </div>
