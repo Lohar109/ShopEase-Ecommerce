@@ -262,6 +262,7 @@
 }
 
 .cart-coupon-trigger {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
@@ -270,17 +271,68 @@
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid #f3f4f6;
-  background: transparent;
+  background: #fff;
   cursor: pointer;
   transition: none;
+  overflow: hidden;
+}
+
+/* Premium animated rotating border effect - always visible */
+.cart-coupon-trigger::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff3f6c 0%,
+    rgba(255, 63, 108, 0) 8%,
+    rgba(255, 63, 108, 0) 16%,
+    #ff3f6c 24%,
+    rgba(255, 63, 108, 0) 32%,
+    rgba(255, 63, 108, 0) 40%,
+    #ff3f6c 50%,
+    rgba(255, 63, 108, 0) 58%,
+    rgba(255, 63, 108, 0) 66%,
+    #ff3f6c 75%,
+    rgba(255, 63, 108, 0) 83%,
+    rgba(255, 63, 108, 0) 91%,
+    #ff3f6c 100%
+  );
+  /* Mask to show only thin border (1-1.5px traveling line) */
+  -webkit-mask: radial-gradient(
+    ellipse 50% 50% at center,
+    transparent 84%,
+    black 88%,
+    black 100%
+  );
+  mask: radial-gradient(
+    ellipse 50% 50% at center,
+    transparent 84%,
+    black 88%,
+    black 100%
+  );
+  animation: rotateBorderContinuous 3.5s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  transition: opacity 200ms ease;
+}
+
+/* Enhanced pulse on interaction */
+.cart-coupon-trigger--pulse::before {
+  opacity: 1;
+  animation: rotateBorderPulse 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .cart-coupon-trigger:hover {
-  background: transparent;
-  border-color: #e5e7eb;
+  background: #fff;
+  border-color: #f3f4f6;
 }
 
 .cart-coupon-trigger-icon {
+  position: relative;
+  z-index: 2;
   width: 24px;
   height: 24px;
   border-radius: 6px;
@@ -288,23 +340,56 @@
   align-items: center;
   justify-content: center;
   color: #ff3f6c;
-  background: transparent;
+  background: #fff;
   flex-shrink: 0;
 }
 
 .cart-coupon-trigger-label {
+  position: relative;
+  z-index: 2;
   flex: 1;
   text-align: left;
   color: #111827;
   font-size: 13px;
   font-weight: 700;
+  background: #fff;
+  padding: 0 2px;
 }
 
 .cart-coupon-trigger-action {
+  position: relative;
+  z-index: 2;
   color: #ff3f6c;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.3px;
+  background: #fff;
+  padding: 0 2px;
+}
+
+/* Smooth continuous rotating border (mesmerizing effect) */
+@keyframes rotateBorderContinuous {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced pulse animation on user action */
+@keyframes rotateBorderPulse {
+  0% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
 }
 
 .cart-offers-card {
