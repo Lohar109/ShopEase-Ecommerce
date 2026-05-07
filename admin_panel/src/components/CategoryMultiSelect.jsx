@@ -273,14 +273,16 @@ const CategoryMultiSelect = ({
     cursor: 'pointer',
     background: isHovered ? '#f9fafb' : isSelected ? '#f0f9ff' : '#ffffff',
     borderLeft: isSelected ? '3px solid #c8507a' : '3px solid transparent',
-    paddingLeft: '9px',
+    paddingLeft: '16px',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '10px',
     fontSize: '14px',
     color: isSelected ? '#c8507a' : '#374151',
     fontWeight: isSelected ? '600' : '500',
     transition: 'background 0.15s ease',
+    boxSizing: 'border-box',
+    width: '100%',
   });
 
   const checkboxStyle = {
@@ -293,6 +295,7 @@ const CategoryMultiSelect = ({
     justifyContent: 'center',
     background: '#ffffff',
     flexShrink: 0,
+    marginLeft: 0,
   };
 
   const emptyStateStyle = {
@@ -354,7 +357,7 @@ const CategoryMultiSelect = ({
                   }}>
                     {isSelected && <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                   </div>
-                  <span style={{ flex: 1 }}>{opt.label}</span>
+                  <span style={{ flex: 1, display: 'inline-flex', alignItems: 'center' }}>{opt.label}</span>
                 </div>
               );
             })
