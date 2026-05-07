@@ -657,14 +657,6 @@ const Cart = () => {
                 <div className="cart-coupons-modal" onClick={(event) => event.stopPropagation()}>
                   <div className="cart-coupons-modal-header">
                     <h2>APPLY COUPON</h2>
-                    <button
-                      type="button"
-                      className="cart-coupons-modal-close"
-                      onClick={() => setShowCouponsModal(false)}
-                      aria-label="Close coupon modal"
-                    >
-                      <X size={18} strokeWidth={2.25} />
-                    </button>
                   </div>
 
                   <div className="cart-coupons-modal-body">
