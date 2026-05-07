@@ -139,6 +139,16 @@ const CouponForm = () => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleCategoriesChange = (ids) => {
+    // selecting categories clears products
+    setForm((prev) => ({ ...prev, applicable_categories: ids || [], applicableProducts: (ids && ids.length > 0) ? [] : prev.applicableProducts }));
+  };
+
+  const handleProductsChange = (ids) => {
+    // selecting products clears categories
+    setForm((prev) => ({ ...prev, applicableProducts: ids || [], applicable_categories: (ids && ids.length > 0) ? [] : prev.applicable_categories }));
+  };
+
   const resetForm = () => {
     setForm(DEFAULT_FORM);
     setActiveTab('general');
@@ -555,19 +565,27 @@ const CouponForm = () => {
                     <CategoryMultiSelect
                       categories={categories}
                       value={form.applicable_categories || []}
-                      onChange={(ids) => onChange('applicable_categories', ids)}
+                      onChange={(ids) => handleCategoriesChange(ids)}
                       placeholder="Search and select categories..."
                       loading={loadingCategories}
+                      disabled={Boolean(form.applicableProducts && form.applicableProducts.length > 0)}
                     />
+                    <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+                      {form.applicableProducts && form.applicableProducts.length > 0 ? 'Disabled because products are selected' : 'Choose either categories or products — selecting one clears the other.'}
+                    </div>
                   </label>
 
                   <label style={{ ...labelStyle, marginTop: 12 }}>
                     APPLICABLE PRODUCTS (OPTIONAL)
                     <ProductMultiSelect
                       value={form.applicableProducts || []}
-                      onChange={(ids) => onChange('applicableProducts', ids)}
+                      onChange={(ids) => handleProductsChange(ids)}
                       placeholder="Search and select products..."
+                      disabled={Boolean(form.applicable_categories && form.applicable_categories.length > 0)}
                     />
+                    <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+                      {form.applicable_categories && form.applicable_categories.length > 0 ? 'Disabled because categories are selected' : 'Choose either categories or products — selecting one clears the other.'}
+                    </div>
                   </label>
                 </section>
               </form>

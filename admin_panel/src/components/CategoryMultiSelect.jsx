@@ -71,6 +71,7 @@ const CategoryMultiSelect = ({
   onChange,
   placeholder = 'Select categories...',
   loading = false,
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -204,8 +205,9 @@ const CategoryMultiSelect = ({
     padding: '8px 12px',
     border: '1px solid #d4d4d8',
     borderRadius: '8px',
-    background: '#ffffff',
-    cursor: loading ? 'not-allowed' : 'pointer',
+    background: disabled ? '#f9fafb' : '#ffffff',
+    cursor: (loading || disabled) ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.6 : 1,
     fontSize: '14px',
     fontFamily: 'Poppins, sans-serif',
   };
@@ -381,11 +383,11 @@ const CategoryMultiSelect = ({
           event.preventDefault();
         }}
         onClick={() => {
-          if (loading) return;
+          if (loading || disabled) return;
           setIsOpen((prev) => !prev);
         }}
         style={triggerStyle}
-        disabled={loading}
+        disabled={loading || disabled}
       >
         <div style={selectedTagsWrapStyle}>
           {loading ? (

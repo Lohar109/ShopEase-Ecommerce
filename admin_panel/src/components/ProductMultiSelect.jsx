@@ -31,7 +31,7 @@ const buildProductOptions = (productsInput) => {
   }
 };
 
-const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select products...', loading: loadingProp = false }) => {
+const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select products...', loading: loadingProp = false, disabled = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(Boolean(loadingProp));
@@ -49,10 +49,21 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
       try {
         setLoading(true);
         const res = await fetch('/api/products');
+        if (!res.ok) {
+          console.error('Products API error', res.status);
+          setProducts([]);
+          return;
+        }
         const data = await res.json();
         if (!mounted) return;
-        const list = Array.isArray(data) ? data : (Array.isArray(data?.products) ? data.products : []);
-        setProducts(list);
+        // support multiple shapes: array, { products: [] }, { data: [] }, { items: [] }
+        let list = [];
+        if (Array.isArray(data)) list = data;
+        else if (Array.isArray(data.products)) list = data.products;
+        else if (Array.isArray(data.data)) list = data.data;
+        else if (Array.isArray(data.items)) list = data.items;
+        else list = [];
+        setProducts(list.map((p) => ({ ...p })));
       } catch (err) {
         console.error('Failed to load products', err);
         setProducts([]);
@@ -137,7 +148,7 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
 
   const containerStyle = { position: 'relative', width: '100%' };
   const triggerStyle = {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', width: '100%', minHeight: '40px', padding: '8px 12px', border: '1px solid #d4d4d8', borderRadius: '8px', background: '#ffffff', cursor: loading ? 'not-allowed' : 'pointer', fontSize: '14px', fontFamily: 'Poppins, sans-serif'
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', width: '100%', minHeight: '40px', padding: '8px 12px', border: '1px solid #d4d4d8', borderRadius: '8px', background: disabled ? '#f9fafb' : '#ffffff', cursor: (loading || disabled) ? 'not-allowed' : 'pointer', fontSize: '14px', fontFamily: 'Poppins, sans-serif', opacity: disabled ? 0.6 : 1
   };
 
   const selectedTagsWrapStyle = { display: 'flex', flexWrap: 'wrap', gap: '6px', flex: 1, alignItems: 'center' };
@@ -184,7 +195,7 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
 
   return (
     <div style={containerStyle} ref={containerRef}>
-      <button ref={triggerRef} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (loading) return; setIsOpen((p) => !p); }} style={triggerStyle} disabled={loading}>
+      <button ref={triggerRef} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (loading || disabled) return; setIsOpen((p) => !p); }} style={triggerStyle} disabled={loading || disabled}>
         <div style={selectedTagsWrapStyle}>
           {loading ? (<span style={{ color: '#9ca3af', display: 'inline-flex', alignItems: 'center', gap: 8 }}><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />Loading products...</span>) : selectedOptions.length > 0 ? (selectedOptions.map((opt) => (<div key={opt.value} style={tagStyle}><span>{opt.label}</span><button type="button" onClick={(e) => { e.stopPropagation(); onChange(value.filter((id) => id !== opt.value)); }} style={tagRemoveButtonStyle}><X size={14} /></button></div>))) : (<span style={{ color: '#9ca3af' }}>{placeholder}</span>) }
         </div>
