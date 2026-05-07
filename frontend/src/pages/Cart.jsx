@@ -329,80 +329,80 @@ const Cart = () => {
           <>
             <CartStepper currentStep={1} />
 
-            {/* NEW: Available Offers Section with Upsell Banner - Moved to main column */}
-            <section className="cart-offers-section-main" aria-label="Available offers">
-              {nextBestOffer && amountToUnlock > 0 && (
-                <div className="cart-upsell-banner">
-                  <p>
-                    Add items worth <span className="upsell-amount">₹{amountToUnlock.toFixed(0)}</span> more to unlock a <strong>{nextBestOffer.title}</strong>!
-                  </p>
-                </div>
-              )}
+            <div className="cart-content">
+              <div className="cart-main-column">
+                <section className="cart-offers-section-main" aria-label="Available offers">
+                  {nextBestOffer && amountToUnlock > 0 && (
+                    <div className="cart-upsell-banner">
+                      <p>
+                        Add items worth <span className="upsell-amount">₹{amountToUnlock.toFixed(0)}</span> more to unlock a <strong>{nextBestOffer.title}</strong>!
+                      </p>
+                    </div>
+                  )}
 
-              <div className="cart-offers-container">
-                <div className="cart-offers-header">
-                  <span className="cart-offers-icon" aria-hidden="true">
-                    <Percent size={16} strokeWidth={2.25} />
-                  </span>
-                  <h3>Available Offers</h3>
-                </div>
+                  <div className="cart-offers-container">
+                    <div className="cart-offers-header">
+                      <span className="cart-offers-icon" aria-hidden="true">
+                        <Percent size={16} strokeWidth={2.25} />
+                      </span>
+                      <h3>Available Offers</h3>
+                    </div>
 
-                <div className="cart-offers-preview" aria-label="Offer preview">
-                  {previewOffers.map((offer) => {
-                    const isEligible = getOfferEligibility(offer);
-                    const savings = getOfferSavings(offer);
-                    const spendMore = spendToUnlock(offer);
-                    const progress = isEligible ? 100 : (offer.minSpend > 0 ? (cartTotal / offer.minSpend) * 100 : 100);
-                    const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
+                    <div className="cart-offers-preview" aria-label="Offer preview">
+                      {previewOffers.map((offer) => {
+                        const isEligible = getOfferEligibility(offer);
+                        const savings = getOfferSavings(offer);
+                        const spendMore = spendToUnlock(offer);
+                        const progress = isEligible ? 100 : (offer.minSpend > 0 ? (cartTotal / offer.minSpend) * 100 : 100);
+                        const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
 
-                    return (
-                      <div className="cart-offer-row" key={offer.id}>
-                        <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
-                          <img
-                            src={resolveImageSrc(offer.logoUrl)}
-                            alt={offer.bank}
-                            className={`offer-logo offer-logo--sidebar ${!isEligible ? 'is-locked' : ''}`}
-                            width={40}
-                            height={40}
-                          />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                            <p style={{ margin: 0, color: '#374151', fontSize: '13px', fontWeight: 500 }}>
-                              {offer.title}
-                            </p>
-                          </div>
-                          <p style={{ margin: '2px 0 6px 0', color: '#9ca3af', fontSize: '12px' }}>
-                            {offer.description}
-                          </p>
-                          {!isEligible && (
-                            <>
-                              <div className="cart-offer-progress-bar">
-                                <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
+                        return (
+                          <div className="cart-offer-row" key={offer.id}>
+                            <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
+                              <img
+                                src={resolveImageSrc(offer.logoUrl)}
+                                alt={offer.bank}
+                                className={`offer-logo offer-logo--sidebar ${!isEligible ? 'is-locked' : ''}`}
+                                width={40}
+                                height={40}
+                              />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                <p style={{ margin: 0, color: '#374151', fontSize: '13px', fontWeight: 500 }}>
+                                  {offer.title}
+                                </p>
                               </div>
-                              <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
-                                Spend ₹{spendMore.toFixed(0)} more to unlock
+                              <p style={{ margin: '2px 0 6px 0', color: '#9ca3af', fontSize: '12px' }}>
+                                {offer.description}
                               </p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                              {!isEligible && (
+                                <>
+                                  <div className="cart-offer-progress-bar">
+                                    <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
+                                  </div>
+                                  <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
+                                    Spend ₹{spendMore.toFixed(0)} more to unlock
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                <button
-                  type="button"
-                  className="cart-offers-toggle"
-                  onClick={() => setShowOffersModal(true)}
-                >
-                  Show More
-                </button>
-              </div>
-            </section>
+                    <button
+                      type="button"
+                      className="cart-offers-toggle"
+                      onClick={() => setShowOffersModal(true)}
+                    >
+                      Show More
+                    </button>
+                  </div>
+                </section>
 
-            <div className="cart-content grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="cart-list block lg:col-span-2">
+                <div className="cart-list">
               {cartItems.map(item => (
                 <div className="cart-item" key={item.cartItemId}>
                   <Link to={`/product/${item.productId}`} className="cart-item-image-link">
@@ -445,9 +445,10 @@ const Cart = () => {
                   </div>
                 </div>
               ))}
+                </div>
               </div>
 
-              <aside className="cart-summary-column block lg:col-span-1">
+              <aside className="cart-summary-column">
                 {/* NEW: Price Details moved to top */}
                 <aside className="cart-summary-card">
                   <h3>Price Details</h3>

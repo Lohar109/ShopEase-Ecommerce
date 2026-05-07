@@ -98,19 +98,27 @@
 
 .cart-content {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr);
+  gap: 24px;
   align-items: start;
-  max-width: 1050px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+}
+
+.cart-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 .cart-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 690px;
+  width: 100%;
+  max-width: none;
 }
 
 .cart-item {
@@ -248,6 +256,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: sticky;
+  top: 24px;
+  align-self: start;
 }
 
 .cart-offers-card {
@@ -625,7 +636,6 @@
 
 /* NEW: Main column offers section with upsell banner */
 .cart-offers-section-main {
-  margin-bottom: 28px;
   width: 100%;
 }
 
@@ -669,6 +679,7 @@
   background: #fff;
   border: 1px solid #f3f4f6;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  width: 100%;
 }
 
 .cart-checkout-btn {
@@ -699,11 +710,21 @@
 @media (max-width: 900px) {
   .cart-content {
     grid-template-columns: 1fr;
-    max-width: 690px;
+    max-width: 100%;
   }
 
   .cart-list {
     max-width: 100%;
+  }
+
+  .cart-summary-column {
+    position: static;
+  }
+}
+
+@media (min-width: 901px) {
+  .cart-summary-column {
+    min-width: 0;
   }
 }
 
