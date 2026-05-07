@@ -715,6 +715,9 @@ const Cart = () => {
                         const isSelected = selectedCouponCode === coupon.code;
                         const savings = getCouponSavings(coupon);
 
+                        const expiryDate = coupon.expiry.replace(/Valid till\s*/i, '').trim();
+                        const expiryTime = coupon.expiryTime || '23:59';
+
                         return (
                           <label className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} key={coupon.code}>
                             <input
@@ -726,10 +729,12 @@ const Cart = () => {
                               <div className="cart-coupon-code-box">{coupon.code}</div>
                               <div className="cart-coupon-meta">
                                 <p className="cart-coupon-title">Save ₹{savings.toFixed(0)}</p>
+                                <p className="cart-coupon-policy">Once you apply this coupon, items will be non-returnable. You can still exchange items.</p>
                                 <p className="cart-coupon-desc">
                                   {coupon.description} <span className="cart-coupon-more">more</span>
                                 </p>
-                                <p className="cart-coupon-expiry">{coupon.expiry} · {coupon.tc}</p>
+                                <p className="cart-coupon-note">Note: Review the non-returnable items in your bag</p>
+                                <p className="cart-coupon-expiry">Expires on: {expiryDate} | {expiryTime} · {coupon.tc}</p>
                               </div>
                             </div>
                           </label>

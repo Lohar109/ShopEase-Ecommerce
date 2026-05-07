@@ -641,7 +641,7 @@
   align-items: flex-start;
   padding: 10px 11px;
   border: 1px solid #eef0f3;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #fff;
   cursor: pointer;
 }
@@ -652,7 +652,8 @@
 }
 
 .cart-coupon-item input {
-  margin-top: 6px;
+  margin-top: 2px;
+  align-self: flex-start;
   accent-color: #ff3f6c;
 }
 
@@ -666,15 +667,15 @@
 
 .cart-coupon-code-box {
   flex-shrink: 0;
-  min-width: 92px;
-  padding: 9px 11px;
-  border-radius: 10px;
-  border: 1px dashed rgba(255, 63, 108, 0.45);
-  background: rgba(255, 63, 108, 0.04);
-  color: #ff3f6c;
-  font-size: 12px;
+  min-width: 84px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px dashed #282c3f;
+  background: transparent;
+  color: #282c3f;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
   text-align: center;
 }
 
@@ -684,18 +685,37 @@
 }
 
 .cart-coupon-title {
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.cart-coupon-desc {
+  margin: 0 0 8px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.cart-coupon-policy {
+  margin: 0 0 8px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.cart-coupon-note {
+  margin: 0 0 8px;
+  color: #ff5722;
   font-size: 12px;
   font-weight: 700;
 }
 
-.cart-coupon-desc,
 .cart-coupon-expiry {
   margin: 0;
-  color: #6b7280;
-  font-size: 11px;
-  line-height: 1.45;
+  color: #9ca3af;
+  font-size: 12px;
 }
 
 .cart-coupon-more {
