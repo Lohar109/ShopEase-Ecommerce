@@ -49,6 +49,8 @@ const Cart = () => {
   const resolveImageSrc = (src) => {
     if (!src) return '';
     if (/^https?:\/\//i.test(src) || src.startsWith('data:')) return src;
+    // Don't prepend API_ORIGIN for frontend assets like logos
+    if (src.startsWith('/assets/')) return src;
     if (src.startsWith('/')) return `${API_ORIGIN}${src}`;
     return `${API_ORIGIN}/${src}`;
   };
@@ -62,7 +64,7 @@ const Cart = () => {
       description: 'Via partner wallets',
       bank: 'Wallets',
       bankLogo: 'wallet',
-      logoUrl: '/assets/logos/wallet.png',
+      logoUrl: '/assets/logos/wallet.svg',
       minSpend: 0,
       discountValue: { type: 'percentage', value: 7.5 },
       hasTC: true
@@ -73,7 +75,7 @@ const Cart = () => {
       description: 'Credit Cards on minimum spend',
       bank: 'Axis Bank',
       bankLogo: 'axis',
-      logoUrl: '/logos/axis.png',
+      logoUrl: '/assets/logos/axis.png',
       minSpend: 5000,
       discountValue: { type: 'percentage', value: 10 },
       hasTC: true
@@ -84,7 +86,7 @@ const Cart = () => {
       description: 'HSBC Bank Cards, up to capped value',
       bank: 'HSBC Bank',
       bankLogo: 'hsbc',
-      logoUrl: '/assets/logos/hsbc.png',
+      logoUrl: '/assets/logos/hsbc.svg',
       minSpend: 8000,
       discountValue: { type: 'percentage', value: 15 },
       hasTC: true
@@ -95,7 +97,7 @@ const Cart = () => {
       description: 'Eligible orders',
       bank: 'Mobikwik',
       bankLogo: 'mobikwik',
-      logoUrl: '/assets/logos/mobikwik.png',
+      logoUrl: '/assets/logos/mobikwik.svg',
       minSpend: 2000,
       discountValue: { type: 'percentage', value: 5 },
       hasTC: true
@@ -106,7 +108,7 @@ const Cart = () => {
       description: 'Bank and wallet offers',
       bank: 'UPI',
       bankLogo: 'upi',
-      logoUrl: '/assets/logos/upi.png',
+      logoUrl: '/assets/logos/upi.svg',
       minSpend: 1500,
       discountValue: { type: 'percentage', value: 8 },
       hasTC: true
@@ -117,7 +119,7 @@ const Cart = () => {
       description: 'On orders above minimum cart value',
       bank: 'Cards',
       bankLogo: 'card',
-      logoUrl: '/assets/logos/card.png',
+      logoUrl: '/assets/logos/card.svg',
       minSpend: 6000,
       discountValue: { type: 'fixed', value: 300 },
       hasTC: true
@@ -139,7 +141,7 @@ const Cart = () => {
       description: 'During current offer window',
       bank: 'All',
       bankLogo: 'shipping',
-      logoUrl: '/assets/logos/shipping.png',
+      logoUrl: '/assets/logos/shipping.svg',
       minSpend: 2500,
       discountValue: { type: 'fixed', value: 150 },
       hasTC: true
@@ -150,7 +152,7 @@ const Cart = () => {
       description: 'Partner bank payment methods',
       bank: 'Banks',
       bankLogo: 'bank',
-      logoUrl: '/assets/logos/bank.png',
+      logoUrl: '/assets/logos/bank.svg',
       minSpend: 4000,
       discountValue: { type: 'fixed', value: 200 },
       hasTC: true
@@ -161,7 +163,7 @@ const Cart = () => {
       description: 'Selected categories with bank offers',
       bank: 'Banks',
       bankLogo: 'bank',
-      logoUrl: '/assets/logos/bank.png',
+      logoUrl: '/assets/logos/bank.svg',
       minSpend: 7000,
       discountValue: { type: 'percentage', value: 12 },
       hasTC: true
@@ -172,7 +174,7 @@ const Cart = () => {
       description: 'Instant discount on cart totals',
       bank: 'All',
       bankLogo: 'gift',
-      logoUrl: '/assets/logos/gift.png',
+      logoUrl: '/assets/logos/gift.svg',
       minSpend: 3500,
       discountValue: { type: 'percentage', value: 7 },
       hasTC: true
@@ -183,7 +185,7 @@ const Cart = () => {
       description: 'Supported wallet checkout',
       bank: 'Wallets',
       bankLogo: 'wallet',
-      logoUrl: '/assets/logos/wallet.png',
+      logoUrl: '/assets/logos/wallet.svg',
       minSpend: 1200,
       discountValue: { type: 'fixed', value: 150 },
       hasTC: true
@@ -194,7 +196,7 @@ const Cart = () => {
       description: 'Recurring prepaid purchases',
       bank: 'All',
       bankLogo: 'repeat',
-      logoUrl: '/assets/logos/repeat.png',
+      logoUrl: '/assets/logos/repeat.svg',
       minSpend: 5000,
       discountValue: { type: 'percentage', value: 3 },
       hasTC: true
@@ -205,7 +207,7 @@ const Cart = () => {
       description: 'App-exclusive payment offers',
       bank: 'App',
       bankLogo: 'mobile',
-      logoUrl: '/assets/logos/mobile.png',
+      logoUrl: '/assets/logos/mobile.svg',
       minSpend: 0,
       discountValue: { type: 'percentage', value: 5 },
       hasTC: true
@@ -216,7 +218,7 @@ const Cart = () => {
       description: 'Additional savings on eligible payments',
       bank: 'All',
       bankLogo: 'gift',
-      logoUrl: '/assets/logos/gift.png',
+      logoUrl: '/assets/logos/gift.svg',
       minSpend: 4000,
       discountValue: { type: 'percentage', value: 8 },
       hasTC: true
