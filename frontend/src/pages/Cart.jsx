@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2 } from 'lucide-react';
+import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
 import toast from 'react-hot-toast';
@@ -53,24 +53,189 @@ const Cart = () => {
     return `${API_ORIGIN}/${src}`;
   };
 
+  const cartTotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
+
   const availableOffers = [
-    '7.5% Cashback on select prepaid orders via partner wallets. T&C',
-    'Up to 10% off with Axis Bank Credit Cards on minimum spend. T&C',
-    'Flat 15% instant discount on HSBC Bank Cards, up to a capped value. T&C',
-    'Get 5% off on Mobikwik wallet payments with eligible orders. T&C',
-    'Save extra on UPI checkout with limited-time bank and wallet offers. T&C',
-    'Flat Rs. 300 off on orders above a minimum cart value with select cards. T&C',
-    'Additional 10% off on first payment using eligible digital wallets. T&C',
-    'Free shipping on prepaid orders during the current offer window. T&C',
-    'Extra Rs. 200 cashback on orders using partner bank payment methods. T&C',
-    'Up to 12% off on selected categories with co-branded bank offers. T&C',
-    'Weekend special: 7% instant discount on cart totals above threshold. T&C',
-    'Flat Rs. 150 off when paying through supported wallet checkout. T&C',
-    'Get bonus cashback on recurring prepaid purchases. T&C',
-    'Extra 5% off on app-exclusive payment offers. T&C',
-    'Limited-time festive offer: additional savings on eligible payment methods. T&C'
+    {
+      id: 1,
+      title: '7.5% Cashback on select prepaid orders',
+      description: 'Via partner wallets',
+      bank: 'Wallets',
+      bankLogo: 'wallet',
+      minSpend: 0,
+      discountValue: { type: 'percentage', value: 7.5 },
+      hasTC: true
+    },
+    {
+      id: 2,
+      title: 'Up to 10% off with Axis Bank',
+      description: 'Credit Cards on minimum spend',
+      bank: 'Axis Bank',
+      bankLogo: 'axis',
+      minSpend: 5000,
+      discountValue: { type: 'percentage', value: 10 },
+      hasTC: true
+    },
+    {
+      id: 3,
+      title: 'Flat 15% instant discount',
+      description: 'HSBC Bank Cards, up to capped value',
+      bank: 'HSBC Bank',
+      bankLogo: 'hsbc',
+      minSpend: 8000,
+      discountValue: { type: 'percentage', value: 15 },
+      hasTC: true
+    },
+    {
+      id: 4,
+      title: '5% off on Mobikwik wallet',
+      description: 'Eligible orders',
+      bank: 'Mobikwik',
+      bankLogo: 'mobikwik',
+      minSpend: 2000,
+      discountValue: { type: 'percentage', value: 5 },
+      hasTC: true
+    },
+    {
+      id: 5,
+      title: 'Save on UPI checkout',
+      description: 'Bank and wallet offers',
+      bank: 'UPI',
+      bankLogo: 'upi',
+      minSpend: 1500,
+      discountValue: { type: 'percentage', value: 8 },
+      hasTC: true
+    },
+    {
+      id: 6,
+      title: 'Flat Rs. 300 off',
+      description: 'On orders above minimum cart value',
+      bank: 'Cards',
+      bankLogo: 'card',
+      minSpend: 6000,
+      discountValue: { type: 'fixed', value: 300 },
+      hasTC: true
+    },
+    {
+      id: 7,
+      title: 'Additional 10% off',
+      description: 'First payment with digital wallets',
+      bank: 'Wallets',
+      bankLogo: 'wallet',
+      minSpend: 3000,
+      discountValue: { type: 'percentage', value: 10 },
+      hasTC: true
+    },
+    {
+      id: 8,
+      title: 'Free shipping on prepaid',
+      description: 'During current offer window',
+      bank: 'All',
+      bankLogo: 'shipping',
+      minSpend: 2500,
+      discountValue: { type: 'fixed', value: 150 },
+      hasTC: true
+    },
+    {
+      id: 9,
+      title: 'Extra Rs. 200 cashback',
+      description: 'Partner bank payment methods',
+      bank: 'Banks',
+      bankLogo: 'bank',
+      minSpend: 4000,
+      discountValue: { type: 'fixed', value: 200 },
+      hasTC: true
+    },
+    {
+      id: 10,
+      title: 'Up to 12% off',
+      description: 'Selected categories with bank offers',
+      bank: 'Banks',
+      bankLogo: 'bank',
+      minSpend: 7000,
+      discountValue: { type: 'percentage', value: 12 },
+      hasTC: true
+    },
+    {
+      id: 11,
+      title: 'Weekend special 7% off',
+      description: 'Instant discount on cart totals',
+      bank: 'All',
+      bankLogo: 'gift',
+      minSpend: 3500,
+      discountValue: { type: 'percentage', value: 7 },
+      hasTC: true
+    },
+    {
+      id: 12,
+      title: 'Flat Rs. 150 off',
+      description: 'Supported wallet checkout',
+      bank: 'Wallets',
+      bankLogo: 'wallet',
+      minSpend: 1200,
+      discountValue: { type: 'fixed', value: 150 },
+      hasTC: true
+    },
+    {
+      id: 13,
+      title: 'Get bonus cashback',
+      description: 'Recurring prepaid purchases',
+      bank: 'All',
+      bankLogo: 'repeat',
+      minSpend: 5000,
+      discountValue: { type: 'percentage', value: 3 },
+      hasTC: true
+    },
+    {
+      id: 14,
+      title: 'Extra 5% off',
+      description: 'App-exclusive payment offers',
+      bank: 'App',
+      bankLogo: 'mobile',
+      minSpend: 0,
+      discountValue: { type: 'percentage', value: 5 },
+      hasTC: true
+    },
+    {
+      id: 15,
+      title: 'Limited-time festive offer',
+      description: 'Additional savings on eligible payments',
+      bank: 'All',
+      bankLogo: 'gift',
+      minSpend: 4000,
+      discountValue: { type: 'percentage', value: 8 },
+      hasTC: true
+    }
   ];
 
+  // Calculate eligibility and savings for each offer
+  const getOfferEligibility = (offer) => {
+    return cartTotal >= offer.minSpend;
+  };
+
+  const getOfferSavings = (offer) => {
+    if (offer.discountValue.type === 'fixed') {
+      return offer.discountValue.value;
+    }
+    return (cartTotal * offer.discountValue.value) / 100;
+  };
+
+  const spendToUnlock = (offer) => {
+    return Math.max(0, offer.minSpend - cartTotal);
+  };
+
+  // Find the best value offer (highest savings among unlocked offers)
+  const getBestValueOffer = () => {
+    const unlockedOffers = availableOffers.filter(getOfferEligibility);
+    if (unlockedOffers.length === 0) return null;
+    return unlockedOffers.reduce((best, offer) => {
+      const bestSavings = getOfferSavings(best);
+      const offerSavings = getOfferSavings(offer);
+      return offerSavings > bestSavings ? offer : best;
+    });
+  };
+
+  const bestValueOffer = getBestValueOffer();
   const previewOffers = availableOffers.slice(0, 2);
 
   return (
@@ -186,15 +351,39 @@ const Cart = () => {
                   </div>
 
                   <div className="cart-offers-preview" aria-label="Offer preview">
-                    {previewOffers.map((offer) => (
-                      <div className="cart-offer-row" key={offer}>
-                        <span className="cart-offer-dot" aria-hidden="true" />
-                        <p>
-                          {offer.split(' T&C')[0]}
-                          <span className="cart-offer-tc"> T&amp;C</span>
-                        </p>
-                      </div>
-                    ))}
+                    {previewOffers.map((offer) => {
+                      const isEligible = getOfferEligibility(offer);
+                      const savings = getOfferSavings(offer);
+                      const spendMore = spendToUnlock(offer);
+                      const progress = isEligible ? 100 : (cartTotal / offer.minSpend) * 100;
+
+                      return (
+                        <div className="cart-offer-row" key={offer.id}>
+                          <span className="cart-offer-dot" aria-hidden="true" />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                              <span className="cart-offer-bank-badge">{offer.bank}</span>
+                              <p style={{ margin: 0, color: '#374151', fontSize: '13px', fontWeight: 500 }}>
+                                {offer.title}
+                              </p>
+                            </div>
+                            <p style={{ margin: '2px 0 6px 0', color: '#9ca3af', fontSize: '12px' }}>
+                              {offer.description}
+                            </p>
+                            {!isEligible && (
+                              <>
+                                <div className="cart-offer-progress-bar">
+                                  <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
+                                </div>
+                                <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
+                                  Spend ₹{spendMore.toFixed(0)} more to unlock
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <button
@@ -262,15 +451,53 @@ const Cart = () => {
 
                   <div className="cart-offers-modal-body">
                     <div className="cart-offers-modal-grid">
-                      {availableOffers.map((offer) => (
-                        <div className="cart-offers-modal-item" key={offer}>
-                          <span className="cart-offers-modal-dot" aria-hidden="true" />
-                          <p>
-                            {offer.split(' T&C')[0]}
-                            <span className="cart-offer-tc"> T&amp;C</span>
-                          </p>
-                        </div>
-                      ))}
+                      {availableOffers.map((offer) => {
+                        const isEligible = getOfferEligibility(offer);
+                        const savings = getOfferSavings(offer);
+                        const spendMore = spendToUnlock(offer);
+                        const progress = isEligible ? 100 : (cartTotal / offer.minSpend) * 100;
+                        const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
+
+                        return (
+                          <div className={`cart-offers-modal-item ${isBestValue ? 'is-best-value' : ''}`} key={offer.id}>
+                            {isBestValue && (
+                              <div className="cart-offer-best-badge">
+                                <Crown size={14} />
+                                <span>Best Deal</span>
+                              </div>
+                            )}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%' }}>
+                              <span className="cart-offers-modal-dot" aria-hidden="true" />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                  <span className="cart-offer-bank-badge">{offer.bank}</span>
+                                  <p style={{ margin: 0, color: '#1f2937', fontSize: '13px', fontWeight: 600 }}>
+                                    {offer.title}
+                                  </p>
+                                </div>
+                                <p style={{ margin: '2px 0 6px 0', color: '#6b7280', fontSize: '12px' }}>
+                                  {offer.description}
+                                </p>
+                                {isEligible && (
+                                  <p style={{ margin: '4px 0 0 0', color: '#10b981', fontSize: '12px', fontWeight: 500 }}>
+                                    You save ₹{savings.toFixed(0)}
+                                  </p>
+                                )}
+                                {!isEligible && (
+                                  <>
+                                    <div className="cart-offer-progress-bar">
+                                      <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
+                                    </div>
+                                    <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
+                                      Spend ₹{spendMore.toFixed(0)} more to unlock
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
