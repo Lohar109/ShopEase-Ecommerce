@@ -23,7 +23,6 @@ const Cart = () => {
   const [couponInput, setCouponInput] = React.useState('');
   const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
   const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
-  const [couponTriggerPulse, setCouponTriggerPulse] = React.useState(false);
 
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
   const platformFee = 250;
@@ -108,20 +107,13 @@ const Cart = () => {
     toast('Item removed', { icon: '🗑️' });
   };
 
-  const triggerCouponPulse = () => {
-    setCouponTriggerPulse(true);
-    setTimeout(() => setCouponTriggerPulse(false), 600);
-  };
-
   const handleOpenCouponsModal = () => {
-    triggerCouponPulse();
     setCouponInput('');
     setSelectedCouponCode(appliedCouponCode);
     setShowCouponsModal(true);
   };
 
   const handleCheckCoupon = () => {
-    triggerCouponPulse();
     const normalizedCode = couponInput.trim().toUpperCase();
     const matchedCoupon = availableCoupons.find((coupon) => coupon.code === normalizedCode);
 
@@ -136,7 +128,6 @@ const Cart = () => {
   };
 
   const handleApplySelectedCoupon = () => {
-    triggerCouponPulse();
     if (!selectedCoupon) {
       toast.error('Please select a coupon first');
       return;
@@ -552,16 +543,14 @@ const Cart = () => {
               <aside className="cart-summary-column">
                 <button
                   type="button"
-                  className={`cart-coupon-trigger${couponTriggerPulse ? ' cart-coupon-trigger--pulse' : ''}`}
+                  className="cart-coupon-trigger"
                   onClick={handleOpenCouponsModal}
                 >
-                  <div className="cart-coupon-trigger-content">
-                    <span className="cart-coupon-trigger-icon" aria-hidden="true">
-                      <Tag size={14} strokeWidth={2.2} />
-                    </span>
-                    <span className="cart-coupon-trigger-label">Apply Coupons</span>
-                    <span className="cart-coupon-trigger-action">APPLY</span>
-                  </div>
+                  <span className="cart-coupon-trigger-icon" aria-hidden="true">
+                    <Tag size={14} strokeWidth={2.2} />
+                  </span>
+                  <span className="cart-coupon-trigger-label">Apply Coupons</span>
+                  <span className="cart-coupon-trigger-action">APPLY</span>
                 </button>
 
                 {/* NEW: Price Details moved to top */}

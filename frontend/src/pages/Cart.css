@@ -268,52 +268,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 2px;
+  padding: 8px 12px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid #f0f0f0;
   background: #fff;
   cursor: pointer;
   transition: none;
-  overflow: hidden;
-}
-
-/* Premium animated rotating border effect - always visible */
-.cart-coupon-trigger::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  border-radius: 8px;
-  background: conic-gradient(from 0deg, transparent, #ff3f6c, transparent 30%);
-  animation: rotate 4s linear infinite;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.35;
-  transition: opacity 200ms ease;
-}
-
-/* Enhanced pulse on interaction */
-.cart-coupon-trigger--pulse::before {
-  opacity: 1;
-  animation: rotate 2s linear infinite;
 }
 
 .cart-coupon-trigger:hover {
   cursor: pointer;
-}
-
-/* Inner content wrapper - shields background, lets border show at edges */
-.cart-coupon-trigger-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  height: 100%;
-  background: #fff;
-  z-index: 1;
-  border-radius: 6px;
-  padding: 6px 10px;
 }
 
 .cart-coupon-trigger-icon {
@@ -342,26 +306,6 @@
   font-weight: 700;
   letter-spacing: 0.3px;
   padding: 0 2px;
-}
-
-/* Smooth continuous rotating border */
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Continuous rotating border (mesmerizing effect) */
-@keyframes rotateBorderContinuous {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .cart-offers-card {
