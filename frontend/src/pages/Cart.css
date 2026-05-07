@@ -615,7 +615,15 @@
 
 .cart-coupons-check-btn:disabled {
   opacity: 0.45;
-  cursor: not-allowed;
+  cursor: pointer;
+}
+
+.cart-coupons-check-btn:disabled:hover {
+  background: #fff !important;
+  color: #ff3f6c !important;
+  border-color: rgba(255, 63, 108, 0.28) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .cart-coupons-check-btn:hover:not(:disabled),
