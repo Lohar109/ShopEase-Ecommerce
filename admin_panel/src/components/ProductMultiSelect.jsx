@@ -7,17 +7,26 @@ const normalizeId = (value) => String(value ?? '').trim();
 const buildProductOptions = (productsInput) => {
   try {
     const products = Array.isArray(productsInput) ? productsInput.filter(Boolean) : [];
+    console.log('[ProductMultiSelect] buildProductOptions input:', { count: products.length, firstProduct: products[0] });
 
     const guessId = (obj) => {
       if (!obj || typeof obj !== 'object') return '';
       const candidates = ['_id', 'id', 'product_id', 'productId', 'sku_id'];
-      for (const key of candidates) if (obj[key]) return normalizeId(obj[key]);
+      for (const key of candidates) {
+        if (obj[key]) {
+          const val = normalizeId(obj[key]);
+          if (val) return val;
+        }
+      }
       // try nested product object
       if (obj.product && typeof obj.product === 'object') return guessId(obj.product);
       // fallback: try first string/number prop
       for (const k of Object.keys(obj)) {
         const v = obj[k];
-        if (typeof v === 'string' || typeof v === 'number') return normalizeId(v);
+        if (typeof v === 'string' || typeof v === 'number') {
+          const val = normalizeId(v);
+          if (val) return val;
+        }
       }
       return '';
     };
@@ -25,26 +34,42 @@ const buildProductOptions = (productsInput) => {
     const guessName = (obj) => {
       if (!obj || typeof obj !== 'object') return 'Unnamed';
       const candidates = ['name', 'title', 'product_name', 'displayName', 'label'];
-      for (const key of candidates) if (obj[key]) return String(obj[key]);
+      for (const key of candidates) {
+        if (obj[key]) {
+          const val = String(obj[key]).trim();
+          if (val && val.length > 0) return val;
+        }
+      }
       if (obj.product && typeof obj.product === 'object') return guessName(obj.product);
-      // fallback to id
-      return guessId(obj) || 'Unnamed';
+      // fallback to id if name not found
+      const id = guessId(obj);
+      return id || 'Unnamed';
     };
 
     const guessSku = (obj) => {
       if (!obj || typeof obj !== 'object') return '';
       const candidates = ['sku', 'sku_code', 'variant_sku', 'product_sku'];
-      for (const key of candidates) if (obj[key]) return String(obj[key]).trim();
+      for (const key of candidates) {
+        if (obj[key]) {
+          const val = String(obj[key]).trim();
+          if (val) return val;
+        }
+      }
       if (obj.product && typeof obj.product === 'object') return guessSku(obj.product);
       return '';
     };
 
-    const options = products.map((p) => {
+    const options = products.map((p, idx) => {
       const id = guessId(p);
       if (!id) return null;
       const name = guessName(p);
       const sku = guessSku(p);
       const label = sku ? `${name} (SKU: ${sku})` : name;
+
+      // Log first few products for debugging
+      if (idx < 3) {
+        console.log(`[ProductMultiSelect] Product #${idx + 1}:`, { id, name, sku, label, rawProduct: p });
+      }
 
       return {
         value: id,
@@ -55,6 +80,7 @@ const buildProductOptions = (productsInput) => {
       };
     }).filter(Boolean);
 
+    console.log('[ProductMultiSelect] Built options:', { total: options.length, samples: options.slice(0, 3) });
     return options.sort((a, b) => a.label.localeCompare(b.label));
   } catch (err) {
     console.error('Failed to build product options', err, productsInput);
@@ -119,13 +145,14 @@ const ProductMultiSelect = ({ value = [], onChange, placeholder = 'Select produc
         console.warn('Products API returned non-JSON response, skipping JSON parse', contentType, snippet);
         setFetchError(`Products API returned non-JSON response (${contentType}). See console/network for details.`);
       }
-      console.log('Products API response', res.status, data);
+      console.log('[ProductMultiSelect] API Response:', { status: res.status, contentType, dataType: typeof data, isArray: Array.isArray(data), dataLength: Array.isArray(data) ? data.length : 'N/A', firstItem: Array.isArray(data) ? data[0] : null, fullData: data });
       if (!mounted) return;
       if (!res.ok) {
         setProducts([]);
         return;
       }
       const list = extractListFromResponse(data);
+      console.log('[ProductMultiSelect] Extracted list:', { count: list.length, firstItem: list[0] });
       setProducts(list.map((p) => ({ ...p })));
       if (list.length === 0 && !fetchError && res.ok) {
         // no items found but no explicit error
