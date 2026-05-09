@@ -1894,20 +1894,32 @@ const ProductForm = () => {
                           position: relative;
                           min-height: 0;
                           border-radius: 40px !important;
+                          border: none !important;
+                          outline: none !important;
+                          outline-offset: 0 !important;
                           background: rgba(255, 255, 255, 0.6) !important;
                           backdrop-filter: blur(20px) !important;
                           -webkit-backdrop-filter: blur(20px) !important;
                           border: 2px solid #ec4899 !important;
-                          box-shadow: 0 0 20px rgba(236, 72, 153, 0.15), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+                          box-shadow: none !important;
+                          background-clip: padding-box;
                           overflow: hidden;
                         }
                         .smart-editor-panel:focus-within {
-                          border-color: rgba(236, 72, 153, 0.6) !important;
-                          box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.12), 0 0 20px rgba(236, 72, 153, 0.22), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 0 10px rgba(124, 58, 237, 0.05);
+                          border-color: rgba(236, 72, 153, 0.4) !important;
+                          box-shadow: none !important;
+                          outline: none !important;
+                          outline-offset: 0 !important;
                         }
                         .smart-editor-content {
                           position: relative;
                           height: 100%;
+                          border-radius: inherit;
+                          overflow: hidden;
+                          background-clip: padding-box;
+                          border: none !important;
+                          outline: none !important;
+                          outline-offset: 0 !important;
                         }
                         .smart-editor-pre {
                           position: absolute;
@@ -1926,6 +1938,12 @@ const ProductForm = () => {
                           z-index: 1;
                           scrollbar-width: thin;
                           scrollbar-color: #7c3aed transparent;
+                          border: none !important;
+                          outline: none !important;
+                          outline-offset: 0 !important;
+                          border-radius: inherit;
+                          background-clip: padding-box;
+                          box-shadow: none !important;
                         }
                         .smart-editor-input {
                           position: absolute;
@@ -1949,6 +1967,14 @@ const ProductForm = () => {
                           z-index: 2;
                           scrollbar-width: thin;
                           scrollbar-color: #7c3aed transparent;
+                          border: none !important;
+                          outline: none !important;
+                          outline-offset: 0 !important;
+                          border-radius: inherit;
+                          background-clip: padding-box;
+                          box-shadow: none !important;
+                          appearance: none;
+                          -webkit-appearance: none;
                         }
                         .smart-editor-pre::-webkit-scrollbar,
                         .smart-editor-input::-webkit-scrollbar,
