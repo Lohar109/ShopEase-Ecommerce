@@ -70,6 +70,15 @@ const ProductForm = () => {
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isProcessHovered, setIsProcessHovered] = useState(false);
   const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
+  const [showMagicFillModal, setShowMagicFillModal] = useState(false);
+  const [magicFillText, setMagicFillText] = useState('');
+  const [magicFillError, setMagicFillError] = useState('');
+  const [highlightCategory, setHighlightCategory] = useState(false);
+  const [highlightSubcategory, setHighlightSubcategory] = useState(false);
+  const [highlightSubSubcategory, setHighlightSubSubcategory] = useState(false);
+  const [highlightAudience, setHighlightAudience] = useState(false);
+  const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
+  const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
 
   const handlePrettifyPaste = () => {
     setQuickPasteWarning('');
@@ -95,6 +104,109 @@ const ProductForm = () => {
         })
         .filter(Boolean);
       setQuickPasteText(cleanedLines.join('\n'));
+    }
+  };
+
+  const handleMagicFillProcess = () => {
+    try {
+      const data = JSON.parse(magicFillText);
+      
+      // 1. Text Fields population
+      if (data.name) setName(data.name);
+      if (data.brand) setBrand(data.brand);
+      if (data.description) setDescription(data.description);
+      
+      // 2. Audience Dropdown Matching (case-insensitive label to value)
+      let matchedAudience = '';
+      const audVal = String(data.audience || '').toLowerCase().trim();
+      if (audVal === 'unisex') matchedAudience = 'unisex';
+      else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
+      else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
+      else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
+      
+      if (matchedAudience) {
+        setAudience(matchedAudience);
+        setHighlightAudience(false);
+      } else {
+        setAudience('');
+        setHighlightAudience(true);
+      }
+
+      // 3. Category & Subcategory Dropdown Matching
+      const normalizeId = id => id ? String(id) : '';
+      const level1Cats = categories.filter(c => c.level === 1 || c.parent_id === null);
+      const catLabel = String(data.category || '').toLowerCase().trim();
+      const matchedCat = level1Cats.find(c => String(c.name || '').toLowerCase().trim() === catLabel);
+
+      if (matchedCat) {
+        const catId = normalizeId(matchedCat.id);
+        setCategoryId(catId);
+        setHighlightCategory(false);
+
+        // Now match Subcategory if sub_category is present
+        const subCatLabel = String(data.sub_category || '').toLowerCase().trim();
+        if (subCatLabel) {
+          const subCats = categories.filter(c => normalizeId(c.parent_id) === catId);
+          const matchedSubCat = subCats.find(c => String(c.name || '').toLowerCase().trim() === subCatLabel);
+          if (matchedSubCat) {
+            const subCatId = normalizeId(matchedSubCat.id);
+            setSubcategoryId(subCatId);
+            setHighlightSubcategory(false);
+
+            // Now match Sub-subcategory if sub_sub_category is present
+            const subSubCatLabel = String(data.sub_sub_category || '').toLowerCase().trim();
+            if (subSubCatLabel) {
+              const subSubCats = categories.filter(c => normalizeId(c.parent_id) === subCatId);
+              const matchedSubSubCat = subSubCats.find(c => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
+              if (matchedSubSubCat) {
+                setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
+                setHighlightSubSubcategory(false);
+              } else {
+                setSubSubcategoryId('');
+                setHighlightSubSubcategory(true);
+              }
+            } else {
+              setSubSubcategoryId('');
+              setHighlightSubSubcategory(false);
+            }
+          } else {
+            setSubcategoryId('');
+            setHighlightSubcategory(true);
+            setSubSubcategoryId('');
+            setHighlightSubSubcategory(false);
+          }
+        } else {
+          setSubcategoryId('');
+          setHighlightSubcategory(false);
+          setSubSubcategoryId('');
+          setHighlightSubSubcategory(false);
+        }
+      } else {
+        setCategoryId('');
+        setHighlightCategory(true);
+        setSubcategoryId('');
+        setHighlightSubcategory(false);
+        setSubSubcategoryId('');
+        setHighlightSubSubcategory(false);
+      }
+
+      // 4. Step 2 Specifications Automation (Dynamic Specs)
+      if (data.specs && typeof data.specs === 'object' && !Array.isArray(data.specs)) {
+        const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
+          sk: mk(),
+          key: String(k || ''),
+          value: String(v || ''),
+        }));
+        if (newSpecs.length > 0) {
+          setSpecs(newSpecs);
+        }
+      }
+
+      setShowMagicFillModal(false);
+      setMagicFillText('');
+      setMagicFillError('');
+    } catch (e) {
+      setMagicFillError('Invalid JSON format: ' + e.message);
     }
   };
 
@@ -1433,10 +1545,41 @@ const ProductForm = () => {
               <div key={activeTab} className="pf-step-pane">
                 {activeTab === 'general' && (
                   <>
-                    <div className="pf-section-title">
-                      <span className="pf-section-title-icon"><Info size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
-                    </div>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                       <div className="pf-section-title" style={{ margin: 0 }}>
+                         <span className="pf-section-title-icon"><Info size={16} /></span>
+                         <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
+                       </div>
+                       <button
+                         type="button"
+                         onClick={() => setShowMagicFillModal(true)}
+                         style={{
+                           background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+                           color: '#ffffff',
+                           border: 'none',
+                           borderRadius: 10,
+                           padding: '8px 16px',
+                           fontSize: 13,
+                           fontWeight: 600,
+                           cursor: 'pointer',
+                           display: 'flex',
+                           alignItems: 'center',
+                           gap: 6,
+                           boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                           transition: 'all 0.2s ease',
+                         }}
+                         onMouseEnter={e => {
+                           e.currentTarget.style.transform = 'translateY(-1px)';
+                           e.currentTarget.style.boxShadow = '0 6px 16px rgba(124, 58, 237, 0.35)';
+                         }}
+                         onMouseLeave={e => {
+                           e.currentTarget.style.transform = 'translateY(0)';
+                           e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.25)';
+                         }}
+                       >
+                         ⚡ Magic Fill
+                       </button>
+                     </div>
                     <div style={{ marginBottom: 18 }}>
                       <label style={{ fontWeight: 500 }}>Product Name</label>
                       <input
@@ -1457,8 +1600,19 @@ const ProductForm = () => {
                           <select
                             className="custom-input pf-select"
                             value={audience}
-                            onChange={aud => setAudience(aud.target.value)}
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                            onChange={aud => {
+                              setAudience(aud.target.value);
+                              setHighlightAudience(false);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '10px 14px',
+                              borderRadius: 12,
+                              border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
+                              background: highlightAudience ? '#fef9c3' : '#fff',
+                              marginTop: 4,
+                              transition: 'all 0.2s ease',
+                            }}
                             required
                           >
                             <option value="unisex">Unisex</option>
@@ -1523,8 +1677,16 @@ const ProductForm = () => {
                               setCategoryId(e.target.value);
                               setSubcategoryId('');
                               setSubSubcategoryId('');
+                              setHighlightCategory(false);
                             }}
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                            style={{
+                              width: '100%',
+                              padding: '10px 14px',
+                              borderRadius: 12,
+                              border: highlightCategory ? '2px solid #eab308' : '1px solid #a0a0a0',
+                              background: highlightCategory ? '#fef9c3' : '#fff',
+                              transition: 'all 0.2s ease',
+                            }}
                             required
                           >
                             <option value="">Select category</option>
@@ -1556,8 +1718,17 @@ const ProductForm = () => {
                             onChange={e => {
                               setSubcategoryId(e.target.value);
                               setSubSubcategoryId('');
+                              setHighlightSubcategory(false);
                             }}
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                            style={{
+                              width: '100%',
+                              padding: '10px 14px',
+                              borderRadius: 12,
+                              border: highlightSubcategory ? '2px solid #eab308' : '1px solid #a0a0a0',
+                              opacity: !categoryId ? 0.6 : 1,
+                              background: highlightSubcategory ? '#fef9c3' : (!categoryId ? '#f5f6fa' : '#fff'),
+                              transition: 'all 0.2s ease',
+                            }}
                             disabled={!categoryId}
                           >
                             <option value="">Select subcategory</option>
@@ -1586,15 +1757,19 @@ const ProductForm = () => {
                           <select
                             className="custom-input pf-select"
                             value={subSubcategoryId}
-                            onChange={e => setSubSubcategoryId(e.target.value)}
+                            onChange={e => {
+                              setSubSubcategoryId(e.target.value);
+                              setHighlightSubSubcategory(false);
+                            }}
                             disabled={!subcategoryId || subSubcategoriesOptions.length === 0}
                             style={{
                               width: '100%',
                               padding: '10px 14px',
                               borderRadius: 12,
-                              border: '1px solid #a0a0a0',
+                              border: highlightSubSubcategory ? '2px solid #eab308' : '1px solid #a0a0a0',
                               opacity: (!subcategoryId || subSubcategoriesOptions.length === 0) ? 0.6 : 1,
-                              background: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#f5f6fa' : '#fff',
+                              background: highlightSubSubcategory ? '#fef9c3' : ((!subcategoryId || subSubcategoriesOptions.length === 0) ? '#f5f6fa' : '#fff'),
+                              transition: 'all 0.2s ease',
                             }}
                           >
                             <option value="">
@@ -2802,6 +2977,182 @@ const ProductForm = () => {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Premium Glassmorphic Magic Fill Modal */}
+      {showMagicFillModal && (
+        <div
+          onClick={() => {
+            setShowMagicFillModal(false);
+            setMagicFillError('');
+            setMagicFillText('');
+          }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(255, 255, 255, 0.35)',
+            backdropFilter: 'blur(32px)',
+            WebkitBackdropFilter: 'blur(32px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 40,
+          }}
+        >
+          <div
+            className="premium-modal-card"
+            style={{
+              background: 'rgba(255, 255, 255, 0.7)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              borderRadius: 32,
+              width: '85%',
+              height: '85%',
+              maxWidth: 1200,
+              maxHeight: 800,
+              padding: 40,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+              fontFamily: 'Poppins, sans-serif',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'all 0.3s ease',
+              boxSizing: 'border-box',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#1e293b', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span>⚡</span> Magic Fill Automation
+                </h2>
+                <p style={{ color: '#64748b', fontSize: 13, margin: '4px 0 0 0' }}>
+                  Paste a JSON object to automatically populate general product information and generate specification rows.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    const parsed = JSON.parse(magicFillText);
+                    setMagicFillText(JSON.stringify(parsed, null, 2));
+                    setMagicFillError('');
+                  } catch (e) {
+                    setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
+                  }
+                }}
+                style={{
+                  background: 'rgba(99, 102, 241, 0.1)',
+                  color: '#4f46e5',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '6px 12px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Prettify JSON
+              </button>
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, marginBottom: 20 }}>
+              <textarea
+                value={magicFillText}
+                onChange={e => {
+                  setMagicFillText(e.target.value);
+                  setMagicFillError('');
+                }}
+                placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category": "Clothing",\n  "sub_category": "Hoodies",\n  "sub_sub_category": "Unisex Hoodies",\n  "specs": {\n    "Material": "80% Cotton, 20% Polyester",\n    "Weight": "320 GSM",\n    "Fit": "Regular Fit"\n  }\n}`}
+                style={{
+                  width: '100%',
+                  flex: 1,
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  color: '#38bdf8',
+                  fontFamily: 'Fira Code, monospace',
+                  fontSize: 14,
+                  padding: 24,
+                  borderRadius: 16,
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  resize: 'none',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            {magicFillError && (
+              <div
+                style={{
+                  background: 'rgba(239, 68, 68, 0.05)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                  color: '#b91c1c',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  marginBottom: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <AlertTriangle size={14} />
+                {magicFillError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMagicFillModal(false);
+                  setMagicFillError('');
+                  setMagicFillText('');
+                }}
+                onMouseEnter={() => setIsMagicCancelHovered(true)}
+                onMouseLeave={() => setIsMagicCancelHovered(false)}
+                style={{
+                  background: isMagicCancelHovered ? 'rgba(241, 245, 249, 0.6)' : 'transparent',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: 12,
+                  padding: '12px 28px',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  transform: isMagicCancelHovered ? 'scale(1.03)' : 'scale(1)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleMagicFillProcess}
+                onMouseEnter={() => setIsMagicProcessHovered(true)}
+                onMouseLeave={() => setIsMagicProcessHovered(false)}
+                style={{
+                  background: isMagicProcessHovered ? 'linear-gradient(135deg, #a855f7 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '12px 32px',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  boxShadow: isMagicProcessHovered ? '0 10px 25px -5px rgba(124, 58, 237, 0.4)' : '0 4px 15px rgba(124, 58, 237, 0.2)',
+                  transform: isMagicProcessHovered ? 'scale(1.03)' : 'scale(1)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Magic Fill Now
+              </button>
+            </div>
           </div>
         </div>
       )}
