@@ -2497,7 +2497,7 @@ const ProductForm = () => {
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.65)',
+            background: 'rgba(255, 255, 255, 0.35)',
             backdropFilter: 'blur(32px)',
             WebkitBackdropFilter: 'blur(32px)',
             display: 'flex',
@@ -2515,9 +2515,9 @@ const ProductForm = () => {
               animation: premiumModalScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
             textarea.quick-paste-textarea {
-              background: rgba(2, 6, 23, 0.7) !important;
-              background-color: rgba(2, 6, 23, 0.7) !important;
-              color: #f1f5f9 !important;
+              background: rgba(255, 255, 255, 0.5) !important;
+              background-color: rgba(255, 255, 255, 0.5) !important;
+              color: #1e293b !important;
               font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
             }
             .custom-preview-panel::-webkit-scrollbar {
@@ -2528,25 +2528,25 @@ const ProductForm = () => {
               background: transparent;
             }
             .custom-preview-panel::-webkit-scrollbar-thumb {
-              background: rgba(255, 255, 255, 0.1);
+              background: rgba(0, 0, 0, 0.1);
               border-radius: 10px;
             }
             .custom-preview-panel:hover::-webkit-scrollbar-thumb {
-              background: rgba(255, 255, 255, 0.2);
+              background: rgba(0, 0, 0, 0.15);
             }
           `}</style>
           <div
             className="premium-modal-card"
             style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.7)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               borderRadius: 32,
               width: '85%',
               height: '85%',
               maxWidth: 1200,
               maxHeight: 800,
-              padding: 48,
-              boxShadow: '0 40px 100px -20px rgba(0, 0, 0, 0.75), 0 0 80px rgba(255, 255, 255, 0.05)',
+              padding: 40,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
               fontFamily: 'Poppins, sans-serif',
               display: 'flex',
               flexDirection: 'column',
@@ -2579,32 +2579,32 @@ const ProductForm = () => {
                     justifyContent: 'center',
                     color: '#10b981',
                     marginBottom: 20,
-                    boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)',
+                    boxShadow: '0 0 30px rgba(16, 185, 129, 0.2)',
                   }}
                 >
                   <Check size={44} strokeWidth={3} />
                 </div>
-                <h4 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: '#34d399' }}>Variants Imported!</h4>
-                <p style={{ margin: '8px 0 0', fontSize: 14, color: '#a7f3d0' }}>Adding new variants to inventory list...</p>
+                <h4 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: '#059669' }}>Variants Imported!</h4>
+                <p style={{ margin: '8px 0 0', fontSize: 14, color: '#047857' }}>Adding new variants to inventory list...</p>
               </div>
             ) : (
               <>
                 {/* Header */}
                 <div style={{ marginBottom: 24 }}>
-                  <h3 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>
+                  <h3 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>
                     Quick Paste Variants
                   </h3>
-                  <p style={{ margin: 0, fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.5 }}>
+                  <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
                     Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
                   </p>
                 </div>
 
                 {/* 2-Column Code-Editor IDE Area */}
                 <div style={{ display: 'flex', gap: 28, flex: 1, minHeight: 0, marginBottom: 24 }}>
-                  {/* Left Column: Dark Editor */}
+                  {/* Left Column: Light Editor */}
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
                         DATA INPUT (JSON or CSV FORMAT)
                       </label>
                       <button
@@ -2613,9 +2613,9 @@ const ProductForm = () => {
                         onMouseEnter={() => setIsPrettifyHovered(true)}
                         onMouseLeave={() => setIsPrettifyHovered(false)}
                         style={{
-                          background: isPrettifyHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
-                          color: '#ffffff',
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          background: isPrettifyHovered ? 'rgba(79, 70, 229, 0.1)' : 'rgba(79, 70, 229, 0.04)',
+                          color: '#4f46e5',
+                          border: '1px solid rgba(79, 70, 229, 0.25)',
                           borderRadius: 8,
                           padding: '4px 12px',
                           fontSize: 11,
@@ -2641,10 +2641,10 @@ const ProductForm = () => {
                         flex: 1,
                         padding: 24,
                         borderRadius: 16,
-                        border: isTextareaFocused ? '1px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.15)',
-                        background: 'rgba(2, 6, 23, 0.7)',
-                        boxShadow: isTextareaFocused ? 'inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(129, 140, 248, 0.3)' : 'inset 0 2px 8px rgba(0, 0, 0, 0.5)',
-                        color: '#f8fafc',
+                        border: isTextareaFocused ? '1px solid #6366f1' : '1px solid #cbd5e1',
+                        background: 'rgba(255, 255, 255, 0.5)',
+                        boxShadow: isTextareaFocused ? 'inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 12px rgba(99, 102, 241, 0.2)' : 'inset 0 1px 3px rgba(0, 0, 0, 0.05)',
+                        color: '#1e293b',
                         fontFamily: 'Fira Code, Courier New, Courier, monospace',
                         fontSize: 13,
                         lineHeight: 1.6,
@@ -2658,7 +2658,7 @@ const ProductForm = () => {
                   {/* Right Column: Live Highlighted Preview */}
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                     <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', height: 26 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
                         LIVE PREVIEW & SYNTAX VALIDATION
                       </label>
                     </div>
@@ -2667,19 +2667,19 @@ const ProductForm = () => {
                       className="custom-preview-panel"
                       style={{
                         flex: 1,
-                        background: 'rgba(2, 6, 23, 0.8)',
+                        background: 'rgba(255, 255, 255, 0.6)',
                         borderRadius: 16,
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.5)',
                         padding: 24,
-                        boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.6)',
+                        boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.05)',
                         overflowY: 'auto',
-                        color: '#e2e8f0',
+                        color: '#334155',
                       }}
                     >
                       {(() => {
                         if (!quickPasteText.trim()) {
                           return (
-                            <div style={{ color: 'rgba(255, 255, 255, 0.3)', fontStyle: 'italic', fontFamily: 'monospace', fontSize: 13 }}>
+                            <div style={{ color: '#94a3b8', fontStyle: 'italic', fontFamily: 'monospace', fontSize: 13 }}>
                               Waiting for code input to generate preview...
                             </div>
                           );
@@ -2697,12 +2697,12 @@ const ProductForm = () => {
                                 return (
                                   <div key={idx} style={{ fontFamily: 'Fira Code, monospace', fontSize: 13, lineHeight: '1.6', whiteSpace: 'pre' }}>
                                     <span>{indent}</span>
-                                    <span style={{ color: '#34d399', fontWeight: 600 }}>"{key}"</span>: <span style={{ color: '#fb923c' }}>{val}</span>
+                                    <span style={{ color: '#059669', fontWeight: 600 }}>"{key}"</span>: <span style={{ color: '#ea580c' }}>{val}</span>
                                   </div>
                                 );
                               }
                               return (
-                                <div key={idx} style={{ fontFamily: 'Fira Code, monospace', fontSize: 13, lineHeight: '1.6', color: '#94a3b8', whiteSpace: 'pre' }}>
+                                <div key={idx} style={{ fontFamily: 'Fira Code, monospace', fontSize: 13, lineHeight: '1.6', color: '#475569', whiteSpace: 'pre' }}>
                                   {line}
                                 </div>
                               );
@@ -2712,24 +2712,24 @@ const ProductForm = () => {
                             const lines = quickPasteText.split('\n').filter(l => l.trim());
                             return (
                               <div style={{ textAlign: 'left' }}>
-                                <div style={{ color: '#818cf8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                                <div style={{ color: '#4f46e5', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'monospace', letterSpacing: '0.5px' }}>
                                   Parsed CSV Rows:
                                 </div>
                                 {lines.map((line, idx) => {
                                   const parts = line.split(/[,\t]+/).map(p => p.trim());
                                   return (
                                     <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 6, fontFamily: 'Fira Code, monospace', fontSize: 13, alignItems: 'center' }}>
-                                      <span style={{ color: 'rgba(255, 255, 255, 0.3)', width: 24, display: 'inline-block' }}>{idx + 1}</span>
+                                      <span style={{ color: '#94a3b8', width: 24, display: 'inline-block' }}>{idx + 1}</span>
                                       {parts.map((p, pIdx) => {
-                                        let color = '#ffffff';
+                                        let color = '#334155';
                                         let label = '';
-                                        if (pIdx === 0) { color = '#34d399'; label = 'Size'; }
-                                        if (pIdx === 1) { color = '#38bdf8'; label = 'Color'; }
-                                        if (pIdx === 2) { color = '#fb923c'; label = 'Price'; }
-                                        if (pIdx === 3) { color = '#c084fc'; label = 'Stock'; }
+                                        if (pIdx === 0) { color = '#059669'; label = 'Size'; }
+                                        if (pIdx === 1) { color = '#0284c7'; label = 'Color'; }
+                                        if (pIdx === 2) { color = '#ea580c'; label = 'Price'; }
+                                        if (pIdx === 3) { color = '#7c3aed'; label = 'Stock'; }
                                         return (
-                                          <span key={pIdx} style={{ color, background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }}>
-                                            <strong style={{ opacity: 0.5, marginRight: 4, fontWeight: 500, fontSize: 10 }}>{label}:</strong>{p}
+                                          <span key={pIdx} style={{ color, background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(0,0,0,0.04)', fontSize: 11 }}>
+                                            <strong style={{ opacity: 0.6, marginRight: 4, fontWeight: 500, fontSize: 10 }}>{label}:</strong>{p}
                                           </span>
                                         );
                                       })}
@@ -2741,7 +2741,7 @@ const ProductForm = () => {
                           }
                         } catch (e) {
                           return (
-                            <div style={{ color: '#fca5a5', fontFamily: 'Fira Code, monospace', fontSize: 13, textAlign: 'left', background: 'rgba(239, 68, 68, 0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(239, 68, 68, 0.15)' }}>
+                            <div style={{ color: '#b91c1c', fontFamily: 'Fira Code, monospace', fontSize: 13, textAlign: 'left', background: 'rgba(239, 68, 68, 0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(239, 68, 68, 0.1)' }}>
                               <strong style={{ color: '#ef4444', display: 'block', marginBottom: 4 }}>⚠️ Syntax Error</strong>
                               {e.message}
                             </div>
@@ -2755,11 +2755,11 @@ const ProductForm = () => {
                 {quickPasteWarning && (
                   <div
                     style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      background: 'rgba(239, 68, 68, 0.05)',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
                       borderRadius: 12,
                       padding: '10px 14px',
-                      color: '#fca5a5',
+                      color: '#b91c1c',
                       fontSize: 12,
                       fontWeight: 500,
                       marginBottom: 20,
@@ -2785,9 +2785,9 @@ const ProductForm = () => {
                     onMouseEnter={() => setIsCancelHovered(true)}
                     onMouseLeave={() => setIsCancelHovered(false)}
                     style={{
-                      background: isCancelHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                      color: '#ffffff',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: isCancelHovered ? 'rgba(241, 245, 249, 0.6)' : 'transparent',
+                      color: '#475569',
+                      border: '1px solid #cbd5e1',
                       borderRadius: 12,
                       padding: '12px 28px',
                       fontWeight: 600,
@@ -2814,7 +2814,7 @@ const ProductForm = () => {
                       fontWeight: 600,
                       fontSize: 14,
                       cursor: 'pointer',
-                      boxShadow: isProcessHovered ? '0 10px 25px -5px rgba(99, 102, 241, 0.5), 0 0 30px rgba(99, 102, 241, 0.2)' : '0 4px 15px rgba(99, 102, 241, 0.25)',
+                      boxShadow: isProcessHovered ? '0 10px 25px -5px rgba(99, 102, 241, 0.4)' : '0 4px 15px rgba(99, 102, 241, 0.2)',
                       transform: isProcessHovered ? 'scale(1.03)' : 'scale(1)',
                       transition: 'all 0.2s ease',
                     }}
