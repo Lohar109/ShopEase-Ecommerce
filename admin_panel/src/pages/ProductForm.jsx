@@ -650,7 +650,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '12% 14% 14% 12% 18% 14% 16% auto';
+  const variantCols = '8% 10% 12% 8% 20% 22% 14% auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -1687,171 +1687,173 @@ const ProductForm = () => {
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
-                    <div style={{ marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-                      <div
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: variantCols,
-                          gap: 16,
-                          background: '#f8f9fa',
-                          borderBottom: '2px solid #e9ecef',
-                          padding: '10px 10px',
-                          marginBottom: 8,
-                        }}
-                      >
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
-                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>Separate Gallery</div>
-                        <div />
-                      </div>
+                    <div style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
+                      <div style={{ minWidth: 950, padding: '0 4px' }}>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: variantCols,
+                            gap: 12,
+                            background: '#f8f9fa',
+                            borderBottom: '2px solid #e9ecef',
+                            padding: '10px 10px',
+                            marginBottom: 8,
+                          }}
+                        >
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Size</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Color</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Price</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Stock</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>SKU</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Image</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>Sep. Gallery</div>
+                          <div />
+                        </div>
 
-                      <div style={{ display: 'grid', gap: 8 }}>
-                        {variantRows.map((variant, index) => {
-                          const currentSku = variant.sku.trim();
-                          const isLocalDuplicate = currentSku !== '' && variantRows.findIndex(v => v.sku.trim() === currentSku) !== index;
-                          const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
+                        <div style={{ display: 'grid', gap: 8 }}>
+                          {variantRows.map((variant, index) => {
+                            const currentSku = variant.sku.trim();
+                            const isLocalDuplicate = currentSku !== '' && variantRows.findIndex(v => v.sku.trim() === currentSku) !== index;
+                            const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
 
-                          return (
-                            <div
-                              key={variant.vk || `var-${index}`}
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: variantCols,
-                                gap: 16,
-                                alignItems: 'center',
-                                borderBottom: '1px solid #f1f3f5',
-                                padding: '5px 0',
-                              }}
-                            >
-                              <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                              <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                              <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                              <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                            return (
                               <div
-                                className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
+                                key={variant.vk || `var-${index}`}
                                 style={{
-                                  position: 'relative',
-                                  width: '100%',
-                                  boxSizing: 'border-box',
+                                  display: 'grid',
+                                  gridTemplateColumns: variantCols,
+                                  gap: 12,
+                                  alignItems: 'center',
+                                  borderBottom: '1px solid #f1f3f5',
+                                  padding: '5px 10px',
                                 }}
                               >
-                                <input
-                                  className={`custom-input ${hasDuplicateSkuError ? 'border-red-500 focus:ring-red-500' : ''}`}
-                                  type="text"
-                                  value={variant.sku}
-                                  readOnly
+                                <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                <div
+                                  className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
                                   style={{
+                                    position: 'relative',
                                     width: '100%',
-                                    height: 40,
-                                    padding: '0 12px',
-                                    borderRadius: 12,
-                                    border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
-                                    background: '#f5f6fa',
-                                    color: '#888',
-                                    textAlign: 'center'
+                                    boxSizing: 'border-box',
                                   }}
-                                />
-                                {hasDuplicateSkuError && (
-                                  <p
-                                    className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap"
-                                    style={{
-                                      position: 'absolute',
-                                      bottom: -18,
-                                      left: 2,
-                                      margin: 0,
-                                      fontSize: 11,
-                                      lineHeight: 1,
-                                      color: '#ef4444',
-                                      whiteSpace: 'nowrap',
-                                    }}
-                                  >
-                                    SKU already exists
-                                  </p>
-                                )}
-                              </div>
-                              {index === 0 ? (
-                                <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
+                                >
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${hasDuplicateSkuError ? 'border-red-500 focus:ring-red-500' : ''}`}
                                     type="text"
-                                    value={variant.image}
+                                    value={variant.sku}
                                     readOnly
                                     style={{
                                       width: '100%',
                                       height: 40,
-                                      padding: '0 12px',
+                                      padding: '0 8px',
                                       borderRadius: 12,
-                                      border: '1px solid #d1d5db',
-                                      background: '#f3f4f6',
-                                      color: '#6b7280',
+                                      border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
+                                      background: '#f5f6fa',
+                                      color: '#888',
+                                      textAlign: 'center'
+                                    }}
+                                  />
+                                  {hasDuplicateSkuError && (
+                                    <p
+                                      className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap"
+                                      style={{
+                                        position: 'absolute',
+                                        bottom: -18,
+                                        left: 2,
+                                        margin: 0,
+                                        fontSize: 11,
+                                        lineHeight: 1,
+                                        color: '#ef4444',
+                                        whiteSpace: 'nowrap',
+                                      }}
+                                    >
+                                      SKU already exists
+                                    </p>
+                                  )}
+                                </div>
+                                {index === 0 ? (
+                                  <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
+                                    <input
+                                      className="custom-input"
+                                      type="text"
+                                      value={variant.image}
+                                      readOnly
+                                      style={{
+                                        width: '100%',
+                                        height: 40,
+                                        padding: '0 8px',
+                                        borderRadius: 12,
+                                        border: '1px solid #d1d5db',
+                                        background: '#f3f4f6',
+                                        color: '#6b7280',
+                                        cursor: 'text',
+                                        textAlign: 'center'
+                                      }}
+                                      placeholder="Auto-synced"
+                                    />
+                                    <span className="auto-sync-tooltip-bubble" role="tooltip">
+                                      Auto-synced from Main Image
+                                      <span className="auto-sync-tooltip-arrow" />
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={variant.image}
+                                    onChange={e => handleVariantChange(index, 'image', e.target.value)}
+                                    style={{
+                                      width: '100%',
+                                      height: 40,
+                                      padding: '0 8px',
+                                      borderRadius: 12,
+                                      border: '1px solid #a0a0a0',
+                                      background: '#fff',
+                                      color: '#111',
                                       cursor: 'text',
                                       textAlign: 'center'
                                     }}
-                                    placeholder="Auto-synced"
                                   />
-                                  <span className="auto-sync-tooltip-bubble" role="tooltip">
-                                    Auto-synced from Main Image
-                                    <span className="auto-sync-tooltip-arrow" />
-                                  </span>
-                                </span>
-                              ) : (
-                                <input
-                                  className="custom-input"
-                                  type="text"
-                                  value={variant.image}
-                                  onChange={e => handleVariantChange(index, 'image', e.target.value)}
+                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={variant.use_separate_gallery || false}
+                                    onChange={e => handleVariantChange(index, 'use_separate_gallery', e.target.checked)}
+                                    title="Use separate gallery images for this variant"
+                                    style={{ width: 18, height: 18, cursor: 'pointer' }}
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => removeVariant(index)}
+                                  title="Remove variant"
                                   style={{
-                                    width: '100%',
-                                    height: 40,
-                                    padding: '0 12px',
+                                    background: '#fef2f2',
+                                    color: '#ef4444',
+                                    border: 'none',
                                     borderRadius: 12,
-                                    border: '1px solid #a0a0a0',
-                                    background: '#fff',
-                                    color: '#111',
-                                    cursor: 'text',
-                                    textAlign: 'center'
+                                    height: 40,
+                                    width: 40,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    justifySelf: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.15s ease',
                                   }}
-                                />
-                              )}
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <input
-                                  type="checkbox"
-                                  checked={variant.use_separate_gallery || false}
-                                  onChange={e => handleVariantChange(index, 'use_separate_gallery', e.target.checked)}
-                                  title="Use separate gallery images for this variant"
-                                  style={{ width: 18, height: 18, cursor: 'pointer' }}
-                                />
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => removeVariant(index)}
-                                title="Remove variant"
-                                style={{
-                                  background: '#fef2f2',
-                                  color: '#ef4444',
-                                  border: 'none',
-                                  borderRadius: 12,
-                                  height: 40,
-                                  width: 40,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  justifySelf: 'center',
-                                  cursor: 'pointer',
-                                  transition: 'background 0.15s ease',
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                     <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>
