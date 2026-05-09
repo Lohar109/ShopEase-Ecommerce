@@ -2130,40 +2130,11 @@ const ProductForm = () => {
 
                 {activeTab === 'inventory' && (
                   <>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <div style={{ marginBottom: 24 }}>
                       <div className="pf-section-title" style={{ margin: 0 }}>
                         <span className="pf-section-title-icon"><Box size={16} /></span>
                         <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowQuickPasteModal(true)}
-                        style={{
-                          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                          color: '#ffffff',
-                          border: 'none',
-                          borderRadius: 8,
-                          padding: '6px 12px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          fontSize: 13,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
-                          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-1px)';
-                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.3)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'none';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.2)';
-                        }}
-                      >
-                        Quick Paste Variants
-                      </button>
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                     <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
