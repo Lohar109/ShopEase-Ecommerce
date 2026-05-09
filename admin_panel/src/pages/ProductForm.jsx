@@ -61,6 +61,95 @@ const ProductForm = () => {
   // Dynamic specifications
   const [specs, setSpecs] = useState([newSpec()]);
 
+  // Quick Paste state
+  const [showQuickPasteModal, setShowQuickPasteModal] = useState(false);
+  const [quickPasteText, setQuickPasteText] = useState('');
+  const [quickPasteWarning, setQuickPasteWarning] = useState('');
+  const [toastMsg, setToastMsg] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  const handleProcessQuickPaste = () => {
+    setQuickPasteWarning('');
+    if (!quickPasteText.trim()) {
+      setQuickPasteWarning('Paste input is empty.');
+      return;
+    }
+
+    const lines = quickPasteText.split('\n');
+    const newVariants = [];
+    let skippedCount = 0;
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return; // skip empty lines silently
+
+      // Split by comma or tab
+      const parts = trimmedLine.split(/[,\t]+/).map(p => p.trim());
+      
+      // We expect: Size, Color, Price, Stock
+      if (parts.length < 4) {
+        skippedCount++;
+        return;
+      }
+
+      const size = parts[0];
+      const color = parts[1];
+      const priceVal = Number(parts[2]);
+      const stockVal = Number(parts[3]);
+
+      if (isNaN(priceVal) || isNaN(stockVal)) {
+        skippedCount++;
+        return;
+      }
+
+      // Generate SKU using the product name slug + color + size (e.g., 'tshirt-red-m')
+      const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+
+      newVariants.push({
+        vk: mk(),
+        size: size,
+        color: color,
+        price: priceVal,
+        override_discount: false,
+        discount_type: 'Percentage',
+        discount_value: '',
+        stock: stockVal,
+        sku: autoSku,
+        image: mainImage || '',
+        use_separate_gallery: false
+      });
+    });
+
+    if (newVariants.length === 0) {
+      setQuickPasteWarning(`No valid variants found. Skipped ${skippedCount} invalid lines.`);
+      return;
+    }
+
+    // Append to existing product_variants (called variantRows in this component)
+    setVariantRows(prev => {
+      // If the only element in prev is the empty default, filter it out to keep the table clean
+      const filteredPrev = prev.filter(v => v.size || v.color || v.price || v.stock);
+      return [...filteredPrev, ...newVariants];
+    });
+
+    const addedCount = newVariants.length;
+    let msg = `Successfully added ${addedCount} variants!`;
+    if (skippedCount > 0) {
+      msg += ` Skipped ${skippedCount} invalid lines.`;
+    }
+
+    setToastMsg(msg);
+    setToastType(skippedCount > 0 ? 'warning' : 'success');
+    setShowQuickPasteModal(false);
+    setQuickPasteText('');
+    setQuickPasteWarning('');
+    setTimeout(() => setToastMsg(''), 4000);
+  };
+
+
   // Media state (Cloudinary URLs only)
   const [mainImage, setMainImage] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
@@ -2190,7 +2279,7 @@ const ProductForm = () => {
                 )}
               </div>
 
-              <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={goBack}
@@ -2209,23 +2298,53 @@ const ProductForm = () => {
                   Back
                 </button>
 
-                <button
-                  type="button"
-                  onClick={goNext}
-                  disabled={!canNext}
-                  style={{
-                    background: '#111827',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 20px',
-                    fontWeight: 600,
-                    cursor: canNext ? 'pointer' : 'not-allowed',
-                    opacity: canNext ? 1 : 0.5,
-                  }}
-                >
-                  Next
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
+                  {activeTab === 'inventory' && (
+                    <button
+                      type="button"
+                      onClick={() => setShowQuickPasteModal(true)}
+                      style={{
+                        background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: 8,
+                        padding: '8px 16px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontSize: 13,
+                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
+                        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.2)';
+                      }}
+                    >
+                      Quick Paste Variants
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    disabled={!canNext}
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '8px 20px',
+                      fontWeight: 600,
+                      cursor: canNext ? 'pointer' : 'not-allowed',
+                      opacity: canNext ? 1 : 0.5,
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -2247,6 +2366,169 @@ const ProductForm = () => {
               <input className="custom-input" type="number" value={variantRows[editingDiscountVariantIndex].discount_value} onChange={e => handleVariantChange(editingDiscountVariantIndex, 'discount_value', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, marginTop: 4 }} />
             </div>
             <button type="button" onClick={() => setEditingDiscountVariantIndex(null)} style={{ background: '#ff3f6c', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', width: '100%' }}>Done</button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Success/Warning Toast */}
+      {toastMsg && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 99999,
+            background: toastType === 'success' ? '#10b981' : '#f59e0b',
+            color: '#fff',
+            padding: '12px 24px',
+            borderRadius: 12,
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+            fontFamily: 'Poppins, sans-serif',
+            fontSize: 14,
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <Check size={18} />
+          {toastMsg}
+        </div>
+      )}
+
+      {/* Glassmorphic Quick Paste Modal */}
+      {showQuickPasteModal && (
+        <div
+          onClick={() => setShowQuickPasteModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(15, 23, 42, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              borderRadius: 24,
+              width: '100%',
+              maxWidth: 500,
+              padding: 32,
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+              fontFamily: 'Poppins, sans-serif',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1e293b' }}>
+              Quick Paste Variants
+            </h3>
+            <p style={{ margin: '0 0 20px', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
+              Paste comma or tab-separated variant data. Each line should contain: <strong>Size, Color, Price, Stock</strong>.
+            </p>
+
+            <textarea
+              className="custom-input"
+              value={quickPasteText}
+              onChange={e => setQuickPasteText(e.target.value)}
+              placeholder="Paste data here: Size, Color, Price, Stock (one per line)&#10;e.g.&#10;M, Red, 150, 100&#10;L, Blue, 180, 50"
+              style={{
+                width: '100%',
+                height: 180,
+                padding: '14px 16px',
+                borderRadius: 16,
+                border: '1px solid #cbd5e1',
+                background: 'rgba(255, 255, 255, 0.6)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                lineHeight: 1.6,
+                resize: 'none',
+                marginBottom: 16,
+                outline: 'none',
+              }}
+            />
+
+            {quickPasteWarning && (
+              <div
+                style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fca5a5',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                  color: '#dc2626',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <AlertTriangle size={14} />
+                {quickPasteWarning}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowQuickPasteModal(false);
+                  setQuickPasteText('');
+                  setQuickPasteWarning('');
+                }}
+                style={{
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '10px 20px',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleProcessQuickPaste}
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '10px 20px',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)';
+                }}
+              >
+                Process
+              </button>
+            </div>
           </div>
         </div>
       )}
