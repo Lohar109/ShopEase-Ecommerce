@@ -67,86 +67,168 @@ const ProductForm = () => {
   const [quickPasteWarning, setQuickPasteWarning] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success');
+  const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
+
+  const handlePrettifyPaste = () => {
+    setQuickPasteWarning('');
+    const txt = quickPasteText.trim();
+    if (!txt) return;
+
+    if (txt.startsWith('[') || txt.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(txt);
+        setQuickPasteText(JSON.stringify(parsed, null, 2));
+      } catch (err) {
+        setQuickPasteWarning('Invalid JSON format: Cannot prettify.');
+      }
+    } else {
+      const lines = txt.split('\n');
+      const cleanedLines = lines
+        .map(line => {
+          const parts = line.split(/[,\t]+/).map(p => p.trim());
+          if (parts.length >= 4) {
+            return parts.slice(0, 4).join(', ');
+          }
+          return line.trim();
+        })
+        .filter(Boolean);
+      setQuickPasteText(cleanedLines.join('\n'));
+    }
+  };
 
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
-    if (!quickPasteText.trim()) {
+    const txt = quickPasteText.trim();
+    if (!txt) {
       setQuickPasteWarning('Paste input is empty.');
       return;
     }
 
-    const lines = quickPasteText.split('\n');
-    const newVariants = [];
+    let newVariants = [];
     let skippedCount = 0;
 
-    lines.forEach(line => {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) return; // skip empty lines silently
+    if (txt.startsWith('[') || txt.startsWith('{')) {
+      try {
+        let parsed = JSON.parse(txt);
+        if (!Array.isArray(parsed)) {
+          parsed = [parsed];
+        }
 
-      // Split by comma or tab
-      const parts = trimmedLine.split(/[,\t]+/).map(p => p.trim());
+        parsed.forEach(item => {
+          if (!item || typeof item !== 'object') {
+            skippedCount++;
+            return;
+          }
 
-      // We expect: Size, Color, Price, Stock
-      if (parts.length < 4) {
-        skippedCount++;
+          const keys = Object.keys(item);
+          const getVal = (possibleKeys) => {
+            const foundKey = keys.find(k => possibleKeys.includes(k.toLowerCase()));
+            return foundKey ? item[foundKey] : undefined;
+          };
+
+          const size = getVal(['size', 'sz']);
+          const color = getVal(['color', 'clr', 'colour']);
+          const priceVal = Number(getVal(['price', 'prc', 'rate']));
+          const stockVal = Number(getVal(['stock', 'stk', 'qty', 'quantity']));
+
+          if (size === undefined || color === undefined || isNaN(priceVal) || isNaN(stockVal)) {
+            skippedCount++;
+            return;
+          }
+
+          const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          const cleanColor = String(color).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const cleanSize = String(size).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+
+          newVariants.push({
+            vk: mk(),
+            size: String(size),
+            color: String(color),
+            price: priceVal,
+            override_discount: false,
+            discount_type: 'Percentage',
+            discount_value: '',
+            stock: stockVal,
+            sku: autoSku,
+            image: mainImage || '',
+            use_separate_gallery: false
+          });
+        });
+      } catch (err) {
+        setQuickPasteWarning('Invalid JSON format: ' + err.message);
         return;
       }
+    } else {
+      const lines = txt.split('\n');
+      lines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
 
-      const size = parts[0];
-      const color = parts[1];
-      const priceVal = Number(parts[2]);
-      const stockVal = Number(parts[3]);
+        const parts = trimmedLine.split(/[,\t]+/).map(p => p.trim());
+        if (parts.length < 4) {
+          skippedCount++;
+          return;
+        }
 
-      if (isNaN(priceVal) || isNaN(stockVal)) {
-        skippedCount++;
-        return;
-      }
+        const size = parts[0];
+        const color = parts[1];
+        const priceVal = Number(parts[2]);
+        const stockVal = Number(parts[3]);
 
-      // Generate SKU using the product name slug + color + size (e.g., 'tshirt-red-m')
-      const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-      const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+        if (isNaN(priceVal) || isNaN(stockVal)) {
+          skippedCount++;
+          return;
+        }
 
-      newVariants.push({
-        vk: mk(),
-        size: size,
-        color: color,
-        price: priceVal,
-        override_discount: false,
-        discount_type: 'Percentage',
-        discount_value: '',
-        stock: stockVal,
-        sku: autoSku,
-        image: mainImage || '',
-        use_separate_gallery: false
+        const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+
+        newVariants.push({
+          vk: mk(),
+          size: size,
+          color: color,
+          price: priceVal,
+          override_discount: false,
+          discount_type: 'Percentage',
+          discount_value: '',
+          stock: stockVal,
+          sku: autoSku,
+          image: mainImage || '',
+          use_separate_gallery: false
+        });
       });
-    });
+    }
 
     if (newVariants.length === 0) {
       setQuickPasteWarning(`No valid variants found. Skipped ${skippedCount} invalid lines.`);
       return;
     }
 
-    // Append to existing product_variants (called variantRows in this component)
-    setVariantRows(prev => {
-      // If the only element in prev is the empty default, filter it out to keep the table clean
-      const filteredPrev = prev.filter(v => v.size || v.color || v.price || v.stock);
-      return [...filteredPrev, ...newVariants];
-    });
+    setIsProcessingSuccess(true);
 
-    const addedCount = newVariants.length;
-    let msg = `Successfully added ${addedCount} variants!`;
-    if (skippedCount > 0) {
-      msg += ` Skipped ${skippedCount} invalid lines.`;
-    }
+    setTimeout(() => {
+      setVariantRows(prev => {
+        const filteredPrev = prev.filter(v => v.size || v.color || v.price || v.stock);
+        return [...filteredPrev, ...newVariants];
+      });
 
-    setToastMsg(msg);
-    setToastType(skippedCount > 0 ? 'warning' : 'success');
-    setShowQuickPasteModal(false);
-    setQuickPasteText('');
-    setQuickPasteWarning('');
-    setTimeout(() => setToastMsg(''), 4000);
+      const addedCount = newVariants.length;
+      let msg = `Successfully added ${addedCount} variants!`;
+      if (skippedCount > 0) {
+        msg += ` Skipped ${skippedCount} invalid lines.`;
+      }
+
+      setToastMsg(msg);
+      setToastType(skippedCount > 0 ? 'warning' : 'success');
+      setShowQuickPasteModal(false);
+      setQuickPasteText('');
+      setQuickPasteWarning('');
+      setIsProcessingSuccess(false);
+      setTimeout(() => setToastMsg(''), 4000);
+    }, 1200);
   };
 
 
@@ -1803,7 +1885,7 @@ const ProductForm = () => {
                           e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.2)';
                         }}
                       >
-                        <span>⚡</span> Quick Paste Variants
+                        Quick Paste Variants
                       </button>
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
@@ -2400,14 +2482,20 @@ const ProductForm = () => {
       {/* Glassmorphic Quick Paste Modal */}
       {showQuickPasteModal && (
         <div
-          onClick={() => setShowQuickPasteModal(false)}
+          onClick={() => {
+            if (!isProcessingSuccess) {
+              setShowQuickPasteModal(false);
+              setQuickPasteText('');
+              setQuickPasteWarning('');
+            }
+          }}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.3)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            background: 'rgba(15, 23, 42, 0.45)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -2417,119 +2505,178 @@ const ProductForm = () => {
           <div
             style={{
               background: 'rgba(255, 255, 255, 0.85)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               borderRadius: 24,
               width: '100%',
               maxWidth: 500,
               padding: 32,
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 40px rgba(99, 102, 241, 0.08)',
               fontFamily: 'Poppins, sans-serif',
+              transition: 'all 0.3s ease',
             }}
             onClick={e => e.stopPropagation()}
           >
-            <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1e293b' }}>
-              Quick Paste Variants
-            </h3>
-            <p style={{ margin: '0 0 20px', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
-              Paste comma or tab-separated variant data. Each line should contain: <strong>Size, Color, Price, Stock</strong>.
-            </p>
-
-            <textarea
-              className="custom-input"
-              value={quickPasteText}
-              onChange={e => setQuickPasteText(e.target.value)}
-              placeholder="Paste data here: Size, Color, Price, Stock (one per line)&#10;e.g.&#10;M, Red, 150, 100&#10;L, Blue, 180, 50"
-              style={{
-                width: '100%',
-                height: 180,
-                padding: '14px 16px',
-                borderRadius: 16,
-                border: '1px solid #cbd5e1',
-                background: 'rgba(255, 255, 255, 0.6)',
-                fontFamily: 'inherit',
-                fontSize: 13,
-                lineHeight: 1.6,
-                resize: 'none',
-                marginBottom: 16,
-                outline: 'none',
-              }}
-            />
-
-            {quickPasteWarning && (
+            {isProcessingSuccess ? (
               <div
                 style={{
-                  background: '#fef2f2',
-                  border: '1px solid #fca5a5',
-                  borderRadius: 12,
-                  padding: '10px 14px',
-                  color: '#dc2626',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  marginBottom: 16,
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 8,
+                  justifyContent: 'center',
+                  padding: '40px 0',
                 }}
               >
-                <AlertTriangle size={14} />
-                {quickPasteWarning}
+                <div
+                  className="pulsing-checkmark"
+                  style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: '50%',
+                    background: '#ecfdf5',
+                    border: '4px solid #10b981',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#10b981',
+                    marginBottom: 16,
+                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
+                  }}
+                >
+                  <Check size={36} strokeWidth={3} />
+                </div>
+                <h4 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#065f46' }}>Variants Imported!</h4>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#047857' }}>Adding to inventory list...</p>
               </div>
+            ) : (
+              <>
+                <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1e293b' }}>
+                  Quick Paste Variants
+                </h3>
+                <p style={{ margin: '0 0 20px', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
+                  Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
+                </p>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Data Input</label>
+                  <button
+                    type="button"
+                    onClick={handlePrettifyPaste}
+                    style={{
+                      background: '#eff6ff',
+                      color: '#2563eb',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '4px 12px',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+                  >
+                    ✨ Prettify Input
+                  </button>
+                </div>
+
+                <textarea
+                  className="custom-input"
+                  value={quickPasteText}
+                  onChange={e => setQuickPasteText(e.target.value)}
+                  placeholder={'[ \n  { "size": "M", "color": "Red", "price": 150, "stock": 100 }\n]\n\nOR\n\nM, Red, 150, 100'}
+                  style={{
+                    width: '100%',
+                    height: 180,
+                    padding: '14px 16px',
+                    borderRadius: 16,
+                    border: '1px solid #cbd5e1',
+                    background: 'rgba(255, 255, 255, 0.6)',
+                    fontFamily: 'Fira Code, Courier New, Courier, monospace',
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    resize: 'none',
+                    marginBottom: 16,
+                    outline: 'none',
+                  }}
+                />
+
+                {quickPasteWarning && (
+                  <div
+                    style={{
+                      background: '#fef2f2',
+                      border: '1px solid #fca5a5',
+                      borderRadius: 12,
+                      padding: '10px 14px',
+                      color: '#dc2626',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      marginBottom: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
+                    <AlertTriangle size={14} />
+                    {quickPasteWarning}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowQuickPasteModal(false);
+                      setQuickPasteText('');
+                      setQuickPasteWarning('');
+                    }}
+                    style={{
+                      background: '#f1f5f9',
+                      color: '#475569',
+                      border: 'none',
+                      borderRadius: 10,
+                      padding: '10px 20px',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleProcessQuickPaste}
+                    style={{
+                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 10,
+                      padding: '10px 20px',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.25)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'none';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)';
+                    }}
+                  >
+                    Process Input
+                  </button>
+                </div>
+              </>
             )}
-
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowQuickPasteModal(false);
-                  setQuickPasteText('');
-                  setQuickPasteWarning('');
-                }}
-                style={{
-                  background: '#f1f5f9',
-                  color: '#475569',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '10px 20px',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  transition: 'background 0.2s ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleProcessQuickPaste}
-                style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '10px 20px',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)';
-                }}
-              >
-                Process
-              </button>
-            </div>
           </div>
         </div>
       )}
