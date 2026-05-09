@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2 } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -13,6 +13,7 @@ import {
 } from '../services/productService';
 
 const STEPS = [
+  { key: 'magic', label: 'Magic Fill', icon: Sparkles },
   { key: 'general', label: 'General' },
   { key: 'specifications', label: 'Specifications' },
   { key: 'media', label: 'Media' },
@@ -30,7 +31,7 @@ const ProductForm = () => {
   const mk = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const newSpec = () => ({ sk: mk(), key: '', value: '' });
   const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', override_discount: false, discount_type: 'Percentage', discount_value: '', stock: '', sku: '', image: img, use_separate_gallery: false });
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('magic');
   const [saving, setSaving] = useState(false);
   const [duplicateSkuError, setDuplicateSkuError] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(isEditMode);
@@ -323,8 +324,10 @@ const ProductForm = () => {
         }
       }
 
-      setShowMagicFillModal(false);
       setMagicFillError('');
+      setToastMsg('Magic Fill applied successfully!');
+      setToastType('success');
+      setTimeout(() => setToastMsg(''), 4000);
     } catch (e) {
       setMagicFillError('Invalid JSON format: ' + e.message);
     }
@@ -1030,8 +1033,10 @@ const ProductForm = () => {
     const galleries = isEditMode ? Array.isArray(designGalleries) && designGalleries.length > 0 : false;
 
     const offers = true;
+    const magic = Boolean(magicFillText.trim() && !magicFillError);
 
     return {
+      magic,
       general,
       specifications,
       media,
@@ -1039,7 +1044,7 @@ const ProductForm = () => {
       galleries,
       offers,
     };
-  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries]);
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError]);
 
   const goNext = () => {
     if (!canNext) return;
@@ -1520,41 +1525,10 @@ const ProductForm = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifySelf: 'center', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
           <h2 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', color: '#18181b', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h2>
-          <button
-            type="button"
-            onClick={() => setShowMagicFillModal(true)}
-            style={{
-              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 12,
-              height: 38,
-              padding: '0 18px',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-              transition: 'all 0.2s ease',
-              fontFamily: 'Poppins, sans-serif',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(124, 58, 237, 0.35)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.25)';
-            }}
-          >
-            ⚡ Magic Fill
-          </button>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
@@ -1616,6 +1590,7 @@ const ProductForm = () => {
             {STEPS.map((step, idx) => {
               const completed = Boolean(stepDone[step.key]);
               const active = idx === activeIdx;
+              const isMagic = step.key === 'magic';
               const lineColor = completed ? '#86efac' : '#e4e4e7';
 
               return (
@@ -1638,15 +1613,20 @@ const ProductForm = () => {
                     type="button"
                     onClick={() => setActiveTab(step.key)}
                     style={{
-                      border: 'none',
-                      background: 'transparent',
+                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : 'none',
+                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
+                      backdropFilter: isMagic && active ? 'blur(24px)' : 'none',
                       width: '100%',
-                      padding: 0,
+                      padding: isMagic && active ? '8px 12px' : 0,
+                      borderRadius: isMagic && active ? 12 : 0,
+                      marginLeft: isMagic && active ? -12 : 0,
+                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : 'none',
                       textAlign: 'left',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 10,
+                      transition: 'all 0.2s ease'
                     }}
                   >
                     <span
@@ -1657,22 +1637,23 @@ const ProductForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8',
-                        background: completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5',
-                        color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
+                        border: isMagic ? 'none' : (completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8'),
+                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : (completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5'),
+                        color: isMagic ? '#ffffff' : (completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af'),
                         fontWeight: 700,
                         fontSize: 12,
                         flexShrink: 0,
+                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : 'none'
                       }}
                     >
-                      {completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx + 1}
+                      {isMagic ? <Sparkles size={16} /> : (completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx)}
                     </span>
 
                     <span
                       style={{
                         fontSize: 14,
                         fontWeight: active ? 700 : completed ? 600 : 500,
-                        color: active ? '#111827' : completed ? '#374151' : '#9ca3af',
+                        color: isMagic ? '#7c3aed' : (active ? '#111827' : completed ? '#374151' : '#9ca3af'),
                       }}
                     >
                       {step.label}
@@ -1694,6 +1675,166 @@ const ProductForm = () => {
               }}
             >
               <div key={activeTab} className="pf-step-pane">
+                {activeTab === 'magic' && (
+                  <>
+                    <div className="pf-section-title" style={{ marginBottom: 24 }}>
+                      <span className="pf-section-title-icon" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', color: '#fff', border: 'none' }}><Sparkles size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Magic Fill Automation</h3>
+                    </div>
+                    <p style={{ color: '#64748b', fontSize: 14, marginBottom: 20 }}>
+                      Paste a JSON object to automatically populate general product information, generate specifications, and batch variants.
+                    </p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
+                      <textarea
+                        value={magicFillText}
+                        onChange={e => {
+                          setMagicFillText(e.target.value);
+                          setMagicFillError('');
+                        }}
+                        placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
+                        style={{
+                          width: '100%',
+                          height: 300,
+                          background: '#0f172a',
+                          color: '#38bdf8',
+                          fontFamily: 'Fira Code, monospace',
+                          fontSize: 14,
+                          padding: 24,
+                          borderRadius: 16,
+                          border: '1px solid #334155',
+                          resize: 'vertical',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+
+                    {previewData && !previewData.error && (
+                      <div
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: 16,
+                          padding: '20px 24px',
+                          marginBottom: 24,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 16,
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>General</span>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                            {(() => {
+                              try {
+                                const parsed = JSON.parse(magicFillText);
+                                if (parsed.name || parsed.brand) return 'Product Name & Brand detected';
+                                return 'Waiting for basic info...';
+                              } catch(e) { return 'Invalid JSON'; }
+                            })()}
+                          </div>
+                        </div>
+                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Categories</span>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                            Matching: <span style={{ color: previewData.category.includes('No Match') ? '#eab308' : '#10b981' }}>{previewData.category}</span>
+                          </div>
+                        </div>
+                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specs</span>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                            Detected <span style={{ color: '#4f46e5' }}>{previewData.specsCount}</span> specification rows
+                          </div>
+                        </div>
+                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inventory</span>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                            Detected <span style={{ color: '#06b6d4' }}>{previewData.variantsCount}</span> variants
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {magicFillError && (
+                      <div
+                        style={{
+                          background: '#fef2f2',
+                          border: '1px solid #fecaca',
+                          borderRadius: 12,
+                          padding: '12px 16px',
+                          color: '#b91c1c',
+                          fontSize: 13,
+                          fontWeight: 500,
+                          marginBottom: 24,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                        }}
+                      >
+                        <AlertTriangle size={16} />
+                        {magicFillError}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try {
+                            const parsed = JSON.parse(magicFillText);
+                            setMagicFillText(JSON.stringify(parsed, null, 2));
+                            setMagicFillError('');
+                          } catch (e) {
+                            setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
+                          }
+                        }}
+                        onMouseEnter={() => setIsPrettifyHovered(true)}
+                        onMouseLeave={() => setIsPrettifyHovered(false)}
+                        style={{
+                          background: isPrettifyHovered ? '#f1f5f9' : 'transparent',
+                          color: '#64748b',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: 12,
+                          padding: '12px 24px',
+                          fontWeight: 600,
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        Prettify JSON
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleMagicFillProcess}
+                        onMouseEnter={() => setIsMagicProcessHovered(true)}
+                        onMouseLeave={() => setIsMagicProcessHovered(false)}
+                        style={{
+                          background: isMagicProcessHovered ? 'linear-gradient(135deg, #a855f7 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: 12,
+                          padding: '12px 32px',
+                          fontWeight: 600,
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          boxShadow: isMagicProcessHovered ? '0 10px 25px -5px rgba(124, 58, 237, 0.4)' : '0 4px 15px rgba(124, 58, 237, 0.2)',
+                          transform: isMagicProcessHovered ? 'scale(1.03)' : 'scale(1)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        Process Magic Fill
+                      </button>
+                    </div>
+                  </>
+                )}
                 {activeTab === 'general' && (
                   <>
                      <div className="pf-section-title">
@@ -3072,217 +3213,7 @@ const ProductForm = () => {
         </div>
       )}
 
-      {/* Premium Glassmorphic Magic Fill Modal */}
-      {showMagicFillModal && (
-        <div
-          onClick={() => {
-            setShowMagicFillModal(false);
-            setMagicFillError('');
-          }}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 40,
-          }}
-        >
-          <div
-            className="premium-modal-card"
-            style={{
-              background: 'rgba(255, 255, 255, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.5)',
-              borderRadius: 32,
-              width: '85%',
-              height: '85%',
-              maxWidth: 1200,
-              maxHeight: 800,
-              padding: 40,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
-              fontFamily: 'Poppins, sans-serif',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              transition: 'all 0.3s ease',
-              boxSizing: 'border-box',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#1e293b', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span>⚡</span> Magic Fill Automation
-                </h2>
-                <p style={{ color: '#64748b', fontSize: 13, margin: '4px 0 0 0' }}>
-                  Paste a JSON object to automatically populate general product information, generate specifications, and batch variants.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  try {
-                    const parsed = JSON.parse(magicFillText);
-                    setMagicFillText(JSON.stringify(parsed, null, 2));
-                    setMagicFillError('');
-                  } catch (e) {
-                    setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
-                  }
-                }}
-                style={{
-                  background: 'rgba(99, 102, 241, 0.1)',
-                  color: '#4f46e5',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '6px 12px',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                Prettify JSON
-              </button>
-            </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, marginBottom: 20 }}>
-              <textarea
-                value={magicFillText}
-                onChange={e => {
-                  setMagicFillText(e.target.value);
-                  setMagicFillError('');
-                }}
-                placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
-                style={{
-                  width: '100%',
-                  flex: 1,
-                  background: 'rgba(15, 23, 42, 0.9)',
-                  color: '#38bdf8',
-                  fontFamily: 'Fira Code, monospace',
-                  fontSize: 14,
-                  padding: 24,
-                  borderRadius: 16,
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  resize: 'none',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
-
-            {previewData && !previewData.error && (
-              <div
-                style={{
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
-                  borderRadius: 16,
-                  padding: '16px 24px',
-                  marginBottom: 20,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 16,
-                  boxSizing: 'border-box',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category Mapping</span>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                    Detected: <span style={{ color: previewData.category.includes('No Match') ? '#eab308' : '#10b981' }}>{previewData.category}</span>
-                  </div>
-                </div>
-                <div style={{ width: 1, height: 32, background: 'rgba(0, 0, 0, 0.08)' }} />
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specifications</span>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                    Detected: <span style={{ color: '#4f46e5' }}>{previewData.specsCount} Specifications</span>
-                  </div>
-                </div>
-                <div style={{ width: 1, height: 32, background: 'rgba(0, 0, 0, 0.08)' }} />
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Variants Summary</span>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                    Detected: <span style={{ color: '#06b6d4' }}>{previewData.variantsCount} Variants</span> {previewData.sizes.length > 0 && `(${previewData.sizes.join(', ')})`}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {magicFillError && (
-              <div
-                style={{
-                  background: 'rgba(239, 68, 68, 0.05)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                  borderRadius: 12,
-                  padding: '10px 14px',
-                  color: '#b91c1c',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  marginBottom: 20,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <AlertTriangle size={14} />
-                {magicFillError}
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowMagicFillModal(false);
-                  setMagicFillError('');
-                }}
-                onMouseEnter={() => setIsMagicCancelHovered(true)}
-                onMouseLeave={() => setIsMagicCancelHovered(false)}
-                style={{
-                  background: isMagicCancelHovered ? 'rgba(241, 245, 249, 0.6)' : 'transparent',
-                  color: '#475569',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: 12,
-                  padding: '12px 28px',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  transform: isMagicCancelHovered ? 'scale(1.03)' : 'scale(1)',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleMagicFillProcess}
-                onMouseEnter={() => setIsMagicProcessHovered(true)}
-                onMouseLeave={() => setIsMagicProcessHovered(false)}
-                style={{
-                  background: isMagicProcessHovered ? 'linear-gradient(135deg, #a855f7 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 12,
-                  padding: '12px 32px',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  boxShadow: isMagicProcessHovered ? '0 10px 25px -5px rgba(124, 58, 237, 0.4)' : '0 4px 15px rgba(124, 58, 237, 0.2)',
-                  transform: isMagicProcessHovered ? 'scale(1.03)' : 'scale(1)',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                Magic Fill Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
