@@ -1869,7 +1869,7 @@ const ProductForm = () => {
                           height: 800px;
                           display: flex;
                           flex-direction: column;
-                          border-radius: 18px;
+                          border-radius: 24px !important;
                           border: 1px solid transparent;
                           background: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)) padding-box, linear-gradient(90deg, #ede9fe, #dbeafe) border-box;
                           backdrop-filter: blur(20px);
@@ -1893,15 +1893,17 @@ const ProductForm = () => {
                         .smart-editor-panel {
                           position: relative;
                           min-height: 0;
-                          background: rgba(255, 255, 255, 0.8) !important;
+                          border-radius: 24px !important;
+                          background: rgba(255, 255, 255, 0.6) !important;
                           backdrop-filter: blur(24px) saturate(180%) !important;
                           -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-                          border: 1px solid rgba(124, 58, 237, 0.15) !important;
-                          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05), inset 0 2px 8px rgba(15, 23, 42, 0.08);
+                          border: 2px solid rgba(124, 58, 237, 0.1) !important;
+                          box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8);
                           overflow: hidden;
                         }
                         .smart-editor-panel:focus-within {
-                          box-shadow: inset 0 0 10px rgba(124, 58, 237, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+                          border-color: rgba(124, 58, 237, 0.4) !important;
+                          box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 0 10px rgba(124, 58, 237, 0.05);
                         }
                         .smart-editor-content {
                           position: relative;
@@ -1957,7 +1959,7 @@ const ProductForm = () => {
                         .smart-editor-input::-webkit-scrollbar-thumb,
                         .smart-hub-insights::-webkit-scrollbar-thumb {
                           background: #a78bfa;
-                          border-radius: 999px;
+                          border-radius: 10px;
                         }
                         .smart-editor-pre::-webkit-scrollbar-track,
                         .smart-editor-input::-webkit-scrollbar-track,
@@ -2008,7 +2010,7 @@ const ProductForm = () => {
                           margin-bottom: 14px;
                         }
                         .smart-stat-pill {
-                          border-radius: 12px;
+                          border-radius: 16px;
                           border: 1px solid rgba(124, 58, 237, 0.18);
                           background: rgba(245, 243, 255, 0.72);
                           padding: 10px 12px;
