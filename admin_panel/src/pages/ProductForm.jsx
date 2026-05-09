@@ -72,6 +72,7 @@ const ProductForm = () => {
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isProcessHovered, setIsProcessHovered] = useState(false);
   const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
+  const [isValidateHovered, setIsValidateHovered] = useState(false);
   const [showMagicFillModal, setShowMagicFillModal] = useState(false);
   const [magicFillText, setMagicFillText] = useState('');
   const [magicFillError, setMagicFillError] = useState('');
@@ -282,21 +283,108 @@ const ProductForm = () => {
     }
   };
 
-  const handleMagicFillProcess = () => {
+  const buildMagicFillAuditRows = (data, status = 'Success') => {
+    const auditRows = [];
+    const addAuditRow = (step, type, action, rowStatus = status) => {
+      auditRows.push({
+        id: auditRows.length + 1,
+        step,
+        type,
+        timestamp: formatMagicTimestamp(),
+        action,
+        status: rowStatus,
+      });
+    };
+
+    if (data.name) addAuditRow('Step 1', 'General', 'Name Auto-Mapped');
+    if (data.brand) addAuditRow('Step 1', 'General', 'Brand Auto-Mapped');
+    if (data.description) addAuditRow('Step 1', 'General', 'Description Auto-Mapped');
+
+    const audVal = String(data.audience || '').toLowerCase().trim();
+    let matchedAudience = '';
+    if (audVal === 'unisex') matchedAudience = 'unisex';
+    else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
+    else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
+    else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
+
+    if (matchedAudience) {
+      addAuditRow('Step 1', 'General', `Audience matched to ${matchedAudience}`);
+    } else if (audVal) {
+      addAuditRow('Step 1', 'General', 'Audience needs manual selection', 'Error');
+    }
+
+    const level1Cats = categories.filter((c) => c.level === 1 || c.parent_id === null);
+    const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
+    const matchedCat = level1Cats.find((c) => String(c.name || '').toLowerCase().trim() === catLabel);
+
+    if (matchedCat) {
+      const catId = normalizeId(matchedCat.id);
+      addAuditRow('Step 1', 'General', `Category matched: ${matchedCat.name}`);
+
+      const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
+      if (subCatLabel) {
+        const subCats = categories.filter((c) => normalizeId(c.parent_id) === catId);
+        const matchedSubCat = subCats.find((c) => String(c.name || '').toLowerCase().trim() === subCatLabel);
+        if (matchedSubCat) {
+          const subCatId = normalizeId(matchedSubCat.id);
+          addAuditRow('Step 1', 'General', `Subcategory matched: ${matchedSubCat.name}`);
+
+          const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
+          if (subSubCatLabel) {
+            const subSubCats = categories.filter((c) => normalizeId(c.parent_id) === subCatId);
+            const matchedSubSubCat = subSubCats.find((c) => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
+            if (matchedSubSubCat) {
+              addAuditRow('Step 1', 'General', `Sub-subcategory matched: ${matchedSubSubCat.name}`);
+            } else {
+              addAuditRow('Step 1', 'General', 'Sub-subcategory needs manual selection', 'Error');
+            }
+          }
+        } else {
+          addAuditRow('Step 1', 'General', 'Subcategory needs manual selection', 'Error');
+        }
+      }
+    } else if (catLabel) {
+      addAuditRow('Step 1', 'General', 'Category needs manual selection', 'Error');
+    }
+
+    let mappedSpecsCount = 0;
+    if (Array.isArray(data.specifications)) mappedSpecsCount = data.specifications.length;
+    else if (Array.isArray(data.specs)) mappedSpecsCount = data.specs.length;
+    else if (data.specifications && typeof data.specifications === 'object') mappedSpecsCount = Object.keys(data.specifications).length;
+    else if (data.specs && typeof data.specs === 'object') mappedSpecsCount = Object.keys(data.specs).length;
+    if (mappedSpecsCount > 0) {
+      addAuditRow('Step 2', 'Specs', `${mappedSpecsCount} specifications auto-mapped`);
+    }
+
+    const varArr = data.inventory || data.variants;
+    if (Array.isArray(varArr) && varArr.length > 0) {
+      addAuditRow('Step 4', 'Inventory', `${varArr.length} variants auto-mapped`);
+    }
+
+    if (auditRows.length === 0) {
+      addAuditRow('Scan', 'Blueprint', 'No mappable fields found in current JSON', 'Error');
+    }
+
+    return auditRows;
+  };
+
+  const runMagicFillWorkflow = (mode = 'apply') => {
     clearMagicSyncTimers();
+    const isValidation = mode === 'validate';
+
     try {
       const data = JSON.parse(magicFillText);
-      const auditRows = [];
-      const addAuditRow = (step, type, action, status = 'Success') => {
-        auditRows.push({
-          id: auditRows.length + 1,
-          step,
-          type,
-          timestamp: formatMagicTimestamp(),
-          action,
-          status,
-        });
-      };
+      const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
+
+      if (isValidation) {
+        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+        setMagicFillError('');
+        setMagicAuditRows(auditRows);
+        setToastMsg('Blueprint validated. Audit log refreshed.');
+        setToastType('success');
+        setTimeout(() => setToastMsg(''), 3000);
+        return;
+      }
 
       setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
 
@@ -317,70 +405,57 @@ const ProductForm = () => {
       }, 1760);
 
       magicSyncTimersRef.current = [generalTimer, specsPulseTimer, specsGreenTimer, inventoryPulseTimer, inventoryGreenTimer];
-      
-      // 1. Step 1: General Details
+
       if (data.name) {
         setName(data.name);
-        addAuditRow('Step 1', 'General', 'Name Auto-Mapped', 'Success');
       }
       if (data.brand) {
         setBrand(data.brand);
-        addAuditRow('Step 1', 'General', 'Brand Auto-Mapped', 'Success');
       }
       if (data.description) {
         setDescription(data.description);
-        addAuditRow('Step 1', 'General', 'Description Auto-Mapped', 'Success');
       }
-      
-      // Target Audience Dropdown Matching (case-insensitive label to value)
+
       let matchedAudience = '';
       const audVal = String(data.audience || '').toLowerCase().trim();
       if (audVal === 'unisex') matchedAudience = 'unisex';
       else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
       else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
       else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
-      
+
       if (matchedAudience) {
         setAudience(matchedAudience);
         setHighlightAudience(false);
-        addAuditRow('Step 1', 'General', `Audience matched to ${matchedAudience}`, 'Success');
       } else {
         setAudience('');
         setHighlightAudience(true);
       }
 
-      // Category & Subcategory Dropdown Matching
-      const normalizeId = id => id ? String(id) : '';
-      const level1Cats = categories.filter(c => c.level === 1 || c.parent_id === null);
+      const level1Cats = categories.filter((c) => c.level === 1 || c.parent_id === null);
       const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
-      const matchedCat = level1Cats.find(c => String(c.name || '').toLowerCase().trim() === catLabel);
+      const matchedCat = level1Cats.find((c) => String(c.name || '').toLowerCase().trim() === catLabel);
 
       if (matchedCat) {
         const catId = normalizeId(matchedCat.id);
         setCategoryId(catId);
         setHighlightCategory(false);
-        addAuditRow('Step 1', 'General', `Category matched: ${matchedCat.name}`, 'Success');
 
-        // Now match Subcategory
         const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
         if (subCatLabel) {
-          const subCats = categories.filter(c => normalizeId(c.parent_id) === catId);
-          const matchedSubCat = subCats.find(c => String(c.name || '').toLowerCase().trim() === subCatLabel);
+          const subCats = categories.filter((c) => normalizeId(c.parent_id) === catId);
+          const matchedSubCat = subCats.find((c) => String(c.name || '').toLowerCase().trim() === subCatLabel);
           if (matchedSubCat) {
             const subCatId = normalizeId(matchedSubCat.id);
             setSubcategoryId(subCatId);
             setHighlightSubcategory(false);
-            addAuditRow('Step 1', 'General', `Subcategory matched: ${matchedSubCat.name}`, 'Success');
 
-            // Now match Sub-subcategory
             const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
             if (subSubCatLabel) {
-              const subSubCats = categories.filter(c => normalizeId(c.parent_id) === subCatId);
-              const matchedSubSubCat = subSubCats.find(c => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
+              const subSubCats = categories.filter((c) => normalizeId(c.parent_id) === subCatId);
+              const matchedSubSubCat = subSubCats.find((c) => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
               if (matchedSubSubCat) {
                 setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
                 setHighlightSubSubcategory(false);
-                addAuditRow('Step 1', 'General', `Sub-subcategory matched: ${matchedSubSubCat.name}`, 'Success');
               } else {
                 setSubSubcategoryId('');
                 setHighlightSubSubcategory(true);
@@ -410,26 +485,23 @@ const ProductForm = () => {
         setHighlightSubSubcategory(false);
       }
 
-      // 2. Step 2: Specifications
       if (Array.isArray(data.specifications)) {
-        const newSpecs = data.specifications.map(s => ({
+        const newSpecs = data.specifications.map((s) => ({
           sk: mk(),
           key: String(s.key || ''),
           value: String(s.value || ''),
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
-          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (Array.isArray(data.specs)) {
-        const newSpecs = data.specs.map(s => ({
+        const newSpecs = data.specs.map((s) => ({
           sk: mk(),
           key: String(s.key || ''),
           value: String(s.value || ''),
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
-          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (data.specifications && typeof data.specifications === 'object') {
         const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
@@ -439,7 +511,6 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
-          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (data.specs && typeof data.specs === 'object') {
         const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
@@ -449,14 +520,12 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
-          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       }
 
-      // 3. Step 4: Inventory (batch add variants and auto-generate SKUs)
       if (Array.isArray(data.inventory || data.variants)) {
         const varArr = data.inventory || data.variants;
-        const newVariants = varArr.map(v => {
+        const newVariants = varArr.map((v) => {
           const size = String(v.size || '');
           const color = String(v.color || '');
           const priceVal = Number(v.price || 0);
@@ -469,8 +538,8 @@ const ProductForm = () => {
 
           return {
             vk: mk(),
-            size: size,
-            color: color,
+            size,
+            color,
             price: priceVal,
             override_discount: false,
             discount_type: 'Percentage',
@@ -478,33 +547,38 @@ const ProductForm = () => {
             stock: stockVal,
             sku: autoSku,
             image: mainImage || '',
-            use_separate_gallery: false
+            use_separate_gallery: false,
           };
         });
 
         if (newVariants.length > 0) {
           setVariantRows(newVariants);
-          addAuditRow('Step 4', 'Inventory', `${newVariants.length} variants auto-mapped`, 'Success');
         }
       }
 
       setMagicFillError('');
       setMagicAuditRows(auditRows);
-      setToastMsg('Magic Fill applied successfully!');
+      setToastMsg('Magic Fill finalized and applied.');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 4000);
     } catch (e) {
+      setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
       setMagicFillError('Invalid JSON format: ' + e.message);
-      setMagicAuditRows((prev) => prev.length ? prev : [{
-        id: 1,
-        step: 'Parse',
-        type: 'JSON',
-        timestamp: formatMagicTimestamp(),
-        action: 'Parse Failed',
-        status: 'Error',
-      }]);
+      setMagicAuditRows([
+        {
+          id: 1,
+          step: 'Parse',
+          type: 'JSON',
+          timestamp: formatMagicTimestamp(),
+          action: 'Parse Failed',
+          status: 'Error',
+        },
+      ]);
     }
   };
+
+  const handleMagicFillValidate = () => runMagicFillWorkflow('validate');
+  const handleMagicFillApply = () => runMagicFillWorkflow('apply');
 
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
@@ -2114,6 +2188,14 @@ const ProductForm = () => {
                           gap: 12px;
                           background: rgba(255, 255, 255, 0.82);
                         }
+                        @keyframes magicApplyPulse {
+                          0% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
+                          50% { transform: scale(1.03); box-shadow: 0 14px 28px -10px rgba(124,58,237,0.5); }
+                          100% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
+                        }
+                        .magic-primary-apply {
+                          animation: magicApplyPulse 1.5s ease-in-out infinite;
+                        }
                         @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
                         .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
                         .sidebar-sync-green { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.2)) !important; border-color: rgba(34,197,94,0.3) !important; box-shadow: 0 8px 20px rgba(34,197,94,0.12) !important; }
@@ -2208,7 +2290,7 @@ const ProductForm = () => {
                                         </tr>
                                       )) : (
                                         <tr>
-                                          <td colSpan={6} style={{ color: '#64748b' }}>Run Process Magic Fill to capture a detailed audit trail.</td>
+                                          <td colSpan={6} style={{ color: '#64748b' }}>Run Validate Blueprint to preview the audit trail, then use Finalize & Apply.</td>
                                         </tr>
                                       )}
                                     </tbody>
@@ -2256,10 +2338,11 @@ const ProductForm = () => {
                                   background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
                                   color: '#5b21b6',
                                   border: '1px solid rgba(124,58,237,0.24)',
-                                  borderRadius: 10,
+                                  borderRadius: 12,
                                   padding: '10px 18px',
                                   fontWeight: 700,
                                   fontSize: 13,
+                                  fontFamily: 'Poppins, sans-serif',
                                   cursor: 'pointer',
                                   transition: 'all 0.2s ease',
                                 }}
@@ -2269,23 +2352,50 @@ const ProductForm = () => {
 
                               <button
                                 type="button"
-                                onClick={handleMagicFillProcess}
+                                onClick={handleMagicFillValidate}
+                                onMouseEnter={() => setIsValidateHovered(true)}
+                                onMouseLeave={() => setIsValidateHovered(false)}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 8,
+                                  background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
+                                  color: '#5b21b6',
+                                  border: '1px solid rgba(196,181,253,0.85)',
+                                  borderRadius: 12,
+                                  padding: '10px 18px',
+                                  fontWeight: 700,
+                                  fontSize: 13,
+                                  fontFamily: 'Poppins, sans-serif',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <Check size={14} />
+                                Validate Blueprint
+                              </button>
+
+                              <button
+                                type="button"
+                                className="magic-primary-apply"
+                                onClick={handleMagicFillApply}
                                 onMouseEnter={() => setIsMagicProcessHovered(true)}
                                 onMouseLeave={() => setIsMagicProcessHovered(false)}
                                 style={{
                                   background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
                                   color: '#ffffff',
                                   border: 'none',
-                                  borderRadius: 10,
+                                  borderRadius: 12,
                                   padding: '10px 22px',
                                   fontWeight: 700,
                                   fontSize: 13,
+                                  fontFamily: 'Poppins, sans-serif',
                                   cursor: 'pointer',
                                   boxShadow: isMagicProcessHovered ? '0 14px 24px -10px rgba(124,58,237,0.45)' : '0 10px 20px -10px rgba(124,58,237,0.35)',
                                   transition: 'all 0.2s ease',
                                 }}
                               >
-                                Process Magic Fill
+                                Finalize & Apply
                               </button>
                             </div>
                           </div>
