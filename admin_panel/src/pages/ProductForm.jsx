@@ -80,6 +80,66 @@ const ProductForm = () => {
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
 
+  const previewData = useMemo(() => {
+    try {
+      const txt = magicFillText.trim();
+      if (!txt) return null;
+      const parsed = JSON.parse(txt);
+
+      // Category detection
+      let detectedCategory = 'None';
+      const catLabel = String(parsed.category_label || parsed.category || '').toLowerCase().trim();
+      if (catLabel) {
+        const normalizeId = id => id ? String(id) : '';
+        const level1Cats = categories.filter(c => c.level === 1 || c.parent_id === null);
+        const matched = level1Cats.find(c => String(c.name || '').toLowerCase().trim() === catLabel);
+        if (matched) {
+          detectedCategory = `${matched.name} (ID: ${matched.id})`;
+        } else {
+          detectedCategory = `"${parsed.category_label || parsed.category}" (No Match)`;
+        }
+      }
+
+      // Specs count detection
+      let specsCount = 0;
+      if (Array.isArray(parsed.specifications)) {
+        specsCount = parsed.specifications.length;
+      } else if (Array.isArray(parsed.specs)) {
+        specsCount = parsed.specs.length;
+      } else if (parsed.specifications && typeof parsed.specifications === 'object') {
+        specsCount = Object.keys(parsed.specifications).length;
+      } else if (parsed.specs && typeof parsed.specs === 'object') {
+        specsCount = Object.keys(parsed.specs).length;
+      }
+
+      // Variants summary detection
+      let variantsCount = 0;
+      let uniqueSizesList = [];
+      const varArr = parsed.inventory || parsed.variants;
+      if (Array.isArray(varArr)) {
+        variantsCount = varArr.length;
+        const sizes = varArr.map(v => String(v.size || '')).filter(Boolean);
+        uniqueSizesList = [...new Set(sizes)];
+      }
+
+      return {
+        category: detectedCategory,
+        specsCount,
+        variantsCount,
+        sizes: uniqueSizesList,
+        error: null
+      };
+    } catch (e) {
+      return {
+        category: 'None',
+        specsCount: 0,
+        variantsCount: 0,
+        sizes: [],
+        error: e.message
+      };
+    }
+  }, [magicFillText, categories]);
+
   const handlePrettifyPaste = () => {
     setQuickPasteWarning('');
     const txt = quickPasteText.trim();
@@ -264,7 +324,6 @@ const ProductForm = () => {
       }
 
       setShowMagicFillModal(false);
-      setMagicFillText('');
       setMagicFillError('');
     } catch (e) {
       setMagicFillError('Invalid JSON format: ' + e.message);
@@ -1461,13 +1520,10 @@ const ProductForm = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifySelf: 'center', minWidth: 0 }}>
           <h2 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', color: '#18181b', margin: 0, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h2>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
             onClick={() => setShowMagicFillModal(true)}
@@ -1476,9 +1532,9 @@ const ProductForm = () => {
               color: '#ffffff',
               border: 'none',
               borderRadius: 12,
-              height: 40,
-              padding: '0 20px',
-              fontSize: 14,
+              height: 38,
+              padding: '0 18px',
+              fontSize: 13,
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -1499,6 +1555,9 @@ const ProductForm = () => {
           >
             ⚡ Magic Fill
           </button>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
             className="pf-ghost-action-btn"
@@ -3048,13 +3107,12 @@ const ProductForm = () => {
           onClick={() => {
             setShowMagicFillModal(false);
             setMagicFillError('');
-            setMagicFillText('');
           }}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            background: 'rgba(255, 255, 255, 0.35)',
+            background: 'rgba(255, 255, 255, 0.4)',
             backdropFilter: 'blur(32px)',
             WebkitBackdropFilter: 'blur(32px)',
             display: 'flex',
@@ -3066,15 +3124,15 @@ const ProductForm = () => {
           <div
             className="premium-modal-card"
             style={{
-              background: 'rgba(255, 255, 255, 0.7)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
+              background: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(255, 255, 255, 0.5)',
               borderRadius: 32,
               width: '85%',
               height: '85%',
               maxWidth: 1200,
               maxHeight: 800,
               padding: 40,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
               fontFamily: 'Poppins, sans-serif',
               display: 'flex',
               flexDirection: 'column',
@@ -3090,7 +3148,7 @@ const ProductForm = () => {
                   <span>⚡</span> Magic Fill Automation
                 </h2>
                 <p style={{ color: '#64748b', fontSize: 13, margin: '4px 0 0 0' }}>
-                  Paste a JSON object to automatically populate general product information and generate specification rows.
+                  Paste a JSON object to automatically populate general product information, generate specifications, and batch variants.
                 </p>
               </div>
               <button
@@ -3127,7 +3185,7 @@ const ProductForm = () => {
                   setMagicFillText(e.target.value);
                   setMagicFillError('');
                 }}
-                placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category": "Clothing",\n  "sub_category": "Hoodies",\n  "sub_sub_category": "Unisex Hoodies",\n  "specs": {\n    "Material": "80% Cotton, 20% Polyester",\n    "Weight": "320 GSM",\n    "Fit": "Regular Fit"\n  }\n}`}
+                placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
                 style={{
                   width: '100%',
                   flex: 1,
@@ -3144,6 +3202,44 @@ const ProductForm = () => {
                 }}
               />
             </div>
+
+            {previewData && !previewData.error && (
+              <div
+                style={{
+                  background: 'rgba(255, 255, 255, 0.5)',
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  borderRadius: 16,
+                  padding: '16px 24px',
+                  marginBottom: 20,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 16,
+                  boxSizing: 'border-box',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category Mapping</span>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                    Detected: <span style={{ color: previewData.category.includes('No Match') ? '#eab308' : '#10b981' }}>{previewData.category}</span>
+                  </div>
+                </div>
+                <div style={{ width: 1, height: 32, background: 'rgba(0, 0, 0, 0.08)' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specifications</span>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                    Detected: <span style={{ color: '#4f46e5' }}>{previewData.specsCount} Specifications</span>
+                  </div>
+                </div>
+                <div style={{ width: 1, height: 32, background: 'rgba(0, 0, 0, 0.08)' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Variants Summary</span>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
+                    Detected: <span style={{ color: '#06b6d4' }}>{previewData.variantsCount} Variants</span> {previewData.sizes.length > 0 && `(${previewData.sizes.join(', ')})`}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {magicFillError && (
               <div
@@ -3172,7 +3268,6 @@ const ProductForm = () => {
                 onClick={() => {
                   setShowMagicFillModal(false);
                   setMagicFillError('');
-                  setMagicFillText('');
                 }}
                 onMouseEnter={() => setIsMagicCancelHovered(true)}
                 onMouseLeave={() => setIsMagicCancelHovered(false)}
