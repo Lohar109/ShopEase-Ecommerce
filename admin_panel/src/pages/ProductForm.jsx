@@ -112,12 +112,12 @@ const ProductForm = () => {
       if (match[1]) {
         const token = match[1];
         const keyName = token.slice(1, -1);
-        const keyToken = wrap(token, '#4f46e5', BOLD_KEYS.includes(keyName) ? 'font-weight:700' : '');
-        output += isKey(match.index, token) ? keyToken : wrap(token, '#059669');
+        const keyToken = wrap(token, '#005cc5', BOLD_KEYS.includes(keyName) ? 'font-weight:700' : '');
+        output += isKey(match.index, token) ? keyToken : wrap(token, '#22863a');
       } else if (match[2]) {
-        output += wrap(match[2], '#9333ea');
+        output += wrap(match[2], '#6f42c1');
       } else if (match[3]) {
-        output += wrap(match[3], '#9333ea');
+        output += wrap(match[3], '#6f42c1');
       } else if (match[4]) {
         output += wrap(match[4], '#64748b');
       }
@@ -1893,17 +1893,17 @@ const ProductForm = () => {
                         .smart-editor-panel {
                           position: relative;
                           min-height: 0;
-                          border-radius: 24px !important;
+                          border-radius: 40px !important;
                           background: rgba(255, 255, 255, 0.6) !important;
-                          backdrop-filter: blur(24px) saturate(180%) !important;
-                          -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-                          border: 2px solid rgba(124, 58, 237, 0.1) !important;
-                          box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+                          backdrop-filter: blur(20px) !important;
+                          -webkit-backdrop-filter: blur(20px) !important;
+                          border: 2px solid #ec4899 !important;
+                          box-shadow: 0 0 20px rgba(236, 72, 153, 0.15), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8);
                           overflow: hidden;
                         }
                         .smart-editor-panel:focus-within {
-                          border-color: rgba(124, 58, 237, 0.4) !important;
-                          box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 0 10px rgba(124, 58, 237, 0.05);
+                          border-color: rgba(236, 72, 153, 0.6) !important;
+                          box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.12), 0 0 20px rgba(236, 72, 153, 0.22), 0 10px 40px -10px rgba(0, 0, 0, 0.04), inset 0 0 10px rgba(124, 58, 237, 0.05);
                         }
                         .smart-editor-content {
                           position: relative;
@@ -2051,7 +2051,7 @@ const ProductForm = () => {
                           width: 100%;
                           border-collapse: collapse;
                           background: rgba(255,255,255,0.82);
-                          border-radius: 12px;
+                          border-radius: 24px;
                           overflow: hidden;
                         }
                         .smart-audit-table th {
