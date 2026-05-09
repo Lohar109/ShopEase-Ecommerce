@@ -2498,23 +2498,33 @@ const ProductForm = () => {
             inset: 0,
             zIndex: 9999,
             background: 'rgba(15, 23, 42, 0.55)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
+            backdropFilter: 'blur(40px)',
+            WebkitBackdropFilter: 'blur(40px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 20,
           }}
         >
+          <style>{`
+            @keyframes premiumModalScaleIn {
+              from { transform: scale(0.95); opacity: 0; }
+              to { transform: scale(1); opacity: 1; }
+            }
+            .premium-modal-card {
+              animation: premiumModalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+          `}</style>
           <div
+            className="premium-modal-card"
             style={{
-              background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)',
+              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: 24,
               width: '100%',
               maxWidth: 500,
-              padding: 32,
-              boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(99, 102, 241, 0.25)',
+              padding: 40,
+              boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 50px rgba(99, 102, 241, 0.3)',
               fontFamily: 'Poppins, sans-serif',
               transition: 'all 0.3s ease',
             }}
@@ -2553,15 +2563,15 @@ const ProductForm = () => {
               </div>
             ) : (
               <>
-                <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#ffffff' }}>
+                <h3 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 700, color: '#ffffff' }}>
                   Quick Paste Variants
                 </h3>
-                <p style={{ margin: '0 0 24px', fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.5 }}>
+                <p style={{ margin: '0 0 28px', fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.6 }}>
                   Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
                 </p>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
-                  <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255, 255, 255, 0.6)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>Data Input</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 }}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>Data Input</label>
                   <button
                     type="button"
                     onClick={handlePrettifyPaste}
@@ -2584,26 +2594,27 @@ const ProductForm = () => {
                 </div>
 
                 <textarea
-                  className="custom-input"
+                  className="custom-input quick-paste-textarea"
                   value={quickPasteText}
                   onChange={e => setQuickPasteText(e.target.value)}
                   onFocus={() => setIsTextareaFocused(true)}
                   onBlur={() => setIsTextareaFocused(false)}
                   placeholder={'[ \n  { "size": "M", "color": "Red", "price": 150, "stock": 100 }\n]\n\nOR\n\nM, Red, 150, 100'}
                   style={{
+                    boxSizing: 'border-box',
                     width: '100%',
                     height: 180,
-                    padding: 16,
+                    padding: 24,
                     borderRadius: 16,
                     border: isTextareaFocused ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.15)',
-                    background: 'rgba(15, 23, 42, 0.75)',
-                    boxShadow: isTextareaFocused ? '0 0 16px rgba(99, 102, 241, 0.35)' : 'none',
+                    background: 'rgba(2, 6, 23, 0.5)',
+                    boxShadow: isTextareaFocused ? 'inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(99, 102, 241, 0.35)' : 'inset 0 2px 8px rgba(0, 0, 0, 0.5)',
                     color: '#f8fafc',
                     fontFamily: 'Fira Code, Courier New, Courier, monospace',
                     fontSize: 13,
                     lineHeight: 1.6,
                     resize: 'none',
-                    marginBottom: 20,
+                    marginBottom: 24,
                     outline: 'none',
                     transition: 'all 0.2s ease',
                   }}
@@ -2619,7 +2630,7 @@ const ProductForm = () => {
                       color: '#fca5a5',
                       fontSize: 12,
                       fontWeight: 500,
-                      marginBottom: 20,
+                      marginBottom: 24,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
@@ -2636,15 +2647,15 @@ const ProductForm = () => {
                     onClick={() => {
                       setShowQuickPasteModal(false);
                       setQuickPasteText('');
-                      setQuickWarning('');
+                      setQuickPasteWarning('');
                     }}
                     onMouseEnter={() => setIsCancelHovered(true)}
                     onMouseLeave={() => setIsCancelHovered(false)}
                     style={{
                       width: '45%',
-                      background: isCancelHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                      background: isCancelHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                       color: '#ffffff',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
                       borderRadius: 10,
                       padding: '10px 20px',
                       fontWeight: 600,
@@ -2672,7 +2683,7 @@ const ProductForm = () => {
                       fontWeight: 600,
                       fontSize: 13,
                       cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                      boxShadow: '0 4px 20px rgba(99, 102, 241, 0.25)',
                       transform: isProcessHovered ? 'scale(1.03)' : 'scale(1)',
                       transition: 'all 0.2s ease',
                     }}

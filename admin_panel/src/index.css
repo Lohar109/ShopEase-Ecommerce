@@ -114,3 +114,13 @@ td {
   background: #a1a1a1;
 }
 
+textarea.quick-paste-textarea {
+  font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
+  background: rgba(2, 6, 23, 0.85) !important;
+  background-color: rgba(2, 6, 23, 0.85) !important;
+  color: #f8fafc !important;
+  border-radius: 16px !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
