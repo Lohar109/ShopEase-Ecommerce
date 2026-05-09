@@ -28,7 +28,7 @@ const ProductForm = () => {
   const isEditMode = Boolean(id);
   const mk = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const newSpec = () => ({ sk: mk(), key: '', value: '' });
-  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', discount_type: 'Percentage', discount_value: '', stock: '', sku: '', image: img, use_separate_gallery: false });
+  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', override_discount: false, discount_type: 'Percentage', discount_value: '', stock: '', sku: '', image: img, use_separate_gallery: false });
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [duplicateSkuError, setDuplicateSkuError] = useState(null);
@@ -54,6 +54,9 @@ const ProductForm = () => {
   const [pId, setPId] = useState('');
   const [img, setImg] = useState('');
   const [addingQuickCat, setAddingQuickCat] = useState(false);
+  const [globalDiscountType, setGlobalDiscountType] = useState('Percentage');
+  const [globalDiscountValue, setGlobalDiscountValue] = useState('');
+  const [editingDiscountVariantIndex, setEditingDiscountVariantIndex] = useState(null);
   // Dynamic specifications
   const [specs, setSpecs] = useState([newSpec()]);
 
@@ -136,6 +139,8 @@ const ProductForm = () => {
         setAudience(p?.audience || 'unisex');
         setMainImage(p?.main_image || '');
         setVideoUrl(p?.video_url || '');
+        setGlobalDiscountType(p?.global_discount_type || 'Percentage');
+        setGlobalDiscountValue(p?.global_discount_value ?? '');
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
         const rawSpecs = p.specifications;
@@ -152,6 +157,7 @@ const ProductForm = () => {
                 size: v.size || '',
                 color: v.color || '',
                 price: v.price ?? '',
+                override_discount: v.override_discount ?? false,
                 discount_type: v.discount_type || 'Percentage',
                 discount_value: v.discount_value ?? '',
                 stock: v.stock ?? '',
@@ -388,6 +394,8 @@ const ProductForm = () => {
         slug,
         brand,
         description,
+        global_discount_type: globalDiscountType,
+        global_discount_value: globalDiscountValue === '' ? 0 : Number(globalDiscountValue),
         category_id: subSubcategoryId || subcategoryId || categoryId,
         audience,
         main_image: mainImage,
@@ -399,8 +407,9 @@ const ProductForm = () => {
           size: v.size,
           color: v.color,
           price: v.price,
-          discount_type: v.discount_type,
-          discount_value: v.discount_value === '' ? 0 : Number(v.discount_value),
+          override_discount: v.override_discount,
+          discount_type: v.override_discount ? v.discount_type : globalDiscountType,
+          discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : (globalDiscountValue === '' ? 0 : Number(globalDiscountValue)),
           stock: v.stock,
           sku: v.sku,
           image: v.image,
@@ -421,6 +430,7 @@ const ProductForm = () => {
                   size: v.size || '',
                   color: v.color || '',
                   price: v.price ?? '',
+                  override_discount: v.override_discount ?? false,
                   discount_type: v.discount_type || 'Percentage',
                   discount_value: v.discount_value ?? '',
                   stock: v.stock ?? '',
@@ -636,7 +646,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr 1.5fr auto 100px';
+  const variantCols = '1.2fr 1.2fr 1.5fr 1fr 1.5fr 1.5fr 1.5fr auto 80px';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -1422,8 +1432,28 @@ const ProductForm = () => {
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                           ))}
                         </select>
-                        <ChevronDown size={16} className="pf-select-icon" />
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="pf-section-title" style={{ marginTop: 32 }}>
+                    <span className="pf-section-title-icon"><Box size={16} /></span>
+                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Pricing Strategy</h3>
+                  </div>
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500 }}>Global Discount Type</label>
+                      <div className="pf-select-wrap">
+                        <select className="custom-input pf-select" value={globalDiscountType} onChange={e => setGlobalDiscountType(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}>
+                          <option value="Percentage">Percentage</option>
+                          <option value="Fixed">Fixed</option>
+                        </select>
+                        <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                      </div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontWeight: 500 }}>Global Discount Value</label>
+                      <input className="custom-input" type="number" min="0" step="0.01" value={globalDiscountValue} onChange={e => setGlobalDiscountValue(e.target.value)} placeholder="0" style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} />
                     </div>
                   </div>
                 </>
@@ -1669,8 +1699,6 @@ const ProductForm = () => {
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Disc. Type</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Disc. Value</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Final Price</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
@@ -1686,11 +1714,13 @@ const ProductForm = () => {
                         const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
 
                         const vPrice = Number(variant.price) || 0;
-                        const vDiscValue = Number(variant.discount_value) || 0;
+                        const effType = variant.override_discount ? variant.discount_type : globalDiscountType;
+                        const effVal = variant.override_discount ? variant.discount_value : globalDiscountValue;
+                        const vDiscValue = Number(effVal) || 0;
                         let finalPrice = vPrice;
                         let hasDiscountError = false;
 
-                        if (variant.discount_type === 'Percentage') {
+                        if (effType === 'Percentage') {
                           if (vDiscValue > 100) hasDiscountError = true;
                           else finalPrice = vPrice * (1 - vDiscValue / 100);
                         } else {
@@ -1717,14 +1747,18 @@ const ProductForm = () => {
                           <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
                           <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
                           <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <select className="custom-input" value={variant.discount_type || 'Percentage'} onChange={e => handleVariantChange(index, 'discount_type', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }}>
-                            <option value="Percentage">Percentage</option>
-                            <option value="Fixed">Fixed</option>
-                          </select>
-                          <input className="custom-input" type="number" min="0" step="0.01" placeholder="0" value={variant.discount_value} onChange={e => handleVariantChange(index, 'discount_value', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: hasDiscountError ? '2px solid #ef4444' : '1px solid #a0a0a0', outline: hasDiscountError ? 'none' : undefined }} />
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>₹{finalPrice.toFixed(2)}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <span style={{ fontSize: 14, fontWeight: savings > 0 ? 700 : 500, color: savings > 0 ? '#16a34a' : '#111' }}>₹{finalPrice.toFixed(2)}</span>
                             {savings > 0 && <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 600 }}>You save ₹{savings.toFixed(2)}</span>}
+                            <label style={{ fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, marginTop: 4, cursor: 'pointer' }}>
+                              <input type="checkbox" checked={variant.override_discount || false} onChange={e => handleVariantChange(index, 'override_discount', e.target.checked)} />
+                              Override Global
+                            </label>
+                            {variant.override_discount && (
+                               <button type="button" onClick={() => setEditingDiscountVariantIndex(index)} style={{ fontSize: 10, color: '#ff3f6c', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, marginTop: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                                 <Edit2 size={10} /> Custom Discount
+                               </button>
+                            )}
                           </div>
                           <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
                           <div
@@ -2078,6 +2112,25 @@ const ProductForm = () => {
           </section>
         </div>
       </div>
+      {editingDiscountVariantIndex !== null && (
+        <div className="cart-offers-modal-overlay" onClick={() => setEditingDiscountVariantIndex(null)} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: '#fff', padding: 24, borderRadius: 12, width: 300 }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0 }}>Custom Discount (Variant {editingDiscountVariantIndex + 1})</h3>
+            <div style={{ marginBottom: 12 }}>
+              <label>Discount Type</label>
+              <select className="custom-input" value={variantRows[editingDiscountVariantIndex].discount_type || 'Percentage'} onChange={e => handleVariantChange(editingDiscountVariantIndex, 'discount_type', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, marginTop: 4 }}>
+                <option value="Percentage">Percentage</option>
+                <option value="Fixed">Fixed</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label>Discount Value</label>
+              <input className="custom-input" type="number" value={variantRows[editingDiscountVariantIndex].discount_value} onChange={e => handleVariantChange(editingDiscountVariantIndex, 'discount_value', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, marginTop: 4 }} />
+            </div>
+            <button type="button" onClick={() => setEditingDiscountVariantIndex(null)} style={{ background: '#ff3f6c', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', width: '100%' }}>Done</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
