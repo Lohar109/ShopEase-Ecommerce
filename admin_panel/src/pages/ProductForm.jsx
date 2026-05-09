@@ -2110,21 +2110,21 @@ const ProductForm = () => {
 
                             {/* Discount Inputs */}
                             {hasOverride && (
-                              <div style={{ display: 'flex', gap: 12, flex: 1.5 }}>
-                                <div style={{ flex: 1 }}>
-                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563' }}>Type</label>
+                              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                <div style={{ width: 180 }}>
+                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4 }}>Type</label>
                                   <select
                                     className="custom-input"
                                     value={discType}
                                     onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
-                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', marginTop: 4, height: 38 }}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
                                   >
                                     <option value="Percentage">Percentage (%)</option>
                                     <option value="Fixed">Fixed (₹)</option>
                                   </select>
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563' }}>Value</label>
+                                <div style={{ width: 100 }}>
+                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4 }}>Value</label>
                                   <input
                                     className="custom-input"
                                     type="number"
@@ -2133,7 +2133,7 @@ const ProductForm = () => {
                                     placeholder="0"
                                     value={variant.discount_value || ''}
                                     onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
-                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', marginTop: 4, height: 38 }}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
                                   />
                                 </div>
                               </div>
