@@ -55,8 +55,6 @@ const ProductForm = () => {
   const [pId, setPId] = useState('');
   const [img, setImg] = useState('');
   const [addingQuickCat, setAddingQuickCat] = useState(false);
-  const [globalDiscountType, setGlobalDiscountType] = useState('Percentage');
-  const [globalDiscountValue, setGlobalDiscountValue] = useState('');
   const [editingDiscountVariantIndex, setEditingDiscountVariantIndex] = useState(null);
   // Dynamic specifications
   const [specs, setSpecs] = useState([newSpec()]);
@@ -315,8 +313,7 @@ const ProductForm = () => {
         setAudience(p?.audience || 'unisex');
         setMainImage(p?.main_image || '');
         setVideoUrl(p?.video_url || '');
-        setGlobalDiscountType(p?.global_discount_type || 'Percentage');
-        setGlobalDiscountValue(p?.global_discount_value ?? '');
+
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
         const rawSpecs = p.specifications;
@@ -570,8 +567,8 @@ const ProductForm = () => {
         slug,
         brand,
         description,
-        global_discount_type: globalDiscountType,
-        global_discount_value: globalDiscountValue === '' ? 0 : Number(globalDiscountValue),
+        global_discount_type: 'Percentage',
+        global_discount_value: 0,
         category_id: subSubcategoryId || subcategoryId || categoryId,
         audience,
         main_image: mainImage,
@@ -584,8 +581,8 @@ const ProductForm = () => {
           color: v.color,
           price: v.price,
           override_discount: v.override_discount,
-          discount_type: v.override_discount ? v.discount_type : globalDiscountType,
-          discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : (globalDiscountValue === '' ? 0 : Number(globalDiscountValue)),
+          discount_type: v.override_discount ? v.discount_type : 'Percentage',
+          discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : 0,
           stock: v.stock,
           sku: v.sku,
           image: v.image,
@@ -1615,26 +1612,7 @@ const ProductForm = () => {
                       </div>
                     </div>
 
-                    <div className="pf-section-title" style={{ marginTop: 32 }}>
-                      <span className="pf-section-title-icon"><Box size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Pricing Strategy</h3>
-                    </div>
-                    <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-                      <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500 }}>Global Discount Type</label>
-                        <div className="pf-select-wrap">
-                          <select className="custom-input pf-select" value={globalDiscountType} onChange={e => setGlobalDiscountType(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}>
-                            <option value="Percentage">Percentage</option>
-                            <option value="Fixed">Fixed</option>
-                          </select>
-                          <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                        </div>
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500 }}>Global Discount Value</label>
-                        <input className="custom-input" type="number" min="0" step="0.01" value={globalDiscountValue} onChange={e => setGlobalDiscountValue(e.target.value)} placeholder="0" style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} />
-                      </div>
-                    </div>
+
                   </>
                 )}
 
