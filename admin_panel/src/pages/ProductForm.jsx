@@ -18,6 +18,7 @@ const STEPS = [
   { key: 'media', label: 'Media' },
   { key: 'inventory', label: 'Inventory' },
   { key: 'galleries', label: 'Galleries' },
+  { key: 'offers', label: 'Offers' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -152,19 +153,19 @@ const ProductForm = () => {
         setVariantRows(
           vs.length > 0
             ? vs.map(v => ({
-                id: v.id || '',
-                vk: mk(),
-                size: v.size || '',
-                color: v.color || '',
-                price: v.price ?? '',
-                override_discount: v.override_discount ?? false,
-                discount_type: v.discount_type || 'Percentage',
-                discount_value: v.discount_value ?? '',
-                stock: v.stock ?? '',
-                sku: v.sku || '',
-                image: v.image || '',
-                use_separate_gallery: v.use_separate_gallery ?? false
-              }))
+              id: v.id || '',
+              vk: mk(),
+              size: v.size || '',
+              color: v.color || '',
+              price: v.price ?? '',
+              override_discount: v.override_discount ?? false,
+              discount_type: v.discount_type || 'Percentage',
+              discount_value: v.discount_value ?? '',
+              stock: v.stock ?? '',
+              sku: v.sku || '',
+              image: v.image || '',
+              use_separate_gallery: v.use_separate_gallery ?? false
+            }))
             : [newVar(p?.main_image || '')]
         );
 
@@ -425,19 +426,19 @@ const ProductForm = () => {
           setVariantRows(
             vs.length > 0
               ? vs.map(v => ({
-                  id: v.id || '',
-                  vk: mk(),
-                  size: v.size || '',
-                  color: v.color || '',
-                  price: v.price ?? '',
-                  override_discount: v.override_discount ?? false,
-                  discount_type: v.discount_type || 'Percentage',
-                  discount_value: v.discount_value ?? '',
-                  stock: v.stock ?? '',
-                  sku: v.sku || '',
-                  image: v.image || '',
-                  use_separate_gallery: v.use_separate_gallery ?? false
-                }))
+                id: v.id || '',
+                vk: mk(),
+                size: v.size || '',
+                color: v.color || '',
+                price: v.price ?? '',
+                override_discount: v.override_discount ?? false,
+                discount_type: v.discount_type || 'Percentage',
+                discount_value: v.discount_value ?? '',
+                stock: v.stock ?? '',
+                sku: v.sku || '',
+                image: v.image || '',
+                use_separate_gallery: v.use_separate_gallery ?? false
+              }))
               : [newVar(mainImage || '')]
           );
           setEditProductData(updated.product || editProductData);
@@ -468,7 +469,7 @@ const ProductForm = () => {
     const imageUrls = Array.isArray(gallery.images) ? gallery.images.join('\n') : '';
     setDesignImagesInput(imageUrls);
     setDesignVideoInput(gallery.video_url || '');
-    
+
     // Scroll to form
     setTimeout(() => {
       const formSection = document.querySelector('[data-gallery-form]');
@@ -494,7 +495,7 @@ const ProductForm = () => {
 
     const normalizedColor = designColorName.trim();
     const parsedImages = designImagesInput
-      .split(/\r?\n|,/) 
+      .split(/\r?\n|,/)
       .map((value) => value.trim())
       .filter(Boolean);
     const normalizedVideoUrl = designVideoInput.trim();
@@ -624,12 +625,15 @@ const ProductForm = () => {
 
     const galleries = isEditMode ? Array.isArray(designGalleries) && designGalleries.length > 0 : false;
 
+    const offers = true;
+
     return {
       general,
       specifications,
       media,
       inventory,
       galleries,
+      offers,
     };
   }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries]);
 
@@ -646,7 +650,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = 'repeat(8, 1fr) auto';
+  const variantCols = '12% 14% 14% 12% 18% 14% 16% auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -1255,820 +1259,918 @@ const ProductForm = () => {
               }}
             >
               <div key={activeTab} className="pf-step-pane">
-              {activeTab === 'general' && (
-                <>
-                  <div className="pf-section-title">
-                    <span className="pf-section-title-icon"><Info size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
-                  </div>
-                  <div style={{ marginBottom: 18 }}>
-                    <label style={{ fontWeight: 500 }}>Product Name</label>
-                    <input
-                      className="custom-input"
-                      type="text"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                      placeholder="Enter product name"
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500 }}>Target Audience</label>
-                      <div className="pf-select-wrap">
-                        <select
-                          className="custom-input pf-select"
-                          value={audience}
-                          onChange={aud => setAudience(aud.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                          required
-                        >
-                          <option value="unisex">Unisex</option>
-                          <option value="men">Men</option>
-                          <option value="women">Women</option>
-                          <option value="kids">Kids</option>
-                        </select>
-                        <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                      </div>
+                {activeTab === 'general' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Info size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
+                    <div style={{ marginBottom: 18 }}>
+                      <label style={{ fontWeight: 500 }}>Product Name</label>
                       <input
                         className="custom-input"
                         type="text"
-                        value={slug}
-                        readOnly
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', marginTop: 4 }}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: 18 }}>
-                    <label style={{ fontWeight: 500 }}>Brand</label>
-                    <input
-                      className="custom-input"
-                      type="text"
-                      value={brand}
-                      onChange={e => setBrand(e.target.value)}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                      placeholder="Enter brand name"
-                      required
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: 18 }}>
-                    <label style={{ fontWeight: 500 }}>Description</label>
-                    <textarea
-                      className="custom-input"
-                      value={description}
-                      onChange={e => setDescription(e.target.value)}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
-                      placeholder="Enter product description"
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 4 }}>
-                    {/* ── Level 1: Category ── */}
-                    <div>
-                      <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                        Category
-                        <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
-                          <span>+</span>
-                        </button>
-                      </label>
-                      <div className="pf-select-wrap">
-                        <select
-                          className="custom-input pf-select"
-                          value={categoryId}
-                          onChange={e => {
-                            setCategoryId(e.target.value);
-                            setSubcategoryId('');
-                            setSubSubcategoryId('');
-                          }}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          required
-                        >
-                          <option value="">Select category</option>
-                          {categories.filter(c => c.level === 1 || c.parent_id === null).map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                        <ChevronDown size={16} className="pf-select-icon" />
-                      </div>
-                    </div>
-
-                    {/* ── Level 2: Subcategory ── */}
-                    <div>
-                      <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                        Subcategory
-                        <button
-                          type="button"
-                          className="pf-mini-plus-btn"
-                          onClick={() => openQuickAdd('subcategory')}
-                          title="Quick add subcategory"
-                        >
-                          <span>+</span>
-                        </button>
-                      </label>
-                      <div className="pf-select-wrap">
-                        <select
-                          className="custom-input pf-select"
-                          value={subcategoryId}
-                          onChange={e => {
-                            setSubcategoryId(e.target.value);
-                            setSubSubcategoryId('');
-                          }}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
-                          disabled={!categoryId}
-                        >
-                          <option value="">Select subcategory</option>
-                          {subcategoriesOptions.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                        <ChevronDown size={16} className="pf-select-icon" />
-                      </div>
-                    </div>
-
-                    {/* ── Level 3: Sub-Subcategory ── */}
-                    <div>
-                      <label style={{ fontWeight: 500, color: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                        Sub-Subcategory
-                        <button
-                          type="button"
-                          className="pf-mini-plus-btn"
-                          onClick={() => openQuickAdd('subsubcategory')}
-                          title="Quick add sub-subcategory"
-                        >
-                          <span>+</span>
-                        </button>
-                      </label>
-                      <div className="pf-select-wrap">
-                        <select
-                          className="custom-input pf-select"
-                          value={subSubcategoryId}
-                          onChange={e => setSubSubcategoryId(e.target.value)}
-                          disabled={!subcategoryId || subSubcategoriesOptions.length === 0}
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #a0a0a0',
-                            opacity: (!subcategoryId || subSubcategoriesOptions.length === 0) ? 0.6 : 1,
-                            background: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#f5f6fa' : '#fff',
-                          }}
-                        >
-                          <option value="">
-                            {!subcategoryId
-                              ? 'Select subcategory first'
-                              : subSubcategoriesOptions.length === 0
-                              ? 'No sub-subcategories'
-                              : 'Select sub-subcategory'}
-                          </option>
-                          {subSubcategoriesOptions.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pf-section-title" style={{ marginTop: 32 }}>
-                    <span className="pf-section-title-icon"><Box size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Pricing Strategy</h3>
-                  </div>
-                  <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500 }}>Global Discount Type</label>
-                      <div className="pf-select-wrap">
-                        <select className="custom-input pf-select" value={globalDiscountType} onChange={e => setGlobalDiscountType(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}>
-                          <option value="Percentage">Percentage</option>
-                          <option value="Fixed">Fixed</option>
-                        </select>
-                        <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                      </div>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ fontWeight: 500 }}>Global Discount Value</label>
-                      <input className="custom-input" type="number" min="0" step="0.01" value={globalDiscountValue} onChange={e => setGlobalDiscountValue(e.target.value)} placeholder="0" style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {activeTab === 'specifications' && (
-                <>
-                  <div className="pf-section-title">
-                    <span className="pf-section-title-icon"><Layers size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
-                  </div>
-                  <div style={{ marginBottom: 6 }}>
-                    <label style={{ fontWeight: 500 }}>Product Specifications</label>
-                    {specs.map((spec, idx) => (
-                      <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={spec.key}
-                          onChange={e => handleSpecChange(idx, 'key', e.target.value)}
-                          placeholder="Key (e.g. Material)"
-                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                        />
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={spec.value}
-                          onChange={e => handleSpecChange(idx, 'value', e.target.value)}
-                          placeholder="Value (e.g. Cotton)"
-                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpec(idx)}
-                          title="Remove specification"
-                          style={{
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: 8,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            transition: 'background 0.15s ease',
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
-                    <button type="button" className="pf-outline-accent-btn" onClick={addSpec} style={{ marginTop: 8 }}><Plus size={14} />Add Specification</button>
-                  </div>
-                </>
-              )}
-
-              {activeTab === 'media' && (
-                <>
-                  <div className="pf-section-title">
-                    <span className="pf-section-title-icon"><Image size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Media</h3>
-                  </div>
-                  <div style={{ marginBottom: 24 }}>
-                    <label style={{ fontWeight: 500 }}>Main Image URL</label>
-                    <div style={{ position: 'relative' }}>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={mainImage}
-                        onChange={e => setMainImage(e.target.value)}
+                        value={name}
+                        onChange={e => setName(e.target.value)}
                         style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                        placeholder="Paste Cloudinary main image URL"
+                        placeholder="Enter product name"
                         required
                       />
-                      {mainImage && (
-                        <button
-                          type="button"
-                          onClick={() => setMainImage('')}
-                          title="Clear image URL"
-                          style={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 'calc(50% + 2px)',
-                            transform: 'translateY(-50%)',
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            border: 'none',
-                            borderRadius: 6,
-                            padding: 6,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            transition: 'background 0.15s ease',
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
                     </div>
-                    {mainImage && (
-                      <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
-                    )}
-                  </div>
 
-                  <div style={{ marginBottom: 24 }}>
-                    <label style={{ fontWeight: 500 }}>Product Video URL</label>
-                    <div style={{ position: 'relative' }}>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={videoUrl}
-                        onChange={e => setVideoUrl(e.target.value)}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                        placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
-                      />
-                      {videoUrl && (
-                        <button
-                          type="button"
-                          onClick={() => setVideoUrl('')}
-                          title="Clear video URL"
-                          style={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 'calc(50% + 2px)',
-                            transform: 'translateY(-50%)',
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            border: 'none',
-                            borderRadius: 6,
-                            padding: 6,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            transition: 'background 0.15s ease',
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                    {videoUrl && (
-                      <video
-                        src={videoUrl}
-                        controls
-                        muted
-                        playsInline
-                        className="w-full max-h-[300px] rounded-lg border border-gray-200 shadow-sm"
-                        style={{ marginTop: 10, width: '100%', maxHeight: 300, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
-                      />
-                    )}
-                    {videoUrl && !/\.(mp4|webm|mov)$/i.test(videoUrl) && (
-                      <div style={{ marginTop: 6, color: '#d97706', fontSize: 12 }}>
-                        Warning: URL does not end with a common video extension (.mp4, .webm, .mov)
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontWeight: 500 }}>Target Audience</label>
+                        <div className="pf-select-wrap">
+                          <select
+                            className="custom-input pf-select"
+                            value={audience}
+                            onChange={aud => setAudience(aud.target.value)}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                            required
+                          >
+                            <option value="unisex">Unisex</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="kids">Kids</option>
+                          </select>
+                          <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                        </div>
                       </div>
-                    )}
-                  </div>
-
-                  <div style={{ marginBottom: 8 }}>
-                    <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
-                    {galleryImages.map((img, idx) => (
-                      <div key={`g-${idx}-${String(img || '').slice(0, 24)}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
                         <input
                           className="custom-input"
                           type="text"
-                          value={img}
-                          onChange={e => handleGalleryImageChange(idx, e.target.value)}
-                          placeholder="Paste Cloudinary image URL"
-                          style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          value={slug}
+                          readOnly
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#f5f6fa', marginTop: 4 }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => removeGalleryImage(idx)}
-                          title="Remove image URL"
-                          style={{
-                            background: '#fef2f2',
-                            color: '#ef4444',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: 8,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            transition: 'background 0.15s ease',
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
                       </div>
-                    ))}
-                    <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
-                  </div>
-
-                  {(() => {
-                    const imgs = galleryImages.filter(Boolean);
-                    if (imgs.length === 0) return null;
-
-                    return (
-                      <div className="pf-preview-grid">
-                        {imgs.map((url, i) => (
-                          <img key={`gp-${i}-${String(url || '').slice(0, 24)}`} src={url} alt="Gallery" className="pf-preview-img" />
-                        ))}
-                      </div>
-                    );
-                  })()}
-                  <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
-                    (Paste Cloudinary image links. You can add as many as you want.)
-                  </div>
-                </>
-              )}
-
-              {activeTab === 'inventory' && (
-                <>
-                  <div className="pf-section-title">
-                    <span className="pf-section-title-icon"><Box size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
-                  </div>
-                  <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
-                  <div style={{ marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-                    <div
-                      className="grid grid-cols-7 gap-4"
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: variantCols,
-                        gap: 16,
-                        background: '#f8f9fa',
-                        borderBottom: '2px solid #e9ecef',
-                        padding: '10px 10px',
-                        marginBottom: 8,
-                      }}
-                    >
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
-                      <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Final Price</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
-                      <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Separate<br/>Gallery</div>
-                      <div />
                     </div>
 
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {variantRows.map((variant, index) => {
-                        const currentSku = variant.sku.trim();
-                        const isLocalDuplicate = currentSku !== '' && variantRows.findIndex(v => v.sku.trim() === currentSku) !== index;
-                        const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
+                    <div style={{ marginBottom: 18 }}>
+                      <label style={{ fontWeight: 500 }}>Brand</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={brand}
+                        onChange={e => setBrand(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                        placeholder="Enter brand name"
+                        required
+                      />
+                    </div>
 
-                        const vPrice = Number(variant.price) || 0;
-                        const effType = variant.override_discount ? variant.discount_type : globalDiscountType;
-                        const effVal = variant.override_discount ? variant.discount_value : globalDiscountValue;
-                        const vDiscValue = Number(effVal) || 0;
-                        let finalPrice = vPrice;
-                        let hasDiscountError = false;
+                    <div style={{ marginBottom: 18 }}>
+                      <label style={{ fontWeight: 500 }}>Description</label>
+                      <textarea
+                        className="custom-input"
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
+                        placeholder="Enter product description"
+                        required
+                      />
+                    </div>
 
-                        if (effType === 'Percentage') {
-                          if (vDiscValue > 100) hasDiscountError = true;
-                          else finalPrice = vPrice * (1 - vDiscValue / 100);
-                        } else {
-                          if (vDiscValue > vPrice) hasDiscountError = true;
-                          else finalPrice = vPrice - vDiscValue;
-                        }
-
-                        if (finalPrice < 0) finalPrice = 0;
-                        const savings = vPrice - finalPrice;
-
-                        return (
-                        <div
-                          key={variant.vk || `var-${index}`}
-                          className="grid grid-cols-7 gap-4"
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: variantCols,
-                            gap: 16,
-                            alignItems: 'center',
-                            borderBottom: '1px solid #f1f3f5',
-                            padding: '5px 0',
-                          }}
-                        >
-                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: savings > 0 ? '#16a34a' : '#111', textAlign: 'center' }}>₹{finalPrice.toFixed(2)}</span>
-                            {savings > 0 && <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 600, textAlign: 'center' }}>Save ₹{savings.toFixed(2)}</span>}
-                            <label style={{ fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, marginTop: 2, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                              <input type="checkbox" checked={variant.override_discount || false} onChange={e => handleVariantChange(index, 'override_discount', e.target.checked)} style={{ width: 12, height: 12 }} />
-                              Override
-                            </label>
-                            {variant.override_discount && (
-                               <button type="button" onClick={() => setEditingDiscountVariantIndex(index)} style={{ fontSize: 10, color: '#ff3f6c', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: 0, marginTop: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                 <Edit2 size={10} /> Custom Disc.
-                               </button>
-                            )}
-                          </div>
-                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <div
-                            className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
-                            style={{
-                              position: 'relative',
-                              width: '100%',
-                              boxSizing: 'border-box',
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 4 }}>
+                      {/* ── Level 1: Category ── */}
+                      <div>
+                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                          Category
+                          <button type="button" className="pf-mini-plus-btn" onClick={() => openQuickAdd('category')} title="Quick add category">
+                            <span>+</span>
+                          </button>
+                        </label>
+                        <div className="pf-select-wrap">
+                          <select
+                            className="custom-input pf-select"
+                            value={categoryId}
+                            onChange={e => {
+                              setCategoryId(e.target.value);
+                              setSubcategoryId('');
+                              setSubSubcategoryId('');
                             }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                            required
                           >
-                            <input
-                              className={`custom-input ${hasDuplicateSkuError ? 'border-red-500 focus:ring-red-500' : ''}`}
-                              type="text"
-                              value={variant.sku}
-                              readOnly
-                              style={{
-                                width: '100%',
-                                height: 40,
-                                padding: '0 12px',
-                                borderRadius: 12,
-                                border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
-                                background: '#f5f6fa',
-                                color: '#888'
-                              }}
-                            />
-                            {hasDuplicateSkuError && (
-                              <p
-                                className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap"
-                                style={{
-                                  position: 'absolute',
-                                  bottom: -18,
-                                  left: 2,
-                                  margin: 0,
-                                  fontSize: 11,
-                                  lineHeight: 1,
-                                  color: '#ef4444',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                SKU already exists
-                              </p>
-                            )}
-                          </div>
-                          {index === 0 ? (
-                            <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
-                              <input
-                                className="custom-input"
-                                type="text"
-                                value={variant.image}
-                                readOnly
-                                style={{
-                                  width: '100%',
-                                  height: 40,
-                                  padding: '0 12px',
-                                  borderRadius: 12,
-                                  border: '1px solid #d1d5db',
-                                  background: '#f3f4f6',
-                                  color: '#6b7280',
-                                  cursor: 'text'
-                                }}
-                                placeholder="Auto-synced"
-                              />
-                              <span className="auto-sync-tooltip-bubble" role="tooltip">
-                                Auto-synced from Main Image
-                                <span className="auto-sync-tooltip-arrow" />
-                              </span>
-                            </span>
-                          ) : (
-                            <input
-                              className="custom-input"
-                              type="text"
-                              value={variant.image}
-                              onChange={e => handleVariantChange(index, 'image', e.target.value)}
-                              style={{
-                                width: '100%',
-                                height: 40,
-                                padding: '0 12px',
-                                borderRadius: 12,
-                                border: '1px solid #a0a0a0',
-                                background: '#fff',
-                                color: '#111',
-                                cursor: 'text'
-                              }}
-                            />
-                          )}
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <input
-                              type="checkbox"
-                              checked={variant.use_separate_gallery || false}
-                              onChange={e => handleVariantChange(index, 'use_separate_gallery', e.target.checked)}
-                              title="Use separate gallery images for this variant"
-                              style={{ width: 18, height: 18, cursor: 'pointer' }}
-                            />
-                          </div>
+                            <option value="">Select category</option>
+                            {categories.filter(c => c.level === 1 || c.parent_id === null).map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                          </select>
+                          <ChevronDown size={16} className="pf-select-icon" />
+                        </div>
+                      </div>
+
+                      {/* ── Level 2: Subcategory ── */}
+                      <div>
+                        <label style={{ fontWeight: 500, color: !categoryId ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                          Subcategory
                           <button
                             type="button"
-                            onClick={() => removeVariant(index)}
-                            title="Remove variant"
+                            className="pf-mini-plus-btn"
+                            onClick={() => openQuickAdd('subcategory')}
+                            title="Quick add subcategory"
+                          >
+                            <span>+</span>
+                          </button>
+                        </label>
+                        <div className="pf-select-wrap">
+                          <select
+                            className="custom-input pf-select"
+                            value={subcategoryId}
+                            onChange={e => {
+                              setSubcategoryId(e.target.value);
+                              setSubSubcategoryId('');
+                            }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', opacity: !categoryId ? 0.6 : 1, background: !categoryId ? '#f5f6fa' : '#fff' }}
+                            disabled={!categoryId}
+                          >
+                            <option value="">Select subcategory</option>
+                            {subcategoriesOptions.map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                          </select>
+                          <ChevronDown size={16} className="pf-select-icon" />
+                        </div>
+                      </div>
+
+                      {/* ── Level 3: Sub-Subcategory ── */}
+                      <div>
+                        <label style={{ fontWeight: 500, color: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#aaa' : '#000', display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                          Sub-Subcategory
+                          <button
+                            type="button"
+                            className="pf-mini-plus-btn"
+                            onClick={() => openQuickAdd('subsubcategory')}
+                            title="Quick add sub-subcategory"
+                          >
+                            <span>+</span>
+                          </button>
+                        </label>
+                        <div className="pf-select-wrap">
+                          <select
+                            className="custom-input pf-select"
+                            value={subSubcategoryId}
+                            onChange={e => setSubSubcategoryId(e.target.value)}
+                            disabled={!subcategoryId || subSubcategoriesOptions.length === 0}
+                            style={{
+                              width: '100%',
+                              padding: '10px 14px',
+                              borderRadius: 12,
+                              border: '1px solid #a0a0a0',
+                              opacity: (!subcategoryId || subSubcategoriesOptions.length === 0) ? 0.6 : 1,
+                              background: (!subcategoryId || subSubcategoriesOptions.length === 0) ? '#f5f6fa' : '#fff',
+                            }}
+                          >
+                            <option value="">
+                              {!subcategoryId
+                                ? 'Select subcategory first'
+                                : subSubcategoriesOptions.length === 0
+                                  ? 'No sub-subcategories'
+                                  : 'Select sub-subcategory'}
+                            </option>
+                            {subSubcategoriesOptions.map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pf-section-title" style={{ marginTop: 32 }}>
+                      <span className="pf-section-title-icon"><Box size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Pricing Strategy</h3>
+                    </div>
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontWeight: 500 }}>Global Discount Type</label>
+                        <div className="pf-select-wrap">
+                          <select className="custom-input pf-select" value={globalDiscountType} onChange={e => setGlobalDiscountType(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}>
+                            <option value="Percentage">Percentage</option>
+                            <option value="Fixed">Fixed</option>
+                          </select>
+                          <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                        </div>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontWeight: 500 }}>Global Discount Value</label>
+                        <input className="custom-input" type="number" min="0" step="0.01" value={globalDiscountValue} onChange={e => setGlobalDiscountValue(e.target.value)} placeholder="0" style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }} />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'specifications' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Layers size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
+                    </div>
+                    <div style={{ marginBottom: 6 }}>
+                      <label style={{ fontWeight: 500 }}>Product Specifications</label>
+                      {specs.map((spec, idx) => (
+                        <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={spec.key}
+                            onChange={e => handleSpecChange(idx, 'key', e.target.value)}
+                            placeholder="Key (e.g. Material)"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={spec.value}
+                            onChange={e => handleSpecChange(idx, 'value', e.target.value)}
+                            placeholder="Value (e.g. Cotton)"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeSpec(idx)}
+                            title="Remove specification"
                             style={{
                               background: '#fef2f2',
                               color: '#ef4444',
                               border: 'none',
-                              borderRadius: 12,
-                              height: 40,
-                              width: 40,
+                              borderRadius: 8,
+                              padding: 8,
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              justifySelf: 'center',
                               cursor: 'pointer',
                               transition: 'background 0.15s ease',
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
+                      ))}
+                      <button type="button" className="pf-outline-accent-btn" onClick={addSpec} style={{ marginTop: 8 }}><Plus size={14} />Add Specification</button>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'media' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Image size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Media</h3>
+                    </div>
+                    <div style={{ marginBottom: 24 }}>
+                      <label style={{ fontWeight: 500 }}>Main Image URL</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={mainImage}
+                          onChange={e => setMainImage(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          placeholder="Paste Cloudinary main image URL"
+                          required
+                        />
+                        {mainImage && (
+                          <button
+                            type="button"
+                            onClick={() => setMainImage('')}
+                            title="Clear image URL"
+                            style={{
+                              position: 'absolute',
+                              right: 8,
+                              top: 'calc(50% + 2px)',
+                              transform: 'translateY(-50%)',
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: 6,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                      {mainImage && (
+                        <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                      )}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                      <label style={{ fontWeight: 500 }}>Product Video URL</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={videoUrl}
+                          onChange={e => setVideoUrl(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
+                        />
+                        {videoUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setVideoUrl('')}
+                            title="Clear video URL"
+                            style={{
+                              position: 'absolute',
+                              right: 8,
+                              top: 'calc(50% + 2px)',
+                              transform: 'translateY(-50%)',
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: 6,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                      {videoUrl && (
+                        <video
+                          src={videoUrl}
+                          controls
+                          muted
+                          playsInline
+                          className="w-full max-h-[300px] rounded-lg border border-gray-200 shadow-sm"
+                          style={{ marginTop: 10, width: '100%', maxHeight: 300, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                        />
+                      )}
+                      {videoUrl && !/\.(mp4|webm|mov)$/i.test(videoUrl) && (
+                        <div style={{ marginTop: 6, color: '#d97706', fontSize: 12 }}>
+                          Warning: URL does not end with a common video extension (.mp4, .webm, .mov)
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ marginBottom: 8 }}>
+                      <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
+                      {galleryImages.map((img, idx) => (
+                        <div key={`g-${idx}-${String(img || '').slice(0, 24)}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={img}
+                            onChange={e => handleGalleryImageChange(idx, e.target.value)}
+                            placeholder="Paste Cloudinary image URL"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(idx)}
+                            title="Remove image URL"
+                            style={{
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: 8,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                      <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
+                    </div>
+
+                    {(() => {
+                      const imgs = galleryImages.filter(Boolean);
+                      if (imgs.length === 0) return null;
+
+                      return (
+                        <div className="pf-preview-grid">
+                          {imgs.map((url, i) => (
+                            <img key={`gp-${i}-${String(url || '').slice(0, 24)}`} src={url} alt="Gallery" className="pf-preview-img" />
+                          ))}
+                        </div>
+                      );
+                    })()}
+                    <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
+                      (Paste Cloudinary image links. You can add as many as you want.)
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'inventory' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Box size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
+                    </div>
+                    <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
+                    <div style={{ marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: variantCols,
+                          gap: 16,
+                          background: '#f8f9fa',
+                          borderBottom: '2px solid #e9ecef',
+                          padding: '10px 10px',
+                          marginBottom: 8,
+                        }}
+                      >
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
+                        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>Separate Gallery</div>
+                        <div />
+                      </div>
+
+                      <div style={{ display: 'grid', gap: 8 }}>
+                        {variantRows.map((variant, index) => {
+                          const currentSku = variant.sku.trim();
+                          const isLocalDuplicate = currentSku !== '' && variantRows.findIndex(v => v.sku.trim() === currentSku) !== index;
+                          const hasDuplicateSkuError = isLocalDuplicate || duplicateSkuError === variant.sku;
+
+                          return (
+                            <div
+                              key={variant.vk || `var-${index}`}
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: variantCols,
+                                gap: 16,
+                                alignItems: 'center',
+                                borderBottom: '1px solid #f1f3f5',
+                                padding: '5px 0',
+                              }}
+                            >
+                              <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                              <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                              <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                              <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                              <div
+                                className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
+                                style={{
+                                  position: 'relative',
+                                  width: '100%',
+                                  boxSizing: 'border-box',
+                                }}
+                              >
+                                <input
+                                  className={`custom-input ${hasDuplicateSkuError ? 'border-red-500 focus:ring-red-500' : ''}`}
+                                  type="text"
+                                  value={variant.sku}
+                                  readOnly
+                                  style={{
+                                    width: '100%',
+                                    height: 40,
+                                    padding: '0 12px',
+                                    borderRadius: 12,
+                                    border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
+                                    background: '#f5f6fa',
+                                    color: '#888',
+                                    textAlign: 'center'
+                                  }}
+                                />
+                                {hasDuplicateSkuError && (
+                                  <p
+                                    className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap"
+                                    style={{
+                                      position: 'absolute',
+                                      bottom: -18,
+                                      left: 2,
+                                      margin: 0,
+                                      fontSize: 11,
+                                      lineHeight: 1,
+                                      color: '#ef4444',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  >
+                                    SKU already exists
+                                  </p>
+                                )}
+                              </div>
+                              {index === 0 ? (
+                                <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={variant.image}
+                                    readOnly
+                                    style={{
+                                      width: '100%',
+                                      height: 40,
+                                      padding: '0 12px',
+                                      borderRadius: 12,
+                                      border: '1px solid #d1d5db',
+                                      background: '#f3f4f6',
+                                      color: '#6b7280',
+                                      cursor: 'text',
+                                      textAlign: 'center'
+                                    }}
+                                    placeholder="Auto-synced"
+                                  />
+                                  <span className="auto-sync-tooltip-bubble" role="tooltip">
+                                    Auto-synced from Main Image
+                                    <span className="auto-sync-tooltip-arrow" />
+                                  </span>
+                                </span>
+                              ) : (
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  value={variant.image}
+                                  onChange={e => handleVariantChange(index, 'image', e.target.value)}
+                                  style={{
+                                    width: '100%',
+                                    height: 40,
+                                    padding: '0 12px',
+                                    borderRadius: 12,
+                                    border: '1px solid #a0a0a0',
+                                    background: '#fff',
+                                    color: '#111',
+                                    cursor: 'text',
+                                    textAlign: 'center'
+                                  }}
+                                />
+                              )}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={variant.use_separate_gallery || false}
+                                  onChange={e => handleVariantChange(index, 'use_separate_gallery', e.target.checked)}
+                                  title="Use separate gallery images for this variant"
+                                  style={{ width: 18, height: 18, cursor: 'pointer' }}
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeVariant(index)}
+                                title="Remove variant"
+                                style={{
+                                  background: '#fef2f2',
+                                  color: '#ef4444',
+                                  border: 'none',
+                                  borderRadius: 12,
+                                  height: 40,
+                                  width: 40,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  justifySelf: 'center',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.15s ease',
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>
+                  </>
+                )}
+
+                {activeTab === 'galleries' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Image size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Design Specific Galleries</h3>
+                    </div>
+                    {!isEditMode ? (
+                      <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
+                        Save the product first, then you can add color-specific galleries.
+                      </div>
+                    ) : (
+                      <>
+                        <div data-gallery-form>
+                          <div style={{ marginBottom: 12 }}>
+                            <label style={{ fontWeight: 500 }}>Variant Selection</label>
+                            <select
+                              value={selectedGalleryVariantId || ''}
+                              onChange={(e) => setSelectedGalleryVariantId(e.target.value || null)}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, fontFamily: 'Poppins, sans-serif' }}
+                            >
+                              <option value="">All Variants (Shared Gallery)</option>
+                              {variantRows.length > 0 && variantRows
+                                .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
+                                .map((variant) => (
+                                  <option key={variant.id} value={variant.id}>
+                                    {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                          <div style={{ marginBottom: 12 }}>
+                            <label style={{ fontWeight: 500 }}>Color Name</label>
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={designColorName}
+                              onChange={(e) => setDesignColorName(e.target.value)}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                              placeholder="e.g. Red, Floral, Midnight Blue"
+                            />
+                          </div>
+                          <div style={{ marginBottom: 12 }}>
+                            <label style={{ fontWeight: 500 }}>Image URLs (comma or new line separated)</label>
+                            <textarea
+                              className="custom-input"
+                              value={designImagesInput}
+                              onChange={(e) => setDesignImagesInput(e.target.value)}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 100, marginTop: 4 }}
+                              placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
+                            />
+                          </div>
+                          <div style={{ marginBottom: 12 }}>
+                            <label style={{ fontWeight: 500 }}>Color Video URL (optional)</label>
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={designVideoInput}
+                              onChange={(e) => setDesignVideoInput(e.target.value)}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                              placeholder="https://res.cloudinary.com/.../video.mp4"
+                            />
+                          </div>
+                          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              className="outline-btn"
+                              onClick={handleSaveDesignGallery}
+                              disabled={savingDesignGallery}
+                              style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
+                            >
+                              {savingDesignGallery ? (editingGalleryId ? 'Updating Gallery...' : 'Saving Gallery...') : (editingGalleryId ? 'Update Gallery' : 'Save Gallery')}
+                            </button>
+                            {editingGalleryId && (
+                              <button
+                                type="button"
+                                className="pf-ghost-action-btn"
+                                onClick={cancelEditGallery}
+                              >
+                                Cancel Edit
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div style={{ marginTop: 24 }}>
+                          <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
+                          {loadingDesignGalleries ? (
+                            <div style={{ color: '#666', fontSize: 14 }}>Loading galleries...</div>
+                          ) : designGalleries.length === 0 ? (
+                            <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
+                          ) : (
+                            <div style={{ display: 'grid', gap: 8 }}>
+                              {designGalleries.map((gallery) => (
+                                <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 12 }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
+                                      <div style={{ fontSize: 12, color: '#6b7280' }}>{getVariantLabelById(gallery.variant_id)}</div>
+                                      {gallery.video_url && (
+                                        <a
+                                          href={gallery.video_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          title="View Video"
+                                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, background: '#f0f0f0', color: '#555', textDecoration: 'none', fontSize: 12, fontWeight: 500, transition: 'all 0.2s ease' }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#e8e8e8';
+                                            e.currentTarget.style.color = '#333';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = '#f0f0f0';
+                                            e.currentTarget.style.color = '#555';
+                                          }}
+                                        >
+                                          <Video size={12} />
+                                          View Video
+                                        </a>
+                                      )}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                      <button
+                                        type="button"
+                                        onClick={() => startEditGallery(gallery)}
+                                        title="Edit gallery"
+                                        style={{
+                                          background: '#f9fafb',
+                                          color: '#374151',
+                                          border: '1px solid #e5e7eb',
+                                          borderRadius: 8,
+                                          padding: 8,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          cursor: 'pointer',
+                                          transition: 'background 0.15s ease',
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
+                                      >
+                                        <Edit2 size={14} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteDesignGallery(gallery.id)}
+                                        disabled={deletingDesignGalleryId === gallery.id}
+                                        title="Delete gallery"
+                                        style={{
+                                          background: '#fef2f2',
+                                          color: '#ef4444',
+                                          border: 'none',
+                                          borderRadius: 8,
+                                          padding: 8,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          cursor: 'pointer',
+                                          transition: 'background 0.15s ease',
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="pf-preview-grid" style={{ marginTop: 12 }}>
+                                    {(gallery.images || []).map((url, i) => (
+                                      <img
+                                        key={`${gallery.id}-${i}`}
+                                        src={url}
+                                        alt={`${gallery.color_name} ${i + 1}`}
+                                        className="pf-preview-img"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+
+                {activeTab === 'offers' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Box size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Offers & Discounts</h3>
+                    </div>
+                    <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Variant Discount Configuration</label>
+                    <div style={{ display: 'grid', gap: 16, fontFamily: 'Poppins, sans-serif' }}>
+                      {variantRows.map((variant, index) => {
+                        const originalPrice = Number(variant.price) || 0;
+                        const hasOverride = variant.override_discount || false;
+                        const discType = variant.discount_type || 'Percentage';
+                        const discValue = Number(variant.discount_value) || 0;
+
+                        // Safe math calculation
+                        let finalPrice = originalPrice;
+                        if (hasOverride) {
+                          if (discType === 'Percentage') {
+                            finalPrice = originalPrice * (1 - discValue / 100);
+                          } else {
+                            finalPrice = originalPrice - discValue;
+                          }
+                        }
+                        if (finalPrice < 0) finalPrice = 0;
+
+                        return (
+                          <div
+                            key={`offer-${index}`}
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.4)',
+                              backdropFilter: 'blur(10px)',
+                              WebkitBackdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(228, 228, 231, 0.6)',
+                              borderRadius: 16,
+                              padding: 20,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: 20,
+                              boxShadow: '0 4px 30px rgba(0, 0, 0, 0.03)',
+                            }}
+                          >
+                            {/* Variant Info */}
+                            <div style={{ flex: 1 }}>
+                              <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#111827' }}>
+                                Variant #{index + 1} ({variant.size || 'No Size'} / {variant.color || 'No Color'})
+                              </h4>
+                              <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b7280' }}>
+                                SKU: {variant.sku || 'N/A'} | Stock: {variant.stock || 0}
+                              </p>
+                              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={hasOverride}
+                                    onChange={(e) => handleVariantChange(index, 'override_discount', e.target.checked)}
+                                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                                  />
+                                  Apply Discount
+                                </label>
+                              </div>
+                            </div>
+
+                            {/* Discount Inputs */}
+                            {hasOverride && (
+                              <div style={{ display: 'flex', gap: 12, flex: 1.5 }}>
+                                <div style={{ flex: 1 }}>
+                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563' }}>Type</label>
+                                  <select
+                                    className="custom-input"
+                                    value={discType}
+                                    onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', marginTop: 4, height: 38 }}
+                                  >
+                                    <option value="Percentage">Percentage (%)</option>
+                                    <option value="Fixed">Fixed (₹)</option>
+                                  </select>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563' }}>Value</label>
+                                  <input
+                                    className="custom-input"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="0"
+                                    value={variant.discount_value || ''}
+                                    onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', marginTop: 4, height: 38 }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Preview Card */}
+                            <div
+                              style={{
+                                background: '#f9fafb',
+                                border: '1px solid #f3f4f6',
+                                borderRadius: 12,
+                                padding: '12px 16px',
+                                minWidth: 180,
+                                textAlign: 'right',
+                              }}
+                            >
+                              <div style={{ fontSize: 11, color: '#6b7280' }}>Original Price</div>
+                              <div style={{ fontSize: 14, textDecoration: hasOverride ? 'line-through' : 'none', color: '#374151', fontWeight: 500 }}>
+                                ₹{originalPrice.toFixed(2)}
+                              </div>
+                              {hasOverride && (
+                                <>
+                                  <div style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Discount</div>
+                                  <div style={{ fontSize: 12, color: '#ef4444', fontWeight: 600 }}>
+                                    {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: '#16a34a', marginTop: 4 }}>Final Price</div>
+                                  <div style={{ fontSize: 16, color: '#16a34a', fontWeight: 700 }}>
+                                    ₹{finalPrice.toFixed(2)}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
                         );
                       })}
                     </div>
-                  </div>
-                  <button type="button" className="pf-outline-accent-btn" onClick={addVariant}><Plus size={14} />Add Variant</button>
-                </>
-              )}
-
-              {activeTab === 'galleries' && (
-                <>
-                  <div className="pf-section-title">
-                    <span className="pf-section-title-icon"><Image size={16} /></span>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Design Specific Galleries</h3>
-                  </div>
-                  {!isEditMode ? (
-                    <div style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
-                      Save the product first, then you can add color-specific galleries.
-                    </div>
-                  ) : (
-                    <>
-                      <div data-gallery-form>
-                      <div style={{ marginBottom: 12 }}>
-                        <label style={{ fontWeight: 500 }}>Variant Selection</label>
-                        <select
-                          value={selectedGalleryVariantId || ''}
-                          onChange={(e) => setSelectedGalleryVariantId(e.target.value || null)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          <option value="">All Variants (Shared Gallery)</option>
-                          {variantRows.length > 0 && variantRows
-                            .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
-                            .map((variant) => (
-                              <option key={variant.id} value={variant.id}>
-                                {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div style={{ marginBottom: 12 }}>
-                        <label style={{ fontWeight: 500 }}>Color Name</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={designColorName}
-                          onChange={(e) => setDesignColorName(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                          placeholder="e.g. Red, Floral, Midnight Blue"
-                        />
-                      </div>
-                      <div style={{ marginBottom: 12 }}>
-                        <label style={{ fontWeight: 500 }}>Image URLs (comma or new line separated)</label>
-                        <textarea
-                          className="custom-input"
-                          value={designImagesInput}
-                          onChange={(e) => setDesignImagesInput(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 100, marginTop: 4 }}
-                          placeholder={'https://res.cloudinary.com/.../image1.jpg\nhttps://res.cloudinary.com/.../image2.jpg'}
-                        />
-                      </div>
-                      <div style={{ marginBottom: 12 }}>
-                        <label style={{ fontWeight: 500 }}>Color Video URL (optional)</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={designVideoInput}
-                          onChange={(e) => setDesignVideoInput(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                          placeholder="https://res.cloudinary.com/.../video.mp4"
-                        />
-                      </div>
-                      <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <button
-                          type="button"
-                          className="outline-btn"
-                          onClick={handleSaveDesignGallery}
-                          disabled={savingDesignGallery}
-                          style={{ opacity: savingDesignGallery ? 0.7 : 1 }}
-                        >
-                          {savingDesignGallery ? (editingGalleryId ? 'Updating Gallery...' : 'Saving Gallery...') : (editingGalleryId ? 'Update Gallery' : 'Save Gallery')}
-                        </button>
-                        {editingGalleryId && (
-                          <button
-                            type="button"
-                            className="pf-ghost-action-btn"
-                            onClick={cancelEditGallery}
-                          >
-                            Cancel Edit
-                          </button>
-                        )}
-                      </div>
-                      </div>
-
-                      <div style={{ marginTop: 24 }}>
-                        <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#111' }}>Added Galleries</h4>
-                        {loadingDesignGalleries ? (
-                          <div style={{ color: '#666', fontSize: 14 }}>Loading galleries...</div>
-                        ) : designGalleries.length === 0 ? (
-                          <div style={{ color: '#666', fontSize: 14 }}>No design specific galleries added yet.</div>
-                        ) : (
-                          <div style={{ display: 'grid', gap: 8 }}>
-                            {designGalleries.map((gallery) => (
-                              <div key={gallery.id} style={{ border: '1px solid #e0e0e0', borderRadius: 12, padding: 12 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <div style={{ fontWeight: 600, color: '#111' }}>{gallery.color_name}</div>
-                                    <div style={{ fontSize: 12, color: '#6b7280' }}>{getVariantLabelById(gallery.variant_id)}</div>
-                                    {gallery.video_url && (
-                                      <a
-                                        href={gallery.video_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        title="View Video"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6, background: '#f0f0f0', color: '#555', textDecoration: 'none', fontSize: 12, fontWeight: 500, transition: 'all 0.2s ease' }}
-                                        onMouseEnter={(e) => {
-                                          e.currentTarget.style.background = '#e8e8e8';
-                                          e.currentTarget.style.color = '#333';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                          e.currentTarget.style.background = '#f0f0f0';
-                                          e.currentTarget.style.color = '#555';
-                                        }}
-                                      >
-                                        <Video size={12} />
-                                        View Video
-                                      </a>
-                                    )}
-                                  </div>
-                                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                    <button
-                                      type="button"
-                                      onClick={() => startEditGallery(gallery)}
-                                      title="Edit gallery"
-                                      style={{
-                                        background: '#f9fafb',
-                                        color: '#374151',
-                                        border: '1px solid #e5e7eb',
-                                        borderRadius: 8,
-                                        padding: 8,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'background 0.15s ease',
-                                      }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
-                                    >
-                                      <Edit2 size={14} />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteDesignGallery(gallery.id)}
-                                      disabled={deletingDesignGalleryId === gallery.id}
-                                      title="Delete gallery"
-                                      style={{
-                                        background: '#fef2f2',
-                                        color: '#ef4444',
-                                        border: 'none',
-                                        borderRadius: 8,
-                                        padding: 8,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'background 0.15s ease',
-                                      }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="pf-preview-grid" style={{ marginTop: 12 }}>
-                                  {(gallery.images || []).map((url, i) => (
-                                    <img
-                                      key={`${gallery.id}-${i}`}
-                                      src={url}
-                                      alt={`${gallery.color_name} ${i + 1}`}
-                                      className="pf-preview-img"
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
+                  </>
+                )}
               </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between' }}>
