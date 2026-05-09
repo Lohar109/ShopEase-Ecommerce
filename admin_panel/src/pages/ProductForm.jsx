@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Folder } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -1954,28 +1954,27 @@ const ProductForm = () => {
                         .smart-hub-body {
                           flex: 1;
                           min-height: 0;
-                          display: flex;
-                          flex-direction: column;
+                          display: grid;
+                          grid-template-rows: 60% 40%;
+                          gap: 0;
                         }
                         .smart-editor-panel {
                           position: relative;
-                          flex: 1;
                           min-height: 0;
-                          border-radius: 40px !important;
-                          border: none !important;
+                          border-radius: 24px 24px 0 0 !important;
+                          border: 1px solid rgba(196, 181, 253, 0.5) !important;
                           outline: none !important;
                           outline-offset: 0 !important;
-                          background: rgba(255, 255, 255, 0.6) !important;
-                          backdrop-filter: blur(20px) !important;
-                          -webkit-backdrop-filter: blur(20px) !important;
-                          border: 2px solid #ec4899 !important;
-                          box-shadow: none !important;
+                          background: rgba(255, 255, 255, 0.4) !important;
+                          backdrop-filter: blur(24px) !important;
+                          -webkit-backdrop-filter: blur(24px) !important;
+                          box-shadow: 0 0 15px rgba(236, 72, 153, 0.1), 0 12px 32px rgba(124, 58, 237, 0.08) !important;
                           background-clip: padding-box;
                           overflow: hidden;
                         }
                         .smart-editor-panel:focus-within {
-                          border-color: rgba(236, 72, 153, 0.4) !important;
-                          box-shadow: none !important;
+                          border-color: rgba(192, 132, 252, 0.8) !important;
+                          box-shadow: 0 0 20px rgba(236, 72, 153, 0.16), 0 12px 32px rgba(124, 58, 237, 0.1) !important;
                           outline: none !important;
                           outline-offset: 0 !important;
                         }
@@ -2089,16 +2088,17 @@ const ProductForm = () => {
                           color: #6b7280;
                         }
                         .smart-hub-insights {
+                          position: relative;
                           display: flex;
                           flex-direction: column;
                           gap: 12px;
-                          min-height: 320px;
-                          padding: 18px 20px 18px;
+                          min-height: 0;
+                          padding: 18px 20px 92px;
                           border-top: 2px solid #ede9fe;
-                          border-radius: 0 0 24px 24px;
-                          background: rgba(248, 250, 252, 0.5);
-                          backdrop-filter: blur(14px);
-                          -webkit-backdrop-filter: blur(14px);
+                          border-radius: 0 0 24px 24px !important;
+                          background: #f8fafc;
+                          backdrop-filter: blur(10px);
+                          -webkit-backdrop-filter: blur(10px);
                         }
                         .smart-stats-grid {
                           display: grid;
@@ -2107,15 +2107,20 @@ const ProductForm = () => {
                         }
                         .smart-stat-pill {
                           border-radius: 24px;
-                          border: 1px solid rgba(167, 139, 250, 0.32);
-                          background: rgba(237, 233, 254, 0.7);
-                          box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
-                          padding: 10px 12px;
+                          border: 1px solid rgba(203, 213, 225, 0.9);
+                          border-left-width: 4px;
+                          background: rgba(255, 255, 255, 0.85);
+                          box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+                          padding: 10px 12px 10px 10px;
                           transition: all 0.25s ease;
                         }
+                        .smart-intel-general { border-left-color: #6366f1; }
+                        .smart-intel-categories { border-left-color: #8b5cf6; }
+                        .smart-intel-specs { border-left-color: #14b8a6; }
+                        .smart-intel-inventory { border-left-color: #f97316; }
                         .smart-stat-pill.active {
-                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.24), 0 0 22px rgba(124, 58, 237, 0.16);
-                          background: rgba(237, 233, 254, 0.92);
+                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2), 0 0 16px rgba(124, 58, 237, 0.14);
+                          background: rgba(255, 255, 255, 0.98);
                         }
                         .smart-stat-pill .k {
                           display: block;
@@ -2132,12 +2137,12 @@ const ProductForm = () => {
                         }
                         .smart-category-state {
                           border-radius: 24px;
-                          border: 1px solid rgba(196, 181, 253, 0.45);
+                          border: 1px solid rgba(196, 181, 253, 0.4);
                           background: rgba(255, 255, 255, 0.82);
                           padding: 12px 14px;
                           display: flex;
                           flex-direction: column;
-                          gap: 3px;
+                          gap: 8px;
                         }
                         .smart-category-label {
                           font-size: 11px;
@@ -2150,6 +2155,20 @@ const ProductForm = () => {
                           font-size: 15px;
                           font-weight: 700;
                           color: #312e81;
+                        }
+                        .smart-category-tag {
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 8px;
+                          width: fit-content;
+                          border-radius: 999px;
+                          border: 1px solid rgba(199, 210, 254, 0.8);
+                          background: #eef2ff;
+                          padding: 8px 12px;
+                        }
+                        .smart-category-tag.awaiting {
+                          border-color: rgba(196, 181, 253, 0.8);
+                          background: rgba(245, 243, 255, 0.9);
                         }
                         .smart-category-awaiting {
                           color: #7c3aed;
@@ -2167,9 +2186,10 @@ const ProductForm = () => {
                         }
                         .smart-audit-table {
                           width: 100%;
-                          border-collapse: collapse;
-                          background: rgba(255,255,255,0.82);
-                          border-radius: 24px;
+                          border-collapse: separate;
+                          border-spacing: 0;
+                          background: rgba(255,255,255,0.92);
+                          border-radius: 16px;
                           overflow: hidden;
                         }
                         .smart-audit-table th {
@@ -2177,34 +2197,64 @@ const ProductForm = () => {
                           font-size: 11px;
                           letter-spacing: 0.08em;
                           text-transform: uppercase;
-                          color: #7c3aed;
+                          color: #6366f1;
                           padding: 12px 14px;
-                          border-bottom: 1px solid rgba(124,58,237,0.16);
-                          background: rgba(237, 233, 254, 0.75);
+                          border-bottom: none;
+                          background: #f8fafc;
                         }
                         .smart-audit-table td {
                           padding: 11px 14px;
-                          border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+                          border-bottom: none;
                           font-size: 13px;
                           color: #0f172a;
+                        }
+                        .smart-audit-table tbody tr:nth-child(odd) {
+                          background: rgba(255, 255, 255, 0.95);
+                        }
+                        .smart-audit-table tbody tr:nth-child(even) {
+                          background: rgba(248, 250, 252, 0.88);
                         }
                         .smart-audit-status {
                           display: inline-flex;
                           align-items: center;
+                          gap: 6px;
                           border-radius: 999px;
                           padding: 5px 9px;
                           font-size: 11px;
                           font-weight: 700;
                         }
-                        .smart-audit-status.preview { background: rgba(16,185,129,0.14); color: #047857; }
+                        .smart-audit-dot {
+                          width: 6px;
+                          height: 6px;
+                          border-radius: 999px;
+                          display: inline-block;
+                          flex-shrink: 0;
+                        }
+                        @keyframes smartPreviewDotPulse {
+                          0%, 100% { transform: scale(1); opacity: 0.75; }
+                          50% { transform: scale(1.35); opacity: 1; }
+                        }
+                        .smart-audit-status.preview { background: #ecfdf5; color: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.16); }
+                        .smart-audit-status.preview .smart-audit-dot { background: #10b981; animation: smartPreviewDotPulse 1.2s ease-in-out infinite; }
                         .smart-audit-status.success { background: rgba(16,185,129,0.14); color: #047857; }
+                        .smart-audit-status.success .smart-audit-dot { background: #10b981; }
                         .smart-audit-status.err { background: rgba(239,68,68,0.12); color: #b91c1c; }
+                        .smart-audit-status.err .smart-audit-dot { background: #ef4444; }
                         .smart-hub-actions {
-                          margin-top: auto;
-                          padding-top: 12px;
+                          position: absolute;
+                          right: 18px;
+                          bottom: 14px;
+                          z-index: 4;
                           display: flex;
                           justify-content: flex-end;
                           gap: 12px;
+                          padding: 10px;
+                          border-radius: 16px;
+                          border: 1px solid rgba(196, 181, 253, 0.45);
+                          background: rgba(255, 255, 255, 0.72);
+                          backdrop-filter: blur(14px);
+                          -webkit-backdrop-filter: blur(14px);
+                          box-shadow: 0 10px 24px rgba(124, 58, 237, 0.12);
                         }
                         @keyframes magicApplyPulse {
                           0% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
@@ -2231,7 +2281,7 @@ const ProductForm = () => {
                         return (
                           <div className="smart-hub-card">
                             <div className="smart-hub-body">
-                              <div className="smart-editor-panel">
+                              <div className="smart-editor-panel bg-white/40 backdrop-blur-xl">
                                 <div className="smart-editor-content">
                                   <pre
                                     ref={magicPreviewRef}
@@ -2270,18 +2320,24 @@ const ProductForm = () => {
 
                               <div className="smart-hub-insights bg-slate-50/50 backdrop-blur-md border-t-2 border-purple-100">
                                 <div className="smart-stats-grid">
-                                  <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
-                                  <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
-                                  <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
-                                  <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                                  <div className={`smart-stat-pill smart-intel-general ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
+                                  <div className={`smart-stat-pill smart-intel-categories ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
+                                  <div className={`smart-stat-pill smart-intel-specs ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
+                                  <div className={`smart-stat-pill smart-intel-inventory ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
                                 </div>
 
                                 <div className="smart-category-state">
                                   <span className="smart-category-label">Matched Category</span>
                                   {categoryMatched ? (
-                                    <span className="smart-category-value">{magicPreview.category}</span>
+                                    <div className="smart-category-tag">
+                                      <Folder size={14} color="#6366f1" />
+                                      <span className="smart-category-value">{magicPreview.category}</span>
+                                    </div>
                                   ) : (
-                                    <span className="smart-category-awaiting">Awaiting Category Match...</span>
+                                    <div className="smart-category-tag awaiting">
+                                      <Folder size={14} color="#7c3aed" />
+                                      <span className="smart-category-awaiting">Awaiting Category Match...</span>
+                                    </div>
                                   )}
                                 </div>
 
@@ -2307,6 +2363,7 @@ const ProductForm = () => {
                                           <td>{row.action}</td>
                                           <td>
                                             <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : (row.status === 'Preview' ? 'preview' : 'success')}`}>
+                                              <span className="smart-audit-dot" />
                                               {row.status}
                                             </span>
                                           </td>
