@@ -72,7 +72,6 @@ const ProductForm = () => {
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isProcessHovered, setIsProcessHovered] = useState(false);
   const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
-  const [isValidateHovered, setIsValidateHovered] = useState(false);
   const [showMagicFillModal, setShowMagicFillModal] = useState(false);
   const [magicFillText, setMagicFillText] = useState('');
   const [magicFillError, setMagicFillError] = useState('');
@@ -82,7 +81,6 @@ const ProductForm = () => {
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
-  const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
@@ -385,23 +383,11 @@ const ProductForm = () => {
     return auditRows;
   };
 
-  const runMagicFillWorkflow = (mode = 'apply') => {
+  const runMagicFillWorkflow = () => {
     clearMagicSyncTimers();
-    const isValidation = mode === 'validate';
 
     try {
       const data = JSON.parse(magicFillText);
-      const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
-
-      if (isValidation) {
-        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
-        setMagicFillError('');
-        setMagicAuditRows(auditRows);
-        setToastMsg('Blueprint validated. Audit log refreshed.');
-        setToastType('success');
-        setTimeout(() => setToastMsg(''), 3000);
-        return;
-      }
 
       setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
 
@@ -574,28 +560,16 @@ const ProductForm = () => {
       }
 
       setMagicFillError('');
-      setMagicAuditRows(auditRows);
       setToastMsg('Magic Fill finalized and applied.');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 4000);
     } catch (e) {
       setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
       setMagicFillError('Invalid JSON format: ' + e.message);
-      setMagicAuditRows([
-        {
-          id: 1,
-          step: 'Parse',
-          type: 'JSON',
-          timestamp: formatMagicTimestamp(),
-          action: 'Parse Failed',
-          status: 'Error',
-        },
-      ]);
     }
   };
 
-  const handleMagicFillValidate = () => runMagicFillWorkflow('validate');
-  const handleMagicFillApply = () => runMagicFillWorkflow('apply');
+  const handleMagicFillApply = () => runMagicFillWorkflow();
 
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
@@ -1972,7 +1946,7 @@ const ProductForm = () => {
                           flex: 1;
                           min-height: 0;
                           display: grid;
-                          grid-template-rows: 60% 40%;
+                          grid-template-rows: 70% 30%;
                           gap: 0;
                         }
                         .smart-editor-panel {
@@ -2061,19 +2035,16 @@ const ProductForm = () => {
                           -webkit-appearance: none;
                         }
                         .smart-editor-pre::-webkit-scrollbar,
-                        .smart-editor-input::-webkit-scrollbar,
-                        .smart-hub-insights::-webkit-scrollbar {
+                        .smart-editor-input::-webkit-scrollbar {
                           width: 6px;
                         }
                         .smart-editor-pre::-webkit-scrollbar-thumb,
-                        .smart-editor-input::-webkit-scrollbar-thumb,
-                        .smart-hub-insights::-webkit-scrollbar-thumb {
+                        .smart-editor-input::-webkit-scrollbar-thumb {
                           background: #a78bfa;
                           border-radius: 10px;
                         }
                         .smart-editor-pre::-webkit-scrollbar-track,
-                        .smart-editor-input::-webkit-scrollbar-track,
-                        .smart-hub-insights::-webkit-scrollbar-track {
+                        .smart-editor-input::-webkit-scrollbar-track {
                           background: transparent;
                         }
                         .smart-empty-zone {
@@ -2183,6 +2154,11 @@ const ProductForm = () => {
                           background: #eef2ff;
                           padding: 8px 12px;
                         }
+                        .smart-category-tag.taxonomy-error {
+                          border-color: rgba(248, 113, 113, 0.65);
+                          box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.22), 0 0 16px rgba(248, 113, 113, 0.18);
+                          background: rgba(255, 255, 255, 0.92);
+                        }
                         .smart-ai-active-dot {
                           width: 7px;
                           height: 7px;
@@ -2210,6 +2186,10 @@ const ProductForm = () => {
                           color: #94a3b8;
                           font-weight: 700;
                         }
+                        .smart-category-missing {
+                          color: #ef4444;
+                          font-weight: 800;
+                        }
                         .smart-category-tag.awaiting {
                           border-color: rgba(196, 181, 253, 0.8);
                           background: rgba(245, 243, 255, 0.9);
@@ -2218,75 +2198,10 @@ const ProductForm = () => {
                           color: #7c3aed;
                           animation: smartAwaitPulse 1.8s ease-in-out infinite;
                         }
-                        .smart-audit-scroll {
-                          max-height: 300px;
-                          overflow-y: auto;
-                          overflow-x: hidden;
-                          border-radius: 24px;
-                        }
                         @keyframes smartAwaitPulse {
                           0%, 100% { opacity: 0.55; }
                           50% { opacity: 1; }
                         }
-                        .smart-audit-list {
-                          display: flex;
-                          flex-direction: column;
-                          gap: 8px;
-                        }
-                        .smart-audit-row {
-                          display: flex;
-                          align-items: center;
-                          justify-content: space-between;
-                          gap: 14px;
-                          border-radius: 12px;
-                          padding: 10px 12px;
-                        }
-                        .smart-audit-row:nth-child(odd) {
-                          background: rgba(255, 255, 255, 0.95);
-                        }
-                        .smart-audit-row:nth-child(even) {
-                          background: rgba(248, 250, 252, 0.92);
-                        }
-                        .smart-audit-row-main {
-                          min-width: 0;
-                        }
-                        .smart-audit-row-action {
-                          font-size: 13px;
-                          color: #0f172a;
-                          font-weight: 600;
-                        }
-                        .smart-audit-row-meta {
-                          margin-top: 3px;
-                          font-size: 11px;
-                          color: #64748b;
-                          letter-spacing: 0.02em;
-                        }
-                        .smart-audit-status {
-                          display: inline-flex;
-                          align-items: center;
-                          gap: 6px;
-                          border-radius: 999px;
-                          padding: 5px 9px;
-                          font-size: 11px;
-                          font-weight: 700;
-                        }
-                        .smart-audit-dot {
-                          width: 6px;
-                          height: 6px;
-                          border-radius: 999px;
-                          display: inline-block;
-                          flex-shrink: 0;
-                        }
-                        @keyframes smartPreviewDotPulse {
-                          0%, 100% { transform: scale(1); opacity: 0.75; }
-                          50% { transform: scale(1.35); opacity: 1; }
-                        }
-                        .smart-audit-status.preview { background: #ecfdf5; color: #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.16); }
-                        .smart-audit-status.preview .smart-audit-dot { background: #10b981; animation: smartPreviewDotPulse 1.2s ease-in-out infinite; }
-                        .smart-audit-status.success { background: rgba(16,185,129,0.14); color: #047857; }
-                        .smart-audit-status.success .smart-audit-dot { background: #10b981; }
-                        .smart-audit-status.err { background: rgba(239,68,68,0.12); color: #b91c1c; }
-                        .smart-audit-status.err .smart-audit-dot { background: #ef4444; }
                         .smart-hub-actions {
                           position: absolute;
                           right: 18px;
@@ -2323,9 +2238,24 @@ const ProductForm = () => {
                         const generalCount = parsed ? ['name', 'brand', 'description', 'audience'].filter((k) => String(parsed?.[k] || '').trim()).length : 0;
                         const specsCount = hasMagicInput ? Number(magicPreview?.specsCount || 0) : 0;
                         const variantsCount = hasMagicInput ? Number(magicPreview?.variantsCount || 0) : 0;
-                        const categoryTrail = hasMagicInput && Array.isArray(magicPreview?.categoryHierarchy) ? magicPreview.categoryHierarchy : [];
+                        const rawMainCategory = hasMagicInput ? String(magicPreview?.categoryMain || '').trim() : '';
+                        const rawSubCategory = hasMagicInput ? String(magicPreview?.categorySub || '').trim() : '';
+                        const rawSubSubCategory = hasMagicInput ? String(magicPreview?.categorySubSub || '').trim() : '';
+                        const categoryTrail = [];
+                        if (rawMainCategory) {
+                          categoryTrail.push(rawMainCategory);
+                          if (rawSubCategory) {
+                            categoryTrail.push(rawSubCategory);
+                            categoryTrail.push(rawSubSubCategory || 'Not Found');
+                          }
+                        } else if (rawSubCategory || rawSubSubCategory) {
+                          categoryTrail.push('Not Found');
+                          if (rawSubCategory) categoryTrail.push(rawSubCategory);
+                          if (rawSubSubCategory) categoryTrail.push(rawSubSubCategory);
+                        }
                         const categoryMatched = categoryTrail.length > 0;
-                        const hasFullCategoryHierarchy = hasMagicInput && Boolean(magicPreview?.hasFullCategoryHierarchy);
+                        const hasFullCategoryHierarchy = Boolean(rawMainCategory && rawSubCategory && rawSubSubCategory);
+                        const hasMissingCategoryHierarchy = categoryTrail.includes('Not Found');
 
                         return (
                           <div className="smart-hub-card">
@@ -2345,7 +2275,6 @@ const ProductForm = () => {
                                     onChange={e => {
                                       setMagicFillText(e.target.value);
                                       setMagicFillError('');
-                                      setMagicAuditRows([]);
                                     }}
                                     onScroll={e => syncMagicScroll(e.target)}
                                     spellCheck={false}
@@ -2378,15 +2307,16 @@ const ProductForm = () => {
                                 <div className="smart-category-state">
                                   <span className="smart-category-label">Matched Category</span>
                                   {categoryMatched ? (
-                                    <div className="smart-category-tag">
+                                    <div className={`smart-category-tag ${hasMissingCategoryHierarchy ? 'taxonomy-error' : ''}`}>
                                       <Folder size={14} color="#6366f1" />
                                       {hasFullCategoryHierarchy && <span className="smart-ai-active-dot" aria-hidden="true" />}
                                       <span className="smart-category-crumb">
                                         {categoryTrail.map((item, idx) => {
                                           const isLast = idx === categoryTrail.length - 1;
+                                          const isMissing = item === 'Not Found';
                                           return (
                                             <React.Fragment key={`${item}-${idx}`}>
-                                              <span className={isLast ? 'smart-category-final' : 'smart-category-parent'}>{item}</span>
+                                              <span className={isMissing ? 'smart-category-missing' : (isLast ? 'smart-category-final' : 'smart-category-parent')}>{item}</span>
                                               {!isLast && <span className="smart-category-separator">&gt;</span>}
                                             </React.Fragment>
                                           );
@@ -2397,29 +2327,6 @@ const ProductForm = () => {
                                     <div className="smart-category-tag awaiting">
                                       <Folder size={14} color="#7c3aed" />
                                       <span className="smart-category-awaiting">Awaiting Category Match...</span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="smart-audit-scroll max-h-[300px] overflow-y-auto">
-                                  {magicAuditRows.length > 0 ? (
-                                    <div className="smart-audit-list">
-                                      {magicAuditRows.map((row) => (
-                                        <div className="smart-audit-row" key={`${row.id}-${row.step}-${row.type}`}>
-                                          <div className="smart-audit-row-main">
-                                            <div className="smart-audit-row-action">{row.action}</div>
-                                            <div className="smart-audit-row-meta">{row.step} • {row.type} • {row.timestamp}</div>
-                                          </div>
-                                          <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : (row.status === 'Preview' ? 'preview' : 'success')}`}>
-                                            <span className="smart-audit-dot" />
-                                            {row.status}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <div style={{ color: '#64748b', padding: '10px 2px' }}>
-                                      Run Validate Blueprint to preview the audit trail, then use Finalize & Apply.
                                     </div>
                                   )}
                                 </div>
@@ -2473,31 +2380,6 @@ const ProductForm = () => {
                                     }}
                                   >
                                     Prettify JSON
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={handleMagicFillValidate}
-                                    onMouseEnter={() => setIsValidateHovered(true)}
-                                    onMouseLeave={() => setIsValidateHovered(false)}
-                                    style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                      background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
-                                      color: '#5b21b6',
-                                      border: '1px solid rgba(196,181,253,0.85)',
-                                      borderRadius: 12,
-                                      padding: '10px 18px',
-                                      fontWeight: 700,
-                                      fontSize: 13,
-                                      fontFamily: 'Poppins, sans-serif',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease',
-                                    }}
-                                  >
-                                    <Check size={14} />
-                                    Validate Blueprint
                                   </button>
 
                                   <button
