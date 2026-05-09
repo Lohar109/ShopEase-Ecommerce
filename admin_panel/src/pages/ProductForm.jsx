@@ -111,12 +111,12 @@ const ProductForm = () => {
     try {
       const data = JSON.parse(magicFillText);
       
-      // 1. Text Fields population
+      // 1. Step 1: General Details
       if (data.name) setName(data.name);
       if (data.brand) setBrand(data.brand);
       if (data.description) setDescription(data.description);
       
-      // 2. Audience Dropdown Matching (case-insensitive label to value)
+      // Target Audience Dropdown Matching (case-insensitive label to value)
       let matchedAudience = '';
       const audVal = String(data.audience || '').toLowerCase().trim();
       if (audVal === 'unisex') matchedAudience = 'unisex';
@@ -132,10 +132,10 @@ const ProductForm = () => {
         setHighlightAudience(true);
       }
 
-      // 3. Category & Subcategory Dropdown Matching
+      // Category & Subcategory Dropdown Matching
       const normalizeId = id => id ? String(id) : '';
       const level1Cats = categories.filter(c => c.level === 1 || c.parent_id === null);
-      const catLabel = String(data.category || '').toLowerCase().trim();
+      const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
       const matchedCat = level1Cats.find(c => String(c.name || '').toLowerCase().trim() === catLabel);
 
       if (matchedCat) {
@@ -143,8 +143,8 @@ const ProductForm = () => {
         setCategoryId(catId);
         setHighlightCategory(false);
 
-        // Now match Subcategory if sub_category is present
-        const subCatLabel = String(data.sub_category || '').toLowerCase().trim();
+        // Now match Subcategory
+        const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
         if (subCatLabel) {
           const subCats = categories.filter(c => normalizeId(c.parent_id) === catId);
           const matchedSubCat = subCats.find(c => String(c.name || '').toLowerCase().trim() === subCatLabel);
@@ -153,8 +153,8 @@ const ProductForm = () => {
             setSubcategoryId(subCatId);
             setHighlightSubcategory(false);
 
-            // Now match Sub-subcategory if sub_sub_category is present
-            const subSubCatLabel = String(data.sub_sub_category || '').toLowerCase().trim();
+            // Now match Sub-subcategory
+            const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
             if (subSubCatLabel) {
               const subSubCats = categories.filter(c => normalizeId(c.parent_id) === subCatId);
               const matchedSubSubCat = subSubCats.find(c => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
@@ -190,8 +190,35 @@ const ProductForm = () => {
         setHighlightSubSubcategory(false);
       }
 
-      // 4. Step 2 Specifications Automation (Dynamic Specs)
-      if (data.specs && typeof data.specs === 'object' && !Array.isArray(data.specs)) {
+      // 2. Step 2: Specifications
+      if (Array.isArray(data.specifications)) {
+        const newSpecs = data.specifications.map(s => ({
+          sk: mk(),
+          key: String(s.key || ''),
+          value: String(s.value || ''),
+        }));
+        if (newSpecs.length > 0) {
+          setSpecs(newSpecs);
+        }
+      } else if (Array.isArray(data.specs)) {
+        const newSpecs = data.specs.map(s => ({
+          sk: mk(),
+          key: String(s.key || ''),
+          value: String(s.value || ''),
+        }));
+        if (newSpecs.length > 0) {
+          setSpecs(newSpecs);
+        }
+      } else if (data.specifications && typeof data.specifications === 'object') {
+        const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
+          sk: mk(),
+          key: String(k || ''),
+          value: String(v || ''),
+        }));
+        if (newSpecs.length > 0) {
+          setSpecs(newSpecs);
+        }
+      } else if (data.specs && typeof data.specs === 'object') {
         const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
           sk: mk(),
           key: String(k || ''),
@@ -199,6 +226,40 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
+        }
+      }
+
+      // 3. Step 4: Inventory (batch add variants and auto-generate SKUs)
+      if (Array.isArray(data.inventory || data.variants)) {
+        const varArr = data.inventory || data.variants;
+        const newVariants = varArr.map(v => {
+          const size = String(v.size || '');
+          const color = String(v.color || '');
+          const priceVal = Number(v.price || 0);
+          const stockVal = Number(v.stock || 0);
+
+          const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+
+          return {
+            vk: mk(),
+            size: size,
+            color: color,
+            price: priceVal,
+            override_discount: false,
+            discount_type: 'Percentage',
+            discount_value: '',
+            stock: stockVal,
+            sku: autoSku,
+            image: mainImage || '',
+            use_separate_gallery: false
+          };
+        });
+
+        if (newVariants.length > 0) {
+          setVariantRows(newVariants);
         }
       }
 
@@ -1409,6 +1470,37 @@ const ProductForm = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifySelf: 'end' }}>
           <button
             type="button"
+            onClick={() => setShowMagicFillModal(true)}
+            style={{
+              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 12,
+              height: 40,
+              padding: '0 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+              transition: 'all 0.2s ease',
+              fontFamily: 'Poppins, sans-serif',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(124, 58, 237, 0.35)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.25)';
+            }}
+          >
+            ⚡ Magic Fill
+          </button>
+          <button
+            type="button"
             className="pf-ghost-action-btn"
             onClick={() => setD(true)}
             disabled={saving}
@@ -1545,40 +1637,9 @@ const ProductForm = () => {
               <div key={activeTab} className="pf-step-pane">
                 {activeTab === 'general' && (
                   <>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                       <div className="pf-section-title" style={{ margin: 0 }}>
-                         <span className="pf-section-title-icon"><Info size={16} /></span>
-                         <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
-                       </div>
-                       <button
-                         type="button"
-                         onClick={() => setShowMagicFillModal(true)}
-                         style={{
-                           background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
-                           color: '#ffffff',
-                           border: 'none',
-                           borderRadius: 10,
-                           padding: '8px 16px',
-                           fontSize: 13,
-                           fontWeight: 600,
-                           cursor: 'pointer',
-                           display: 'flex',
-                           alignItems: 'center',
-                           gap: 6,
-                           boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-                           transition: 'all 0.2s ease',
-                         }}
-                         onMouseEnter={e => {
-                           e.currentTarget.style.transform = 'translateY(-1px)';
-                           e.currentTarget.style.boxShadow = '0 6px 16px rgba(124, 58, 237, 0.35)';
-                         }}
-                         onMouseLeave={e => {
-                           e.currentTarget.style.transform = 'translateY(0)';
-                           e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.25)';
-                         }}
-                       >
-                         ⚡ Magic Fill
-                       </button>
+                     <div className="pf-section-title">
+                       <span className="pf-section-title-icon"><Info size={16} /></span>
+                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>General Details</h3>
                      </div>
                     <div style={{ marginBottom: 18 }}>
                       <label style={{ fontWeight: 500 }}>Product Name</label>
