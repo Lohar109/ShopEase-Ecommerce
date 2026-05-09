@@ -185,6 +185,8 @@ const ProductForm = () => {
           parsed: null,
           prettyJson: '',
           category: 'None',
+          categoryHierarchy: [],
+          hasFullCategoryHierarchy: false,
           specsCount: 0,
           variantsCount: 0,
           sizes: [],
@@ -194,8 +196,19 @@ const ProductForm = () => {
       const parsed = JSON.parse(txt);
       const prettyJson = JSON.stringify(parsed, null, 2);
 
-      // Category detection
+      // Category detection (raw JSON hierarchy first)
       let detectedCategory = 'None';
+      const categoryHierarchy = [];
+      const rawMainCategory = String(parsed.category_label || parsed.category || '').trim();
+      const rawSubCategory = String(parsed.subcategory_label || parsed.sub_category || '').trim();
+      const rawSubSubCategory = String(parsed.sub_subcategory_label || parsed.sub_sub_category || '').trim();
+
+      if (rawMainCategory) categoryHierarchy.push(rawMainCategory);
+      if (rawSubCategory) categoryHierarchy.push(rawSubCategory);
+      if (rawSubSubCategory) categoryHierarchy.push(rawSubSubCategory);
+
+      const hasFullCategoryHierarchy = Boolean(rawMainCategory && rawSubCategory && rawSubSubCategory);
+
       const catLabel = String(parsed.category_label || parsed.category || '').toLowerCase().trim();
       if (catLabel) {
         const normalizeId = id => id ? String(id) : '';
@@ -234,6 +247,8 @@ const ProductForm = () => {
         parsed,
         prettyJson,
         category: detectedCategory,
+        categoryHierarchy,
+        hasFullCategoryHierarchy,
         specsCount,
         variantsCount,
         sizes: uniqueSizesList,
@@ -244,6 +259,8 @@ const ProductForm = () => {
         parsed: null,
         prettyJson: magicFillText,
         category: 'None',
+        categoryHierarchy: [],
+        hasFullCategoryHierarchy: false,
         specsCount: 0,
         variantsCount: 0,
         sizes: [],
@@ -2166,6 +2183,33 @@ const ProductForm = () => {
                           background: #eef2ff;
                           padding: 8px 12px;
                         }
+                        .smart-ai-active-dot {
+                          width: 7px;
+                          height: 7px;
+                          border-radius: 999px;
+                          background: #10b981;
+                          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35);
+                          animation: smartPreviewDotPulse 1.2s ease-in-out infinite;
+                        }
+                        .smart-category-crumb {
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 7px;
+                          line-height: 1.35;
+                        }
+                        .smart-category-parent {
+                          color: #64748b;
+                          opacity: 0.78;
+                          font-weight: 600;
+                        }
+                        .smart-category-final {
+                          color: #312e81;
+                          font-weight: 800;
+                        }
+                        .smart-category-separator {
+                          color: #94a3b8;
+                          font-weight: 700;
+                        }
                         .smart-category-tag.awaiting {
                           border-color: rgba(196, 181, 253, 0.8);
                           background: rgba(245, 243, 255, 0.9);
@@ -2184,35 +2228,38 @@ const ProductForm = () => {
                           0%, 100% { opacity: 0.55; }
                           50% { opacity: 1; }
                         }
-                        .smart-audit-table {
-                          width: 100%;
-                          border-collapse: separate;
-                          border-spacing: 0;
-                          background: rgba(255,255,255,0.92);
-                          border-radius: 16px;
-                          overflow: hidden;
+                        .smart-audit-list {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 8px;
                         }
-                        .smart-audit-table th {
-                          text-align: left;
-                          font-size: 11px;
-                          letter-spacing: 0.08em;
-                          text-transform: uppercase;
-                          color: #6366f1;
-                          padding: 12px 14px;
-                          border-bottom: none;
-                          background: #f8fafc;
+                        .smart-audit-row {
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-between;
+                          gap: 14px;
+                          border-radius: 12px;
+                          padding: 10px 12px;
                         }
-                        .smart-audit-table td {
-                          padding: 11px 14px;
-                          border-bottom: none;
-                          font-size: 13px;
-                          color: #0f172a;
-                        }
-                        .smart-audit-table tbody tr:nth-child(odd) {
+                        .smart-audit-row:nth-child(odd) {
                           background: rgba(255, 255, 255, 0.95);
                         }
-                        .smart-audit-table tbody tr:nth-child(even) {
-                          background: rgba(248, 250, 252, 0.88);
+                        .smart-audit-row:nth-child(even) {
+                          background: rgba(248, 250, 252, 0.92);
+                        }
+                        .smart-audit-row-main {
+                          min-width: 0;
+                        }
+                        .smart-audit-row-action {
+                          font-size: 13px;
+                          color: #0f172a;
+                          font-weight: 600;
+                        }
+                        .smart-audit-row-meta {
+                          margin-top: 3px;
+                          font-size: 11px;
+                          color: #64748b;
+                          letter-spacing: 0.02em;
                         }
                         .smart-audit-status {
                           display: inline-flex;
@@ -2276,7 +2323,9 @@ const ProductForm = () => {
                         const generalCount = parsed ? ['name', 'brand', 'description', 'audience'].filter((k) => String(parsed?.[k] || '').trim()).length : 0;
                         const specsCount = hasMagicInput ? Number(magicPreview?.specsCount || 0) : 0;
                         const variantsCount = hasMagicInput ? Number(magicPreview?.variantsCount || 0) : 0;
-                        const categoryMatched = hasMagicInput && magicPreview?.category && !magicPreview.category.includes('No Match') && magicPreview.category !== 'None';
+                        const categoryTrail = hasMagicInput && Array.isArray(magicPreview?.categoryHierarchy) ? magicPreview.categoryHierarchy : [];
+                        const categoryMatched = categoryTrail.length > 0;
+                        const hasFullCategoryHierarchy = hasMagicInput && Boolean(magicPreview?.hasFullCategoryHierarchy);
 
                         return (
                           <div className="smart-hub-card">
@@ -2331,7 +2380,18 @@ const ProductForm = () => {
                                   {categoryMatched ? (
                                     <div className="smart-category-tag">
                                       <Folder size={14} color="#6366f1" />
-                                      <span className="smart-category-value">{magicPreview.category}</span>
+                                      {hasFullCategoryHierarchy && <span className="smart-ai-active-dot" aria-hidden="true" />}
+                                      <span className="smart-category-crumb">
+                                        {categoryTrail.map((item, idx) => {
+                                          const isLast = idx === categoryTrail.length - 1;
+                                          return (
+                                            <React.Fragment key={`${item}-${idx}`}>
+                                              <span className={isLast ? 'smart-category-final' : 'smart-category-parent'}>{item}</span>
+                                              {!isLast && <span className="smart-category-separator">&gt;</span>}
+                                            </React.Fragment>
+                                          );
+                                        })}
+                                      </span>
                                     </div>
                                   ) : (
                                     <div className="smart-category-tag awaiting">
@@ -2342,39 +2402,26 @@ const ProductForm = () => {
                                 </div>
 
                                 <div className="smart-audit-scroll max-h-[300px] overflow-y-auto">
-                                  <table className="smart-audit-table">
-                                    <thead>
-                                      <tr>
-                                        <th>ID</th>
-                                        <th>Step</th>
-                                        <th>Type</th>
-                                        <th>Timestamp</th>
-                                        <th>Action</th>
-                                        <th>Status</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
-                                        <tr key={`${row.id}-${row.step}-${row.type}`}>
-                                          <td>{row.id}</td>
-                                          <td>{row.step}</td>
-                                          <td>{row.type}</td>
-                                          <td>{row.timestamp}</td>
-                                          <td>{row.action}</td>
-                                          <td>
-                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : (row.status === 'Preview' ? 'preview' : 'success')}`}>
-                                              <span className="smart-audit-dot" />
-                                              {row.status}
-                                            </span>
-                                          </td>
-                                        </tr>
-                                      )) : (
-                                        <tr>
-                                          <td colSpan={6} style={{ color: '#64748b' }}>Run Validate Blueprint to preview the audit trail, then use Finalize & Apply.</td>
-                                        </tr>
-                                      )}
-                                    </tbody>
-                                  </table>
+                                  {magicAuditRows.length > 0 ? (
+                                    <div className="smart-audit-list">
+                                      {magicAuditRows.map((row) => (
+                                        <div className="smart-audit-row" key={`${row.id}-${row.step}-${row.type}`}>
+                                          <div className="smart-audit-row-main">
+                                            <div className="smart-audit-row-action">{row.action}</div>
+                                            <div className="smart-audit-row-meta">{row.step} • {row.type} • {row.timestamp}</div>
+                                          </div>
+                                          <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : (row.status === 'Preview' ? 'preview' : 'success')}`}>
+                                            <span className="smart-audit-dot" />
+                                            {row.status}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <div style={{ color: '#64748b', padding: '10px 2px' }}>
+                                      Run Validate Blueprint to preview the audit trail, then use Finalize & Apply.
+                                    </div>
+                                  )}
                                 </div>
 
                                 {magicFillError && (
