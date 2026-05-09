@@ -1,11 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Editor from 'react-simple-code-editor';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-json';
-
-const CodeEditor = Editor.default || Editor;
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
 import {
@@ -1691,72 +1686,28 @@ const ProductForm = () => {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
-                      <style>{`
-                        .magic-editor-outer::-webkit-scrollbar { width: 6px; height: 6px; }
-                        .magic-editor-outer::-webkit-scrollbar-track { background: transparent; }
-                        .magic-editor-outer::-webkit-scrollbar-thumb { background-color: #a855f7; border-radius: 20px; }
-                        
-                        .magic-editor-inner::-webkit-scrollbar { height: 6px; }
-                        .magic-editor-inner::-webkit-scrollbar-track { background: transparent; }
-                        .magic-editor-inner::-webkit-scrollbar-thumb { background-color: #a855f7; border-radius: 20px; }
-
-                        .magic-editor-outer .token.property { color: #3b82f6; }
-                        .magic-editor-outer .token.string { color: #22c55e; }
-                        .magic-editor-outer .token.number, .magic-editor-outer .token.boolean { color: #a855f7; }
-                        .magic-editor-outer .token.punctuation, .magic-editor-outer .token.operator { color: #94a3b8; }
-                        
-                        .magic-editor-inner textarea { outline: none !important; }
-                      `}</style>
-                      <div className="magic-editor-outer" style={{
-                          height: '70vh', minHeight: 600, background: '#0f172a', borderRadius: 16, border: '1px solid #334155', display: 'flex', overflowY: 'auto', overflowX: 'hidden'
-                      }}>
-                        <div style={{
-                          padding: '24px 12px 24px 16px',
-                          textAlign: 'right',
-                          color: '#475569',
-                          fontFamily: '"Fira Code", "JetBrains Mono", monospace',
-                          fontSize: 14,
-                          lineHeight: 1.5,
-                          borderRight: '1px solid #334155',
-                          userSelect: 'none',
+                      <textarea
+                        value={magicFillText}
+                        onChange={e => {
+                          setMagicFillText(e.target.value);
+                          setMagicFillError('');
+                        }}
+                        placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
+                        style={{
+                          width: '100%',
+                          height: 300,
                           background: '#0f172a',
-                          flexShrink: 0
-                        }}>
-                          {Array.from({ length: (magicFillText || '').split('\\n').length || 1 }, (_, i) => i + 1).map(n => <div key={n}>{n}</div>)}
-                        </div>
-                        
-                        <div className="magic-editor-inner" style={{ flex: 1, overflowX: 'auto' }}>
-                          <CodeEditor
-                            value={magicFillText}
-                            onValueChange={code => { setMagicFillText(code); setMagicFillError(''); }}
-                            highlight={code => {
-                              let highlighted = Prism.highlight(code, Prism.languages.json, 'json');
-                              highlighted = highlighted.replace(
-                                /<span class="token property">"specifications"<\/span>/g,
-                                '<span class="token property" style="color:#a855f7;text-shadow:0 0 8px rgba(168,85,247,0.8);font-weight:700;">"specifications"</span>'
-                              );
-                              highlighted = highlighted.replace(
-                                /<span class="token property">"inventory"<\/span>/g,
-                                '<span class="token property" style="color:#a855f7;text-shadow:0 0 8px rgba(168,85,247,0.8);font-weight:700;">"inventory"</span>'
-                              );
-                              highlighted = highlighted.replace(
-                                /<span class="token property">"variants"<\/span>/g,
-                                '<span class="token property" style="color:#a855f7;text-shadow:0 0 8px rgba(168,85,247,0.8);font-weight:700;">"variants"</span>'
-                              );
-                              return highlighted;
-                            }}
-                            padding={24}
-                            style={{
-                              fontFamily: '"Fira Code", "JetBrains Mono", monospace',
-                              fontSize: 14,
-                              lineHeight: 1.5,
-                              minWidth: '100%',
-                              minHeight: '100%',
-                              whiteSpace: 'pre'
-                            }}
-                          />
-                        </div>
-                      </div>
+                          color: '#38bdf8',
+                          fontFamily: 'Fira Code, monospace',
+                          fontSize: 14,
+                          padding: 24,
+                          borderRadius: 16,
+                          border: '1px solid #334155',
+                          resize: 'vertical',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
                     </div>
 
                     {previewData && !previewData.error && (
