@@ -646,7 +646,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '1.2fr 1.2fr 1.5fr 1fr 1.5fr 1.5fr 1.5fr auto 80px';
+  const variantCols = 'repeat(8, 1fr) auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -1699,7 +1699,7 @@ const ProductForm = () => {
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Size</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Color</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Price</div>
-                      <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Final Price</div>
+                      <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Final Price</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Stock</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>SKU</div>
                       <div style={{ textAlign: 'left', color: '#6b7280', fontSize: 13, fontWeight: 600 }}>Image</div>
@@ -1744,33 +1744,29 @@ const ProductForm = () => {
                             padding: '5px 0',
                           }}
                         >
-                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <span style={{ fontSize: 14, fontWeight: savings > 0 ? 700 : 500, color: savings > 0 ? '#16a34a' : '#111' }}>₹{finalPrice.toFixed(2)}</span>
-                            {savings > 0 && <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 600 }}>You save ₹{savings.toFixed(2)}</span>}
-                            <label style={{ fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, marginTop: 4, cursor: 'pointer' }}>
-                              <input type="checkbox" checked={variant.override_discount || false} onChange={e => handleVariantChange(index, 'override_discount', e.target.checked)} />
-                              Override Global
+                          <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: savings > 0 ? '#16a34a' : '#111', textAlign: 'center' }}>₹{finalPrice.toFixed(2)}</span>
+                            {savings > 0 && <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 600, textAlign: 'center' }}>Save ₹{savings.toFixed(2)}</span>}
+                            <label style={{ fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, marginTop: 2, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                              <input type="checkbox" checked={variant.override_discount || false} onChange={e => handleVariantChange(index, 'override_discount', e.target.checked)} style={{ width: 12, height: 12 }} />
+                              Override
                             </label>
                             {variant.override_discount && (
-                               <button type="button" onClick={() => setEditingDiscountVariantIndex(index)} style={{ fontSize: 10, color: '#ff3f6c', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, marginTop: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                 <Edit2 size={10} /> Custom Discount
+                               <button type="button" onClick={() => setEditingDiscountVariantIndex(index)} style={{ fontSize: 10, color: '#ff3f6c', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: 0, marginTop: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
+                                 <Edit2 size={10} /> Custom Disc.
                                </button>
                             )}
                           </div>
-                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', padding: 4, borderRadius: 12, border: '1px solid #a0a0a0' }} />
+                          <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 12, border: '1px solid #a0a0a0' }} />
                           <div
                             className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
                             style={{
                               position: 'relative',
                               width: '100%',
                               boxSizing: 'border-box',
-                              border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid transparent',
-                              borderRadius: 8,
-                              padding: 2,
-                              background: hasDuplicateSkuError ? '#fff7f7' : 'transparent',
                             }}
                           >
                             <input
@@ -1780,7 +1776,8 @@ const ProductForm = () => {
                               readOnly
                               style={{
                                 width: '100%',
-                                padding: 4,
+                                height: 40,
+                                padding: '0 12px',
                                 borderRadius: 12,
                                 border: hasDuplicateSkuError ? '1px solid #ef4444' : '1px solid #a0a0a0',
                                 background: '#f5f6fa',
@@ -1814,7 +1811,8 @@ const ProductForm = () => {
                                 readOnly
                                 style={{
                                   width: '100%',
-                                  padding: 4,
+                                  height: 40,
+                                  padding: '0 12px',
                                   borderRadius: 12,
                                   border: '1px solid #d1d5db',
                                   background: '#f3f4f6',
@@ -1836,7 +1834,8 @@ const ProductForm = () => {
                               onChange={e => handleVariantChange(index, 'image', e.target.value)}
                               style={{
                                 width: '100%',
-                                padding: 4,
+                                height: 40,
+                                padding: '0 12px',
                                 borderRadius: 12,
                                 border: '1px solid #a0a0a0',
                                 background: '#fff',
@@ -1862,19 +1861,20 @@ const ProductForm = () => {
                               background: '#fef2f2',
                               color: '#ef4444',
                               border: 'none',
-                              borderRadius: 8,
-                              padding: 8,
+                              borderRadius: 12,
+                              height: 40,
+                              width: 40,
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              justifySelf: 'start',
+                              justifySelf: 'center',
                               cursor: 'pointer',
                               transition: 'background 0.15s ease',
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                         );
