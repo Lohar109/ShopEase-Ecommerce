@@ -2514,6 +2514,12 @@ const ProductForm = () => {
             .premium-modal-card {
               animation: premiumModalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
+            textarea.quick-paste-textarea {
+              background: rgba(2, 6, 23, 0.85) !important;
+              background-color: rgba(2, 6, 23, 0.85) !important;
+              color: #f8fafc !important;
+              font-family: 'Fira Code', monospace !important;
+            }
           `}</style>
           <div
             className="premium-modal-card"
