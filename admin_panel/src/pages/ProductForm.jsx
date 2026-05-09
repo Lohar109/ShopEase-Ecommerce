@@ -85,7 +85,7 @@ const ProductForm = () => {
 
       // Split by comma or tab
       const parts = trimmedLine.split(/[,\t]+/).map(p => p.trim());
-      
+
       // We expect: Size, Color, Price, Stock
       if (parts.length < 4) {
         skippedCount++;
@@ -1771,9 +1771,40 @@ const ProductForm = () => {
 
                 {activeTab === 'inventory' && (
                   <>
-                    <div className="pf-section-title">
-                      <span className="pf-section-title-icon"><Box size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <div className="pf-section-title" style={{ margin: 0 }}>
+                        <span className="pf-section-title-icon"><Box size={16} /></span>
+                        <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowQuickPasteModal(true)}
+                        style={{
+                          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '6px 12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          fontSize: 13,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
+                          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.3)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'none';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.2)';
+                        }}
+                      >
+                        <span>⚡</span> Quick Paste Variants
+                      </button>
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                     <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
@@ -2199,78 +2230,78 @@ const ProductForm = () => {
                               </div>
                             </div>
 
-                             {/* Right Part: Inputs & Price Summary Card horizontally aligned side-by-side */}
-                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 24 }}>
-                               {hasOverride && (
-                                 <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                                   <div style={{ width: 180 }}>
-                                     <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Type</label>
-                                     <select
-                                       className="custom-input"
-                                       value={discType}
-                                       onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
-                                       style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
-                                     >
-                                       <option value="Percentage">Percentage (%)</option>
-                                       <option value="Fixed">Fixed (₹)</option>
-                                     </select>
-                                   </div>
-                                   <div style={{ width: 100 }}>
-                                     <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Value</label>
-                                     <input
-                                       className="custom-input"
-                                       type="number"
-                                       min="0"
-                                       step="0.01"
-                                       placeholder="0"
-                                       value={variant.discount_value || ''}
-                                       onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
-                                       style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
-                                     />
-                                   </div>
-                                 </div>
-                               )}
+                            {/* Right Part: Inputs & Price Summary Card horizontally aligned side-by-side */}
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 24 }}>
+                              {hasOverride && (
+                                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                                  <div style={{ width: 180 }}>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Type</label>
+                                    <select
+                                      className="custom-input"
+                                      value={discType}
+                                      onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
+                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
+                                    >
+                                      <option value="Percentage">Percentage (%)</option>
+                                      <option value="Fixed">Fixed (₹)</option>
+                                    </select>
+                                  </div>
+                                  <div style={{ width: 100 }}>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Value</label>
+                                    <input
+                                      className="custom-input"
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      placeholder="0"
+                                      value={variant.discount_value || ''}
+                                      onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
+                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
 
-                               {/* Price Summary Card */}
-                               <div
-                                 style={{
-                                   background: '#f8fafc',
-                                   border: '1px solid #e2e8f0',
-                                   borderRadius: 12,
-                                   padding: '12px 16px',
-                                   width: 296,
-                                   minWidth: 296,
-                                   display: 'flex',
-                                   flexDirection: 'column',
-                                   gap: 8,
-                                   fontFamily: 'Poppins, sans-serif',
-                                 }}
-                               >
-                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                   <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>Original Price</span>
-                                   <span style={{ fontSize: 13, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
-                                     ₹{originalPrice.toFixed(2)}
-                                   </span>
-                                 </div>
-                                 {hasOverride && (
-                                   <>
-                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                       <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 400 }}>Discount</span>
-                                       <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>
-                                         {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
-                                       </span>
-                                     </div>
-                                     <div style={{ borderTop: '1px solid #e2e8f0', margin: '2px 0' }} />
-                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                       <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 400 }}>Final Price</span>
-                                       <span style={{ fontSize: 15, color: '#16a34a', fontWeight: 700 }}>
-                                         ₹{finalPrice.toFixed(2)}
-                                       </span>
-                                     </div>
-                                   </>
-                                 )}
-                               </div>
-                             </div>
+                              {/* Price Summary Card */}
+                              <div
+                                style={{
+                                  background: '#f8fafc',
+                                  border: '1px solid #e2e8f0',
+                                  borderRadius: 12,
+                                  padding: '12px 16px',
+                                  width: 296,
+                                  minWidth: 296,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 8,
+                                  fontFamily: 'Poppins, sans-serif',
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>Original Price</span>
+                                  <span style={{ fontSize: 13, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
+                                    ₹{originalPrice.toFixed(2)}
+                                  </span>
+                                </div>
+                                {hasOverride && (
+                                  <>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 400 }}>Discount</span>
+                                      <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>
+                                        {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                      </span>
+                                    </div>
+                                    <div style={{ borderTop: '1px solid #e2e8f0', margin: '2px 0' }} />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 400 }}>Final Price</span>
+                                      <span style={{ fontSize: 15, color: '#16a34a', fontWeight: 700 }}>
+                                        ₹{finalPrice.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         );
                       })}
@@ -2298,53 +2329,23 @@ const ProductForm = () => {
                   Back
                 </button>
 
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
-                  {activeTab === 'inventory' && (
-                    <button
-                      type="button"
-                      onClick={() => setShowQuickPasteModal(true)}
-                      style={{
-                        background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: 8,
-                        padding: '8px 16px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        fontSize: 13,
-                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
-                        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.2)';
-                      }}
-                    >
-                      Quick Paste Variants
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    disabled={!canNext}
-                    style={{
-                      background: '#111827',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '8px 20px',
-                      fontWeight: 600,
-                      cursor: canNext ? 'pointer' : 'not-allowed',
-                      opacity: canNext ? 1 : 0.5,
-                    }}
-                  >
-                    Next
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  disabled={!canNext}
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 20px',
+                    fontWeight: 600,
+                    cursor: canNext ? 'pointer' : 'not-allowed',
+                    opacity: canNext ? 1 : 0.5,
+                  }}
+                >
+                  Next
+                </button>
               </div>
             </div>
           </section>
