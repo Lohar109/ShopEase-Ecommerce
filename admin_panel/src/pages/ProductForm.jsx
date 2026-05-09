@@ -2497,42 +2497,62 @@ const ProductForm = () => {
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.55)',
-            backdropFilter: 'blur(40px)',
-            WebkitBackdropFilter: 'blur(40px)',
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(32px)',
+            WebkitBackdropFilter: 'blur(32px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 20,
+            padding: 40,
           }}
         >
           <style>{`
             @keyframes premiumModalScaleIn {
-              from { transform: scale(0.95); opacity: 0; }
+              from { transform: scale(0.96); opacity: 0; }
               to { transform: scale(1); opacity: 1; }
             }
             .premium-modal-card {
-              animation: premiumModalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+              animation: premiumModalScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
             textarea.quick-paste-textarea {
-              background: rgba(2, 6, 23, 0.85) !important;
-              background-color: rgba(2, 6, 23, 0.85) !important;
-              color: #f8fafc !important;
-              font-family: 'Fira Code', monospace !important;
+              background: rgba(2, 6, 23, 0.7) !important;
+              background-color: rgba(2, 6, 23, 0.7) !important;
+              color: #f1f5f9 !important;
+              font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
+            }
+            .custom-preview-panel::-webkit-scrollbar {
+              width: 6px;
+              height: 6px;
+            }
+            .custom-preview-panel::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .custom-preview-panel::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 10px;
+            }
+            .custom-preview-panel:hover::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.2);
             }
           `}</style>
           <div
             className="premium-modal-card"
             style={{
-              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 24,
-              width: '100%',
-              maxWidth: 500,
-              padding: 40,
-              boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 50px rgba(99, 102, 241, 0.3)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: 32,
+              width: '85%',
+              height: '85%',
+              maxWidth: 1200,
+              maxHeight: 800,
+              padding: 48,
+              boxShadow: '0 40px 100px -20px rgba(0, 0, 0, 0.75), 0 0 80px rgba(255, 255, 255, 0.05)',
               fontFamily: 'Poppins, sans-serif',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
               transition: 'all 0.3s ease',
+              boxSizing: 'border-box',
             }}
             onClick={e => e.stopPropagation()}
           >
@@ -2543,14 +2563,14 @@ const ProductForm = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '40px 0',
+                  height: '100%',
                 }}
               >
                 <div
                   className="pulsing-checkmark"
                   style={{
-                    width: 72,
-                    height: 72,
+                    width: 88,
+                    height: 88,
                     borderRadius: '50%',
                     background: 'rgba(16, 185, 129, 0.1)',
                     border: '4px solid #10b981',
@@ -2558,73 +2578,179 @@ const ProductForm = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#10b981',
-                    marginBottom: 16,
-                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+                    marginBottom: 20,
+                    boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)',
                   }}
                 >
-                  <Check size={36} strokeWidth={3} />
+                  <Check size={44} strokeWidth={3} />
                 </div>
-                <h4 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#34d399' }}>Variants Imported!</h4>
-                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#a7f3d0' }}>Adding to inventory list...</p>
+                <h4 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: '#34d399' }}>Variants Imported!</h4>
+                <p style={{ margin: '8px 0 0', fontSize: 14, color: '#a7f3d0' }}>Adding new variants to inventory list...</p>
               </div>
             ) : (
               <>
-                <h3 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 700, color: '#ffffff' }}>
-                  Quick Paste Variants
-                </h3>
-                <p style={{ margin: '0 0 28px', fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.6 }}>
-                  Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
-                </p>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 }}>
-                  <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>Data Input</label>
-                  <button
-                    type="button"
-                    onClick={handlePrettifyPaste}
-                    onMouseEnter={() => setIsPrettifyHovered(true)}
-                    onMouseLeave={() => setIsPrettifyHovered(false)}
-                    style={{
-                      background: isPrettifyHovered ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                      color: '#a5b4fc',
-                      border: '1px solid rgba(165, 180, 252, 0.3)',
-                      borderRadius: 6,
-                      padding: '3px 10px',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    ✨ Prettify Input
-                  </button>
+                {/* Header */}
+                <div style={{ marginBottom: 24 }}>
+                  <h3 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>
+                    Quick Paste Variants
+                  </h3>
+                  <p style={{ margin: 0, fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.5 }}>
+                    Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
+                  </p>
                 </div>
 
-                <textarea
-                  className="custom-input quick-paste-textarea"
-                  value={quickPasteText}
-                  onChange={e => setQuickPasteText(e.target.value)}
-                  onFocus={() => setIsTextareaFocused(true)}
-                  onBlur={() => setIsTextareaFocused(false)}
-                  placeholder={'[ \n  { "size": "M", "color": "Red", "price": 150, "stock": 100 }\n]\n\nOR\n\nM, Red, 150, 100'}
-                  style={{
-                    boxSizing: 'border-box',
-                    width: '100%',
-                    height: 180,
-                    padding: 24,
-                    borderRadius: 16,
-                    border: isTextareaFocused ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.15)',
-                    background: 'rgba(2, 6, 23, 0.5)',
-                    boxShadow: isTextareaFocused ? 'inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(99, 102, 241, 0.35)' : 'inset 0 2px 8px rgba(0, 0, 0, 0.5)',
-                    color: '#f8fafc',
-                    fontFamily: 'Fira Code, Courier New, Courier, monospace',
-                    fontSize: 13,
-                    lineHeight: 1.6,
-                    resize: 'none',
-                    marginBottom: 24,
-                    outline: 'none',
-                    transition: 'all 0.2s ease',
-                  }}
-                />
+                {/* 2-Column Code-Editor IDE Area */}
+                <div style={{ display: 'flex', gap: 28, flex: 1, minHeight: 0, marginBottom: 24 }}>
+                  {/* Left Column: Dark Editor */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
+                        DATA INPUT (JSON or CSV FORMAT)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handlePrettifyPaste}
+                        onMouseEnter={() => setIsPrettifyHovered(true)}
+                        onMouseLeave={() => setIsPrettifyHovered(false)}
+                        style={{
+                          background: isPrettifyHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                          color: '#ffffff',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          borderRadius: 8,
+                          padding: '4px 12px',
+                          fontSize: 11,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        ✨ Prettify JSON
+                      </button>
+                    </div>
+
+                    <textarea
+                      className="custom-input quick-paste-textarea"
+                      value={quickPasteText}
+                      onChange={e => setQuickPasteText(e.target.value)}
+                      onFocus={() => setIsTextareaFocused(true)}
+                      onBlur={() => setIsTextareaFocused(false)}
+                      placeholder={'[ \n  { "size": "M", "color": "Red", "price": 150, "stock": 100 }\n]\n\nOR\n\nM, Red, 150, 100'}
+                      style={{
+                        boxSizing: 'border-box',
+                        width: '100%',
+                        flex: 1,
+                        padding: 24,
+                        borderRadius: 16,
+                        border: isTextareaFocused ? '1px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.15)',
+                        background: 'rgba(2, 6, 23, 0.7)',
+                        boxShadow: isTextareaFocused ? 'inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 16px rgba(129, 140, 248, 0.3)' : 'inset 0 2px 8px rgba(0, 0, 0, 0.5)',
+                        color: '#f8fafc',
+                        fontFamily: 'Fira Code, Courier New, Courier, monospace',
+                        fontSize: 13,
+                        lineHeight: 1.6,
+                        resize: 'none',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    />
+                  </div>
+
+                  {/* Right Column: Live Highlighted Preview */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', height: 26 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0, fontFamily: 'monospace' }}>
+                        LIVE PREVIEW & SYNTAX VALIDATION
+                      </label>
+                    </div>
+
+                    <div
+                      className="custom-preview-panel"
+                      style={{
+                        flex: 1,
+                        background: 'rgba(2, 6, 23, 0.8)',
+                        borderRadius: 16,
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        padding: 24,
+                        boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.6)',
+                        overflowY: 'auto',
+                        color: '#e2e8f0',
+                      }}
+                    >
+                      {(() => {
+                        if (!quickPasteText.trim()) {
+                          return (
+                            <div style={{ color: 'rgba(255, 255, 255, 0.3)', fontStyle: 'italic', fontFamily: 'monospace', fontSize: 13 }}>
+                              Waiting for code input to generate preview...
+                            </div>
+                          );
+                        }
+                        try {
+                          if (quickPasteText.trim().startsWith('[') || quickPasteText.trim().startsWith('{')) {
+                            const parsed = JSON.parse(quickPasteText);
+                            const pretty = JSON.stringify(parsed, null, 2);
+                            const tokens = pretty.split('\n').map((line, idx) => {
+                              const match = line.match(/^(\s*)"([^"]+)":\s*(.*)$/);
+                              if (match) {
+                                const indent = match[1];
+                                const key = match[2];
+                                const val = match[3];
+                                return (
+                                  <div key={idx} style={{ fontFamily: 'Fira Code, monospace', fontSize: 13, lineHeight: '1.6', whiteSpace: 'pre' }}>
+                                    <span>{indent}</span>
+                                    <span style={{ color: '#34d399', fontWeight: 600 }}>"{key}"</span>: <span style={{ color: '#fb923c' }}>{val}</span>
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div key={idx} style={{ fontFamily: 'Fira Code, monospace', fontSize: 13, lineHeight: '1.6', color: '#94a3b8', whiteSpace: 'pre' }}>
+                                  {line}
+                                </div>
+                              );
+                            });
+                            return <div style={{ textAlign: 'left' }}>{tokens}</div>;
+                          } else {
+                            const lines = quickPasteText.split('\n').filter(l => l.trim());
+                            return (
+                              <div style={{ textAlign: 'left' }}>
+                                <div style={{ color: '#818cf8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                                  Parsed CSV Rows:
+                                </div>
+                                {lines.map((line, idx) => {
+                                  const parts = line.split(/[,\t]+/).map(p => p.trim());
+                                  return (
+                                    <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 6, fontFamily: 'Fira Code, monospace', fontSize: 13, alignItems: 'center' }}>
+                                      <span style={{ color: 'rgba(255, 255, 255, 0.3)', width: 24, display: 'inline-block' }}>{idx + 1}</span>
+                                      {parts.map((p, pIdx) => {
+                                        let color = '#ffffff';
+                                        let label = '';
+                                        if (pIdx === 0) { color = '#34d399'; label = 'Size'; }
+                                        if (pIdx === 1) { color = '#38bdf8'; label = 'Color'; }
+                                        if (pIdx === 2) { color = '#fb923c'; label = 'Price'; }
+                                        if (pIdx === 3) { color = '#c084fc'; label = 'Stock'; }
+                                        return (
+                                          <span key={pIdx} style={{ color, background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }}>
+                                            <strong style={{ opacity: 0.5, marginRight: 4, fontWeight: 500, fontSize: 10 }}>{label}:</strong>{p}
+                                          </span>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+                        } catch (e) {
+                          return (
+                            <div style={{ color: '#fca5a5', fontFamily: 'Fira Code, monospace', fontSize: 13, textAlign: 'left', background: 'rgba(239, 68, 68, 0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(239, 68, 68, 0.15)' }}>
+                              <strong style={{ color: '#ef4444', display: 'block', marginBottom: 4 }}>⚠️ Syntax Error</strong>
+                              {e.message}
+                            </div>
+                          );
+                        }
+                      })()}
+                    </div>
+                  </div>
+                </div>
 
                 {quickPasteWarning && (
                   <div
@@ -2636,7 +2762,7 @@ const ProductForm = () => {
                       color: '#fca5a5',
                       fontSize: 12,
                       fontWeight: 500,
-                      marginBottom: 24,
+                      marginBottom: 20,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
@@ -2647,7 +2773,8 @@ const ProductForm = () => {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}>
+                {/* Bottom Footer Actions */}
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -2658,14 +2785,13 @@ const ProductForm = () => {
                     onMouseEnter={() => setIsCancelHovered(true)}
                     onMouseLeave={() => setIsCancelHovered(false)}
                     style={{
-                      width: '45%',
                       background: isCancelHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                       color: '#ffffff',
                       border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: 10,
-                      padding: '10px 20px',
+                      borderRadius: 12,
+                      padding: '12px 28px',
                       fontWeight: 600,
-                      fontSize: 13,
+                      fontSize: 14,
                       cursor: 'pointer',
                       transform: isCancelHovered ? 'scale(1.03)' : 'scale(1)',
                       transition: 'all 0.2s ease',
@@ -2680,16 +2806,15 @@ const ProductForm = () => {
                     onMouseEnter={() => setIsProcessHovered(true)}
                     onMouseLeave={() => setIsProcessHovered(false)}
                     style={{
-                      width: '50%',
                       background: isProcessHovered ? 'linear-gradient(135deg, #818cf8 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
                       color: '#ffffff',
                       border: 'none',
-                      borderRadius: 10,
-                      padding: '10px 20px',
+                      borderRadius: 12,
+                      padding: '12px 32px',
                       fontWeight: 600,
-                      fontSize: 13,
+                      fontSize: 14,
                       cursor: 'pointer',
-                      boxShadow: '0 4px 20px rgba(99, 102, 241, 0.25)',
+                      boxShadow: isProcessHovered ? '0 10px 25px -5px rgba(99, 102, 241, 0.5), 0 0 30px rgba(99, 102, 241, 0.2)' : '0 4px 15px rgba(99, 102, 241, 0.25)',
                       transform: isProcessHovered ? 'scale(1.03)' : 'scale(1)',
                       transition: 'all 0.2s ease',
                     }}
