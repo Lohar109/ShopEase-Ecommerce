@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
@@ -80,6 +80,34 @@ const ProductForm = () => {
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
+  const magicEditorRef = useRef(null);
+
+  // VS Code Light syntax highlighter for JSON
+  const highlightJSON = (code) => {
+    if (!code) return '';
+    const PRIMARY_KEYS = ['name', 'brand', 'description', 'audience', 'category_label', 'subcategory_label', 'specifications', 'specs', 'inventory', 'variants'];
+    const escaped = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return escaped
+      // Strings (values) - dark green
+      .replace(/(:\s*)("[^"]*")/g, (_, colon, val) => `${colon}<span style="color:#116329">${val}</span>`)
+      // Keys - deep blue, primary keys bold
+      .replace(/("([^"]+)")(?=\s*:)/g, (_, full, keyName) => {
+        const isPrimary = PRIMARY_KEYS.includes(keyName);
+        return isPrimary
+          ? `<span style="color:#0550ae;font-weight:700">${full}</span>`
+          : `<span style="color:#0550ae">${full}</span>`;
+      })
+      // Numbers - vibrant purple
+      .replace(/:\s*(\d+(\.\d+)?)/g, (match, num) => match.replace(num, `<span style="color:#8250df">${num}</span>`))
+      // Booleans/null
+      .replace(/:\s*(true|false|null)/g, (match, kw) => match.replace(kw, `<span style="color:#8250df">${kw}</span>`))
+      // Braces & brackets - slate gray
+      .replace(/([{}[\]])/g, '<span style="color:#24292f">$1</span>');
+  };
+
 
   const previewData = useMemo(() => {
     try {
@@ -1686,28 +1714,59 @@ const ProductForm = () => {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
-                      <textarea
-                        value={magicFillText}
-                        onChange={e => {
-                          setMagicFillText(e.target.value);
-                          setMagicFillError('');
-                        }}
-                        placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
-                        style={{
-                          width: '100%',
-                          height: 300,
-                          background: '#0f172a',
-                          color: '#38bdf8',
-                          fontFamily: 'Fira Code, monospace',
-                          fontSize: 14,
-                          padding: 24,
-                          borderRadius: 16,
-                          border: '1px solid #334155',
-                          resize: 'vertical',
-                          outline: 'none',
-                          boxSizing: 'border-box',
-                        }}
-                      />
+                      <style>{`
+                        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+                        .mf-editor-wrap { position: relative; border-radius: 14px; overflow: hidden; border: 1.5px solid #e2e8f0; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04); transition: border-color 0.2s ease; }
+                        .mf-editor-wrap:focus-within { border-color: #a78bfa; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04), 0 0 0 3px rgba(167,139,250,0.15); }
+                        .mf-pre {
+                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                          font-size: 13.5px; line-height: 1.6; padding: 30px;
+                          margin: 0; white-space: pre-wrap; word-break: break-all;
+                          min-height: 320px; background: #fcfcfc;
+                          color: #24292f; pointer-events: none; user-select: none;
+                          box-sizing: border-box; width: 100%; display: block;
+                        }
+                        .mf-textarea {
+                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                          font-size: 13.5px; line-height: 1.6; padding: 30px;
+                          position: absolute; inset: 0; width: 100%; height: 100%;
+                          background: transparent; color: transparent;
+                          caret-color: #7c3aed; border: none; outline: none; resize: none;
+                          box-sizing: border-box; overflow: auto; z-index: 2;
+                          white-space: pre-wrap; word-break: break-all;
+                        }
+                        .mf-textarea::selection { background: rgba(124,58,237,0.18); }
+                        .mf-textarea::-webkit-scrollbar { width: 6px; }
+                        .mf-textarea::-webkit-scrollbar-track { background: transparent; }
+                        .mf-textarea::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; }
+                      `}</style>
+                      <div className="mf-editor-wrap">
+                        <pre
+                          className="mf-pre"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{ __html: highlightJSON(magicFillText) + '\n' }}
+                        />
+                        <textarea
+                          ref={magicEditorRef}
+                          className="mf-textarea"
+                          value={magicFillText}
+                          onChange={e => {
+                            setMagicFillText(e.target.value);
+                            setMagicFillError('');
+                            // sync pre scroll
+                            const pre = e.target.previousSibling;
+                            if (pre) { pre.scrollTop = e.target.scrollTop; pre.scrollLeft = e.target.scrollLeft; }
+                          }}
+                          onScroll={e => {
+                            const pre = e.target.previousSibling;
+                            if (pre) { pre.scrollTop = e.target.scrollTop; pre.scrollLeft = e.target.scrollLeft; }
+                          }}
+                          spellCheck={false}
+                          autoComplete="off"
+                          autoCorrect="off"
+                          placeholder={`{\n  "name": "Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "specifications": [\n    { "key": "Material", "value": "100% Cotton" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
+                        />
+                      </div>
                     </div>
 
                     {previewData && !previewData.error && (
