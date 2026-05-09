@@ -80,7 +80,10 @@ const ProductForm = () => {
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
+  const [magicAuditRows, setMagicAuditRows] = useState([]);
+  const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
   const magicEditorRef = useRef(null);
+  const magicSyncTimersRef = useRef([]);
 
   // VS Code Light syntax highlighter for JSON
   const highlightJSON = (code) => {
@@ -108,12 +111,30 @@ const ProductForm = () => {
       .replace(/([{}[\]])/g, '<span style="color:#24292f">$1</span>');
   };
 
+  const clearMagicSyncTimers = () => {
+    magicSyncTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+    magicSyncTimersRef.current = [];
+  };
 
-  const previewData = useMemo(() => {
+  const formatMagicTimestamp = (date = new Date()) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+
+  const magicPreview = useMemo(() => {
     try {
       const txt = magicFillText.trim();
-      if (!txt) return null;
+      if (!txt) {
+        return {
+          parsed: null,
+          prettyJson: '',
+          category: 'None',
+          specsCount: 0,
+          variantsCount: 0,
+          sizes: [],
+          error: null,
+        };
+      }
       const parsed = JSON.parse(txt);
+      const prettyJson = JSON.stringify(parsed, null, 2);
 
       // Category detection
       let detectedCategory = 'None';
@@ -152,6 +173,8 @@ const ProductForm = () => {
       }
 
       return {
+        parsed,
+        prettyJson,
         category: detectedCategory,
         specsCount,
         variantsCount,
@@ -160,6 +183,8 @@ const ProductForm = () => {
       };
     } catch (e) {
       return {
+        parsed: null,
+        prettyJson: magicFillText,
         category: 'None',
         specsCount: 0,
         variantsCount: 0,
@@ -168,6 +193,10 @@ const ProductForm = () => {
       };
     }
   }, [magicFillText, categories]);
+
+  useEffect(() => () => {
+    clearMagicSyncTimers();
+  }, []);
 
   const handlePrettifyPaste = () => {
     setQuickPasteWarning('');
@@ -197,13 +226,54 @@ const ProductForm = () => {
   };
 
   const handleMagicFillProcess = () => {
+    clearMagicSyncTimers();
     try {
       const data = JSON.parse(magicFillText);
+      const auditRows = [];
+      const addAuditRow = (step, type, action, status = 'Success') => {
+        auditRows.push({
+          id: auditRows.length + 1,
+          step,
+          type,
+          timestamp: formatMagicTimestamp(),
+          action,
+          status,
+        });
+      };
+
+      setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
+
+      const generalTimer = setTimeout(() => {
+        setMagicSyncStates((prev) => ({ ...prev, general: 'green' }));
+      }, 420);
+      const specsPulseTimer = setTimeout(() => {
+        setMagicSyncStates((prev) => ({ ...prev, specifications: 'pulse' }));
+      }, 650);
+      const specsGreenTimer = setTimeout(() => {
+        setMagicSyncStates((prev) => ({ ...prev, specifications: 'green' }));
+      }, 1080);
+      const inventoryPulseTimer = setTimeout(() => {
+        setMagicSyncStates((prev) => ({ ...prev, inventory: 'pulse' }));
+      }, 1320);
+      const inventoryGreenTimer = setTimeout(() => {
+        setMagicSyncStates((prev) => ({ ...prev, inventory: 'green' }));
+      }, 1760);
+
+      magicSyncTimersRef.current = [generalTimer, specsPulseTimer, specsGreenTimer, inventoryPulseTimer, inventoryGreenTimer];
       
       // 1. Step 1: General Details
-      if (data.name) setName(data.name);
-      if (data.brand) setBrand(data.brand);
-      if (data.description) setDescription(data.description);
+      if (data.name) {
+        setName(data.name);
+        addAuditRow('Step 1', 'General', 'Name Auto-Mapped', 'Success');
+      }
+      if (data.brand) {
+        setBrand(data.brand);
+        addAuditRow('Step 1', 'General', 'Brand Auto-Mapped', 'Success');
+      }
+      if (data.description) {
+        setDescription(data.description);
+        addAuditRow('Step 1', 'General', 'Description Auto-Mapped', 'Success');
+      }
       
       // Target Audience Dropdown Matching (case-insensitive label to value)
       let matchedAudience = '';
@@ -216,6 +286,7 @@ const ProductForm = () => {
       if (matchedAudience) {
         setAudience(matchedAudience);
         setHighlightAudience(false);
+        addAuditRow('Step 1', 'General', `Audience matched to ${matchedAudience}`, 'Success');
       } else {
         setAudience('');
         setHighlightAudience(true);
@@ -231,6 +302,7 @@ const ProductForm = () => {
         const catId = normalizeId(matchedCat.id);
         setCategoryId(catId);
         setHighlightCategory(false);
+        addAuditRow('Step 1', 'General', `Category matched: ${matchedCat.name}`, 'Success');
 
         // Now match Subcategory
         const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
@@ -241,6 +313,7 @@ const ProductForm = () => {
             const subCatId = normalizeId(matchedSubCat.id);
             setSubcategoryId(subCatId);
             setHighlightSubcategory(false);
+            addAuditRow('Step 1', 'General', `Subcategory matched: ${matchedSubCat.name}`, 'Success');
 
             // Now match Sub-subcategory
             const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
@@ -250,6 +323,7 @@ const ProductForm = () => {
               if (matchedSubSubCat) {
                 setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
                 setHighlightSubSubcategory(false);
+                addAuditRow('Step 1', 'General', `Sub-subcategory matched: ${matchedSubSubCat.name}`, 'Success');
               } else {
                 setSubSubcategoryId('');
                 setHighlightSubSubcategory(true);
@@ -288,6 +362,7 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
+          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (Array.isArray(data.specs)) {
         const newSpecs = data.specs.map(s => ({
@@ -297,6 +372,7 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
+          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (data.specifications && typeof data.specifications === 'object') {
         const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
@@ -306,6 +382,7 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
+          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       } else if (data.specs && typeof data.specs === 'object') {
         const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
@@ -315,6 +392,7 @@ const ProductForm = () => {
         }));
         if (newSpecs.length > 0) {
           setSpecs(newSpecs);
+          addAuditRow('Step 2', 'Specs', `${newSpecs.length} specifications auto-mapped`, 'Success');
         }
       }
 
@@ -349,15 +427,25 @@ const ProductForm = () => {
 
         if (newVariants.length > 0) {
           setVariantRows(newVariants);
+          addAuditRow('Step 4', 'Inventory', `${newVariants.length} variants auto-mapped`, 'Success');
         }
       }
 
       setMagicFillError('');
+      setMagicAuditRows(auditRows);
       setToastMsg('Magic Fill applied successfully!');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 4000);
     } catch (e) {
       setMagicFillError('Invalid JSON format: ' + e.message);
+      setMagicAuditRows((prev) => prev.length ? prev : [{
+        id: 1,
+        step: 'Parse',
+        type: 'JSON',
+        timestamp: formatMagicTimestamp(),
+        action: 'Parse Failed',
+        status: 'Error',
+      }]);
     }
   };
 
@@ -1620,6 +1708,9 @@ const ProductForm = () => {
               const active = idx === activeIdx;
               const isMagic = step.key === 'magic';
               const lineColor = completed ? '#86efac' : '#e4e4e7';
+              const syncState = magicSyncStates[step.key] || 'idle';
+              const isSyncPulse = syncState === 'pulse';
+              const isSyncGreen = syncState === 'green';
 
               return (
                 <div key={step.key} style={{ position: 'relative', paddingBottom: idx < STEPS.length - 1 ? 26 : 0 }}>
@@ -1641,14 +1732,14 @@ const ProductForm = () => {
                     type="button"
                     onClick={() => setActiveTab(step.key)}
                     style={{
-                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : 'none',
-                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
+                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : (isSyncGreen ? '1px solid rgba(34,197,94,0.24)' : 'none'),
+                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : (isSyncGreen ? 'rgba(236, 253, 245, 0.85)' : 'transparent'),
                       backdropFilter: isMagic && active ? 'blur(24px)' : 'none',
                       width: '100%',
                       padding: isMagic && active ? '8px 12px' : 0,
                       borderRadius: isMagic && active ? 12 : 0,
                       marginLeft: isMagic && active ? -12 : 0,
-                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : 'none',
+                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : (isSyncGreen ? '0 10px 20px rgba(34,197,94,0.12)' : 'none'),
                       textAlign: 'left',
                       cursor: 'pointer',
                       display: 'flex',
@@ -1658,6 +1749,7 @@ const ProductForm = () => {
                     }}
                   >
                     <span
+                      className={isSyncPulse ? 'pf-sync-dot sidebar-sync-pulse' : `pf-sync-dot ${isSyncGreen ? 'sidebar-sync-green' : ''}`}
                       style={{
                         width: 30,
                         height: 30,
@@ -1665,23 +1757,23 @@ const ProductForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: isMagic ? 'none' : (completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8'),
-                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : (completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5'),
-                        color: isMagic ? '#ffffff' : (completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af'),
+                        border: isMagic ? 'none' : (isSyncGreen ? '1px solid rgba(34,197,94,0.22)' : (completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8')),
+                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : (isSyncGreen ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : (completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5')),
+                        color: isMagic ? '#ffffff' : (isSyncGreen ? '#ffffff' : (completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af')),
                         fontWeight: 700,
                         fontSize: 12,
                         flexShrink: 0,
-                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : 'none'
+                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : (isSyncPulse ? '0 0 0 0 rgba(34,197,94,0.2)' : 'none')
                       }}
                     >
-                      {isMagic ? <Sparkles size={16} /> : (completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx)}
+                      {isMagic ? <Sparkles size={16} /> : (isSyncGreen ? <Check size={16} /> : (completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx))}
                     </span>
 
                     <span
                       style={{
                         fontSize: 14,
                         fontWeight: active ? 700 : completed ? 600 : 500,
-                        color: isMagic ? '#7c3aed' : (active ? '#111827' : completed ? '#374151' : '#9ca3af'),
+                        color: isMagic ? '#7c3aed' : (isSyncGreen ? '#15803d' : (active ? '#111827' : completed ? '#374151' : '#9ca3af')),
                       }}
                     >
                       {step.label}
@@ -1715,116 +1807,194 @@ const ProductForm = () => {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
                       <style>{`
-                        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-                        .mf-editor-wrap { position: relative; border-radius: 14px; overflow: hidden; border: 1.5px solid #e2e8f0; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04); transition: border-color 0.2s ease; }
-                        .mf-editor-wrap:focus-within { border-color: #a78bfa; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04), 0 0 0 3px rgba(167,139,250,0.15); }
-                        .mf-pre {
-                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 13.5px; line-height: 1.6; padding: 30px;
-                          margin: 0; white-space: pre-wrap; word-break: break-all;
-                          min-height: 320px; background: #fcfcfc;
-                          color: #24292f; pointer-events: none; user-select: none;
-                          box-sizing: border-box; width: 100%; display: block;
+                        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+                        .smart-sync-shell {
+                          position: relative;
+                          border-radius: 18px;
+                          overflow: hidden;
+                          border: 1px solid rgba(148, 163, 184, 0.22);
+                          background: rgba(255, 255, 255, 0.66);
+                          backdrop-filter: blur(20px);
+                          -webkit-backdrop-filter: blur(20px);
+                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.08), inset 0 1px 0 rgba(255,255,255,0.8);
                         }
-                        .mf-textarea {
-                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 13.5px; line-height: 1.6; padding: 30px;
-                          position: absolute; inset: 0; width: 100%; height: 100%;
-                          background: transparent; color: transparent;
-                          caret-color: #7c3aed; border: none; outline: none; resize: none;
-                          box-sizing: border-box; overflow: auto; z-index: 2;
-                          white-space: pre-wrap; word-break: break-all;
+                        .smart-sync-shell:focus-within { box-shadow: 0 24px 60px rgba(124, 58, 237, 0.12), 0 0 0 3px rgba(168, 85, 247, 0.14); }
+                        .smart-sync-stage {
+                          position: relative;
+                          min-height: 340px;
+                          padding: 28px;
+                          background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,250,252,0.92) 100%);
                         }
-                        .mf-textarea::selection { background: rgba(124,58,237,0.18); }
-                        .mf-textarea::-webkit-scrollbar { width: 6px; }
-                        .mf-textarea::-webkit-scrollbar-track { background: transparent; }
-                        .mf-textarea::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; }
+                        .smart-sync-code {
+                          margin: 0;
+                          min-height: 292px;
+                          white-space: pre-wrap;
+                          word-break: break-word;
+                          overflow: auto;
+                          padding-right: 0;
+                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                          font-size: 13.5px;
+                          line-height: 1.72;
+                          color: #24292f;
+                          user-select: none;
+                        }
+                        .smart-sync-key { color: #0550ae; }
+                        .smart-sync-key-primary { color: #0550ae; font-weight: 700; }
+                        .smart-sync-string { color: #116329; }
+                        .smart-sync-number { color: #8250df; }
+                        .smart-sync-brace { color: #24292f; }
+                        .smart-sync-input {
+                          position: absolute;
+                          inset: 0;
+                          width: 100%;
+                          height: 100%;
+                          opacity: 0.01;
+                          color: transparent;
+                          caret-color: #7c3aed;
+                          background: transparent;
+                          border: none;
+                          resize: none;
+                          outline: none;
+                          padding: 24px;
+                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                          font-size: 13.5px;
+                          line-height: 1.72;
+                          z-index: 2;
+                          white-space: pre-wrap;
+                          word-break: break-word;
+                        }
+                        .audit-log-card {
+                          background: rgba(255, 255, 255, 0.68);
+                          border: 1px solid rgba(148, 163, 184, 0.18);
+                          border-radius: 18px;
+                          backdrop-filter: blur(18px);
+                          -webkit-backdrop-filter: blur(18px);
+                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.06);
+                          overflow: hidden;
+                        }
+                        .audit-log-table {
+                          width: 100%;
+                          border-collapse: collapse;
+                        }
+                        .audit-log-table thead th {
+                          text-align: left;
+                          font-size: 11px;
+                          letter-spacing: 0.08em;
+                          text-transform: uppercase;
+                          color: #64748b;
+                          background: rgba(248, 250, 252, 0.8);
+                          padding: 14px 16px;
+                          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+                        }
+                        .audit-log-table tbody td {
+                          padding: 13px 16px;
+                          border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+                          font-size: 13px;
+                          color: #0f172a;
+                        }
+                        .audit-log-pill {
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 6px;
+                          padding: 6px 10px;
+                          border-radius: 999px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        }
+                        .audit-success { background: rgba(16, 185, 129, 0.12); color: #047857; }
+                        .audit-error { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+                        @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+                        @keyframes smartGlow { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35); } 100% { box-shadow: 0 0 0 14px rgba(34, 197, 94, 0); } }
+                        .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
+                        .sidebar-sync-green { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.2)) !important; border-color: rgba(34,197,94,0.3) !important; box-shadow: 0 8px 20px rgba(34,197,94,0.12) !important; }
+                        .sidebar-sync-green .pf-sync-dot { background: #22c55e !important; color: #fff !important; }
                       `}</style>
-                      <div className="mf-editor-wrap">
-                        <pre
-                          className="mf-pre"
-                          aria-hidden="true"
-                          dangerouslySetInnerHTML={{ __html: highlightJSON(magicFillText) + '\n' }}
-                        />
-                        <textarea
-                          ref={magicEditorRef}
-                          className="mf-textarea"
-                          value={magicFillText}
-                          onChange={e => {
-                            setMagicFillText(e.target.value);
-                            setMagicFillError('');
-                            // sync pre scroll
-                            const pre = e.target.previousSibling;
-                            if (pre) { pre.scrollTop = e.target.scrollTop; pre.scrollLeft = e.target.scrollLeft; }
-                          }}
-                          onScroll={e => {
-                            const pre = e.target.previousSibling;
-                            if (pre) { pre.scrollTop = e.target.scrollTop; pre.scrollLeft = e.target.scrollLeft; }
-                          }}
-                          spellCheck={false}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          placeholder={`{\n  "name": "Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "specifications": [\n    { "key": "Material", "value": "100% Cotton" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
-                        />
+                      <div className="smart-sync-shell">
+                        <div className="smart-sync-stage">
+                          <pre
+                            className="smart-sync-code"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{ __html: highlightJSON(magicPreview.prettyJson || magicFillText || '') + '\n' }}
+                          />
+                          <textarea
+                            ref={magicEditorRef}
+                            className="smart-sync-input"
+                            value={magicFillText}
+                            onChange={e => {
+                              setMagicFillText(e.target.value);
+                              setMagicFillError('');
+                              setMagicAuditRows([]);
+                            }}
+                            onScroll={e => {
+                              const pre = e.target.previousSibling;
+                              if (pre) {
+                                pre.scrollTop = e.target.scrollTop;
+                                pre.scrollLeft = e.target.scrollLeft;
+                              }
+                            }}
+                            spellCheck={false}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            placeholder={`Paste JSON here...`}
+                            aria-label="Magic Fill JSON input"
+                          />
+
+                        </div>
                       </div>
                     </div>
 
-                    {previewData && !previewData.error && (
-                      <div
-                        style={{
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: 16,
-                          padding: '20px 24px',
-                          marginBottom: 24,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          gap: 16,
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>General</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            {(() => {
-                              try {
-                                const parsed = JSON.parse(magicFillText);
-                                if (parsed.name || parsed.brand) return 'Product Name & Brand detected';
-                                return 'Waiting for basic info...';
-                              } catch(e) { return 'Invalid JSON'; }
-                            })()}
+                    {magicPreview && !magicPreview.error && (
+                      <div className="audit-log-card" style={{ marginBottom: 24 }}>
+                        <div style={{ padding: '18px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#64748b' }}>Visual Smart-Sync Hub</div>
+                            <div style={{ marginTop: 4, fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{magicPreview.category && !magicPreview.category.includes('No Match') ? `Matched category: ${magicPreview.category}` : 'Awaiting a category match'}</div>
+                          </div>
+                          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            <div className="audit-log-pill" style={{ background: 'rgba(45, 212, 191, 0.12)', color: '#0f766e' }}>Specs: {magicPreview.specsCount || 8}</div>
+                            <div className="audit-log-pill" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#6d28d9' }}>Variants: {magicPreview.variantsCount || 12}</div>
                           </div>
                         </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Categories</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Matching: <span style={{ color: previewData.category.includes('No Match') ? '#eab308' : '#10b981' }}>{previewData.category}</span>
-                          </div>
-                        </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specs</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Detected <span style={{ color: '#4f46e5' }}>{previewData.specsCount}</span> specification rows
-                          </div>
-                        </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inventory</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Detected <span style={{ color: '#06b6d4' }}>{previewData.variantsCount}</span> variants
-                          </div>
-                        </div>
+                        <table className="audit-log-table">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Step</th>
+                              <th>Type</th>
+                              <th>Timestamp</th>
+                              <th>Action</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
+                              <tr key={`${row.id}-${row.step}-${row.type}`}>
+                                <td>{row.id}</td>
+                                <td>{row.step}</td>
+                                <td>{row.type}</td>
+                                <td>{row.timestamp}</td>
+                                <td>{row.action}</td>
+                                <td>
+                                  <span className={`audit-log-pill ${row.status === 'Error' ? 'audit-error' : 'audit-success'}`}>
+                                    {row.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            )) : (
+                              <tr>
+                                <td colSpan={6} style={{ padding: '18px 16px', color: '#64748b' }}>Run Process Magic Fill to capture a detailed audit trail.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
                       </div>
                     )}
 
                     {magicFillError && (
                       <div
                         style={{
-                          background: '#fef2f2',
-                          border: '1px solid #fecaca',
+                          background: 'rgba(254, 242, 242, 0.88)',
+                          border: '1px solid rgba(252, 165, 165, 0.5)',
                           borderRadius: 12,
                           padding: '12px 16px',
                           color: '#b91c1c',
@@ -1856,15 +2026,16 @@ const ProductForm = () => {
                         onMouseEnter={() => setIsPrettifyHovered(true)}
                         onMouseLeave={() => setIsPrettifyHovered(false)}
                         style={{
-                          background: isPrettifyHovered ? '#f1f5f9' : 'transparent',
-                          color: '#64748b',
-                          border: '1px solid #cbd5e1',
+                          background: isPrettifyHovered ? 'rgba(248, 250, 252, 0.95)' : 'rgba(255,255,255,0.72)',
+                          color: '#475569',
+                          border: '1px solid rgba(203, 213, 225, 0.9)',
                           borderRadius: 12,
                           padding: '12px 24px',
                           fontWeight: 600,
                           fontSize: 14,
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
+                          boxShadow: '0 12px 35px rgba(15, 23, 42, 0.05)',
                         }}
                       >
                         Prettify JSON
@@ -1881,11 +2052,11 @@ const ProductForm = () => {
                           border: 'none',
                           borderRadius: 12,
                           padding: '12px 32px',
-                          fontWeight: 600,
+                          fontWeight: 700,
                           fontSize: 14,
                           cursor: 'pointer',
-                          boxShadow: isMagicProcessHovered ? '0 10px 25px -5px rgba(124, 58, 237, 0.4)' : '0 4px 15px rgba(124, 58, 237, 0.2)',
-                          transform: isMagicProcessHovered ? 'scale(1.03)' : 'scale(1)',
+                          boxShadow: isMagicProcessHovered ? '0 18px 30px -8px rgba(124, 58, 237, 0.45)' : '0 10px 22px -8px rgba(124, 58, 237, 0.3)',
+                          transform: isMagicProcessHovered ? 'translateY(-1px)' : 'translateY(0)',
                           transition: 'all 0.2s ease',
                         }}
                       >
