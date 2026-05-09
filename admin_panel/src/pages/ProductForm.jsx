@@ -1957,15 +1957,9 @@ const ProductForm = () => {
                           display: flex;
                           flex-direction: column;
                         }
-                        .smart-hub-body.active .smart-editor-panel {
-                          height: 60%;
-                          border-bottom: 1px solid rgba(124, 58, 237, 0.14);
-                        }
-                        .smart-hub-body.empty .smart-editor-panel {
-                          height: 100%;
-                        }
                         .smart-editor-panel {
                           position: relative;
+                          flex: 1;
                           min-height: 0;
                           border-radius: 40px !important;
                           border: none !important;
@@ -2095,30 +2089,33 @@ const ProductForm = () => {
                           color: #6b7280;
                         }
                         .smart-hub-insights {
-                          height: 40%;
-                          overflow-y: auto;
-                          overflow-x: hidden;
-                          padding: 16px 20px 18px;
-                          background: rgba(255,255,255,0.82);
-                          scrollbar-width: thin;
-                          scrollbar-color: #7c3aed transparent;
+                          display: flex;
+                          flex-direction: column;
+                          gap: 12px;
+                          min-height: 320px;
+                          padding: 18px 20px 18px;
+                          border-top: 2px solid #ede9fe;
+                          border-radius: 0 0 24px 24px;
+                          background: rgba(248, 250, 252, 0.5);
+                          backdrop-filter: blur(14px);
+                          -webkit-backdrop-filter: blur(14px);
                         }
                         .smart-stats-grid {
                           display: grid;
                           grid-template-columns: repeat(4, minmax(0, 1fr));
                           gap: 10px;
-                          margin-bottom: 14px;
                         }
                         .smart-stat-pill {
-                          border-radius: 16px;
-                          border: 1px solid rgba(124, 58, 237, 0.18);
-                          background: rgba(245, 243, 255, 0.72);
+                          border-radius: 24px;
+                          border: 1px solid rgba(167, 139, 250, 0.32);
+                          background: rgba(237, 233, 254, 0.7);
+                          box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
                           padding: 10px 12px;
                           transition: all 0.25s ease;
                         }
                         .smart-stat-pill.active {
-                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2), 0 0 18px rgba(124, 58, 237, 0.12);
-                          background: rgba(237, 233, 254, 0.9);
+                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.24), 0 0 22px rgba(124, 58, 237, 0.16);
+                          background: rgba(237, 233, 254, 0.92);
                         }
                         .smart-stat-pill .k {
                           display: block;
@@ -2134,14 +2131,35 @@ const ProductForm = () => {
                           color: #5b21b6;
                         }
                         .smart-category-state {
-                          font-size: 13px;
-                          font-weight: 600;
-                          color: #64748b;
-                          margin: 2px 0 12px;
+                          border-radius: 24px;
+                          border: 1px solid rgba(196, 181, 253, 0.45);
+                          background: rgba(255, 255, 255, 0.82);
+                          padding: 12px 14px;
+                          display: flex;
+                          flex-direction: column;
+                          gap: 3px;
+                        }
+                        .smart-category-label {
+                          font-size: 11px;
+                          font-weight: 700;
+                          letter-spacing: 0.08em;
+                          text-transform: uppercase;
+                          color: #7c3aed;
+                        }
+                        .smart-category-value {
+                          font-size: 15px;
+                          font-weight: 700;
+                          color: #312e81;
                         }
                         .smart-category-awaiting {
                           color: #7c3aed;
                           animation: smartAwaitPulse 1.8s ease-in-out infinite;
+                        }
+                        .smart-audit-scroll {
+                          max-height: 300px;
+                          overflow-y: auto;
+                          overflow-x: hidden;
+                          border-radius: 24px;
                         }
                         @keyframes smartAwaitPulse {
                           0%, 100% { opacity: 0.55; }
@@ -2178,15 +2196,15 @@ const ProductForm = () => {
                           font-size: 11px;
                           font-weight: 700;
                         }
-                        .smart-audit-status.ok { background: rgba(16,185,129,0.12); color: #047857; }
+                        .smart-audit-status.preview { background: rgba(16,185,129,0.14); color: #047857; }
+                        .smart-audit-status.success { background: rgba(16,185,129,0.14); color: #047857; }
                         .smart-audit-status.err { background: rgba(239,68,68,0.12); color: #b91c1c; }
                         .smart-hub-actions {
-                          border-top: 1px solid rgba(124, 58, 237, 0.14);
-                          padding: 14px 18px;
+                          margin-top: auto;
+                          padding-top: 12px;
                           display: flex;
                           justify-content: flex-end;
                           gap: 12px;
-                          background: rgba(255, 255, 255, 0.82);
                         }
                         @keyframes magicApplyPulse {
                           0% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
@@ -2212,7 +2230,7 @@ const ProductForm = () => {
 
                         return (
                           <div className="smart-hub-card">
-                            <div className={`smart-hub-body ${hasMagicInput ? 'active' : 'empty'}`}>
+                            <div className="smart-hub-body">
                               <div className="smart-editor-panel">
                                 <div className="smart-editor-content">
                                   <pre
@@ -2250,19 +2268,24 @@ const ProductForm = () => {
                                 </div>
                               </div>
 
-                              {hasMagicInput && (
-                                <div className="smart-hub-insights">
-                                  <div className="smart-stats-grid">
-                                    <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
-                                    <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
-                                    <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
-                                    <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
-                                  </div>
+                              <div className="smart-hub-insights bg-slate-50/50 backdrop-blur-md border-t-2 border-purple-100">
+                                <div className="smart-stats-grid">
+                                  <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
+                                  <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
+                                  <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
+                                  <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                                </div>
 
-                                  <div className="smart-category-state">
-                                    {categoryMatched ? `Matched Category: ${magicPreview.category}` : <span className="smart-category-awaiting">Awaiting Category Match...</span>}
-                                  </div>
+                                <div className="smart-category-state">
+                                  <span className="smart-category-label">Matched Category</span>
+                                  {categoryMatched ? (
+                                    <span className="smart-category-value">{magicPreview.category}</span>
+                                  ) : (
+                                    <span className="smart-category-awaiting">Awaiting Category Match...</span>
+                                  )}
+                                </div>
 
+                                <div className="smart-audit-scroll max-h-[300px] overflow-y-auto">
                                   <table className="smart-audit-table">
                                     <thead>
                                       <tr>
@@ -2283,7 +2306,7 @@ const ProductForm = () => {
                                           <td>{row.timestamp}</td>
                                           <td>{row.action}</td>
                                           <td>
-                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : 'ok'}`}>
+                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : (row.status === 'Preview' ? 'preview' : 'success')}`}>
                                               {row.status}
                                             </span>
                                           </td>
@@ -2295,108 +2318,108 @@ const ProductForm = () => {
                                       )}
                                     </tbody>
                                   </table>
-
-                                  {magicFillError && (
-                                    <div
-                                      style={{
-                                        marginTop: 12,
-                                        background: 'rgba(254, 242, 242, 0.9)',
-                                        border: '1px solid rgba(252, 165, 165, 0.5)',
-                                        borderRadius: 10,
-                                        padding: '10px 12px',
-                                        color: '#b91c1c',
-                                        fontSize: 12,
-                                        fontWeight: 600,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 8,
-                                      }}
-                                    >
-                                      <AlertTriangle size={14} />
-                                      {magicFillError}
-                                    </div>
-                                  )}
                                 </div>
-                              )}
-                            </div>
 
-                            <div className="smart-hub-actions">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  try {
-                                    const parsedJson = JSON.parse(magicFillText);
-                                    setMagicFillText(JSON.stringify(parsedJson, null, 2));
-                                    setMagicFillError('');
-                                  } catch (e) {
-                                    setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
-                                  }
-                                }}
-                                onMouseEnter={() => setIsPrettifyHovered(true)}
-                                onMouseLeave={() => setIsPrettifyHovered(false)}
-                                style={{
-                                  background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
-                                  color: '#5b21b6',
-                                  border: '1px solid rgba(124,58,237,0.24)',
-                                  borderRadius: 12,
-                                  padding: '10px 18px',
-                                  fontWeight: 700,
-                                  fontSize: 13,
-                                  fontFamily: 'Poppins, sans-serif',
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                Prettify JSON
-                              </button>
+                                {magicFillError && (
+                                  <div
+                                    style={{
+                                      marginTop: 4,
+                                      background: 'rgba(254, 242, 242, 0.9)',
+                                      border: '1px solid rgba(252, 165, 165, 0.5)',
+                                      borderRadius: 10,
+                                      padding: '10px 12px',
+                                      color: '#b91c1c',
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                    }}
+                                  >
+                                    <AlertTriangle size={14} />
+                                    {magicFillError}
+                                  </div>
+                                )}
 
-                              <button
-                                type="button"
-                                onClick={handleMagicFillValidate}
-                                onMouseEnter={() => setIsValidateHovered(true)}
-                                onMouseLeave={() => setIsValidateHovered(false)}
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 8,
-                                  background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
-                                  color: '#5b21b6',
-                                  border: '1px solid rgba(196,181,253,0.85)',
-                                  borderRadius: 12,
-                                  padding: '10px 18px',
-                                  fontWeight: 700,
-                                  fontSize: 13,
-                                  fontFamily: 'Poppins, sans-serif',
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                <Check size={14} />
-                                Validate Blueprint
-                              </button>
+                                <div className="smart-hub-actions">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      try {
+                                        const parsedJson = JSON.parse(magicFillText);
+                                        setMagicFillText(JSON.stringify(parsedJson, null, 2));
+                                        setMagicFillError('');
+                                      } catch (e) {
+                                        setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
+                                      }
+                                    }}
+                                    onMouseEnter={() => setIsPrettifyHovered(true)}
+                                    onMouseLeave={() => setIsPrettifyHovered(false)}
+                                    style={{
+                                      background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
+                                      color: '#5b21b6',
+                                      border: '1px solid rgba(124,58,237,0.24)',
+                                      borderRadius: 12,
+                                      padding: '10px 18px',
+                                      fontWeight: 700,
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins, sans-serif',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    Prettify JSON
+                                  </button>
 
-                              <button
-                                type="button"
-                                className="magic-primary-apply"
-                                onClick={handleMagicFillApply}
-                                onMouseEnter={() => setIsMagicProcessHovered(true)}
-                                onMouseLeave={() => setIsMagicProcessHovered(false)}
-                                style={{
-                                  background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
-                                  color: '#ffffff',
-                                  border: 'none',
-                                  borderRadius: 12,
-                                  padding: '10px 22px',
-                                  fontWeight: 700,
-                                  fontSize: 13,
-                                  fontFamily: 'Poppins, sans-serif',
-                                  cursor: 'pointer',
-                                  boxShadow: isMagicProcessHovered ? '0 14px 24px -10px rgba(124,58,237,0.45)' : '0 10px 20px -10px rgba(124,58,237,0.35)',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                Finalize & Apply
-                              </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleMagicFillValidate}
+                                    onMouseEnter={() => setIsValidateHovered(true)}
+                                    onMouseLeave={() => setIsValidateHovered(false)}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
+                                      color: '#5b21b6',
+                                      border: '1px solid rgba(196,181,253,0.85)',
+                                      borderRadius: 12,
+                                      padding: '10px 18px',
+                                      fontWeight: 700,
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins, sans-serif',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <Check size={14} />
+                                    Validate Blueprint
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="magic-primary-apply"
+                                    onClick={handleMagicFillApply}
+                                    onMouseEnter={() => setIsMagicProcessHovered(true)}
+                                    onMouseLeave={() => setIsMagicProcessHovered(false)}
+                                    style={{
+                                      background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                                      color: '#ffffff',
+                                      border: 'none',
+                                      borderRadius: 12,
+                                      padding: '10px 22px',
+                                      fontWeight: 700,
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins, sans-serif',
+                                      cursor: 'pointer',
+                                      boxShadow: isMagicProcessHovered ? '0 14px 24px -10px rgba(124,58,237,0.45)' : '0 10px 20px -10px rgba(124,58,237,0.35)',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    Finalize & Apply
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         );
