@@ -93,22 +93,38 @@ const ProductForm = () => {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    return escaped
-      // Strings (values) - dark green
-      .replace(/(:\s*)("[^"]*")/g, (_, colon, val) => `${colon}<span style="color:#116329">${val}</span>`)
-      // Keys - deep blue, primary keys bold
-      .replace(/("([^"]+)")(?=\s*:)/g, (_, full, keyName) => {
-        const isPrimary = PRIMARY_KEYS.includes(keyName);
-        return isPrimary
-          ? `<span style="color:#0550ae;font-weight:700">${full}</span>`
-          : `<span style="color:#0550ae">${full}</span>`;
-      })
-      // Numbers - vibrant purple
-      .replace(/:\s*(\d+(\.\d+)?)/g, (match, num) => match.replace(num, `<span style="color:#8250df">${num}</span>`))
-      // Booleans/null
-      .replace(/:\s*(true|false|null)/g, (match, kw) => match.replace(kw, `<span style="color:#8250df">${kw}</span>`))
-      // Braces & brackets - slate gray
-      .replace(/([{}[\]])/g, '<span style="color:#24292f">$1</span>');
+    const tokenRegex = /("(?:\\.|[^"\\])*")|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|\b(true|false|null)\b|([{}\[\],:])/g;
+    const wrap = (text, color, extra = '') => `<span style="color:${color}${extra ? `;${extra}` : ''}">${text}</span>`;
+    const isKey = (index, text) => {
+      let nextIndex = index + text.length;
+      while (nextIndex < escaped.length && /\s/.test(escaped[nextIndex])) nextIndex += 1;
+      return escaped[nextIndex] === ':';
+    };
+
+    let output = '';
+    let lastIndex = 0;
+    let match;
+    while ((match = tokenRegex.exec(escaped)) !== null) {
+      output += escaped.slice(lastIndex, match.index);
+
+      if (match[1]) {
+        const token = match[1];
+        const keyName = token.slice(1, -1);
+        const keyToken = wrap(token, '#0550ae', PRIMARY_KEYS.includes(keyName) ? 'font-weight:700' : '');
+        output += isKey(match.index, token) ? keyToken : wrap(token, '#116329');
+      } else if (match[2]) {
+        output += wrap(match[2], '#8250df');
+      } else if (match[3]) {
+        output += wrap(match[3], '#8250df');
+      } else if (match[4]) {
+        output += wrap(match[4], '#24292f');
+      }
+
+      lastIndex = tokenRegex.lastIndex;
+    }
+
+    output += escaped.slice(lastIndex);
+    return output;
   };
 
   const clearMagicSyncTimers = () => {
@@ -1821,7 +1837,7 @@ const ProductForm = () => {
                         .smart-sync-shell:focus-within { box-shadow: 0 24px 60px rgba(124, 58, 237, 0.12), 0 0 0 3px rgba(168, 85, 247, 0.14); }
                         .smart-sync-stage {
                           position: relative;
-                          min-height: 340px;
+                          height: 700px;
                           padding: 28px;
                           background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,250,252,0.92) 100%);
                         }
@@ -1834,7 +1850,7 @@ const ProductForm = () => {
                           padding-right: 0;
                           font-family: 'JetBrains Mono', 'Fira Code', monospace;
                           font-size: 13.5px;
-                          line-height: 1.72;
+                          line-height: 1.6;
                           color: #24292f;
                           user-select: none;
                         }
@@ -1858,7 +1874,7 @@ const ProductForm = () => {
                           padding: 24px;
                           font-family: 'JetBrains Mono', 'Fira Code', monospace;
                           font-size: 13.5px;
-                          line-height: 1.72;
+                          line-height: 1.6;
                           z-index: 2;
                           white-space: pre-wrap;
                           word-break: break-word;
