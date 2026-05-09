@@ -2144,36 +2144,36 @@ const ProductForm = () => {
                               style={{
                                 background: '#f8fafc',
                                 border: '1px solid #e2e8f0',
-                                borderRadius: 16,
-                                padding: '24px',
-                                width: 280,
-                                minWidth: 280,
-                                textAlign: 'right',
-                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                                borderRadius: 12,
+                                padding: '16px',
+                                width: 240,
+                                minWidth: 240,
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: 12,
+                                gap: 10,
+                                fontFamily: 'Poppins, sans-serif',
                               }}
                             >
-                              <div>
-                                <div style={{ fontSize: 13, color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Original Price</div>
-                                <div style={{ fontSize: 22, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 700, marginTop: 4 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: 14, color: '#64748b', fontWeight: 400 }}>Original Price</span>
+                                <span style={{ fontSize: 14, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
                                   ₹{originalPrice.toFixed(2)}
-                                </div>
+                                </span>
                               </div>
                               {hasOverride && (
                                 <>
-                                  <div>
-                                    <div style={{ fontSize: 13, color: '#ef4444', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Discount</div>
-                                    <div style={{ fontSize: 22, color: '#ef4444', fontWeight: 700, marginTop: 4 }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: 14, color: '#ef4444', fontWeight: 400 }}>Discount</span>
+                                    <span style={{ fontSize: 14, color: '#ef4444', fontWeight: 600 }}>
                                       {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
-                                    </div>
+                                    </span>
                                   </div>
-                                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 4 }}>
-                                    <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Final Price</div>
-                                    <div style={{ fontSize: 32, color: '#16a34a', fontWeight: 800, marginTop: 4, letterSpacing: '-0.5px' }}>
+                                  <div style={{ borderTop: '1px solid #e2e8f0', margin: '4px 0' }} />
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: 14, color: '#16a34a', fontWeight: 400 }}>Final Price</span>
+                                    <span style={{ fontSize: 16, color: '#16a34a', fontWeight: 700 }}>
                                       ₹{finalPrice.toFixed(2)}
-                                    </div>
+                                    </span>
                                   </div>
                                 </>
                               )}
