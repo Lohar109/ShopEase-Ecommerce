@@ -2142,27 +2142,38 @@ const ProductForm = () => {
                             {/* Preview Card */}
                             <div
                               style={{
-                                background: '#f9fafb',
-                                border: '1px solid #f3f4f6',
-                                borderRadius: 12,
-                                padding: '12px 16px',
-                                minWidth: 180,
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: 16,
+                                padding: '24px',
+                                width: 280,
+                                minWidth: 280,
                                 textAlign: 'right',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 12,
                               }}
                             >
-                              <div style={{ fontSize: 11, color: '#6b7280' }}>Original Price</div>
-                              <div style={{ fontSize: 14, textDecoration: hasOverride ? 'line-through' : 'none', color: '#374151', fontWeight: 500 }}>
-                                ₹{originalPrice.toFixed(2)}
+                              <div>
+                                <div style={{ fontSize: 13, color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Original Price</div>
+                                <div style={{ fontSize: 22, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 700, marginTop: 4 }}>
+                                  ₹{originalPrice.toFixed(2)}
+                                </div>
                               </div>
                               {hasOverride && (
                                 <>
-                                  <div style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Discount</div>
-                                  <div style={{ fontSize: 12, color: '#ef4444', fontWeight: 600 }}>
-                                    {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                  <div>
+                                    <div style={{ fontSize: 13, color: '#ef4444', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Discount</div>
+                                    <div style={{ fontSize: 22, color: '#ef4444', fontWeight: 700, marginTop: 4 }}>
+                                      {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                    </div>
                                   </div>
-                                  <div style={{ fontSize: 11, color: '#16a34a', marginTop: 4 }}>Final Price</div>
-                                  <div style={{ fontSize: 16, color: '#16a34a', fontWeight: 700 }}>
-                                    ₹{finalPrice.toFixed(2)}
+                                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 4 }}>
+                                    <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Final Price</div>
+                                    <div style={{ fontSize: 32, color: '#16a34a', fontWeight: 800, marginTop: 4, letterSpacing: '-0.5px' }}>
+                                      ₹{finalPrice.toFixed(2)}
+                                    </div>
                                   </div>
                                 </>
                               )}
