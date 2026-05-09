@@ -68,6 +68,10 @@ const ProductForm = () => {
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success');
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
+  const [isTextareaFocused, setIsTextareaFocused] = useState(false);
+  const [isCancelHovered, setIsCancelHovered] = useState(false);
+  const [isProcessHovered, setIsProcessHovered] = useState(false);
+  const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
 
   const handlePrettifyPaste = () => {
     setQuickPasteWarning('');
@@ -2493,9 +2497,9 @@ const ProductForm = () => {
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.45)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            background: 'rgba(15, 23, 42, 0.55)',
+            backdropFilter: 'blur(32px)',
+            WebkitBackdropFilter: 'blur(32px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -2504,15 +2508,13 @@ const ProductForm = () => {
         >
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.85)',
-              backdropFilter: 'blur(30px)',
-              WebkitBackdropFilter: 'blur(30px)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
+              background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: 24,
               width: '100%',
               maxWidth: 500,
               padding: 32,
-              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 40px rgba(99, 102, 241, 0.08)',
+              boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(99, 102, 241, 0.25)',
               fontFamily: 'Poppins, sans-serif',
               transition: 'all 0.3s ease',
             }}
@@ -2534,48 +2536,48 @@ const ProductForm = () => {
                     width: 72,
                     height: 72,
                     borderRadius: '50%',
-                    background: '#ecfdf5',
+                    background: 'rgba(16, 185, 129, 0.1)',
                     border: '4px solid #10b981',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#10b981',
                     marginBottom: 16,
-                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
+                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
                   }}
                 >
                   <Check size={36} strokeWidth={3} />
                 </div>
-                <h4 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#065f46' }}>Variants Imported!</h4>
-                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#047857' }}>Adding to inventory list...</p>
+                <h4 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#34d399' }}>Variants Imported!</h4>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#a7f3d0' }}>Adding to inventory list...</p>
               </div>
             ) : (
               <>
-                <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1e293b' }}>
+                <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#ffffff' }}>
                   Quick Paste Variants
                 </h3>
-                <p style={{ margin: '0 0 20px', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
+                <p style={{ margin: '0 0 24px', fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.5 }}>
                   Paste raw CSV/Tab-separated lines or a valid JSON array. Each variant requires: <strong>Size, Color, Price, Stock</strong>.
                 </p>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Data Input</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255, 255, 255, 0.6)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>Data Input</label>
                   <button
                     type="button"
                     onClick={handlePrettifyPaste}
+                    onMouseEnter={() => setIsPrettifyHovered(true)}
+                    onMouseLeave={() => setIsPrettifyHovered(false)}
                     style={{
-                      background: '#eff6ff',
-                      color: '#2563eb',
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '4px 12px',
-                      fontSize: 12,
+                      background: isPrettifyHovered ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                      color: '#a5b4fc',
+                      border: '1px solid rgba(165, 180, 252, 0.3)',
+                      borderRadius: 6,
+                      padding: '3px 10px',
+                      fontSize: 11,
                       fontWeight: 600,
                       cursor: 'pointer',
-                      transition: 'background 0.2s ease',
+                      transition: 'all 0.2s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
                   >
                     ✨ Prettify Input
                   </button>
@@ -2585,34 +2587,39 @@ const ProductForm = () => {
                   className="custom-input"
                   value={quickPasteText}
                   onChange={e => setQuickPasteText(e.target.value)}
+                  onFocus={() => setIsTextareaFocused(true)}
+                  onBlur={() => setIsTextareaFocused(false)}
                   placeholder={'[ \n  { "size": "M", "color": "Red", "price": 150, "stock": 100 }\n]\n\nOR\n\nM, Red, 150, 100'}
                   style={{
                     width: '100%',
                     height: 180,
-                    padding: '14px 16px',
+                    padding: 16,
                     borderRadius: 16,
-                    border: '1px solid #cbd5e1',
-                    background: 'rgba(255, 255, 255, 0.6)',
+                    border: isTextareaFocused ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(15, 23, 42, 0.75)',
+                    boxShadow: isTextareaFocused ? '0 0 16px rgba(99, 102, 241, 0.35)' : 'none',
+                    color: '#f8fafc',
                     fontFamily: 'Fira Code, Courier New, Courier, monospace',
                     fontSize: 13,
                     lineHeight: 1.6,
                     resize: 'none',
-                    marginBottom: 16,
+                    marginBottom: 20,
                     outline: 'none',
+                    transition: 'all 0.2s ease',
                   }}
                 />
 
                 {quickPasteWarning && (
                   <div
                     style={{
-                      background: '#fef2f2',
-                      border: '1px solid #fca5a5',
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
                       borderRadius: 12,
                       padding: '10px 14px',
-                      color: '#dc2626',
+                      color: '#fca5a5',
                       fontSize: 12,
                       fontWeight: 500,
-                      marginBottom: 16,
+                      marginBottom: 20,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
@@ -2623,27 +2630,29 @@ const ProductForm = () => {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}>
                   <button
                     type="button"
                     onClick={() => {
                       setShowQuickPasteModal(false);
                       setQuickPasteText('');
-                      setQuickPasteWarning('');
+                      setQuickWarning('');
                     }}
+                    onMouseEnter={() => setIsCancelHovered(true)}
+                    onMouseLeave={() => setIsCancelHovered(false)}
                     style={{
-                      background: '#f1f5f9',
-                      color: '#475569',
-                      border: 'none',
+                      width: '45%',
+                      background: isCancelHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
                       borderRadius: 10,
                       padding: '10px 20px',
                       fontWeight: 600,
                       fontSize: 13,
                       cursor: 'pointer',
-                      transition: 'background 0.2s ease',
+                      transform: isCancelHovered ? 'scale(1.03)' : 'scale(1)',
+                      transition: 'all 0.2s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
                   >
                     Cancel
                   </button>
@@ -2651,8 +2660,11 @@ const ProductForm = () => {
                   <button
                     type="button"
                     onClick={handleProcessQuickPaste}
+                    onMouseEnter={() => setIsProcessHovered(true)}
+                    onMouseLeave={() => setIsProcessHovered(false)}
                     style={{
-                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                      width: '50%',
+                      background: isProcessHovered ? 'linear-gradient(135deg, #818cf8 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
                       color: '#ffffff',
                       border: 'none',
                       borderRadius: 10,
@@ -2661,15 +2673,8 @@ const ProductForm = () => {
                       fontSize: 13,
                       cursor: 'pointer',
                       boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
-                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.25)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'none';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)';
+                      transform: isProcessHovered ? 'scale(1.03)' : 'scale(1)',
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     Process Input
