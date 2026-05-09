@@ -80,6 +80,9 @@ const ProductForm = () => {
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncingStep, setSyncingStep] = useState(''); // 'general' | 'specs' | 'inventory' | 'done'
+  const [blueprintSummary, setBlueprintSummary] = useState(null);
 
   const previewData = useMemo(() => {
     try {
@@ -168,168 +171,81 @@ const ProductForm = () => {
     }
   };
 
-  const handleMagicFillProcess = () => {
+  const handleMagicFillProcess = async () => {
     try {
       const data = JSON.parse(magicFillText);
-      
-      // 1. Step 1: General Details
+      setIsSyncing(true);
+
+      // Step 1: General
+      setSyncingStep('general');
       if (data.name) setName(data.name);
       if (data.brand) setBrand(data.brand);
       if (data.description) setDescription(data.description);
-      
-      // Target Audience Dropdown Matching (case-insensitive label to value)
-      let matchedAudience = '';
       const audVal = String(data.audience || '').toLowerCase().trim();
+      let matchedAudience = '';
       if (audVal === 'unisex') matchedAudience = 'unisex';
       else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
       else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
       else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
-      
-      if (matchedAudience) {
-        setAudience(matchedAudience);
-        setHighlightAudience(false);
-      } else {
-        setAudience('');
-        setHighlightAudience(true);
-      }
-
-      // Category & Subcategory Dropdown Matching
+      if (matchedAudience) { setAudience(matchedAudience); setHighlightAudience(false); }
+      else { setAudience(''); setHighlightAudience(true); }
       const normalizeId = id => id ? String(id) : '';
       const level1Cats = categories.filter(c => c.level === 1 || c.parent_id === null);
       const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
       const matchedCat = level1Cats.find(c => String(c.name || '').toLowerCase().trim() === catLabel);
-
       if (matchedCat) {
         const catId = normalizeId(matchedCat.id);
-        setCategoryId(catId);
-        setHighlightCategory(false);
-
-        // Now match Subcategory
+        setCategoryId(catId); setHighlightCategory(false);
         const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
         if (subCatLabel) {
-          const subCats = categories.filter(c => normalizeId(c.parent_id) === catId);
-          const matchedSubCat = subCats.find(c => String(c.name || '').toLowerCase().trim() === subCatLabel);
+          const matchedSubCat = categories.filter(c => normalizeId(c.parent_id) === catId).find(c => String(c.name || '').toLowerCase().trim() === subCatLabel);
           if (matchedSubCat) {
             const subCatId = normalizeId(matchedSubCat.id);
-            setSubcategoryId(subCatId);
-            setHighlightSubcategory(false);
-
-            // Now match Sub-subcategory
+            setSubcategoryId(subCatId); setHighlightSubcategory(false);
             const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
             if (subSubCatLabel) {
-              const subSubCats = categories.filter(c => normalizeId(c.parent_id) === subCatId);
-              const matchedSubSubCat = subSubCats.find(c => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
-              if (matchedSubSubCat) {
-                setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
-                setHighlightSubSubcategory(false);
-              } else {
-                setSubSubcategoryId('');
-                setHighlightSubSubcategory(true);
-              }
-            } else {
-              setSubSubcategoryId('');
-              setHighlightSubSubcategory(false);
-            }
-          } else {
-            setSubcategoryId('');
-            setHighlightSubcategory(true);
-            setSubSubcategoryId('');
-            setHighlightSubSubcategory(false);
-          }
-        } else {
-          setSubcategoryId('');
-          setHighlightSubcategory(false);
-          setSubSubcategoryId('');
-          setHighlightSubSubcategory(false);
-        }
-      } else {
-        setCategoryId('');
-        setHighlightCategory(true);
-        setSubcategoryId('');
-        setHighlightSubcategory(false);
-        setSubSubcategoryId('');
-        setHighlightSubSubcategory(false);
-      }
+              const matchedSubSub = categories.filter(c => normalizeId(c.parent_id) === subCatId).find(c => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
+              if (matchedSubSub) { setSubSubcategoryId(normalizeId(matchedSubSub.id)); setHighlightSubSubcategory(false); }
+              else { setSubSubcategoryId(''); setHighlightSubSubcategory(true); }
+            } else { setSubSubcategoryId(''); setHighlightSubSubcategory(false); }
+          } else { setSubcategoryId(''); setHighlightSubcategory(true); setSubSubcategoryId(''); setHighlightSubSubcategory(false); }
+        } else { setSubcategoryId(''); setHighlightSubcategory(false); setSubSubcategoryId(''); setHighlightSubSubcategory(false); }
+      } else { setCategoryId(''); setHighlightCategory(true); setSubcategoryId(''); setHighlightSubcategory(false); setSubSubcategoryId(''); setHighlightSubSubcategory(false); }
+      await new Promise(r => setTimeout(r, 700));
 
-      // 2. Step 2: Specifications
-      if (Array.isArray(data.specifications)) {
-        const newSpecs = data.specifications.map(s => ({
-          sk: mk(),
-          key: String(s.key || ''),
-          value: String(s.value || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (Array.isArray(data.specs)) {
-        const newSpecs = data.specs.map(s => ({
-          sk: mk(),
-          key: String(s.key || ''),
-          value: String(s.value || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (data.specifications && typeof data.specifications === 'object') {
-        const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
-          sk: mk(),
-          key: String(k || ''),
-          value: String(v || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (data.specs && typeof data.specs === 'object') {
-        const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
-          sk: mk(),
-          key: String(k || ''),
-          value: String(v || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      }
+      // Step 2: Specifications
+      setSyncingStep('specs');
+      const specsArr = Array.isArray(data.specifications) ? data.specifications : Array.isArray(data.specs) ? data.specs : null;
+      const specsObj = !specsArr ? (data.specifications || data.specs) : null;
+      if (specsArr && specsArr.length > 0) setSpecs(specsArr.map(s => ({ sk: mk(), key: String(s.key || ''), value: String(s.value || '') })));
+      else if (specsObj && typeof specsObj === 'object') setSpecs(Object.entries(specsObj).map(([k, v]) => ({ sk: mk(), key: String(k), value: String(v) })));
+      await new Promise(r => setTimeout(r, 700));
 
-      // 3. Step 4: Inventory (batch add variants and auto-generate SKUs)
+      // Step 3: Inventory
+      setSyncingStep('inventory');
       if (Array.isArray(data.inventory || data.variants)) {
         const varArr = data.inventory || data.variants;
-        const newVariants = varArr.map(v => {
-          const size = String(v.size || '');
-          const color = String(v.color || '');
-          const priceVal = Number(v.price || 0);
-          const stockVal = Number(v.stock || 0);
-
-          const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-          const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
-
-          return {
-            vk: mk(),
-            size: size,
-            color: color,
-            price: priceVal,
-            override_discount: false,
-            discount_type: 'Percentage',
-            discount_value: '',
-            stock: stockVal,
-            sku: autoSku,
-            image: mainImage || '',
-            use_separate_gallery: false
-          };
-        });
-
-        if (newVariants.length > 0) {
-          setVariantRows(newVariants);
-        }
+        const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        setVariantRows(varArr.map(v => {
+          const size = String(v.size || ''); const color = String(v.color || '');
+          return { vk: mk(), size, color, price: Number(v.price || 0), override_discount: false, discount_type: 'Percentage', discount_value: '', stock: Number(v.stock || 0), sku: [normalizedSlug, color.toLowerCase().replace(/[^a-z0-9]+/g, '-'), size.toLowerCase().replace(/[^a-z0-9]+/g, '-')].filter(Boolean).join('-'), image: mainImage || '', use_separate_gallery: false };
+        }));
       }
+      await new Promise(r => setTimeout(r, 700));
 
+      setSyncingStep('done');
       setMagicFillError('');
       setToastMsg('Magic Fill applied successfully!');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 4000);
+      await new Promise(r => setTimeout(r, 900));
+      setIsSyncing(false);
+      setSyncingStep('');
+      setActiveTab('general');
     } catch (e) {
       setMagicFillError('Invalid JSON format: ' + e.message);
+      setIsSyncing(false);
+      setSyncingStep('');
     }
   };
 
@@ -1675,166 +1591,184 @@ const ProductForm = () => {
               }}
             >
               <div key={activeTab} className="pf-step-pane">
-                {activeTab === 'magic' && (
-                  <>
-                    <div className="pf-section-title" style={{ marginBottom: 24 }}>
-                      <span className="pf-section-title-icon" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', color: '#fff', border: 'none' }}><Sparkles size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Magic Fill Automation</h3>
-                    </div>
-                    <p style={{ color: '#64748b', fontSize: 14, marginBottom: 20 }}>
-                      Paste a JSON object to automatically populate general product information, generate specifications, and batch variants.
-                    </p>
+                {activeTab === 'magic' && (() => {
+                  let parsedBlueprint = null;
+                  let isValidJson = false;
+                  try { if (magicFillText.trim()) { parsedBlueprint = JSON.parse(magicFillText); isValidJson = true; } } catch {}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
-                      <textarea
-                        value={magicFillText}
-                        onChange={e => {
-                          setMagicFillText(e.target.value);
-                          setMagicFillError('');
-                        }}
-                        placeholder={`{\n  "name": "Unisex Premium Hoodie",\n  "brand": "ShopEase",\n  "description": "Ultra soft premium hoodie...",\n  "audience": "unisex",\n  "category_label": "Clothing",\n  "subcategory_label": "Hoodies",\n  "sub_subcategory_label": "Warm Wear",\n  "specifications": [\n    { "key": "Material", "value": "80% Cotton, 20% Polyester" },\n    { "key": "Weight", "value": "320 GSM" }\n  ],\n  "inventory": [\n    { "size": "M", "color": "Black", "price": 89, "stock": 200 }\n  ]\n}`}
-                        style={{
-                          width: '100%',
-                          height: 300,
-                          background: '#0f172a',
-                          color: '#38bdf8',
-                          fontFamily: 'Fira Code, monospace',
-                          fontSize: 14,
-                          padding: 24,
-                          borderRadius: 16,
-                          border: '1px solid #334155',
-                          resize: 'vertical',
-                          outline: 'none',
-                          boxSizing: 'border-box',
-                        }}
-                      />
-                    </div>
+                  const specsForDisplay = (() => {
+                    if (!parsedBlueprint) return [];
+                    const s = parsedBlueprint.specifications || parsedBlueprint.specs;
+                    if (Array.isArray(s)) return s;
+                    if (s && typeof s === 'object') return Object.entries(s).map(([key, value]) => ({ key, value }));
+                    return [];
+                  })();
+                  const invArr = parsedBlueprint ? (parsedBlueprint.inventory || parsedBlueprint.variants) : null;
+                  const invCount = Array.isArray(invArr) ? invArr.length : 0;
+                  const totalFields = Object.keys(parsedBlueprint || {}).length;
 
-                    {previewData && !previewData.error && (
-                      <div
-                        style={{
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: 16,
-                          padding: '20px 24px',
-                          marginBottom: 24,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          gap: 16,
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>General</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            {(() => {
-                              try {
-                                const parsed = JSON.parse(magicFillText);
-                                if (parsed.name || parsed.brand) return 'Product Name & Brand detected';
-                                return 'Waiting for basic info...';
-                              } catch(e) { return 'Invalid JSON'; }
-                            })()}
-                          </div>
+                  return (
+                    <>
+                      <style>{`
+                        @keyframes pf-pulse-ring { 0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0.3)} 50%{box-shadow:0 0 0 10px rgba(124,58,237,0)} }
+                        @keyframes pf-sparkle-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:0.8} }
+                        @keyframes pf-bar-fill { from{width:0} to{width:var(--bar-pct)} }
+                        @keyframes pf-fade-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+                        @keyframes pf-step-pop { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+                        .pf-hub-dropzone { border:2px dashed #d8b4fe; border-radius:18px; padding:52px 32px; text-align:center; cursor:pointer; outline:none; transition:all 0.3s cubic-bezier(.4,0,.2,1); background:rgba(248,245,255,0.5); }
+                        .pf-hub-dropzone:hover,.pf-hub-dropzone:focus { border-color:#7c3aed; transform:scale(1.01); background:rgba(243,232,255,0.6); box-shadow:inset 0 0 40px rgba(124,58,237,0.07),0 8px 32px rgba(124,58,237,0.07); }
+                        .pf-hub-dropzone:hover .pf-sparkle-icon { animation:pf-sparkle-pulse 1.2s ease-in-out infinite; }
+                        .pf-spec-chip { display:inline-flex; align-items:center; gap:6px; background:#f5f3ff; border:1px solid #ede9fe; border-radius:8px; padding:5px 12px; font-size:12.5px; color:#5b21b6; font-weight:500; }
+                        .pf-spec-chip strong { color:#3b0764; font-weight:700; }
+                        .pf-sync-step { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; transition:all 0.4s ease; }
+                        .pf-sync-step.active { background:linear-gradient(90deg,rgba(124,58,237,0.08),rgba(139,92,246,0.04)); }
+                        .pf-sync-step.done { background:rgba(16,185,129,0.06); }
+                        .pf-sync-dot { width:10px; height:10px; border-radius:50%; background:#e2e8f0; transition:all 0.4s ease; flex-shrink:0; }
+                        .pf-sync-step.active .pf-sync-dot { background:#7c3aed; animation:pf-pulse-ring 1.2s ease infinite; }
+                        .pf-sync-step.done .pf-sync-dot { background:#10b981; }
+                      `}</style>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+                        <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg,#a855f7,#7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(124,58,237,0.25)' }}>
+                          <Sparkles size={18} color="#fff" />
                         </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Categories</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Matching: <span style={{ color: previewData.category.includes('No Match') ? '#eab308' : '#10b981' }}>{previewData.category}</span>
-                          </div>
-                        </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specs</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Detected <span style={{ color: '#4f46e5' }}>{previewData.specsCount}</span> specification rows
-                          </div>
-                        </div>
-                        <div style={{ width: 1, height: 32, background: '#cbd5e1' }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inventory</span>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginTop: 2 }}>
-                            Detected <span style={{ color: '#06b6d4' }}>{previewData.variantsCount}</span> variants
-                          </div>
+                        <div>
+                          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>Visual Smart-Sync Hub</h3>
+                          <p style={{ margin: 0, fontSize: 13, color: '#64748b', marginTop: 1 }}>Paste JSON or upload a blueprint to auto-fill all product steps</p>
                         </div>
                       </div>
-                    )}
 
-                    {magicFillError && (
-                      <div
-                        style={{
-                          background: '#fef2f2',
-                          border: '1px solid #fecaca',
-                          borderRadius: 12,
-                          padding: '12px 16px',
-                          color: '#b91c1c',
-                          fontSize: 13,
-                          fontWeight: 500,
-                          marginBottom: 24,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
-                      >
-                        <AlertTriangle size={16} />
-                        {magicFillError}
-                      </div>
-                    )}
+                      {isSyncing && (
+                        <div style={{ marginBottom: 24, background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: 14, padding: '18px 20px', animation: 'pf-fade-in 0.3s ease' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#6d28d9' }}>Syncing Blueprint…</span>
+                            <span style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500 }}>
+                              {syncingStep === 'general' ? 'Step 1 / 3' : syncingStep === 'specs' ? 'Step 2 / 3' : syncingStep === 'inventory' ? 'Step 3 / 3' : 'Complete ✓'}
+                            </span>
+                          </div>
+                          <div style={{ height: 5, background: '#ede9fe', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
+                            <div style={{ height: '100%', borderRadius: 99, background: 'linear-gradient(90deg,#a855f7,#7c3aed)', transition: 'width 0.6s cubic-bezier(.4,0,.2,1)', width: syncingStep === 'general' ? '33%' : syncingStep === 'specs' ? '66%' : syncingStep === 'inventory' ? '90%' : '100%' }} />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {[['general','General Details'],['specs','Specifications'],['inventory','Inventory & Variants']].map(([key,label]) => {
+                              const isDone = (key === 'general' && ['specs','inventory','done'].includes(syncingStep)) || (key === 'specs' && ['inventory','done'].includes(syncingStep)) || (key === 'inventory' && syncingStep === 'done');
+                              const isActive = syncingStep === key;
+                              return (
+                                <div key={key} className={`pf-sync-step${isActive?' active':''}${isDone?' done':''}`}>
+                                  <div className="pf-sync-dot" />
+                                  <span style={{ fontSize: 13, fontWeight: 500, color: isDone ? '#059669' : isActive ? '#6d28d9' : '#94a3b8' }}>{label}</span>
+                                  {isDone && <Check size={13} color="#10b981" style={{ marginLeft: 'auto' }} />}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                    <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          try {
-                            const parsed = JSON.parse(magicFillText);
-                            setMagicFillText(JSON.stringify(parsed, null, 2));
-                            setMagicFillError('');
-                          } catch (e) {
-                            setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
-                          }
-                        }}
-                        onMouseEnter={() => setIsPrettifyHovered(true)}
-                        onMouseLeave={() => setIsPrettifyHovered(false)}
-                        style={{
-                          background: isPrettifyHovered ? '#f1f5f9' : 'transparent',
-                          color: '#64748b',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: 12,
-                          padding: '12px 24px',
-                          fontWeight: 600,
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        Prettify JSON
-                      </button>
+                      {!isValidJson && !isSyncing && (
+                        <>
+                          <input type="file" id="mf-json-upload" accept=".json,application/json" style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files[0]; if (!file) return;
+                              const reader = new FileReader();
+                              reader.onload = (ev) => { try { JSON.parse(ev.target.result); setMagicFillText(ev.target.result); setMagicFillError(''); } catch { setMagicFillError('Uploaded file is not valid JSON.'); } };
+                              reader.readAsText(file); e.target.value = '';
+                            }}
+                          />
+                          <div className="pf-hub-dropzone" tabIndex={0}
+                            title="Click to upload JSON, or Ctrl+V to paste"
+                            onClick={() => document.getElementById('mf-json-upload').click()}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('mf-json-upload').click(); } }}
+                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#7c3aed'; }}
+                            onDragLeave={(e) => { e.currentTarget.style.borderColor = '#d8b4fe'; }}
+                            onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#d8b4fe'; const file = e.dataTransfer.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (ev) => { try { JSON.parse(ev.target.result); setMagicFillText(ev.target.result); setMagicFillError(''); } catch { setMagicFillError('Dropped file is not valid JSON.'); } }; reader.readAsText(file); }}
+                            onPaste={(e) => { e.preventDefault(); const text = e.clipboardData.getData('Text'); try { JSON.parse(text); setMagicFillText(text); setMagicFillError(''); } catch { setMagicFillError('Pasted text is not valid JSON.'); } }}
+                          >
+                            <div className="pf-sparkle-icon" style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg,#f3e8ff,#ede9fe)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px', boxShadow: '0 4px 24px rgba(124,58,237,0.12)' }}>
+                              <Sparkles size={30} color="#7c3aed" />
+                            </div>
+                            <h4 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 700, color: '#1e293b' }}>Click & Paste JSON Blueprint</h4>
+                            <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: 13.5 }}>Drag & drop a <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, fontSize: 12 }}>.json</code> file, or click to browse</p>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '6px 14px', fontSize: 12.5, color: '#64748b' }}>
+                              <span style={{ fontFamily: 'monospace', background: '#f1f5f9', padding: '1px 6px', borderRadius: 4 }}>Ctrl+V</span> to paste JSON instantly
+                            </div>
+                          </div>
 
-                      <button
-                        type="button"
-                        onClick={handleMagicFillProcess}
-                        onMouseEnter={() => setIsMagicProcessHovered(true)}
-                        onMouseLeave={() => setIsMagicProcessHovered(false)}
-                        style={{
-                          background: isMagicProcessHovered ? 'linear-gradient(135deg, #a855f7 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                          color: '#ffffff',
-                          border: 'none',
-                          borderRadius: 12,
-                          padding: '12px 32px',
-                          fontWeight: 600,
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          boxShadow: isMagicProcessHovered ? '0 10px 25px -5px rgba(124, 58, 237, 0.4)' : '0 4px 15px rgba(124, 58, 237, 0.2)',
-                          transform: isMagicProcessHovered ? 'scale(1.03)' : 'scale(1)',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        Process Magic Fill
-                      </button>
-                    </div>
-                  </>
-                )}
+                          <div style={{ marginTop: 16, marginBottom: 8 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 10px' }}>Quick Templates</p>
+                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                              {[{ label: '👕 Hoodie Template', data: '{"name":"Premium Hoodie","brand":"ShopEase","description":"Ultra-soft hoodie","audience":"unisex","category_label":"Clothing","specifications":[{"key":"Material","value":"100% Cotton"},{"key":"Weight","value":"320 GSM"}],"inventory":[{"size":"M","color":"Black","price":89,"stock":200},{"size":"L","color":"Navy","price":89,"stock":150}]}' },
+                                { label: '👟 Sneaker Template', data: '{"name":"Comfort Runner","brand":"ShopEase","description":"Lightweight running sneakers","audience":"unisex","category_label":"Footwear","specifications":[{"key":"Sole","value":"Rubber"},{"key":"Upper","value":"Mesh"}],"inventory":[{"size":"42","color":"White","price":120,"stock":80}]}' }
+                              ].map((t) => (
+                                <button key={t.label} type="button"
+                                  onClick={() => { try { JSON.parse(t.data); setMagicFillText(t.data); setMagicFillError(''); } catch {} }}
+                                  style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 9, padding: '7px 14px', fontSize: 12.5, color: '#475569', fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s ease' }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#f3e8ff'; e.currentTarget.style.borderColor = '#c4b5fd'; e.currentTarget.style.color = '#6d28d9'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}
+                                >{t.label}</button>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {isValidJson && !isSyncing && (
+                        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.04)', animation: 'pf-fade-in 0.3s ease' }}>
+                          <div style={{ padding: '22px 28px', background: 'linear-gradient(135deg,#faf5ff 0%,#f5f3ff 100%)', borderBottom: '1px solid #ede9fe' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Product Blueprint</span>
+                                <h4 style={{ margin: '4px 0 0', fontSize: 20, fontWeight: 700, color: '#1e293b', letterSpacing: '-0.01em' }}>{parsedBlueprint?.name || '—'}</h4>
+                                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>{parsedBlueprint?.brand || ''}{parsedBlueprint?.category_label ? ` · ${parsedBlueprint.category_label}` : ''}</p>
+                              </div>
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <span style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>{totalFields} fields</span>
+                                <button type="button" onClick={() => { setMagicFillText(''); setMagicFillError(''); }} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 12px', fontSize: 12, color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>Reset</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '20px 28px', borderBottom: '1px solid #f1f5f9' }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 12px' }}>Specifications</p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                              {specsForDisplay.length > 0 ? specsForDisplay.map((s, i) => (
+                                <span key={i} className="pf-spec-chip"><strong>{s.key}:</strong> {s.value}</span>
+                              )) : <span style={{ color: '#94a3b8', fontSize: 13 }}>No specifications detected</span>}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '16px 28px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <Box size={16} color="#a78bfa" />
+                            {invCount > 0
+                              ? <span style={{ fontSize: 13, color: '#4c1d95', fontWeight: 600 }}>{invCount} variant{invCount > 1 ? 's' : ''} ready to import</span>
+                              : <span style={{ fontSize: 13, color: '#94a3b8' }}>No inventory detected</span>}
+                          </div>
+
+                          <div style={{ padding: '16px 28px', background: '#fafafa', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }}>
+                            <button type="button" onClick={() => { setMagicFillText(''); setMagicFillError(''); }}
+                              style={{ background: 'transparent', border: '1px solid #e2e8f0', borderRadius: 10, padding: '10px 20px', fontSize: 13.5, color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>
+                              ← Back
+                            </button>
+                            <button type="button" onClick={handleMagicFillProcess} disabled={isSyncing}
+                              onMouseEnter={() => setIsMagicProcessHovered(true)}
+                              onMouseLeave={() => setIsMagicProcessHovered(false)}
+                              style={{ background: isMagicProcessHovered ? 'linear-gradient(135deg,#a855f7,#6d28d9)' : 'linear-gradient(135deg,#8b5cf6,#7c3aed)', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 28px', fontSize: 13.5, fontWeight: 700, cursor: isSyncing ? 'wait' : 'pointer', boxShadow: isMagicProcessHovered ? '0 8px 24px rgba(124,58,237,0.35)' : '0 4px 14px rgba(124,58,237,0.2)', transform: isMagicProcessHovered && !isSyncing ? 'scale(1.03)' : 'scale(1)', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <Sparkles size={15} />
+                              Confirm & Apply
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {magicFillError && (
+                        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: '12px 16px', color: '#b91c1c', fontSize: 13, fontWeight: 500, marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <AlertTriangle size={16} />
+                          {magicFillError}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
                 {activeTab === 'general' && (
                   <>
                      <div className="pf-section-title">
