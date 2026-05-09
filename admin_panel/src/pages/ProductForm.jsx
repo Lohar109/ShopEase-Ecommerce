@@ -24,6 +24,7 @@ const STEPS = [
 
 const normalizeId = (value) => String(value ?? '').trim();
 const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalizeId(value));
+const MAGIC_FILL_DRAFT_KEY = 'shopease.productform.magicfill.draft';
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -83,12 +84,13 @@ const ProductForm = () => {
   const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
   const magicEditorRef = useRef(null);
+  const magicPreviewRef = useRef(null);
   const magicSyncTimersRef = useRef([]);
 
   // VS Code Light syntax highlighter for JSON
   const highlightJSON = (code) => {
     if (!code) return '';
-    const PRIMARY_KEYS = ['name', 'brand', 'description', 'audience', 'category_label', 'subcategory_label', 'specifications', 'specs', 'inventory', 'variants'];
+    const BOLD_KEYS = ['specs', 'variants', 'specifications', 'inventory'];
     const escaped = code
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -110,14 +112,14 @@ const ProductForm = () => {
       if (match[1]) {
         const token = match[1];
         const keyName = token.slice(1, -1);
-        const keyToken = wrap(token, '#0550ae', PRIMARY_KEYS.includes(keyName) ? 'font-weight:700' : '');
-        output += isKey(match.index, token) ? keyToken : wrap(token, '#116329');
+        const keyToken = wrap(token, '#4f46e5', BOLD_KEYS.includes(keyName) ? 'font-weight:700' : '');
+        output += isKey(match.index, token) ? keyToken : wrap(token, '#059669');
       } else if (match[2]) {
-        output += wrap(match[2], '#8250df');
+        output += wrap(match[2], '#9333ea');
       } else if (match[3]) {
-        output += wrap(match[3], '#8250df');
+        output += wrap(match[3], '#9333ea');
       } else if (match[4]) {
-        output += wrap(match[4], '#24292f');
+        output += wrap(match[4], '#64748b');
       }
 
       lastIndex = tokenRegex.lastIndex;
@@ -132,7 +134,46 @@ const ProductForm = () => {
     magicSyncTimersRef.current = [];
   };
 
+  const syncMagicScroll = (sourceEl) => {
+    const previewEl = magicPreviewRef.current;
+    const editorEl = magicEditorRef.current;
+    if (!previewEl || !editorEl || !sourceEl) return;
+
+    const { scrollTop = 0, scrollLeft = 0 } = sourceEl;
+    if (previewEl !== sourceEl) {
+      previewEl.scrollTop = scrollTop;
+      previewEl.scrollLeft = scrollLeft;
+    }
+    if (editorEl !== sourceEl) {
+      editorEl.scrollTop = scrollTop;
+      editorEl.scrollLeft = scrollLeft;
+    }
+  };
+
   const formatMagicTimestamp = (date = new Date()) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  useEffect(() => {
+    try {
+      const savedDraft = sessionStorage.getItem(MAGIC_FILL_DRAFT_KEY);
+      if (savedDraft && !magicFillText) {
+        setMagicFillText(savedDraft);
+      }
+    } catch {
+      // ignore storage access failures
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (magicFillText) {
+        sessionStorage.setItem(MAGIC_FILL_DRAFT_KEY, magicFillText);
+      } else {
+        sessionStorage.removeItem(MAGIC_FILL_DRAFT_KEY);
+      }
+    } catch {
+      // ignore storage access failures
+    }
+  }, [magicFillText]);
 
 
   const magicPreview = useMemo(() => {
@@ -1821,263 +1862,407 @@ const ProductForm = () => {
                       Paste a JSON object to automatically populate general product information, generate specifications, and batch variants.
                     </p>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
+                    <div style={{ marginBottom: 24 }}>
                       <style>{`
                         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-                        .smart-sync-shell {
-                          position: relative;
+                        .smart-hub-card {
+                          height: 800px;
+                          display: flex;
+                          flex-direction: column;
                           border-radius: 18px;
-                          overflow: hidden;
-                          border: 1px solid rgba(148, 163, 184, 0.22);
-                          background: rgba(255, 255, 255, 0.66);
+                          border: 1px solid transparent;
+                          background: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)) padding-box, linear-gradient(90deg, #ede9fe, #dbeafe) border-box;
                           backdrop-filter: blur(20px);
                           -webkit-backdrop-filter: blur(20px);
-                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.08), inset 0 1px 0 rgba(255,255,255,0.82);
+                          overflow: hidden;
                         }
-                        .smart-sync-shell:focus-within { box-shadow: 0 24px 60px rgba(124, 58, 237, 0.12), 0 0 0 3px rgba(168, 85, 247, 0.14); }
-                        .smart-sync-stage {
+                        .smart-hub-body {
+                          flex: 1;
+                          min-height: 0;
+                          display: flex;
+                          flex-direction: column;
+                        }
+                        .smart-hub-body.active .smart-editor-panel {
+                          height: 60%;
+                          border-bottom: 1px solid rgba(124, 58, 237, 0.14);
+                        }
+                        .smart-hub-body.empty .smart-editor-panel {
+                          height: 100%;
+                        }
+                        .smart-editor-panel {
                           position: relative;
-                          height: 700px;
-                          padding: 28px;
-                          background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,250,252,0.92) 100%);
+                          min-height: 0;
+                          background: rgba(255, 255, 255, 0.8) !important;
+                          backdrop-filter: blur(24px) saturate(180%) !important;
+                          -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+                          border: 1px solid rgba(124, 58, 237, 0.15) !important;
+                          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05), inset 0 2px 8px rgba(15, 23, 42, 0.08);
+                          overflow: hidden;
                         }
-                        .smart-sync-code {
+                        .smart-editor-panel:focus-within {
+                          box-shadow: inset 0 0 10px rgba(124, 58, 237, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+                        }
+                        .smart-editor-content {
+                          position: relative;
+                          height: 100%;
+                        }
+                        .smart-editor-pre {
+                          position: absolute;
+                          inset: 0;
                           margin: 0;
-                          min-height: 292px;
+                          padding: 40px;
+                          overflow: auto;
                           white-space: pre-wrap;
                           word-break: break-word;
-                          overflow: auto;
-                          padding-right: 0;
                           font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 13.5px;
-                          line-height: 1.6;
-                          color: #24292f;
+                          font-size: 14px;
+                          line-height: 1.8;
+                          color: #1a1a1a !important;
                           user-select: none;
+                          pointer-events: none;
+                          z-index: 1;
+                          scrollbar-width: thin;
+                          scrollbar-color: #7c3aed transparent;
                         }
-                        .smart-sync-key { color: #0550ae; }
-                        .smart-sync-key-primary { color: #0550ae; font-weight: 700; }
-                        .smart-sync-string { color: #116329; }
-                        .smart-sync-number { color: #8250df; }
-                        .smart-sync-brace { color: #24292f; }
-                        .smart-sync-input {
+                        .smart-editor-input {
                           position: absolute;
                           inset: 0;
                           width: 100%;
                           height: 100%;
-                          opacity: 0.01;
+                          padding: 40px;
+                          border: none;
+                          outline: none;
+                          resize: none;
+                          background: transparent;
                           color: transparent;
                           caret-color: #7c3aed;
-                          background: transparent;
-                          border: none;
-                          resize: none;
-                          outline: none;
-                          padding: 24px;
                           font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 13.5px;
-                          line-height: 1.6;
-                          z-index: 2;
+                          font-size: 14px;
+                          line-height: 1.8;
+                          overflow-y: auto;
+                          overflow-x: hidden;
                           white-space: pre-wrap;
                           word-break: break-word;
+                          z-index: 2;
+                          scrollbar-width: thin;
+                          scrollbar-color: #7c3aed transparent;
                         }
-                        .audit-log-card {
-                          background: rgba(255, 255, 255, 0.68);
-                          border: 1px solid rgba(148, 163, 184, 0.18);
+                        .smart-editor-pre::-webkit-scrollbar,
+                        .smart-editor-input::-webkit-scrollbar,
+                        .smart-hub-insights::-webkit-scrollbar {
+                          width: 6px;
+                        }
+                        .smart-editor-pre::-webkit-scrollbar-thumb,
+                        .smart-editor-input::-webkit-scrollbar-thumb,
+                        .smart-hub-insights::-webkit-scrollbar-thumb {
+                          background: #a78bfa;
+                          border-radius: 999px;
+                        }
+                        .smart-editor-pre::-webkit-scrollbar-track,
+                        .smart-editor-input::-webkit-scrollbar-track,
+                        .smart-hub-insights::-webkit-scrollbar-track {
+                          background: transparent;
+                        }
+                        .smart-empty-zone {
+                          position: absolute;
+                          inset: 0;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          pointer-events: none;
+                          z-index: 3;
+                        }
+                        .smart-empty-zone-card {
+                          width: min(620px, calc(100% - 64px));
+                          border: 1px dashed rgba(124, 58, 237, 0.28);
                           border-radius: 18px;
-                          backdrop-filter: blur(18px);
-                          -webkit-backdrop-filter: blur(18px);
-                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.06);
-                          overflow: hidden;
+                          padding: 34px 24px;
+                          text-align: center;
+                          background: rgba(124, 58, 237, 0.04);
                         }
-                        .audit-log-table {
+                        .smart-empty-zone-title {
+                          margin-top: 12px;
+                          font-size: 18px;
+                          font-weight: 700;
+                          color: #4c1d95;
+                        }
+                        .smart-empty-zone-sub {
+                          margin-top: 6px;
+                          font-size: 13px;
+                          color: #6b7280;
+                        }
+                        .smart-hub-insights {
+                          height: 40%;
+                          overflow-y: auto;
+                          overflow-x: hidden;
+                          padding: 16px 20px 18px;
+                          background: rgba(255,255,255,0.82);
+                          scrollbar-width: thin;
+                          scrollbar-color: #7c3aed transparent;
+                        }
+                        .smart-stats-grid {
+                          display: grid;
+                          grid-template-columns: repeat(4, minmax(0, 1fr));
+                          gap: 10px;
+                          margin-bottom: 14px;
+                        }
+                        .smart-stat-pill {
+                          border-radius: 12px;
+                          border: 1px solid rgba(124, 58, 237, 0.18);
+                          background: rgba(245, 243, 255, 0.72);
+                          padding: 10px 12px;
+                          transition: all 0.25s ease;
+                        }
+                        .smart-stat-pill.active {
+                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2), 0 0 18px rgba(124, 58, 237, 0.12);
+                          background: rgba(237, 233, 254, 0.9);
+                        }
+                        .smart-stat-pill .k {
+                          display: block;
+                          font-size: 10px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.08em;
+                          color: #6b7280;
+                          margin-bottom: 4px;
+                        }
+                        .smart-stat-pill .v {
+                          font-size: 14px;
+                          font-weight: 700;
+                          color: #5b21b6;
+                        }
+                        .smart-category-state {
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #64748b;
+                          margin: 2px 0 12px;
+                        }
+                        .smart-category-awaiting {
+                          color: #7c3aed;
+                          animation: smartAwaitPulse 1.8s ease-in-out infinite;
+                        }
+                        @keyframes smartAwaitPulse {
+                          0%, 100% { opacity: 0.55; }
+                          50% { opacity: 1; }
+                        }
+                        .smart-audit-table {
                           width: 100%;
                           border-collapse: collapse;
+                          background: rgba(255,255,255,0.82);
+                          border-radius: 12px;
+                          overflow: hidden;
                         }
-                        .audit-log-table thead th {
+                        .smart-audit-table th {
                           text-align: left;
                           font-size: 11px;
                           letter-spacing: 0.08em;
                           text-transform: uppercase;
-                          color: #64748b;
-                          background: rgba(248, 250, 252, 0.8);
-                          padding: 14px 16px;
-                          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+                          color: #7c3aed;
+                          padding: 12px 14px;
+                          border-bottom: 1px solid rgba(124,58,237,0.16);
+                          background: rgba(237, 233, 254, 0.75);
                         }
-                        .audit-log-table tbody td {
-                          padding: 13px 16px;
+                        .smart-audit-table td {
+                          padding: 11px 14px;
                           border-bottom: 1px solid rgba(226, 232, 240, 0.7);
                           font-size: 13px;
                           color: #0f172a;
                         }
-                        .audit-log-pill {
+                        .smart-audit-status {
                           display: inline-flex;
                           align-items: center;
-                          gap: 6px;
-                          padding: 6px 10px;
                           border-radius: 999px;
+                          padding: 5px 9px;
                           font-size: 11px;
                           font-weight: 700;
                         }
-                        .audit-success { background: rgba(16, 185, 129, 0.12); color: #047857; }
-                        .audit-error { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+                        .smart-audit-status.ok { background: rgba(16,185,129,0.12); color: #047857; }
+                        .smart-audit-status.err { background: rgba(239,68,68,0.12); color: #b91c1c; }
+                        .smart-hub-actions {
+                          border-top: 1px solid rgba(124, 58, 237, 0.14);
+                          padding: 14px 18px;
+                          display: flex;
+                          justify-content: flex-end;
+                          gap: 12px;
+                          background: rgba(255, 255, 255, 0.82);
+                        }
                         @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
-                        @keyframes smartGlow { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35); } 100% { box-shadow: 0 0 0 14px rgba(34, 197, 94, 0); } }
                         .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
                         .sidebar-sync-green { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.2)) !important; border-color: rgba(34,197,94,0.3) !important; box-shadow: 0 8px 20px rgba(34,197,94,0.12) !important; }
                         .sidebar-sync-green .pf-sync-dot { background: #22c55e !important; color: #fff !important; }
                       `}</style>
-                      <div className="smart-sync-shell">
-                        <div className="smart-sync-stage">
-                          <pre
-                            className="smart-sync-code"
-                            aria-hidden="true"
-                            dangerouslySetInnerHTML={{ __html: highlightJSON(magicPreview.prettyJson || magicFillText || '') + '\n' }}
-                          />
-                          <textarea
-                            ref={magicEditorRef}
-                            className="smart-sync-input"
-                            value={magicFillText}
-                            onChange={e => {
-                              setMagicFillText(e.target.value);
-                              setMagicFillError('');
-                              setMagicAuditRows([]);
-                            }}
-                            onScroll={e => {
-                              const pre = e.target.previousSibling;
-                              if (pre) {
-                                pre.scrollTop = e.target.scrollTop;
-                                pre.scrollLeft = e.target.scrollLeft;
-                              }
-                            }}
-                            spellCheck={false}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            placeholder={`Paste JSON here...`}
-                            aria-label="Magic Fill JSON input"
-                          />
 
-                        </div>
-                      </div>
-                    </div>
+                      {(() => {
+                        const hasMagicInput = Boolean(magicFillText.trim());
+                        const parsed = magicPreview?.parsed || null;
+                        const generalCount = parsed ? ['name', 'brand', 'description', 'audience'].filter((k) => String(parsed?.[k] || '').trim()).length : 0;
+                        const specsCount = hasMagicInput ? Number(magicPreview?.specsCount || 0) : 0;
+                        const variantsCount = hasMagicInput ? Number(magicPreview?.variantsCount || 0) : 0;
+                        const categoryMatched = hasMagicInput && magicPreview?.category && !magicPreview.category.includes('No Match') && magicPreview.category !== 'None';
 
-                    {magicPreview && !magicPreview.error && (
-                      <div className="audit-log-card" style={{ marginBottom: 24 }}>
-                        <div style={{ padding: '18px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                          <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#64748b' }}>Visual Smart-Sync Hub</div>
-                            <div style={{ marginTop: 4, fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{magicPreview.category && !magicPreview.category.includes('No Match') ? `Matched category: ${magicPreview.category}` : 'Awaiting a category match'}</div>
+                        return (
+                          <div className="smart-hub-card">
+                            <div className={`smart-hub-body ${hasMagicInput ? 'active' : 'empty'}`}>
+                              <div className="smart-editor-panel">
+                                <div className="smart-editor-content">
+                                  <pre
+                                    ref={magicPreviewRef}
+                                    className="smart-editor-pre"
+                                    aria-hidden="true"
+                                    dangerouslySetInnerHTML={{ __html: highlightJSON(magicPreview.prettyJson || magicFillText || '') + '\n' }}
+                                  />
+                                  <textarea
+                                    ref={magicEditorRef}
+                                    className="smart-editor-input"
+                                    value={magicFillText}
+                                    onChange={e => {
+                                      setMagicFillText(e.target.value);
+                                      setMagicFillError('');
+                                      setMagicAuditRows([]);
+                                    }}
+                                    onScroll={e => syncMagicScroll(e.target)}
+                                    spellCheck={false}
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    placeholder={'Paste your product JSON here to start the magic...'}
+                                    aria-label="Magic Fill JSON input"
+                                  />
+
+                                  {!hasMagicInput && (
+                                    <div className="smart-empty-zone">
+                                      <div className="smart-empty-zone-card">
+                                        <Sparkles size={28} color="#7c3aed" />
+                                        <div className="smart-empty-zone-title">Smart-Paste</div>
+                                        <div className="smart-empty-zone-sub">Paste your product JSON here to start the magic...</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {hasMagicInput && (
+                                <div className="smart-hub-insights">
+                                  <div className="smart-stats-grid">
+                                    <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
+                                    <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
+                                    <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
+                                    <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                                  </div>
+
+                                  <div className="smart-category-state">
+                                    {categoryMatched ? `Matched Category: ${magicPreview.category}` : <span className="smart-category-awaiting">Awaiting Category Match...</span>}
+                                  </div>
+
+                                  <table className="smart-audit-table">
+                                    <thead>
+                                      <tr>
+                                        <th>ID</th>
+                                        <th>Step</th>
+                                        <th>Type</th>
+                                        <th>Timestamp</th>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
+                                        <tr key={`${row.id}-${row.step}-${row.type}`}>
+                                          <td>{row.id}</td>
+                                          <td>{row.step}</td>
+                                          <td>{row.type}</td>
+                                          <td>{row.timestamp}</td>
+                                          <td>{row.action}</td>
+                                          <td>
+                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : 'ok'}`}>
+                                              {row.status}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      )) : (
+                                        <tr>
+                                          <td colSpan={6} style={{ color: '#64748b' }}>Run Process Magic Fill to capture a detailed audit trail.</td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </table>
+
+                                  {magicFillError && (
+                                    <div
+                                      style={{
+                                        marginTop: 12,
+                                        background: 'rgba(254, 242, 242, 0.9)',
+                                        border: '1px solid rgba(252, 165, 165, 0.5)',
+                                        borderRadius: 10,
+                                        padding: '10px 12px',
+                                        color: '#b91c1c',
+                                        fontSize: 12,
+                                        fontWeight: 600,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <AlertTriangle size={14} />
+                                      {magicFillError}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="smart-hub-actions">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  try {
+                                    const parsedJson = JSON.parse(magicFillText);
+                                    setMagicFillText(JSON.stringify(parsedJson, null, 2));
+                                    setMagicFillError('');
+                                  } catch (e) {
+                                    setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
+                                  }
+                                }}
+                                onMouseEnter={() => setIsPrettifyHovered(true)}
+                                onMouseLeave={() => setIsPrettifyHovered(false)}
+                                style={{
+                                  background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
+                                  color: '#5b21b6',
+                                  border: '1px solid rgba(124,58,237,0.24)',
+                                  borderRadius: 10,
+                                  padding: '10px 18px',
+                                  fontWeight: 700,
+                                  fontSize: 13,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                Prettify JSON
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={handleMagicFillProcess}
+                                onMouseEnter={() => setIsMagicProcessHovered(true)}
+                                onMouseLeave={() => setIsMagicProcessHovered(false)}
+                                style={{
+                                  background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  borderRadius: 10,
+                                  padding: '10px 22px',
+                                  fontWeight: 700,
+                                  fontSize: 13,
+                                  cursor: 'pointer',
+                                  boxShadow: isMagicProcessHovered ? '0 14px 24px -10px rgba(124,58,237,0.45)' : '0 10px 20px -10px rgba(124,58,237,0.35)',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                Process Magic Fill
+                              </button>
+                            </div>
                           </div>
-                          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                            <div className="audit-log-pill" style={{ background: 'rgba(45, 212, 191, 0.12)', color: '#0f766e' }}>Specs: {magicPreview.specsCount || 8}</div>
-                            <div className="audit-log-pill" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#6d28d9' }}>Variants: {magicPreview.variantsCount || 12}</div>
-                          </div>
-                        </div>
-                        <table className="audit-log-table">
-                          <thead>
-                            <tr>
-                              <th>ID</th>
-                              <th>Step</th>
-                              <th>Type</th>
-                              <th>Timestamp</th>
-                              <th>Action</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
-                              <tr key={`${row.id}-${row.step}-${row.type}`}>
-                                <td>{row.id}</td>
-                                <td>{row.step}</td>
-                                <td>{row.type}</td>
-                                <td>{row.timestamp}</td>
-                                <td>{row.action}</td>
-                                <td>
-                                  <span className={`audit-log-pill ${row.status === 'Error' ? 'audit-error' : 'audit-success'}`}>
-                                    {row.status}
-                                  </span>
-                                </td>
-                              </tr>
-                            )) : (
-                              <tr>
-                                <td colSpan={6} style={{ padding: '18px 16px', color: '#64748b' }}>Run Process Magic Fill to capture a detailed audit trail.</td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-
-                    {magicFillError && (
-                      <div
-                        style={{
-                          background: 'rgba(254, 242, 242, 0.88)',
-                          border: '1px solid rgba(252, 165, 165, 0.5)',
-                          borderRadius: 12,
-                          padding: '12px 16px',
-                          color: '#b91c1c',
-                          fontSize: 13,
-                          fontWeight: 500,
-                          marginBottom: 24,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
-                      >
-                        <AlertTriangle size={16} />
-                        {magicFillError}
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', alignItems: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          try {
-                            const parsed = JSON.parse(magicFillText);
-                            setMagicFillText(JSON.stringify(parsed, null, 2));
-                            setMagicFillError('');
-                          } catch (e) {
-                            setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
-                          }
-                        }}
-                        onMouseEnter={() => setIsPrettifyHovered(true)}
-                        onMouseLeave={() => setIsPrettifyHovered(false)}
-                        style={{
-                          background: isPrettifyHovered ? 'rgba(248, 250, 252, 0.95)' : 'rgba(255,255,255,0.72)',
-                          color: '#475569',
-                          border: '1px solid rgba(203, 213, 225, 0.9)',
-                          borderRadius: 12,
-                          padding: '12px 24px',
-                          fontWeight: 600,
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          boxShadow: '0 12px 35px rgba(15, 23, 42, 0.05)',
-                        }}
-                      >
-                        Prettify JSON
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleMagicFillProcess}
-                        onMouseEnter={() => setIsMagicProcessHovered(true)}
-                        onMouseLeave={() => setIsMagicProcessHovered(false)}
-                        style={{
-                          background: isMagicProcessHovered ? 'linear-gradient(135deg, #a855f7 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                          color: '#ffffff',
-                          border: 'none',
-                          borderRadius: 12,
-                          padding: '12px 32px',
-                          fontWeight: 700,
-                          fontSize: 14,
-                          cursor: 'pointer',
-                          boxShadow: isMagicProcessHovered ? '0 18px 30px -8px rgba(124, 58, 237, 0.45)' : '0 10px 22px -8px rgba(124, 58, 237, 0.3)',
-                          transform: isMagicProcessHovered ? 'translateY(-1px)' : 'translateY(0)',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        Process Magic Fill
-                      </button>
+                        );
+                      })()}
                     </div>
                   </>
                 )}
