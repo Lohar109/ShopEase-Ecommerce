@@ -1687,7 +1687,7 @@ const ProductForm = () => {
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
-                    <div style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
                       <div style={{ minWidth: 950, padding: '0 4px' }}>
                         <div
                           style={{

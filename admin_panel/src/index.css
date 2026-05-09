@@ -97,3 +97,20 @@ td {
   animation: toast-pop-in 240ms ease-out;
 }
 
+.custom-scrollbar-container::-webkit-scrollbar {
+  height: 5px;
+}
+
+.custom-scrollbar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar-container::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar-container:hover::-webkit-scrollbar-thumb {
+  background: #a1a1a1;
+}
+
