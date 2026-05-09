@@ -2088,8 +2088,8 @@ const ProductForm = () => {
                             }}
                           >
                             {/* Variant Info */}
-                            <div style={{ flex: 1 }}>
-                              <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#111827' }}>
+                            <div style={{ width: 340, minWidth: 320, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                              <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
                                 Variant #{index + 1} ({variant.size || 'No Size'} / {variant.color || 'No Color'})
                               </h4>
                               <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b7280' }}>
