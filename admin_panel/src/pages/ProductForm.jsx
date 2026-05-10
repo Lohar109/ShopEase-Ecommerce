@@ -1,5 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
+
+const CrystalIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0%" stopColor="#A855F7" />
+        <stop offset="100%" stopColor="#3B82F6" />
+      </linearGradient>
+    </defs>
+    <g filter="url(#f1)">
+      <path d="M12 2L16.5 8.5L12 22L7.5 8.5L12 2Z" fill="url(#g1)" stroke="rgba(255,255,255,0.36)" strokeWidth="0.6" />
+    </g>
+  </svg>
+);
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import QuickAddModal from '../components/QuickAddModal';
@@ -2306,32 +2320,36 @@ const ProductForm = () => {
                     <span
                       className={isSyncPulse ? 'pf-sync-dot sidebar-sync-pulse' : `pf-sync-dot ${(!isMagic && (isSyncGreen || completed)) ? 'sidebar-sync-green' : ''}`}
                       style={{
-                        width: 30,
-                        height: 30,
+                        width: 38,
+                        height: 38,
                         borderRadius: 999,
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: isMagic ? 'none' : ((isSyncGreen || completed) ? '1px solid rgba(34,197,94,0.28)' : active ? 'none' : '1px solid #d4d4d8'),
-                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : ((isSyncGreen || completed) ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : active ? '#c8507a' : '#f4f4f5'),
+                        border: isMagic && active ? '1px solid rgba(168,85,247,0.18)' : (!isMagic ? ((isSyncGreen || completed) ? '1px solid rgba(34,197,94,0.28)' : active ? 'none' : '1px solid #d4d4d8') : 'none'),
+                        background: isMagic ? 'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(124,58,237,0.12))' : ((isSyncGreen || completed) ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : active ? '#c8507a' : '#f4f4f5'),
                         color: isMagic ? '#ffffff' : ((isSyncGreen || completed) ? '#ffffff' : active ? '#ffffff' : '#9ca3af'),
-                        fontWeight: 700,
-                        fontSize: 12,
+                        fontWeight: 800,
+                        fontSize: 14,
                         flexShrink: 0,
-                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : ((isSyncPulse || isSyncGreen || completed) ? '0 0 12px rgba(34,197,94,0.18)' : 'none')
+                        boxShadow: isMagic ? '0 6px 22px rgba(168,85,247,0.12)' : ((isSyncPulse || isSyncGreen || completed) ? '0 0 14px rgba(34,197,94,0.14)' : 'none'),
                       }}
                     >
-                      {isMagic ? <Sparkles size={16} /> : ((isSyncGreen || completed) ? <Check size={16} /> : idx)}
+                      {isMagic ? <CrystalIcon size={18} /> : ((isSyncGreen || completed) ? <Check size={16} /> : <span style={{fontWeight:800, background: 'linear-gradient(90deg,#A855F7,#3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>{idx}</span>)}
                     </span>
 
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: active ? 700 : (!isMagic && (completed || isSyncGreen)) ? 600 : 500,
-                        color: isMagic ? '#7c3aed' : ((completed || isSyncGreen) ? '#15803d' : (active ? '#111827' : '#64748b')),
-                      }}
-                    >
-                      {step.label}
+                    <span style={{ display: 'inline-block', position: 'relative' }}>
+                      <span
+                        className={isMagic && active ? 'magic-text-pulse' : ''}
+                        style={{
+                          fontSize: 17.5,
+                          fontWeight: (active || (completed || isSyncGreen)) ? 800 : 600,
+                          color: isMagic && active ? '#6d28d9' : ((completed || isSyncGreen) ? '#15803d' : (active ? '#111827' : '#475569')),
+                          lineHeight: '20px'
+                        }}
+                      >
+                        {step.label}
+                      </span>
                     </span>
                   </button>
                 </div>
@@ -2891,6 +2909,8 @@ const ProductForm = () => {
                           .smart-hub-insights { padding-bottom: 18px; }
                         }
                         @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+                        @keyframes navPulse { 0% { box-shadow: 0 6px 18px rgba(168,85,247,0.08); } 50% { box-shadow: 0 12px 32px rgba(168,85,247,0.14); } 100% { box-shadow: 0 6px 18px rgba(168,85,247,0.08); } }
+                        .magic-text-pulse { animation: navPulse 1.6s ease-in-out infinite; }
                         @keyframes auditRowSlideIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
                         .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
                         .sidebar-sync-green { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.2)) !important; border-color: rgba(34,197,94,0.3) !important; box-shadow: 0 8px 20px rgba(34,197,94,0.12) !important; }
