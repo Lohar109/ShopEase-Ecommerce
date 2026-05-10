@@ -2136,7 +2136,7 @@ const ProductForm = () => {
                     }}
                   >
                     <span
-                      className={isSyncPulse ? 'pf-sync-dot sidebar-sync-pulse' : `pf-sync-dot ${(isSyncGreen || completed) ? 'sidebar-sync-green' : ''}`}
+                      className={isSyncPulse ? 'pf-sync-dot sidebar-sync-pulse' : `pf-sync-dot ${(!isMagic && (isSyncGreen || completed)) ? 'sidebar-sync-green' : ''}`}
                       style={{
                         width: 30,
                         height: 30,
@@ -2159,7 +2159,7 @@ const ProductForm = () => {
                     <span
                       style={{
                         fontSize: 14,
-                        fontWeight: active ? 700 : (completed || isSyncGreen) ? 600 : 500,
+                        fontWeight: active ? 700 : (!isMagic && (completed || isSyncGreen)) ? 600 : 500,
                         color: isMagic ? '#7c3aed' : ((completed || isSyncGreen) ? '#15803d' : (active ? '#111827' : '#64748b')),
                       }}
                     >
