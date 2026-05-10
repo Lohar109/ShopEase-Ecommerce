@@ -575,6 +575,7 @@ const ProductForm = () => {
     else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
     else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
     else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
+    else if (audVal === 'adult dog' || audVal === 'adult dogs') matchedAudience = 'adult dog';
 
     if (matchedAudience) {
       addAuditRow('Step 1', 'General', `Audience matched to ${matchedAudience}`);
@@ -738,6 +739,7 @@ const ProductForm = () => {
         else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
         else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
         else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
+        else if (audVal === 'adult dog' || audVal === 'adult dogs') matchedAudience = 'adult dog';
 
         if (matchedAudience) {
           setAudience(matchedAudience);
