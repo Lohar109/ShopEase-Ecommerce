@@ -2265,25 +2265,50 @@ const ProductForm = () => {
             style={{
               position: 'sticky',
               top: 86,
-              background: '#ffffff',
-              borderRadius: 12,
-              border: '1px solid #eceff3',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              padding: '18px 16px',
+              background: 'transparent',
+              borderRadius: 0,
+              border: 'none',
+              boxShadow: 'none',
+              padding: 0,
             }}
           >
-            {STEPS.map((step, idx) => {
+            {/* Featured Magic Fill at top (keeps purple sparkle) */}
+            {(() => {
+              const magicStep = STEPS.find((s) => s.key === 'magic');
+              const active = activeTab === 'magic';
+              return (
+                <div key="magic-featured" style={{ marginBottom: 12, padding: '6px 4px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('magic')}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: 0,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#a855f7,#7c3aed)', color: '#fff' }}>
+                      <Sparkles size={14} />
+                    </span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{magicStep?.label}</span>
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Minimalist vertical stepper matching CouponForm */}
+            {STEPS.filter((s) => s.key !== 'magic').map((step, idx) => {
               const completed = Boolean(stepDone[step.key]);
-              const active = idx === activeIdx;
-              const isMagic = step.key === 'magic';
-              const lineColor = '#e4e4e7';
-              const syncState = magicSyncStates[step.key] || 'idle';
-              const isSyncPulse = syncState === 'pulse';
-              const isSyncGreen = syncState === 'green';
+              const active = step.key === activeTab;
+              const lineColor = completed ? '#bbf7d0' : '#e4e4e7';
 
               return (
-                <div key={step.key} style={{ position: 'relative', paddingBottom: idx < STEPS.length - 1 ? 26 : 0 }}>
-                  {idx < STEPS.length - 1 && (
+                <div key={step.key} style={{ position: 'relative', paddingBottom: idx < STEPS.length - 2 ? 26 : 0 }}>
+                  {idx < STEPS.length - 2 && (
                     <span
                       aria-hidden="true"
                       style={{
@@ -2303,54 +2328,39 @@ const ProductForm = () => {
                     style={{
                       border: 'none',
                       background: 'transparent',
-                      backdropFilter: 'none',
                       width: '100%',
                       padding: 0,
-                      borderRadius: 0,
-                      marginLeft: 0,
-                      boxShadow: 'none',
                       textAlign: 'left',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 10,
-                      transition: 'all 0.2s ease'
                     }}
                   >
-                    <span
-                      className={isSyncPulse ? 'pf-sync-dot sidebar-sync-pulse' : `pf-sync-dot ${(!isMagic && (isSyncGreen || completed)) ? 'sidebar-sync-green' : ''}`}
-                      style={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: 999,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: isMagic && active ? '1px solid rgba(168,85,247,0.18)' : (!isMagic ? ((isSyncGreen || completed) ? '1px solid rgba(34,197,94,0.28)' : active ? 'none' : '1px solid #d4d4d8') : 'none'),
-                        background: isMagic ? 'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(124,58,237,0.12))' : ((isSyncGreen || completed) ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : active ? '#c8507a' : '#f4f4f5'),
-                        color: isMagic ? '#ffffff' : ((isSyncGreen || completed) ? '#ffffff' : active ? '#ffffff' : '#9ca3af'),
-                        fontWeight: 800,
-                        fontSize: 14,
-                        flexShrink: 0,
-                        boxShadow: isMagic ? '0 6px 22px rgba(168,85,247,0.12)' : ((isSyncPulse || isSyncGreen || completed) ? '0 0 14px rgba(34,197,94,0.14)' : 'none'),
-                      }}
-                    >
-                      {isMagic ? <CrystalIcon size={18} /> : ((isSyncGreen || completed) ? <Check size={16} /> : <span style={{fontWeight:800, background: 'linear-gradient(90deg,#A855F7,#3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>{idx}</span>)}
-                    </span>
-
-                    <span style={{ display: 'inline-block', position: 'relative' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span
-                        className={isMagic && active ? 'magic-text-pulse' : ''}
                         style={{
-                          fontSize: 17.5,
-                          fontWeight: (active || (completed || isSyncGreen)) ? 800 : 600,
-                          color: isMagic && active ? '#6d28d9' : ((completed || isSyncGreen) ? '#15803d' : (active ? '#111827' : '#475569')),
-                          lineHeight: '20px'
+                          width: 30,
+                          height: 30,
+                          borderRadius: 999,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8',
+                          background: completed ? '#f0fdf4' : active ? '#ef4444' : '#f4f4f5',
+                          color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
+                          fontWeight: 700,
+                          fontSize: 12,
+                          flexShrink: 0,
                         }}
                       >
+                        {completed ? <Check size={16} /> : idx + 1}
+                      </span>
+
+                      <span style={{ fontSize: 14, fontWeight: active ? 700 : completed ? 600 : 500, color: active ? '#111827' : completed ? '#374151' : '#9ca3af' }}>
                         {step.label}
                       </span>
-                    </span>
+                    </div>
                   </button>
                 </div>
               );
