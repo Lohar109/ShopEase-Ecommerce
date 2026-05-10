@@ -3149,32 +3149,21 @@ const ProductForm = () => {
                                       style={{
                                         display: 'inline-flex',
                                         alignItems: 'center',
-                                        gap: 10,
-                                        padding: '10px 18px',
+                                        gap: 6,
+                                        background: isCancelHovered ? '#f3e8ff' : '#faf5ff',
+                                        color: isCancelHovered ? '#6d28d9' : '#8b5cf6',
+                                        border: '1px solid #6c3aa0',
                                         borderRadius: 12,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.18s ease',
-                                        background: isCancelHovered ? 'rgba(124,58,237,0.05)' : 'transparent',
-                                        backdropFilter: isCancelHovered ? 'blur(4px)' : 'none',
-                                        WebkitBackdropFilter: isCancelHovered ? 'blur(4px)' : 'none',
-                                        border: '1px solid transparent',
-                                        backgroundImage: `linear-gradient(#ffffff, #ffffff), linear-gradient(to right, #A855F7, #3B82F6)`,
-                                        backgroundOrigin: 'padding-box, border-box',
-                                        backgroundClip: 'padding-box, border-box',
-                                      }}
-                                    >
-                                      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 18, height: 18 }}>
-                                        <Clipboard size={14} style={{ filter: isCancelHovered ? 'drop-shadow(0 0 8px #A855F7)' : 'drop-shadow(0 0 4px #A855F7)', color: '#7c3aed' }} />
-                                        <Sparkles size={8} style={{ position: 'absolute', right: -6, top: -6, color: '#FDE68A', filter: isCancelHovered ? 'drop-shadow(0 0 8px #A855F7)' : 'drop-shadow(0 0 4px #A855F7)' }} />
-                                      </span>
-                                      <span style={{
-                                        fontWeight: 600,
+                                        padding: '10px 18px',
+                                        fontWeight: 700,
                                         fontSize: 13,
                                         fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
-                                        background: 'linear-gradient(90deg, #A855F7, #3B82F6)',
-                                        WebkitBackgroundClip: 'text',
-                                        WebkitTextFillColor: 'transparent'
-                                      }}>Paste</span>
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      <Clipboard size={14} />
+                                      Paste
                                     </button>
 
                                     <button
