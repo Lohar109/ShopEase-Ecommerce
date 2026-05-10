@@ -3521,7 +3521,7 @@ const ProductForm = () => {
                       />
                     </div>
 
-                      <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                      <div style={{ display: 'flex', gap: 16, marginBottom: 18, alignItems: 'flex-end' }}>
                       <div style={{ flex: 1 }}>
                         <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                           Target Audience
@@ -3560,7 +3560,7 @@ const ProductForm = () => {
                         </div>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
+                        <label style={{ fontWeight: 500, marginBottom: 4 }}>Slug (auto-generated)</label>
                         <input
                           className="custom-input"
                           type="text"
