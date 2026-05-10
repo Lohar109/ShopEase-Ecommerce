@@ -72,6 +72,7 @@ const ProductForm = () => {
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isProcessHovered, setIsProcessHovered] = useState(false);
   const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
+  const [isClearHovered, setIsClearHovered] = useState(false);
   const [isValidateHovered, setIsValidateHovered] = useState(false);
   const [showMagicFillModal, setShowMagicFillModal] = useState(false);
   const [magicFillText, setMagicFillText] = useState('');
@@ -836,6 +837,18 @@ const ProductForm = () => {
     }, 400);
   };
 
+  const handleMagicFillClear = () => {
+    setMagicFillText('');
+    setMagicFillError('');
+    setMappedData(null);
+    setMagicAuditRows([]);
+    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+    setIsBlueprintEditorOpen(false);
+    setToastMsg('Blueprint cleared.');
+    setToastType('success');
+    setTimeout(() => setToastMsg(''), 2500);
+  };
+
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
     const txt = quickPasteText.trim();
@@ -1530,7 +1543,10 @@ const ProductForm = () => {
         const color = String(v?.color || '').trim();
         const price = Number(v?.price);
         const stock = Number(v?.stock);
-        return size && color && Number.isFinite(price) && price >= 0 && Number.isFinite(stock) && stock >= 0;
+        const image = String(v?.image || '').trim();
+        // Image must be present, not empty, and not the default 'Auto-synced' placeholder
+        const hasValidImage = image && image !== 'Auto-synced';
+        return size && color && Number.isFinite(price) && price >= 0 && Number.isFinite(stock) && stock >= 0 && hasValidImage;
       });
 
     const galleries = isEditMode ? Array.isArray(designGalleries) && designGalleries.length > 0 : false;
@@ -2918,6 +2934,31 @@ const ProductForm = () => {
 
                                 <div className="smart-hub-footer">
                                   <div className="smart-hub-actions">
+                                    <button
+                                      type="button"
+                                      onClick={handleMagicFillClear}
+                                      onMouseEnter={() => setIsClearHovered(true)}
+                                      onMouseLeave={() => setIsClearHovered(false)}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        background: isClearHovered ? 'rgba(226, 232, 240, 0.6)' : '#ffffff',
+                                        color: '#64748b',
+                                        border: '1px solid #cbd5e1',
+                                        borderRadius: 12,
+                                        padding: '10px 16px',
+                                        fontWeight: 600,
+                                        fontSize: 13,
+                                        fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      <Trash2 size={14} />
+                                      Clear
+                                    </button>
+
                                     <button
                                       type="button"
                                       onClick={() => {
