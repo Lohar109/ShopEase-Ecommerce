@@ -88,6 +88,7 @@ const ProductForm = () => {
   const [mappedData, setMappedData] = useState(null);
   const [activeBlueprintGroup, setActiveBlueprintGroup] = useState('general');
   const [isBlueprintEditorOpen, setIsBlueprintEditorOpen] = useState(false);
+  const [isEditorSlidingOut, setIsEditorSlidingOut] = useState(false);
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
   const magicSyncTimersRef = useRef([]);
@@ -820,7 +821,20 @@ const ProductForm = () => {
   };
 
   const handleMagicFillValidate = () => runMagicFillWorkflow('validate');
-  const handleMagicFillApply = () => runMagicFillWorkflow('apply');
+
+  const handleMagicFillApply = () => {
+    setIsEditorSlidingOut(true);
+    setTimeout(() => {
+      setIsBlueprintEditorOpen(false);
+      setIsEditorSlidingOut(false);
+      runMagicFillWorkflow('apply');
+      setTimeout(() => {
+        setToastMsg('Applied successfully! Blueprint is now live.');
+        setToastType('success');
+        setTimeout(() => setToastMsg(''), 3500);
+      }, 100);
+    }, 400);
+  };
 
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
@@ -2489,6 +2503,30 @@ const ProductForm = () => {
                           flex-direction: column;
                           gap: 12px;
                           box-shadow: 0 10px 28px rgba(124, 58, 237, 0.08);
+                          animation: blueprintEnter 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                        }
+                        .smart-blueprint-editor.sliding-out {
+                          animation: blueprintExit 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                        }
+                        @keyframes blueprintEnter {
+                          from {
+                            opacity: 0;
+                            transform: translateY(-10px);
+                          }
+                          to {
+                            opacity: 1;
+                            transform: translateY(0);
+                          }
+                        }
+                        @keyframes blueprintExit {
+                          from {
+                            opacity: 1;
+                            transform: translateY(0);
+                          }
+                          to {
+                            opacity: 0;
+                            transform: translateY(20px);
+                          }
                         }
                         .smart-blueprint-editor-head {
                           display: flex;
@@ -2960,7 +2998,7 @@ const ProductForm = () => {
                                 </div>
 
                                 {isBlueprintEditorOpen && summarySource && (
-                                  <div className="smart-blueprint-editor">
+                                  <div className={`smart-blueprint-editor${isEditorSlidingOut ? ' sliding-out' : ''}`}>
                                     <div className="smart-blueprint-editor-head">
                                       <div>
                                         <div className="smart-blueprint-editor-title">Blueprint Detail Editor</div>
