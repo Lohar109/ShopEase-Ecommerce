@@ -408,12 +408,42 @@ const ProductList = () => {
             )}
           </div>
 
+          <style>{`
+            .product-management-scroll {
+              max-height: calc(100vh - 300px);
+              overflow-y: auto;
+              overflow-x: hidden;
+              min-height: 0;
+              scrollbar-width: thin;
+              scrollbar-color: #d1d5db #f3f4f6;
+            }
+
+            .product-management-scroll::-webkit-scrollbar {
+              width: 6px;
+              height: 6px;
+            }
+
+            .product-management-scroll::-webkit-scrollbar-track {
+              background: #f3f4f6;
+            }
+
+            .product-management-scroll::-webkit-scrollbar-thumb {
+              background: #d1d5db;
+              border-radius: 999px;
+            }
+
+            .product-management-scroll::-webkit-scrollbar-thumb:hover {
+              background: #9ca3af;
+            }
+          `}</style>
+
           {!loading && rows.length === 0 ? (
             <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 50 }}>
               No products found.
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="product-management-scroll">
+              <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
                 <thead>
                   <tr style={{ background: '#f9fafb' }}>
@@ -580,6 +610,7 @@ const ProductList = () => {
                 </tbody>
                 )}
               </table>
+              </div>
             </div>
           )}
       <ConfirmModal
