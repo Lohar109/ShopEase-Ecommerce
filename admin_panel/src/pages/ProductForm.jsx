@@ -3521,42 +3521,43 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+                      <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500 }}>Target Audience</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{ flex: 1 }}>
-                              <div className="pf-select-wrap">
-                                <select
-                                  className="custom-input pf-select"
-                                  value={audience}
-                                  onChange={aud => {
-                                    setAudience(aud.target.value);
-                                    setHighlightAudience(false);
-                                  }}
-                                  style={{
-                                    width: '100%',
-                                    padding: '10px 14px',
-                                    borderRadius: 12,
-                                    border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
-                                    background: highlightAudience ? '#fef9c3' : '#fff',
-                                    marginTop: 4,
-                                    transition: 'all 0.2s ease',
-                                  }}
-                                  required
-                                >
-                                  {audiences.map(aud => (
-                                    <option key={aud} value={aud}>{aud.charAt(0).toUpperCase() + aud.slice(1)}</option>
-                                  ))}
-                                </select>
-                                <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                              </div>
+                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                          Target Audience
+                          <button type="button" className="pf-mini-plus-btn" onClick={openAddAudience} title="Quick add audience" style={{ marginLeft: 8 }}>
+                            <span>+</span>
+                          </button>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ flex: 1 }}>
+                            <div className="pf-select-wrap">
+                              <select
+                                className="custom-input pf-select"
+                                value={audience}
+                                onChange={aud => {
+                                  setAudience(aud.target.value);
+                                  setHighlightAudience(false);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  padding: '10px 14px',
+                                  borderRadius: 12,
+                                  border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
+                                  background: highlightAudience ? '#fef9c3' : '#fff',
+                                  marginTop: 4,
+                                  transition: 'all 0.2s ease',
+                                }}
+                                required
+                              >
+                                {audiences.map(aud => (
+                                  <option key={aud} value={aud}>{aud.charAt(0).toUpperCase() + aud.slice(1)}</option>
+                                ))}
+                              </select>
+                              <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
                             </div>
-                            <button type="button" className="pf-mini-plus-btn" onClick={openAddAudience} title="Quick add audience">
-                              <span>+</span>
-                            </button>
                           </div>
-                      
+                        </div>
                       </div>
                       <div style={{ flex: 1 }}>
                         <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
