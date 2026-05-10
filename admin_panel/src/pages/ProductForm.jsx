@@ -41,6 +41,13 @@ const normalizeId = (value) => String(value ?? '').trim();
 const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalizeId(value));
 const MAGIC_FILL_DRAFT_KEY = 'shopease.productform.magicfill.draft';
 
+const formatAudienceLabel = (aud) => {
+  return aud
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const ProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -82,7 +89,7 @@ const ProductForm = () => {
   const [quickPasteWarning, setQuickPasteWarning] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success');
-  const [audiences, setAudiences] = useState(['unisex', 'men', 'women', 'kids']);
+  const [audiences, setAudiences] = useState(['unisex', 'men', 'women', 'kids', 'adult dog']);
   const [showAddAudienceModal, setShowAddAudienceModal] = useState(false);
   const [newAudienceName, setNewAudienceName] = useState('');
   const [addingAudience, setAddingAudience] = useState(false);
@@ -3551,7 +3558,7 @@ const ProductForm = () => {
                                 required
                               >
                                 {audiences.map(aud => (
-                                  <option key={aud} value={aud}>{aud.charAt(0).toUpperCase() + aud.slice(1)}</option>
+                                  <option key={aud} value={aud}>{formatAudienceLabel(aud)}</option>
                                 ))}
                               </select>
                               <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
