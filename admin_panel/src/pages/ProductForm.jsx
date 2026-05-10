@@ -171,6 +171,26 @@ const ProductForm = () => {
     magicSyncTimersRef.current = [];
   };
 
+  const resetMagicFillState = () => {
+    clearMagicSyncTimers();
+    setMagicFillText('');
+    setMagicFillError('');
+    setMappedData(null);
+    setMagicAuditRows([]);
+    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+    setMagicRingCount(0);
+    setMagicLabPulse(false);
+    setIsBlueprintEditorOpen(false);
+    setIsEditorSlidingOut(false);
+    setIsAnalyzing(false);
+
+    try {
+      sessionStorage.removeItem(MAGIC_FILL_DRAFT_KEY);
+    } catch {
+      // ignore storage access failures
+    }
+  };
+
   const syncMagicScroll = (sourceEl) => {
     const previewEl = magicPreviewRef.current;
     const editorEl = magicEditorRef.current;
@@ -416,6 +436,15 @@ const ProductForm = () => {
       // ignore storage access failures
     }
   }, [magicFillText]);
+
+  useEffect(() => {
+    resetMagicFillState();
+
+    return () => {
+      resetMagicFillState();
+    };
+    // Reset whenever the route identity changes so a previous product session cannot leak into the next one.
+  }, [id, isEditMode]);
 
 
   const magicPreview = useMemo(() => {
@@ -873,6 +902,8 @@ const ProductForm = () => {
             setVariantRows(newVariants);
           }
         }
+
+        setMappedData(createMagicBlueprintData(data));
 
         setMagicFillError('');
         setMagicAuditRows(auditRows);
@@ -1546,6 +1577,8 @@ const ProductForm = () => {
       } else {
         await saveProduct(productData);
       }
+
+      resetMagicFillState();
 
       setSaving(false);
       navigate('/products');
@@ -2967,19 +3000,11 @@ const ProductForm = () => {
                         const blueprintData = getMagicBlueprintData();
                         const summarySource = blueprintData || magicPreview?.parsed || null;
                         const generalCount = summarySource ? ['name', 'brand', 'description', 'audience'].filter((k) => String(summarySource?.[k] || '').trim()).length : 0;
-                        
-                        // Specs count: prioritize magic preview, fallback to form state
-                        let specsCount = 0;
-                        if (Array.isArray(summarySource?.specifications)) {
-                          specsCount = summarySource.specifications.length;
-                        } else if (Array.isArray(summarySource?.specs)) {
-                          specsCount = summarySource.specs.length;
-                        } else if (Array.isArray(specs)) {
-                          // Fallback to form specs state
-                          const usedSpecs = specs.filter((s) => String(s?.key || '').trim() || String(s?.value || '').trim());
-                          specsCount = usedSpecs.length;
-                        }
-                        
+                        const specsCount = Array.isArray(summarySource?.specifications)
+                          ? summarySource.specifications.length
+                          : Array.isArray(summarySource?.specs)
+                            ? summarySource.specs.length
+                            : 0;
                         const variantsCount = Array.isArray(summarySource?.inventory)
                           ? summarySource.inventory.length
                           : Array.isArray(summarySource?.variants)
