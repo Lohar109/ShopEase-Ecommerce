@@ -2119,14 +2119,14 @@ const ProductForm = () => {
                     type="button"
                     onClick={() => setActiveTab(step.key)}
                     style={{
-                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : 'none',
-                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
-                      backdropFilter: isMagic && active ? 'blur(24px)' : 'none',
+                      border: 'none',
+                      background: 'transparent',
+                      backdropFilter: 'none',
                       width: '100%',
-                      padding: isMagic && active ? '8px 12px' : 0,
-                      borderRadius: isMagic && active ? 12 : 0,
-                      marginLeft: isMagic && active ? -12 : 0,
-                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : 'none',
+                      padding: 0,
+                      borderRadius: 0,
+                      marginLeft: 0,
+                      boxShadow: 'none',
                       textAlign: 'left',
                       cursor: 'pointer',
                       display: 'flex',
