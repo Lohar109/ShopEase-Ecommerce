@@ -971,8 +971,9 @@ const ProductForm = () => {
         return;
       }
 
-      // Set parsed data as mappedData (do not expose raw JSON in UI)
-      setMappedData(parsed);
+      // Set normalized blueprint data
+      const normalizedData = createMagicBlueprintData(parsed);
+      setMappedData(normalizedData);
       setMagicFillText('');
       setMagicFillError('');
       setMagicAuditRows([]);
@@ -2966,11 +2967,19 @@ const ProductForm = () => {
                         const blueprintData = getMagicBlueprintData();
                         const summarySource = blueprintData || magicPreview?.parsed || null;
                         const generalCount = summarySource ? ['name', 'brand', 'description', 'audience'].filter((k) => String(summarySource?.[k] || '').trim()).length : 0;
-                        const specsCount = Array.isArray(summarySource?.specifications)
-                          ? summarySource.specifications.length
-                          : Array.isArray(summarySource?.specs)
-                            ? summarySource.specs.length
-                            : 0;
+                        
+                        // Specs count: prioritize magic preview, fallback to form state
+                        let specsCount = 0;
+                        if (Array.isArray(summarySource?.specifications)) {
+                          specsCount = summarySource.specifications.length;
+                        } else if (Array.isArray(summarySource?.specs)) {
+                          specsCount = summarySource.specs.length;
+                        } else if (Array.isArray(specs)) {
+                          // Fallback to form specs state
+                          const usedSpecs = specs.filter((s) => String(s?.key || '').trim() || String(s?.value || '').trim());
+                          specsCount = usedSpecs.length;
+                        }
+                        
                         const variantsCount = Array.isArray(summarySource?.inventory)
                           ? summarySource.inventory.length
                           : Array.isArray(summarySource?.variants)
