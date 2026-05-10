@@ -92,7 +92,10 @@ const ProductForm = () => {
   const [isEditorSlidingOut, setIsEditorSlidingOut] = useState(false);
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
+  const magicAuditTableRef = useRef(null);
   const magicSyncTimersRef = useRef([]);
+  const [animatingRowIds, setAnimatingRowIds] = useState(new Set());
+  const [spinnerRowIds, setSpinnerRowIds] = useState(new Set());
 
   // VS Code Light syntax highlighter for JSON
   const highlightJSON = (code) => {
@@ -607,7 +610,51 @@ const ProductForm = () => {
     return auditRows;
   };
 
-  const runMagicFillWorkflow = (mode = 'apply') => {
+  // Helper function for sequential delays
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Append audit rows sequentially with animation
+  const appendAuditRowsSequentially = async (rows) => {
+    setMagicAuditRows([]);
+    setAnimatingRowIds(new Set());
+    setSpinnerRowIds(new Set());
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      
+      // Show spinner for 100ms
+      setSpinnerRowIds((prev) => new Set(prev).add(row.id));
+      await delay(100);
+      
+      // Remove spinner and add row with animation
+      setSpinnerRowIds((prev) => {
+        const next = new Set(prev);
+        next.delete(row.id);
+        return next;
+      });
+      
+      setAnimatingRowIds((prev) => new Set(prev).add(row.id));
+      setMagicAuditRows((prev) => [...prev, row]);
+      
+      // Auto-scroll to bottom
+      await delay(50);
+      if (magicAuditTableRef.current) {
+        magicAuditTableRef.current.scrollTop = magicAuditTableRef.current.scrollHeight;
+      }
+      
+      // Stagger delay between rows
+      await delay(150);
+      
+      // Remove animation class after fade-in
+      setAnimatingRowIds((prev) => {
+        const next = new Set(prev);
+        next.delete(row.id);
+        return next;
+      });
+    }
+  };
+
+  const runMagicFillWorkflow = async (mode = 'apply') => {
     clearMagicSyncTimers();
     const isValidation = mode === 'validate';
     setIsAnalyzing(true);
@@ -620,7 +667,8 @@ const ProductForm = () => {
         if (isValidation) {
           setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
           setMagicFillError('');
-          setMagicAuditRows(auditRows);
+          await appendAuditRowsSequentially(auditRows);
+          setIsAnalyzing(false);
           setToastMsg('Blueprint validated. Audit log refreshed.');
           setToastType('success');
           setTimeout(() => setToastMsg(''), 3000);
@@ -2739,9 +2787,13 @@ const ProductForm = () => {
                           .smart-hub-insights { padding-bottom: 18px; }
                         }
                         @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+                        @keyframes auditRowSlideIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
                         .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
                         .sidebar-sync-green { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.2)) !important; border-color: rgba(34,197,94,0.3) !important; box-shadow: 0 8px 20px rgba(34,197,94,0.12) !important; }
                         .sidebar-sync-green .pf-sync-dot { background: #22c55e !important; color: #fff !important; }
+                        .audit-row-animating { animation: auditRowSlideIn 0.4s ease forwards; }
+                        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                        .audit-row-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(124, 58, 237, 0.3); border-top-color: #7c3aed; border-radius: 50%; animation: spinner 0.6s linear infinite; }
                       `}</style>
 
                       {(() => {
@@ -3129,7 +3181,7 @@ const ProductForm = () => {
                                   </div>
                                 )}
 
-                                <div className="smart-audit-scroller">
+                                <div className="smart-audit-scroller" ref={magicAuditTableRef}>
                                   <table className="smart-audit-table">
                                     <thead>
                                       <tr>
@@ -3143,16 +3195,20 @@ const ProductForm = () => {
                                     </thead>
                                     <tbody>
                                       {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
-                                        <tr key={`${row.id}-${row.step}-${row.type}`}>
+                                        <tr key={`${row.id}-${row.step}-${row.type}`} className={animatingRowIds.has(row.id) ? 'audit-row-animating' : ''}>
                                           <td>{row.id}</td>
                                           <td>{row.step}</td>
                                           <td>{row.type}</td>
                                           <td>{row.timestamp}</td>
                                           <td>{row.action}</td>
                                           <td>
-                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : 'ok'}`}>
-                                              {row.status}
-                                            </span>
+                                            {spinnerRowIds.has(row.id) ? (
+                                              <div className="audit-row-spinner" />
+                                            ) : (
+                                              <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : 'ok'}`}>
+                                                {row.status}
+                                              </span>
+                                            )}
                                           </td>
                                         </tr>
                                       )) : (
