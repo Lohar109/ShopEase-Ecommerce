@@ -82,6 +82,10 @@ const ProductForm = () => {
   const [quickPasteWarning, setQuickPasteWarning] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success');
+  const [audiences, setAudiences] = useState(['unisex', 'men', 'women', 'kids']);
+  const [showAddAudienceModal, setShowAddAudienceModal] = useState(false);
+  const [newAudienceName, setNewAudienceName] = useState('');
+  const [addingAudience, setAddingAudience] = useState(false);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -161,6 +165,45 @@ const ProductForm = () => {
   const clearMagicSyncTimers = () => {
     magicSyncTimersRef.current.forEach((timerId) => clearTimeout(timerId));
     magicSyncTimersRef.current = [];
+  };
+
+  const openAddAudience = () => {
+    setNewAudienceName('');
+    setShowAddAudienceModal(true);
+  };
+
+  const closeAddAudience = () => {
+    setShowAddAudienceModal(false);
+    setNewAudienceName('');
+  };
+
+  const handleAddAudience = async () => {
+    const name = String(newAudienceName || '').trim();
+    if (!name) return;
+    setAddingAudience(true);
+    try {
+      const key = name.toLowerCase();
+      if (audiences.includes(key)) {
+        setToastType('error');
+        setToastMsg('Audience already exists');
+        setTimeout(() => setToastMsg(''), 2500);
+        return;
+      }
+      const next = [...audiences, key];
+      setAudiences(next);
+      setAudience(key);
+      setToastType('success');
+      setToastMsg('Audience added');
+      setTimeout(() => setToastMsg(''), 2500);
+      setShowAddAudienceModal(false);
+      setNewAudienceName('');
+    } catch (err) {
+      setToastType('error');
+      setToastMsg(err.message || 'Failed to add audience');
+      setTimeout(() => setToastMsg(''), 2500);
+    } finally {
+      setAddingAudience(false);
+    }
   };
 
   const syncMagicScroll = (sourceEl) => {
@@ -1787,6 +1830,22 @@ const ProductForm = () => {
         onClose={closeQuickAdd}
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
+      />
+      <QuickAddModal
+        m={showAddAudienceModal}
+        title={'Add Audience'}
+        val={newAudienceName}
+        setVal={setNewAudienceName}
+        isSubcategory={false}
+        pId={''}
+        setPId={() => {}}
+        img={''}
+        setImg={() => {}}
+        parentOptions={[]}
+        canAdd={Boolean(newAudienceName && newAudienceName.trim())}
+        onClose={closeAddAudience}
+        onAdd={handleAddAudience}
+        loading={addingAudience}
       />
       {showWarningModal && (
         <div
@@ -3465,32 +3524,39 @@ const ProductForm = () => {
                     <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
                       <div style={{ flex: 1 }}>
                         <label style={{ fontWeight: 500 }}>Target Audience</label>
-                        <div className="pf-select-wrap">
-                          <select
-                            className="custom-input pf-select"
-                            value={audience}
-                            onChange={aud => {
-                              setAudience(aud.target.value);
-                              setHighlightAudience(false);
-                            }}
-                            style={{
-                              width: '100%',
-                              padding: '10px 14px',
-                              borderRadius: 12,
-                              border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
-                              background: highlightAudience ? '#fef9c3' : '#fff',
-                              marginTop: 4,
-                              transition: 'all 0.2s ease',
-                            }}
-                            required
-                          >
-                            <option value="unisex">Unisex</option>
-                            <option value="men">Men</option>
-                            <option value="women">Women</option>
-                            <option value="kids">Kids</option>
-                          </select>
-                          <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
-                        </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ flex: 1 }}>
+                              <div className="pf-select-wrap">
+                                <select
+                                  className="custom-input pf-select"
+                                  value={audience}
+                                  onChange={aud => {
+                                    setAudience(aud.target.value);
+                                    setHighlightAudience(false);
+                                  }}
+                                  style={{
+                                    width: '100%',
+                                    padding: '10px 14px',
+                                    borderRadius: 12,
+                                    border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
+                                    background: highlightAudience ? '#fef9c3' : '#fff',
+                                    marginTop: 4,
+                                    transition: 'all 0.2s ease',
+                                  }}
+                                  required
+                                >
+                                  {audiences.map(aud => (
+                                    <option key={aud} value={aud}>{aud.charAt(0).toUpperCase() + aud.slice(1)}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
+                              </div>
+                            </div>
+                            <button type="button" className="pf-mini-plus-btn" onClick={openAddAudience} title="Quick add audience">
+                              <span>+</span>
+                            </button>
+                          </div>
+                      
                       </div>
                       <div style={{ flex: 1 }}>
                         <label style={{ fontWeight: 500 }}>Slug (auto-generated)</label>
