@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
 import {
@@ -96,6 +97,10 @@ const ProductForm = () => {
   const magicSyncTimersRef = useRef([]);
   const [animatingRowIds, setAnimatingRowIds] = useState(new Set());
   const [spinnerRowIds, setSpinnerRowIds] = useState(new Set());
+  const [magicLabPulse, setMagicLabPulse] = useState(false);
+  const [magicRingCount, setMagicRingCount] = useState(0);
+  const magicLabPulseTimerRef = useRef(null);
+  const magicRingTimerRef = useRef(null);
 
   // VS Code Light syntax highlighter for JSON
   const highlightJSON = (code) => {
@@ -895,6 +900,45 @@ const ProductForm = () => {
     setToastMsg('Blueprint cleared.');
     setToastType('success');
     setTimeout(() => setToastMsg(''), 2500);
+  };
+
+  const triggerMagicPasteFeedback = () => {
+    // Activate 2-second purple border pulse
+    setMagicLabPulse(true);
+    
+    // Clear existing timers
+    if (magicLabPulseTimerRef.current) clearTimeout(magicLabPulseTimerRef.current);
+    if (magicRingTimerRef.current) clearTimeout(magicRingTimerRef.current);
+    
+    // Animate ring count from 0 to mapped count (23 for full blueprint)
+    setMagicRingCount(0);
+    let currentCount = 0;
+    const targetCount = 23; // Full mapped fields
+    const stepDuration = 100; // ms per step
+    const totalSteps = targetCount;
+    const stepIncrement = Math.ceil(targetCount / totalSteps);
+    
+    const animateRing = () => {
+      currentCount += stepIncrement;
+      if (currentCount >= targetCount) {
+        currentCount = targetCount;
+        setMagicRingCount(currentCount);
+      } else {
+        setMagicRingCount(currentCount);
+        magicRingTimerRef.current = setTimeout(animateRing, stepDuration);
+      }
+    };
+    animateRing();
+    
+    // Show success toast
+    setToastMsg('Blueprint Synced Successfully');
+    setToastType('success');
+    setTimeout(() => setToastMsg(''), 3000);
+    
+    // Reset border pulse after 2 seconds
+    magicLabPulseTimerRef.current = setTimeout(() => {
+      setMagicLabPulse(false);
+    }, 2000);
   };
 
   const handleProcessQuickPaste = () => {
@@ -2793,6 +2837,8 @@ const ProductForm = () => {
                         .sidebar-sync-green .pf-sync-dot { background: #22c55e !important; color: #fff !important; }
                         .audit-row-animating { animation: auditRowSlideIn 0.4s ease forwards; }
                         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                        @keyframes magicBorderPulse { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 50% { box-shadow: 0 0 0 12px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+                        .smart-editor-panel.magic-pulse-active { animation: magicBorderPulse 2s ease-in-out 1; }
                         .audit-row-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(124, 58, 237, 0.3); border-top-color: #7c3aed; border-radius: 50%; animation: spinner 0.6s linear infinite; }
                       `}</style>
 
@@ -2839,7 +2885,7 @@ const ProductForm = () => {
                         return (
                           <div className="smart-hub-card">
                             <div className="smart-hub-body">
-                              <div className="smart-editor-panel">
+                              <div className={`smart-editor-panel${magicLabPulse ? ' magic-pulse-active' : ''}`}>
                                 <textarea
                                   ref={magicEditorRef}
                                   className="smart-paste-input"
@@ -2848,6 +2894,20 @@ const ProductForm = () => {
                                     setMagicFillText(e.target.value);
                                     setMagicFillError('');
                                     setMagicAuditRows([]);
+                                  }}
+                                  onPaste={(e) => {
+                                    const pasted = e.clipboardData?.getData('text/plain') || '';
+                                    const trimmed = pasted.trim();
+                                    if (!trimmed) return;
+                                    try {
+                                      JSON.parse(trimmed);
+                                      // Valid JSON detected - trigger paste feedback
+                                      window.setTimeout(() => {
+                                        triggerMagicPasteFeedback();
+                                      }, 0);
+                                    } catch {
+                                      // Not valid JSON, normal paste behavior
+                                    }
                                   }}
                                   spellCheck={false}
                                   autoComplete="off"
@@ -2884,11 +2944,11 @@ const ProductForm = () => {
                                     <div
                                       className="smart-ring"
                                       style={{
-                                        background: `conic-gradient(#7c3aed ${ringPercent}%, rgba(226, 232, 240, 0.9) ${ringPercent}% 100%)`,
+                                        background: `conic-gradient(#7c3aed ${magicRingCount > 0 ? Math.min(100, Math.round((magicRingCount / 23) * 100)) : ringPercent}%, rgba(226, 232, 240, 0.9) ${magicRingCount > 0 ? Math.min(100, Math.round((magicRingCount / 23) * 100)) : ringPercent}% 100%)`,
                                       }}
                                     >
                                       <div className="smart-ring-center">
-                                        <div className="smart-ring-count">{totalMapped}</div>
+                                        <div className="smart-ring-count">{magicRingCount > 0 ? magicRingCount : totalMapped}</div>
                                         <div className="smart-ring-label">Fields Mapped</div>
                                       </div>
                                       {ringDots.map((dot, idx) => (
@@ -2978,8 +3038,23 @@ const ProductForm = () => {
                                     </div>
 
                                     <div className="smart-intelligence-tag">
-                                      <span className="smart-brain-pulse"><Brain size={14} /></span>
-                                      <span className="smart-category-value">{categoryLabel}</span>
+                                      {magicRingCount > 0 ? (
+                                        <>
+                                          <motion.span 
+                                            animate={{ scale: [1, 1.12, 1], rotate: [0, 8, 0] }}
+                                            transition={{ duration: 0.8, repeat: Infinity }}
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                          >
+                                            <Sparkles size={14} color="#7c3aed" />
+                                          </motion.span>
+                                          <span className="smart-category-value">JSON Data Mapped Successfully ({magicRingCount} Fields)</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <span className="smart-brain-pulse"><Brain size={14} /></span>
+                                          <span className="smart-category-value">{categoryLabel}</span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
