@@ -85,6 +85,9 @@ const ProductForm = () => {
   const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [mappedData, setMappedData] = useState(null);
+  const [activeBlueprintGroup, setActiveBlueprintGroup] = useState('general');
+  const [isBlueprintEditorOpen, setIsBlueprintEditorOpen] = useState(false);
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
   const magicSyncTimersRef = useRef([]);
@@ -153,6 +156,211 @@ const ProductForm = () => {
   };
 
   const formatMagicTimestamp = (date = new Date()) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const createMagicBlueprintData = (parsed) => {
+    if (!parsed || typeof parsed !== 'object') return null;
+
+    const normalizeSpecRows = (rows) => {
+      if (Array.isArray(rows)) {
+        return rows.map((item) => ({
+          key: String(item?.key || ''),
+          value: String(item?.value || ''),
+        }));
+      }
+
+      if (rows && typeof rows === 'object') {
+        return Object.entries(rows).map(([key, value]) => ({
+          key: String(key || ''),
+          value: String(value ?? ''),
+        }));
+      }
+
+      return [];
+    };
+
+    const normalizeInventoryRows = (rows) => {
+      const sourceRows = Array.isArray(rows) ? rows : [];
+      return sourceRows.map((item) => ({
+        size: String(item?.size || ''),
+        color: String(item?.color || ''),
+        price: String(item?.price ?? ''),
+        stock: String(item?.stock ?? ''),
+        sku: String(item?.sku || ''),
+        image: String(item?.image || ''),
+      }));
+    };
+
+    return {
+      name: String(parsed.name || ''),
+      brand: String(parsed.brand || ''),
+      description: String(parsed.description || ''),
+      audience: String(parsed.audience || ''),
+      category_label: String(parsed.category_label || parsed.category || ''),
+      subcategory_label: String(parsed.subcategory_label || parsed.sub_category || ''),
+      sub_subcategory_label: String(parsed.sub_subcategory_label || parsed.sub_sub_category || ''),
+      specifications: normalizeSpecRows(parsed.specifications || parsed.specs),
+      inventory: normalizeInventoryRows(parsed.inventory || parsed.variants),
+    };
+  };
+
+  const getMagicBlueprintData = () => mappedData || createMagicBlueprintData(magicPreview.parsed);
+
+  const commitMagicBlueprintData = (nextData) => {
+    if (!nextData) return;
+    setMappedData(nextData);
+    setMagicFillText(JSON.stringify(nextData, null, 2));
+    setMagicFillError('');
+  };
+
+  const formatMagicBlueprintInventoryValue = (variant) => {
+    if (!variant) return '';
+
+    return [
+      variant.size ? `Size: ${variant.size}` : '',
+      variant.color ? `Color: ${variant.color}` : '',
+      variant.price !== '' ? `Price: ${variant.price}` : '',
+      variant.stock !== '' ? `Stock: ${variant.stock}` : '',
+      variant.sku ? `SKU: ${variant.sku}` : '',
+    ].filter(Boolean).join(' | ');
+  };
+
+  const parseMagicBlueprintInventoryValue = (value, fallback = {}) => {
+    const nextVariant = { ...fallback };
+    const raw = String(value || '').trim();
+
+    if (!raw) {
+      return nextVariant;
+    }
+
+    raw.split('|').forEach((segment) => {
+      const [rawKey, ...rest] = segment.split(':');
+      const key = String(rawKey || '').trim().toLowerCase();
+      const segmentValue = rest.join(':').trim();
+
+      if (!key) return;
+      if (key === 'size') nextVariant.size = segmentValue;
+      else if (key === 'color') nextVariant.color = segmentValue;
+      else if (key === 'price') nextVariant.price = segmentValue;
+      else if (key === 'stock') nextVariant.stock = segmentValue;
+      else if (key === 'sku') nextVariant.sku = segmentValue;
+      else if (key === 'image') nextVariant.image = segmentValue;
+    });
+
+    return nextVariant;
+  };
+
+  const buildMagicBlueprintEditorRows = (group, data) => {
+    if (!data) return [];
+
+    if (group === 'general') {
+      return [
+        { id: 'name', fieldName: 'Name', value: data.name || '', kind: 'general', key: 'name', editable: true },
+        { id: 'brand', fieldName: 'Brand', value: data.brand || '', kind: 'general', key: 'brand', editable: true },
+        { id: 'description', fieldName: 'Description', value: data.description || '', kind: 'general', key: 'description', editable: true },
+        { id: 'audience', fieldName: 'Audience', value: data.audience || '', kind: 'general', key: 'audience', editable: true },
+      ];
+    }
+
+    if (group === 'categories') {
+      return [
+        { id: 'category_label', fieldName: 'Category', value: data.category_label || data.category || '', kind: 'category', key: 'category_label', editable: true },
+        { id: 'subcategory_label', fieldName: 'Subcategory', value: data.subcategory_label || data.sub_category || '', kind: 'category', key: 'subcategory_label', editable: true },
+        { id: 'sub_subcategory_label', fieldName: 'Sub-subcategory', value: data.sub_subcategory_label || data.sub_sub_category || '', kind: 'category', key: 'sub_subcategory_label', editable: true },
+      ];
+    }
+
+    if (group === 'specifications') {
+      const sourceRows = Array.isArray(data.specifications) ? data.specifications : (Array.isArray(data.specs) ? data.specs : []);
+      return sourceRows.map((item, index) => ({
+        id: `spec-${index}`,
+        fieldName: item?.key || `Specification ${index + 1}`,
+        value: item?.value || '',
+        kind: 'specification',
+        index,
+        editable: true,
+      }));
+    }
+
+    if (group === 'inventory') {
+      const sourceRows = Array.isArray(data.inventory) ? data.inventory : (Array.isArray(data.variants) ? data.variants : []);
+      return sourceRows.map((item, index) => ({
+        id: `variant-${index}`,
+        fieldName: item?.sku || `Variant ${index + 1}`,
+        value: formatMagicBlueprintInventoryValue(item),
+        kind: 'inventory',
+        index,
+        editable: true,
+      }));
+    }
+
+    return [];
+  };
+
+  const updateMagicBlueprintField = (key, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    commitMagicBlueprintData({ ...baseData, [key]: value });
+  };
+
+  const updateMagicBlueprintSpecification = (index, key, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData || !Array.isArray(baseData.specifications)) return;
+
+    const nextSpecifications = baseData.specifications.map((row, rowIndex) => (
+      rowIndex === index ? { ...row, [key]: value } : row
+    ));
+    commitMagicBlueprintData({ ...baseData, specifications: nextSpecifications });
+  };
+
+  const updateMagicBlueprintInventory = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData || !Array.isArray(baseData.inventory)) return;
+
+    const nextInventory = baseData.inventory.map((row, rowIndex) => (
+      rowIndex === index ? parseMagicBlueprintInventoryValue(value, row) : row
+    ));
+    commitMagicBlueprintData({ ...baseData, inventory: nextInventory });
+  };
+
+  const removeMagicBlueprintSpecification = (index) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData || !Array.isArray(baseData.specifications)) return;
+
+    commitMagicBlueprintData({
+      ...baseData,
+      specifications: baseData.specifications.filter((_, rowIndex) => rowIndex !== index),
+    });
+  };
+
+  const removeMagicBlueprintInventory = (index) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData || !Array.isArray(baseData.inventory)) return;
+
+    commitMagicBlueprintData({
+      ...baseData,
+      inventory: baseData.inventory.filter((_, rowIndex) => rowIndex !== index),
+    });
+  };
+
+  const addMagicBlueprintRow = () => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+
+    if (activeBlueprintGroup === 'inventory') {
+      commitMagicBlueprintData({
+        ...baseData,
+        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size: '', color: '', price: '', stock: '', sku: '', image: '' }],
+      });
+      return;
+    }
+
+    if (activeBlueprintGroup === 'specifications') {
+      commitMagicBlueprintData({
+        ...baseData,
+        specifications: [...(Array.isArray(baseData.specifications) ? baseData.specifications : []), { key: '', value: '' }],
+      });
+    }
+  };
 
   useEffect(() => {
     try {
@@ -269,6 +477,17 @@ const ProductForm = () => {
       };
     }
   }, [magicFillText, categories]);
+
+  useEffect(() => {
+    if (magicPreview.parsed) {
+      setMappedData(createMagicBlueprintData(magicPreview.parsed));
+      return;
+    }
+
+    setMappedData(null);
+    setIsBlueprintEditorOpen(false);
+    setActiveBlueprintGroup('general');
+  }, [magicPreview.parsed]);
 
   useEffect(() => () => {
     clearMagicSyncTimers();
@@ -393,7 +612,7 @@ const ProductForm = () => {
 
     try {
       try {
-        const data = JSON.parse(magicFillText);
+        const data = getMagicBlueprintData() || JSON.parse(magicFillText);
         const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
 
         if (isValidation) {
@@ -2158,6 +2377,9 @@ const ProductForm = () => {
                           gap: 10px;
                         }
                         .smart-stat-pill {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 6px;
                           border-radius: 16px;
                           border: 1px solid rgba(196, 181, 253, 0.3);
                           background: rgba(167, 139, 250, 0.12);
@@ -2168,6 +2390,16 @@ const ProductForm = () => {
                         .smart-stat-pill.active {
                           background: rgba(139, 92, 246, 0.2);
                           box-shadow: 0 0 16px rgba(139, 92, 246, 0.15);
+                        }
+                        .smart-stat-pill.selected {
+                          border-color: rgba(124, 58, 237, 0.55);
+                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.16) inset, 0 10px 24px rgba(124, 58, 237, 0.12);
+                        }
+                        .smart-stat-pill-head {
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-between;
+                          gap: 8px;
                         }
                         .smart-stat-pill .k {
                           display: block;
@@ -2214,6 +2446,138 @@ const ProductForm = () => {
                           font-weight: 700;
                           color: #312e81;
                           letter-spacing: 0.01em;
+                        }
+                        .smart-stat-edit {
+                          width: 20px;
+                          height: 20px;
+                          border-radius: 999px;
+                          border: 1px solid rgba(196, 181, 253, 0.46);
+                          background: rgba(255, 255, 255, 0.82);
+                          color: #7c3aed;
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          cursor: pointer;
+                          transition: all 0.2s ease;
+                          flex-shrink: 0;
+                        }
+                        .smart-stat-edit:hover,
+                        .smart-stat-edit.active {
+                          background: rgba(124, 58, 237, 0.12);
+                          border-color: rgba(124, 58, 237, 0.58);
+                          transform: translateY(-1px);
+                        }
+                        .smart-blueprint-editor {
+                          border-radius: 12px;
+                          border: 1px solid rgba(196, 181, 253, 0.36);
+                          background: rgba(255, 255, 255, 0.8);
+                          backdrop-filter: blur(18px);
+                          -webkit-backdrop-filter: blur(18px);
+                          padding: 14px;
+                          display: flex;
+                          flex-direction: column;
+                          gap: 12px;
+                          box-shadow: 0 10px 28px rgba(124, 58, 237, 0.08);
+                        }
+                        .smart-blueprint-editor-head {
+                          display: flex;
+                          align-items: flex-start;
+                          justify-content: space-between;
+                          gap: 12px;
+                        }
+                        .smart-blueprint-editor-title {
+                          font-size: 13px;
+                          font-weight: 800;
+                          color: #312e81;
+                          letter-spacing: 0.01em;
+                        }
+                        .smart-blueprint-editor-sub {
+                          margin-top: 3px;
+                          font-size: 11px;
+                          color: #64748b;
+                        }
+                        .smart-blueprint-close,
+                        .smart-blueprint-add,
+                        .smart-blueprint-action {
+                          border-radius: 10px;
+                          border: 1px solid rgba(196, 181, 253, 0.36);
+                          background: rgba(255, 255, 255, 0.9);
+                          color: #5b21b6;
+                          font-size: 12px;
+                          font-weight: 700;
+                          cursor: pointer;
+                          transition: all 0.2s ease;
+                        }
+                        .smart-blueprint-close:hover,
+                        .smart-blueprint-add:hover,
+                        .smart-blueprint-action:hover {
+                          background: rgba(124, 58, 237, 0.08);
+                          border-color: rgba(124, 58, 237, 0.45);
+                        }
+                        .smart-blueprint-close {
+                          padding: 8px 12px;
+                        }
+                        .smart-blueprint-table-wrap {
+                          overflow: hidden;
+                          border-radius: 12px;
+                          border: 1px solid rgba(196, 181, 253, 0.26);
+                          background: rgba(255, 255, 255, 0.92);
+                        }
+                        .smart-blueprint-table {
+                          width: 100%;
+                          border-collapse: collapse;
+                        }
+                        .smart-blueprint-table th {
+                          text-align: left;
+                          font-size: 11px;
+                          letter-spacing: 0.08em;
+                          text-transform: uppercase;
+                          color: #7c3aed;
+                          padding: 11px 12px;
+                          border-bottom: 1px solid rgba(196, 181, 253, 0.28);
+                          background: rgba(245, 243, 255, 0.78);
+                        }
+                        .smart-blueprint-table td {
+                          padding: 10px 12px;
+                          border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+                          vertical-align: middle;
+                        }
+                        .smart-blueprint-field {
+                          font-size: 13px;
+                          font-weight: 700;
+                          color: #1f2937;
+                        }
+                        .smart-blueprint-input {
+                          width: 100%;
+                          border-radius: 10px;
+                          border: 1px solid rgba(196, 181, 253, 0.34);
+                          background: rgba(255, 255, 255, 0.94);
+                          padding: 9px 10px;
+                          font-size: 13px;
+                          color: #111827;
+                          outline: none;
+                          transition: all 0.2s ease;
+                        }
+                        .smart-blueprint-input:focus {
+                          border-color: rgba(124, 58, 237, 0.6);
+                          box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+                        }
+                        .smart-blueprint-fixed {
+                          display: inline-flex;
+                          align-items: center;
+                          border-radius: 999px;
+                          padding: 4px 10px;
+                          background: rgba(241, 245, 249, 0.92);
+                          color: #64748b;
+                          font-size: 11px;
+                          font-weight: 700;
+                        }
+                        .smart-blueprint-action {
+                          padding: 7px 10px;
+                        }
+                        .smart-blueprint-add {
+                          align-self: flex-start;
+                          padding: 9px 14px;
                         }
                         .smart-audit-scroller {
                           max-height: 300px;
@@ -2317,12 +2681,27 @@ const ProductForm = () => {
 
                       {(() => {
                         const hasMagicInput = Boolean(magicFillText.trim());
-                        const parsed = magicPreview?.parsed || null;
-                        const generalCount = parsed ? ['name', 'brand', 'description', 'audience'].filter((k) => String(parsed?.[k] || '').trim()).length : 0;
-                        const specsCount = hasMagicInput ? Number(magicPreview?.specsCount || 0) : 0;
-                        const variantsCount = hasMagicInput ? Number(magicPreview?.variantsCount || 0) : 0;
-                        const categoryMatched = hasMagicInput && magicPreview?.category && !String(magicPreview.category).includes('No Match') && magicPreview.category !== 'None';
-                        const categoryLabel = hasMagicInput ? (magicPreview?.category || 'Awaiting Category Match...') : 'Awaiting Category Match...';
+                        const blueprintData = getMagicBlueprintData();
+                        const summarySource = blueprintData || magicPreview?.parsed || null;
+                        const generalCount = summarySource ? ['name', 'brand', 'description', 'audience'].filter((k) => String(summarySource?.[k] || '').trim()).length : 0;
+                        const specsCount = Array.isArray(summarySource?.specifications)
+                          ? summarySource.specifications.length
+                          : Array.isArray(summarySource?.specs)
+                            ? summarySource.specs.length
+                            : 0;
+                        const variantsCount = Array.isArray(summarySource?.inventory)
+                          ? summarySource.inventory.length
+                          : Array.isArray(summarySource?.variants)
+                            ? summarySource.variants.length
+                            : 0;
+                        const level1Cats = categories.filter((c) => c.level === 1 || c.parent_id === null);
+                        const categoryLabel = (() => {
+                          const catLabel = String(summarySource?.category_label || summarySource?.category || '').toLowerCase().trim();
+                          if (!summarySource || !catLabel) return 'Awaiting Category Match...';
+                          const matchedCat = level1Cats.find((c) => String(c.name || '').toLowerCase().trim() === catLabel);
+                          return matchedCat ? `${matchedCat.name} (ID: ${matchedCat.id})` : `"${summarySource.category_label || summarySource.category}" (No Match)`;
+                        })();
+                        const categoryMatched = Boolean(summarySource && categoryLabel.includes('(ID:'));
                         const totalMapped = generalCount + (categoryMatched ? 1 : 0) + specsCount + variantsCount;
                         const ringStates = [
                           { key: 'general', label: 'General', ok: generalCount > 0 },
@@ -2338,6 +2717,7 @@ const ProductForm = () => {
                           { top: '92%', left: '50%' },
                           { top: '50%', left: '8%' },
                         ];
+                        const activeBlueprintRows = buildMagicBlueprintEditorRows(activeBlueprintGroup, summarySource);
 
                         return (
                           <div className="smart-hub-card">
@@ -2406,10 +2786,78 @@ const ProductForm = () => {
 
                                   <div className="smart-summary-stack">
                                     <div className="smart-stats-grid">
-                                      <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
-                                      <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
-                                      <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
-                                      <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                                      <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'general' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">General</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'general' ? 'active' : ''}`}
+                                            aria-label="Edit General blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'general';
+                                              setActiveBlueprintGroup('general');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{generalCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'categories' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">Categories</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'categories' ? 'active' : ''}`}
+                                            aria-label="Edit Categories blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'categories';
+                                              setActiveBlueprintGroup('categories');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{categoryMatched ? 1 : 0}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'specifications' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">Specs</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'specifications' ? 'active' : ''}`}
+                                            aria-label="Edit Specs blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'specifications';
+                                              setActiveBlueprintGroup('specifications');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{specsCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'inventory' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">Inventory</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'inventory' ? 'active' : ''}`}
+                                            aria-label="Edit Inventory blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'inventory';
+                                              setActiveBlueprintGroup('inventory');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{variantsCount}</span>
+                                      </div>
                                     </div>
 
                                     <div className="smart-intelligence-tag">
@@ -2418,6 +2866,97 @@ const ProductForm = () => {
                                     </div>
                                   </div>
                                 </div>
+
+                                {isBlueprintEditorOpen && summarySource && (
+                                  <div className="smart-blueprint-editor">
+                                    <div className="smart-blueprint-editor-head">
+                                      <div>
+                                        <div className="smart-blueprint-editor-title">Blueprint Detail Editor</div>
+                                        <div className="smart-blueprint-editor-sub">Inline edits update the mapped blueprint immediately.</div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="smart-blueprint-close"
+                                        onClick={() => setIsBlueprintEditorOpen(false)}
+                                      >
+                                        Close
+                                      </button>
+                                    </div>
+
+                                    <div className="smart-blueprint-table-wrap">
+                                      <table className="smart-blueprint-table">
+                                        <thead>
+                                          <tr>
+                                            <th>Field Name</th>
+                                            <th>Detected Value</th>
+                                            <th>Actions</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {activeBlueprintRows.length > 0 ? activeBlueprintRows.map((row) => (
+                                            <tr key={row.id}>
+                                              <td>
+                                                <span className="smart-blueprint-field">{row.fieldName}</span>
+                                              </td>
+                                              <td>
+                                                {(row.kind === 'specification' || row.kind === 'inventory' || row.kind === 'general' || row.kind === 'category') && (
+                                                  <input
+                                                    className="smart-blueprint-input"
+                                                    value={row.value}
+                                                    onChange={(e) => {
+                                                      if (row.kind === 'specification') {
+                                                        updateMagicBlueprintSpecification(row.index, 'value', e.target.value);
+                                                      } else if (row.kind === 'inventory') {
+                                                        updateMagicBlueprintInventory(row.index, e.target.value);
+                                                      } else {
+                                                        updateMagicBlueprintField(row.key, e.target.value);
+                                                      }
+                                                    }}
+                                                  />
+                                                )}
+                                              </td>
+                                              <td>
+                                                {row.kind === 'specification' ? (
+                                                  <button
+                                                    type="button"
+                                                    className="smart-blueprint-action"
+                                                    onClick={() => removeMagicBlueprintSpecification(row.index)}
+                                                  >
+                                                    Remove
+                                                  </button>
+                                                ) : row.kind === 'inventory' ? (
+                                                  <button
+                                                    type="button"
+                                                    className="smart-blueprint-action"
+                                                    onClick={() => removeMagicBlueprintInventory(row.index)}
+                                                  >
+                                                    Remove
+                                                  </button>
+                                                ) : (
+                                                  <span className="smart-blueprint-fixed">Locked</span>
+                                                )}
+                                              </td>
+                                            </tr>
+                                          )) : (
+                                            <tr>
+                                              <td colSpan={3} style={{ color: '#64748b' }}>No editable fields are available for this section.</td>
+                                            </tr>
+                                          )}
+                                        </tbody>
+                                      </table>
+                                    </div>
+
+                                    {(activeBlueprintGroup === 'specifications' || activeBlueprintGroup === 'inventory') && (
+                                      <button
+                                        type="button"
+                                        className="smart-blueprint-add"
+                                        onClick={addMagicBlueprintRow}
+                                      >
+                                        + Add Field
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
 
                                 <div className="smart-audit-scroller">
                                   <table className="smart-audit-table">
