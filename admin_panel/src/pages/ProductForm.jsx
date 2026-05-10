@@ -2094,7 +2094,7 @@ const ProductForm = () => {
               const completed = Boolean(stepDone[step.key]);
               const active = idx === activeIdx;
               const isMagic = step.key === 'magic';
-              const lineColor = completed ? '#86efac' : '#e4e4e7';
+              const lineColor = '#e4e4e7';
               const syncState = magicSyncStates[step.key] || 'idle';
               const isSyncPulse = syncState === 'pulse';
               const isSyncGreen = syncState === 'green';
@@ -2119,14 +2119,14 @@ const ProductForm = () => {
                     type="button"
                     onClick={() => setActiveTab(step.key)}
                     style={{
-                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : (isSyncGreen ? '1px solid rgba(34,197,94,0.24)' : 'none'),
-                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : (isSyncGreen ? 'rgba(236, 253, 245, 0.85)' : 'transparent'),
+                      border: isMagic && active ? '1px solid rgba(233, 213, 255, 0.8)' : 'none',
+                      background: isMagic && active ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
                       backdropFilter: isMagic && active ? 'blur(24px)' : 'none',
                       width: '100%',
                       padding: isMagic && active ? '8px 12px' : 0,
                       borderRadius: isMagic && active ? 12 : 0,
                       marginLeft: isMagic && active ? -12 : 0,
-                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : (isSyncGreen ? '0 10px 20px rgba(34,197,94,0.12)' : 'none'),
+                      boxShadow: isMagic && active ? '0 4px 15px rgba(168, 85, 247, 0.1)' : 'none',
                       textAlign: 'left',
                       cursor: 'pointer',
                       display: 'flex',
@@ -2144,23 +2144,23 @@ const ProductForm = () => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: isMagic ? 'none' : (isSyncGreen ? '1px solid rgba(34,197,94,0.22)' : (completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8')),
-                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : (isSyncGreen ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : (completed ? '#f0fdf4' : active ? '#c8507a' : '#f4f4f5')),
-                        color: isMagic ? '#ffffff' : (isSyncGreen ? '#ffffff' : (completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af')),
+                        border: isMagic ? 'none' : ((isSyncGreen || completed) ? '1px solid rgba(34,197,94,0.28)' : active ? 'none' : '1px solid #d4d4d8'),
+                        background: isMagic ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : ((isSyncGreen || completed) ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : active ? '#c8507a' : '#f4f4f5'),
+                        color: isMagic ? '#ffffff' : ((isSyncGreen || completed) ? '#ffffff' : active ? '#ffffff' : '#9ca3af'),
                         fontWeight: 700,
                         fontSize: 12,
                         flexShrink: 0,
-                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : (isSyncPulse ? '0 0 0 0 rgba(34,197,94,0.2)' : 'none')
+                        boxShadow: isMagic ? '0 2px 10px rgba(168, 85, 247, 0.3)' : ((isSyncPulse || isSyncGreen || completed) ? '0 0 12px rgba(34,197,94,0.18)' : 'none')
                       }}
                     >
-                      {isMagic ? <Sparkles size={16} /> : (isSyncGreen ? <Check size={16} /> : (completed ? <span className="pf-check-anim"><Check size={16} /></span> : idx))}
+                      {isMagic ? <Sparkles size={16} /> : ((isSyncGreen || completed) ? <Check size={16} /> : idx)}
                     </span>
 
                     <span
                       style={{
                         fontSize: 14,
                         fontWeight: active ? 700 : completed ? 600 : 500,
-                        color: isMagic ? '#7c3aed' : (isSyncGreen ? '#15803d' : (active ? '#111827' : completed ? '#374151' : '#9ca3af')),
+                        color: isMagic ? '#7c3aed' : (active ? '#111827' : '#64748b'),
                       }}
                     >
                       {step.label}
