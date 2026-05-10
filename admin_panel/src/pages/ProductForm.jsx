@@ -2182,7 +2182,8 @@ const ProductForm = () => {
                       <style>{`
                         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
                         .smart-hub-card {
-                          height: 820px;
+                          min-height: 820px;
+                          height: auto;
                           display: flex;
                           flex-direction: column;
                           font-family: 'Inter', 'Satoshi', 'Poppins', sans-serif;
@@ -2192,7 +2193,15 @@ const ProductForm = () => {
                           backdrop-filter: blur(40px);
                           -webkit-backdrop-filter: blur(40px);
                           box-shadow: 0 12px 40px rgba(124, 58, 237, 0.08);
-                          overflow: hidden;
+                          overflow: visible;
+                        }
+                        .smart-hub-body {
+                          flex: 1;
+                          min-height: 0;
+                          display: flex;
+                          flex-direction: column;
+                          gap: 0;
+                          overflow: visible;
                         }
                         .smart-hub-body {
                           flex: 1;
@@ -2303,7 +2312,7 @@ const ProductForm = () => {
                           display: flex;
                           flex-direction: column;
                           gap: 14px;
-                          padding: 20px 22px 96px;
+                          padding: 20px 22px 24px;
                           border-top: 2px solid #e9d5ff;
                           border-radius: 0 0 24px 24px;
                           background: rgba(248, 250, 252, 0.5);
@@ -2468,6 +2477,8 @@ const ProductForm = () => {
                           transform: translateY(-1px);
                         }
                         .smart-blueprint-editor {
+                          width: 100%;
+                          box-sizing: border-box;
                           border-radius: 12px;
                           border: 1px solid rgba(196, 181, 253, 0.36);
                           background: rgba(255, 255, 255, 0.8);
@@ -2638,20 +2649,20 @@ const ProductForm = () => {
                           gap: 8px;
                         }
                         .smart-hub-actions {
-                          position: absolute;
-                          right: 20px;
-                          bottom: 16px;
-                          z-index: 4;
+                          position: relative;
+                          z-index: 10;
                           display: flex;
                           justify-content: flex-end;
                           gap: 12px;
-                          padding: 9px;
-                          border-radius: 16px;
-                          border: 1px solid rgba(196, 181, 253, 0.36);
-                          background: rgba(255, 255, 255, 0.72);
-                          backdrop-filter: blur(14px);
-                          -webkit-backdrop-filter: blur(14px);
-                          box-shadow: 0 10px 24px rgba(124, 58, 237, 0.1);
+                          padding: 9px 0 0;
+                          margin-top: 20px;
+                          margin-bottom: 20px;
+                        }
+                        .smart-hub-footer {
+                          position: relative;
+                          z-index: 10;
+                          display: flex;
+                          justify-content: flex-end;
                         }
                         @keyframes magicApplyPulse {
                           0% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
@@ -2667,9 +2678,9 @@ const ProductForm = () => {
                           .smart-ring-shell { justify-content: flex-start; }
                           .smart-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
                           .smart-hub-actions {
-                            position: static;
-                            margin-top: 6px;
-                            align-self: flex-end;
+                            margin-top: 16px;
+                            align-self: stretch;
+                            justify-content: flex-end;
                           }
                           .smart-hub-insights { padding-bottom: 18px; }
                         }
@@ -2867,6 +2878,87 @@ const ProductForm = () => {
                                   </div>
                                 </div>
 
+                                <div className="smart-hub-footer">
+                                  <div className="smart-hub-actions">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        try {
+                                          const parsedJson = JSON.parse(magicFillText);
+                                          setMagicFillText(JSON.stringify(parsedJson, null, 2));
+                                          setMagicFillError('');
+                                        } catch (e) {
+                                          setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
+                                        }
+                                      }}
+                                      onMouseEnter={() => setIsPrettifyHovered(true)}
+                                      onMouseLeave={() => setIsPrettifyHovered(false)}
+                                      style={{
+                                        background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
+                                        color: '#5b21b6',
+                                        border: '1px solid rgba(124,58,237,0.24)',
+                                        borderRadius: 12,
+                                        padding: '10px 18px',
+                                        fontWeight: 700,
+                                        fontSize: 13,
+                                        fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      Prettify JSON
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={handleMagicFillValidate}
+                                      onMouseEnter={() => setIsValidateHovered(true)}
+                                      onMouseLeave={() => setIsValidateHovered(false)}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 8,
+                                        background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
+                                        color: '#5b21b6',
+                                        border: '1px solid rgba(196,181,253,0.85)',
+                                        borderRadius: 12,
+                                        padding: '10px 18px',
+                                        fontWeight: 700,
+                                        fontSize: 13,
+                                        fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      <Check size={14} />
+                                      Validate Blueprint
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      className="magic-primary-apply"
+                                      onClick={handleMagicFillApply}
+                                      onMouseEnter={() => setIsMagicProcessHovered(true)}
+                                      onMouseLeave={() => setIsMagicProcessHovered(false)}
+                                      style={{
+                                        background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: 12,
+                                        padding: '10px 22px',
+                                        fontWeight: 700,
+                                        fontSize: 13,
+                                        fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 12px 26px -12px rgba(79, 70, 229, 0.6)',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      Finalize & Apply
+                                    </button>
+                                  </div>
+                                </div>
+
                                 {isBlueprintEditorOpen && summarySource && (
                                   <div className="smart-blueprint-editor">
                                     <div className="smart-blueprint-editor-head">
@@ -2999,85 +3091,6 @@ const ProductForm = () => {
                                     {magicFillError}
                                   </div>
                                 )}
-
-                                <div className="smart-hub-actions">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      try {
-                                        const parsedJson = JSON.parse(magicFillText);
-                                        setMagicFillText(JSON.stringify(parsedJson, null, 2));
-                                        setMagicFillError('');
-                                      } catch (e) {
-                                        setMagicFillError('Cannot prettify. Invalid JSON: ' + e.message);
-                                      }
-                                    }}
-                                    onMouseEnter={() => setIsPrettifyHovered(true)}
-                                    onMouseLeave={() => setIsPrettifyHovered(false)}
-                                    style={{
-                                      background: isPrettifyHovered ? 'rgba(124,58,237,0.08)' : '#ffffff',
-                                      color: '#5b21b6',
-                                      border: '1px solid rgba(124,58,237,0.24)',
-                                      borderRadius: 12,
-                                      padding: '10px 18px',
-                                      fontWeight: 700,
-                                      fontSize: 13,
-                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease',
-                                    }}
-                                  >
-                                    Prettify JSON
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={handleMagicFillValidate}
-                                    onMouseEnter={() => setIsValidateHovered(true)}
-                                    onMouseLeave={() => setIsValidateHovered(false)}
-                                    style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                      background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
-                                      color: '#5b21b6',
-                                      border: '1px solid rgba(196,181,253,0.85)',
-                                      borderRadius: 12,
-                                      padding: '10px 18px',
-                                      fontWeight: 700,
-                                      fontSize: 13,
-                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease',
-                                    }}
-                                  >
-                                    <Check size={14} />
-                                    Validate Blueprint
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    className="magic-primary-apply"
-                                    onClick={handleMagicFillApply}
-                                    onMouseEnter={() => setIsMagicProcessHovered(true)}
-                                    onMouseLeave={() => setIsMagicProcessHovered(false)}
-                                    style={{
-                                      background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
-                                      color: '#ffffff',
-                                      border: 'none',
-                                      borderRadius: 12,
-                                      padding: '10px 22px',
-                                      fontWeight: 700,
-                                      fontSize: 13,
-                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
-                                      cursor: 'pointer',
-                                      boxShadow: '0 12px 26px -12px rgba(79, 70, 229, 0.6)',
-                                      transition: 'all 0.2s ease',
-                                    }}
-                                  >
-                                    Finalize & Apply
-                                  </button>
-                                </div>
                               </div>
                             </div>
                           </div>
