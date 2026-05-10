@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Folder } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
@@ -72,6 +72,7 @@ const ProductForm = () => {
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isProcessHovered, setIsProcessHovered] = useState(false);
   const [isPrettifyHovered, setIsPrettifyHovered] = useState(false);
+  const [isValidateHovered, setIsValidateHovered] = useState(false);
   const [showMagicFillModal, setShowMagicFillModal] = useState(false);
   const [magicFillText, setMagicFillText] = useState('');
   const [magicFillError, setMagicFillError] = useState('');
@@ -81,6 +82,7 @@ const ProductForm = () => {
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
+  const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
@@ -383,11 +385,23 @@ const ProductForm = () => {
     return auditRows;
   };
 
-  const runMagicFillWorkflow = () => {
+  const runMagicFillWorkflow = (mode = 'apply') => {
     clearMagicSyncTimers();
+    const isValidation = mode === 'validate';
 
     try {
       const data = JSON.parse(magicFillText);
+      const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
+
+      if (isValidation) {
+        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+        setMagicFillError('');
+        setMagicAuditRows(auditRows);
+        setToastMsg('Blueprint validated. Audit log refreshed.');
+        setToastType('success');
+        setTimeout(() => setToastMsg(''), 3000);
+        return;
+      }
 
       setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
 
@@ -560,16 +574,28 @@ const ProductForm = () => {
       }
 
       setMagicFillError('');
+      setMagicAuditRows(auditRows);
       setToastMsg('Magic Fill finalized and applied.');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 4000);
     } catch (e) {
       setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
       setMagicFillError('Invalid JSON format: ' + e.message);
+      setMagicAuditRows([
+        {
+          id: 1,
+          step: 'Parse',
+          type: 'JSON',
+          timestamp: formatMagicTimestamp(),
+          action: 'Parse Failed',
+          status: 'Error',
+        },
+      ]);
     }
   };
 
-  const handleMagicFillApply = () => runMagicFillWorkflow();
+  const handleMagicFillValidate = () => runMagicFillWorkflow('validate');
+  const handleMagicFillApply = () => runMagicFillWorkflow('apply');
 
   const handleProcessQuickPaste = () => {
     setQuickPasteWarning('');
@@ -1929,164 +1955,196 @@ const ProductForm = () => {
 
                     <div style={{ marginBottom: 24 }}>
                       <style>{`
-                        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
                         .smart-hub-card {
-                          height: 800px;
+                          height: 820px;
                           display: flex;
                           flex-direction: column;
-                          border-radius: 24px !important;
-                          border: 1px solid transparent;
-                          background: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)) padding-box, linear-gradient(90deg, #ede9fe, #dbeafe) border-box;
-                          backdrop-filter: blur(20px);
-                          -webkit-backdrop-filter: blur(20px);
-                          box-shadow: 0 24px 60px rgba(124, 58, 237, 0.08), inset 0 1px 0 rgba(255,255,255,0.82);
+                          font-family: 'Inter', 'Satoshi', 'Poppins', sans-serif;
+                          border-radius: 24px;
+                          border: 1px solid rgba(255, 255, 255, 0.95);
+                          background: linear-gradient(135deg, rgba(248, 250, 252, 0.72), rgba(255, 255, 255, 0.5));
+                          backdrop-filter: blur(40px);
+                          -webkit-backdrop-filter: blur(40px);
+                          box-shadow: 0 12px 40px rgba(124, 58, 237, 0.08);
                           overflow: hidden;
                         }
                         .smart-hub-body {
                           flex: 1;
                           min-height: 0;
-                          display: grid;
-                          grid-template-rows: 70% 30%;
+                          display: flex;
+                          flex-direction: column;
                           gap: 0;
                         }
                         .smart-editor-panel {
                           position: relative;
-                          min-height: 0;
-                          border-radius: 24px 24px 0 0 !important;
-                          border: 1px solid rgba(196, 181, 253, 0.5) !important;
-                          outline: none !important;
-                          outline-offset: 0 !important;
-                          background: rgba(255, 255, 255, 0.4) !important;
-                          backdrop-filter: blur(24px) !important;
-                          -webkit-backdrop-filter: blur(24px) !important;
-                          box-shadow: 0 0 15px rgba(236, 72, 153, 0.1), 0 12px 32px rgba(124, 58, 237, 0.08) !important;
-                          background-clip: padding-box;
+                          min-height: 240px;
+                          border-radius: 24px 24px 0 0;
+                          border: 0;
+                          background: transparent;
                           overflow: hidden;
+                          padding: 24px;
                         }
-                        .smart-editor-panel:focus-within {
-                          border-color: rgba(192, 132, 252, 0.8) !important;
-                          box-shadow: 0 0 20px rgba(236, 72, 153, 0.16), 0 12px 32px rgba(124, 58, 237, 0.1) !important;
-                          outline: none !important;
-                          outline-offset: 0 !important;
-                        }
-                        .smart-editor-content {
-                          position: relative;
-                          height: 100%;
-                          border-radius: inherit;
-                          overflow: hidden;
-                          background-clip: padding-box;
-                          border: none !important;
-                          outline: none !important;
-                          outline-offset: 0 !important;
-                        }
-                        .smart-editor-pre {
+                        .smart-paste-input {
                           position: absolute;
                           inset: 0;
-                          margin: 0;
-                          padding: 40px;
-                          overflow: auto;
-                          white-space: pre-wrap;
-                          word-break: break-word;
-                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 14px;
-                          line-height: 1.8;
-                          color: #1a1a1a !important;
-                          user-select: none;
+                          opacity: 0;
                           pointer-events: none;
-                          z-index: 1;
-                          scrollbar-width: thin;
-                          scrollbar-color: #7c3aed transparent;
-                          border: none !important;
-                          outline: none !important;
-                          outline-offset: 0 !important;
-                          border-radius: inherit;
-                          background-clip: padding-box;
-                          box-shadow: none !important;
-                        }
-                        .smart-editor-input {
-                          position: absolute;
-                          inset: 0;
-                          width: 100%;
-                          height: 100%;
-                          padding: 40px;
+                          resize: none;
                           border: none;
                           outline: none;
-                          resize: none;
-                          background: transparent;
-                          color: transparent;
-                          caret-color: #7c3aed;
-                          font-family: 'JetBrains Mono', 'Fira Code', monospace;
-                          font-size: 14px;
-                          line-height: 1.8;
-                          overflow-y: auto;
-                          overflow-x: hidden;
-                          white-space: pre-wrap;
-                          word-break: break-word;
-                          z-index: 2;
-                          scrollbar-width: thin;
-                          scrollbar-color: #7c3aed transparent;
-                          border: none !important;
-                          outline: none !important;
-                          outline-offset: 0 !important;
-                          border-radius: inherit;
-                          background-clip: padding-box;
-                          box-shadow: none !important;
-                          appearance: none;
-                          -webkit-appearance: none;
                         }
-                        .smart-editor-pre::-webkit-scrollbar,
-                        .smart-editor-input::-webkit-scrollbar {
-                          width: 6px;
-                        }
-                        .smart-editor-pre::-webkit-scrollbar-thumb,
-                        .smart-editor-input::-webkit-scrollbar-thumb {
-                          background: #a78bfa;
-                          border-radius: 10px;
-                        }
-                        .smart-editor-pre::-webkit-scrollbar-track,
-                        .smart-editor-input::-webkit-scrollbar-track {
-                          background: transparent;
-                        }
-                        .smart-empty-zone {
-                          position: absolute;
-                          inset: 0;
+                        .smart-paste-zone {
+                          width: 100%;
+                          height: 100%;
+                          min-height: 192px;
+                          border-radius: 24px;
+                          border: 1px dashed rgba(167, 139, 250, 0.7);
+                          background: rgba(255, 255, 255, 0.42);
                           display: flex;
+                          flex-direction: column;
                           align-items: center;
                           justify-content: center;
-                          pointer-events: none;
-                          z-index: 3;
+                          gap: 8px;
+                          color: #6d28d9;
+                          cursor: text;
+                          transition: all 0.24s ease;
                         }
-                        .smart-empty-zone-card {
-                          width: min(620px, calc(100% - 64px));
-                          border: 1px dashed rgba(124, 58, 237, 0.28);
-                          border-radius: 18px;
-                          padding: 34px 24px;
-                          text-align: center;
-                          background: rgba(124, 58, 237, 0.04);
+                        .smart-paste-zone:hover {
+                          border-color: rgba(124, 58, 237, 0.9);
+                          background: rgba(255, 255, 255, 0.55);
                         }
-                        .smart-empty-zone-title {
-                          margin-top: 12px;
+                        .smart-paste-title {
                           font-size: 18px;
                           font-weight: 700;
                           color: #4c1d95;
                         }
-                        .smart-empty-zone-sub {
-                          margin-top: 6px;
+                        .smart-paste-sub {
                           font-size: 13px;
-                          color: #6b7280;
+                          font-weight: 500;
+                          color: #64748b;
+                          text-align: center;
+                          max-width: 460px;
+                        }
+                        .smart-analyzing-wrap {
+                          height: 100%;
+                          min-height: 192px;
+                          border-radius: 24px;
+                          border: 1px dashed rgba(167, 139, 250, 0.6);
+                          background: rgba(255, 255, 255, 0.5);
+                          display: flex;
+                          flex-direction: column;
+                          align-items: center;
+                          justify-content: center;
+                          gap: 10px;
+                        }
+                        .smart-analyzing-spinner {
+                          width: 38px;
+                          height: 38px;
+                          border-radius: 999px;
+                          border: 2px solid rgba(167, 139, 250, 0.3);
+                          border-top-color: #7c3aed;
+                          animation: smartSpin 1s linear infinite;
+                        }
+                        @keyframes smartSpin {
+                          to { transform: rotate(360deg); }
+                        }
+                        .smart-analyzing-title {
+                          font-size: 16px;
+                          font-weight: 700;
+                          color: #5b21b6;
+                        }
+                        .smart-analyzing-bars {
+                          display: flex;
+                          gap: 6px;
+                        }
+                        .smart-analyzing-bars span {
+                          width: 6px;
+                          height: 16px;
+                          border-radius: 999px;
+                          background: rgba(124, 58, 237, 0.65);
+                          animation: smartBars 1.1s ease-in-out infinite;
+                        }
+                        .smart-analyzing-bars span:nth-child(2) { animation-delay: 0.12s; }
+                        .smart-analyzing-bars span:nth-child(3) { animation-delay: 0.24s; }
+                        @keyframes smartBars {
+                          0%, 100% { transform: scaleY(0.6); opacity: 0.45; }
+                          50% { transform: scaleY(1.2); opacity: 1; }
                         }
                         .smart-hub-insights {
                           position: relative;
+                          flex: 1;
+                          min-height: 0;
                           display: flex;
                           flex-direction: column;
-                          gap: 12px;
-                          min-height: 0;
-                          padding: 18px 20px 92px;
-                          border-top: 2px solid #ede9fe;
-                          border-radius: 0 0 24px 24px !important;
-                          background: #f8fafc;
-                          backdrop-filter: blur(10px);
-                          -webkit-backdrop-filter: blur(10px);
+                          gap: 14px;
+                          padding: 20px 22px 96px;
+                          border-top: 2px solid #e9d5ff;
+                          border-radius: 0 0 24px 24px;
+                          background: rgba(248, 250, 252, 0.5);
+                          backdrop-filter: blur(14px);
+                          -webkit-backdrop-filter: blur(14px);
+                        }
+                        .smart-intelligence-row {
+                          display: grid;
+                          grid-template-columns: 200px 1fr;
+                          gap: 14px;
+                        }
+                        .smart-ring-shell {
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        }
+                        .smart-ring {
+                          width: 142px;
+                          height: 142px;
+                          border-radius: 999px;
+                          position: relative;
+                          display: grid;
+                          place-items: center;
+                        }
+                        .smart-ring-center {
+                          width: 104px;
+                          height: 104px;
+                          border-radius: 999px;
+                          background: rgba(255, 255, 255, 0.92);
+                          border: 1px solid rgba(196, 181, 253, 0.35);
+                          display: flex;
+                          flex-direction: column;
+                          align-items: center;
+                          justify-content: center;
+                        }
+                        .smart-ring-count {
+                          font-size: 28px;
+                          font-weight: 800;
+                          line-height: 1;
+                          color: #4c1d95;
+                        }
+                        .smart-ring-label {
+                          margin-top: 3px;
+                          font-size: 11px;
+                          color: #64748b;
+                          font-weight: 600;
+                        }
+                        .smart-ring-dot {
+                          position: absolute;
+                          width: 9px;
+                          height: 9px;
+                          border-radius: 999px;
+                          transform: translate(-50%, -50%);
+                        }
+                        .smart-ring-dot.ok {
+                          background: #22c55e;
+                          box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.14);
+                        }
+                        .smart-ring-dot.miss {
+                          background: #ef4444;
+                          box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.14);
+                        }
+                        .smart-summary-stack {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 10px;
                         }
                         .smart-stats-grid {
                           display: grid;
@@ -2094,21 +2152,16 @@ const ProductForm = () => {
                           gap: 10px;
                         }
                         .smart-stat-pill {
-                          border-radius: 24px;
-                          border: 1px solid rgba(203, 213, 225, 0.9);
-                          border-left-width: 4px;
-                          background: rgba(255, 255, 255, 0.85);
-                          box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
-                          padding: 10px 12px 10px 10px;
+                          border-radius: 16px;
+                          border: 1px solid rgba(196, 181, 253, 0.3);
+                          background: rgba(167, 139, 250, 0.12);
+                          box-shadow: 0 0 0 1px rgba(196, 181, 253, 0.15) inset;
+                          padding: 10px 12px;
                           transition: all 0.25s ease;
                         }
-                        .smart-intel-general { border-left-color: #6366f1; }
-                        .smart-intel-categories { border-left-color: #8b5cf6; }
-                        .smart-intel-specs { border-left-color: #14b8a6; }
-                        .smart-intel-inventory { border-left-color: #f97316; }
                         .smart-stat-pill.active {
-                          box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2), 0 0 16px rgba(124, 58, 237, 0.14);
-                          background: rgba(255, 255, 255, 0.98);
+                          background: rgba(139, 92, 246, 0.2);
+                          box-shadow: 0 0 16px rgba(139, 92, 246, 0.15);
                         }
                         .smart-stat-pill .k {
                           display: block;
@@ -2123,100 +2176,112 @@ const ProductForm = () => {
                           font-weight: 700;
                           color: #5b21b6;
                         }
-                        .smart-category-state {
-                          border-radius: 24px;
-                          border: 1px solid rgba(196, 181, 253, 0.4);
-                          background: rgba(255, 255, 255, 0.82);
-                          padding: 12px 14px;
-                          display: flex;
-                          flex-direction: column;
-                          gap: 8px;
+                        .smart-intelligence-tag {
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 10px;
+                          border-radius: 999px;
+                          width: fit-content;
+                          border: 1px solid rgba(255, 255, 255, 0.92);
+                          background: rgba(255, 255, 255, 0.55);
+                          padding: 9px 14px;
+                          backdrop-filter: blur(24px);
+                          -webkit-backdrop-filter: blur(24px);
                         }
-                        .smart-category-label {
-                          font-size: 11px;
+                        .smart-brain-pulse {
+                          width: 24px;
+                          height: 24px;
+                          border-radius: 999px;
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          color: #7c3aed;
+                          background: rgba(167, 139, 250, 0.16);
+                          animation: smartBrainPulse 1.6s ease-in-out infinite;
+                        }
+                        @keyframes smartBrainPulse {
+                          0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.18); }
+                          50% { box-shadow: 0 0 0 6px rgba(124, 58, 237, 0); }
+                        }
+                        .smart-category-value {
+                          font-size: 14px;
                           font-weight: 700;
+                          color: #312e81;
+                          letter-spacing: 0.01em;
+                        }
+                        .smart-audit-scroller {
+                          max-height: 300px;
+                          overflow-y: auto;
+                          border-radius: 16px;
+                          border: 1px solid rgba(196, 181, 253, 0.3);
+                          background: rgba(255, 255, 255, 0.72);
+                        }
+                        .smart-audit-table {
+                          width: 100%;
+                          border-collapse: collapse;
+                        }
+                        .smart-audit-table th {
+                          text-align: left;
+                          font-size: 11px;
                           letter-spacing: 0.08em;
                           text-transform: uppercase;
                           color: #7c3aed;
+                          padding: 11px 12px;
+                          border-bottom: 1px solid rgba(196, 181, 253, 0.28);
+                          background: rgba(245, 243, 255, 0.75);
+                          position: sticky;
+                          top: 0;
+                          z-index: 1;
                         }
-                        .smart-category-value {
-                          font-size: 15px;
-                          font-weight: 700;
-                          color: #312e81;
+                        .smart-audit-table td {
+                          padding: 10px 12px;
+                          border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+                          font-size: 13px;
+                          color: #0f172a;
                         }
-                        .smart-category-tag {
+                        .smart-audit-status {
                           display: inline-flex;
+                          align-items: center;
+                          border-radius: 999px;
+                          padding: 4px 9px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        }
+                        .smart-audit-status.ok {
+                          background: rgba(34, 197, 94, 0.15);
+                          color: #047857;
+                        }
+                        .smart-audit-status.err {
+                          background: rgba(239, 68, 68, 0.14);
+                          color: #b91c1c;
+                        }
+                        .smart-error-banner {
+                          background: rgba(254, 242, 242, 0.9);
+                          border: 1px solid rgba(252, 165, 165, 0.5);
+                          border-radius: 10px;
+                          padding: 10px 12px;
+                          color: #b91c1c;
+                          font-size: 12px;
+                          font-weight: 600;
+                          display: flex;
                           align-items: center;
                           gap: 8px;
-                          width: fit-content;
-                          border-radius: 999px;
-                          border: 1px solid rgba(199, 210, 254, 0.8);
-                          background: #eef2ff;
-                          padding: 8px 12px;
-                        }
-                        .smart-category-tag.taxonomy-error {
-                          border-color: rgba(248, 113, 113, 0.65);
-                          box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.22), 0 0 16px rgba(248, 113, 113, 0.18);
-                          background: rgba(255, 255, 255, 0.92);
-                        }
-                        .smart-ai-active-dot {
-                          width: 7px;
-                          height: 7px;
-                          border-radius: 999px;
-                          background: #10b981;
-                          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35);
-                          animation: smartPreviewDotPulse 1.2s ease-in-out infinite;
-                        }
-                        .smart-category-crumb {
-                          display: inline-flex;
-                          align-items: center;
-                          gap: 7px;
-                          line-height: 1.35;
-                        }
-                        .smart-category-parent {
-                          color: #64748b;
-                          opacity: 0.78;
-                          font-weight: 600;
-                        }
-                        .smart-category-final {
-                          color: #312e81;
-                          font-weight: 800;
-                        }
-                        .smart-category-separator {
-                          color: #94a3b8;
-                          font-weight: 700;
-                        }
-                        .smart-category-missing {
-                          color: #ef4444;
-                          font-weight: 800;
-                        }
-                        .smart-category-tag.awaiting {
-                          border-color: rgba(196, 181, 253, 0.8);
-                          background: rgba(245, 243, 255, 0.9);
-                        }
-                        .smart-category-awaiting {
-                          color: #7c3aed;
-                          animation: smartAwaitPulse 1.8s ease-in-out infinite;
-                        }
-                        @keyframes smartAwaitPulse {
-                          0%, 100% { opacity: 0.55; }
-                          50% { opacity: 1; }
                         }
                         .smart-hub-actions {
                           position: absolute;
-                          right: 18px;
-                          bottom: 14px;
+                          right: 20px;
+                          bottom: 16px;
                           z-index: 4;
                           display: flex;
                           justify-content: flex-end;
                           gap: 12px;
-                          padding: 10px;
+                          padding: 9px;
                           border-radius: 16px;
-                          border: 1px solid rgba(196, 181, 253, 0.45);
+                          border: 1px solid rgba(196, 181, 253, 0.36);
                           background: rgba(255, 255, 255, 0.72);
                           backdrop-filter: blur(14px);
                           -webkit-backdrop-filter: blur(14px);
-                          box-shadow: 0 10px 24px rgba(124, 58, 237, 0.12);
+                          box-shadow: 0 10px 24px rgba(124, 58, 237, 0.1);
                         }
                         @keyframes magicApplyPulse {
                           0% { transform: scale(1); box-shadow: 0 10px 20px -10px rgba(124,58,237,0.35); }
@@ -2225,6 +2290,18 @@ const ProductForm = () => {
                         }
                         .magic-primary-apply {
                           animation: magicApplyPulse 1.5s ease-in-out infinite;
+                        }
+                        @media (max-width: 900px) {
+                          .smart-hub-card { height: auto; min-height: 860px; }
+                          .smart-intelligence-row { grid-template-columns: 1fr; }
+                          .smart-ring-shell { justify-content: flex-start; }
+                          .smart-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                          .smart-hub-actions {
+                            position: static;
+                            margin-top: 6px;
+                            align-self: flex-end;
+                          }
+                          .smart-hub-insights { padding-bottom: 18px; }
                         }
                         @keyframes smartPulse { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
                         .sidebar-sync-pulse { animation: smartPulse 0.7s ease; }
@@ -2238,115 +2315,141 @@ const ProductForm = () => {
                         const generalCount = parsed ? ['name', 'brand', 'description', 'audience'].filter((k) => String(parsed?.[k] || '').trim()).length : 0;
                         const specsCount = hasMagicInput ? Number(magicPreview?.specsCount || 0) : 0;
                         const variantsCount = hasMagicInput ? Number(magicPreview?.variantsCount || 0) : 0;
-                        const rawMainCategory = hasMagicInput ? String(magicPreview?.categoryMain || '').trim() : '';
-                        const rawSubCategory = hasMagicInput ? String(magicPreview?.categorySub || '').trim() : '';
-                        const rawSubSubCategory = hasMagicInput ? String(magicPreview?.categorySubSub || '').trim() : '';
-                        const categoryTrail = [];
-                        if (rawMainCategory) {
-                          categoryTrail.push(rawMainCategory);
-                          if (rawSubCategory) {
-                            categoryTrail.push(rawSubCategory);
-                            categoryTrail.push(rawSubSubCategory || 'Not Found');
-                          }
-                        } else if (rawSubCategory || rawSubSubCategory) {
-                          categoryTrail.push('Not Found');
-                          if (rawSubCategory) categoryTrail.push(rawSubCategory);
-                          if (rawSubSubCategory) categoryTrail.push(rawSubSubCategory);
-                        }
-                        const categoryMatched = categoryTrail.length > 0;
-                        const hasFullCategoryHierarchy = Boolean(rawMainCategory && rawSubCategory && rawSubSubCategory);
-                        const hasMissingCategoryHierarchy = categoryTrail.includes('Not Found');
+                        const categoryMatched = hasMagicInput && magicPreview?.category && !String(magicPreview.category).includes('No Match') && magicPreview.category !== 'None';
+                        const categoryLabel = hasMagicInput ? (magicPreview?.category || 'Awaiting Category Match...') : 'Awaiting Category Match...';
+                        const totalMapped = generalCount + (categoryMatched ? 1 : 0) + specsCount + variantsCount;
+                        const ringStates = [
+                          { key: 'general', label: 'General', ok: generalCount > 0 },
+                          { key: 'categories', label: 'Categories', ok: categoryMatched },
+                          { key: 'specs', label: 'Specs', ok: specsCount > 0 },
+                          { key: 'inventory', label: 'Inventory', ok: variantsCount > 0 },
+                        ];
+                        const completedGroups = ringStates.filter((s) => s.ok).length;
+                        const ringPercent = Math.round((completedGroups / ringStates.length) * 100);
+                        const ringDots = [
+                          { top: '8%', left: '50%' },
+                          { top: '50%', left: '92%' },
+                          { top: '92%', left: '50%' },
+                          { top: '50%', left: '8%' },
+                        ];
 
                         return (
                           <div className="smart-hub-card">
                             <div className="smart-hub-body">
-                              <div className="smart-editor-panel bg-white/40 backdrop-blur-xl">
-                                <div className="smart-editor-content">
-                                  <pre
-                                    ref={magicPreviewRef}
-                                    className="smart-editor-pre"
-                                    aria-hidden="true"
-                                    dangerouslySetInnerHTML={{ __html: highlightJSON(magicPreview.prettyJson || magicFillText || '') + '\n' }}
-                                  />
-                                  <textarea
-                                    ref={magicEditorRef}
-                                    className="smart-editor-input"
-                                    value={magicFillText}
-                                    onChange={e => {
-                                      setMagicFillText(e.target.value);
-                                      setMagicFillError('');
-                                    }}
-                                    onScroll={e => syncMagicScroll(e.target)}
-                                    spellCheck={false}
-                                    autoComplete="off"
-                                    autoCorrect="off"
-                                    placeholder={'Paste your product JSON here to start the magic...'}
-                                    aria-label="Magic Fill JSON input"
-                                  />
+                              <div className="smart-editor-panel">
+                                <textarea
+                                  ref={magicEditorRef}
+                                  className="smart-paste-input"
+                                  value={magicFillText}
+                                  onChange={(e) => {
+                                    setMagicFillText(e.target.value);
+                                    setMagicFillError('');
+                                    setMagicAuditRows([]);
+                                  }}
+                                  spellCheck={false}
+                                  autoComplete="off"
+                                  autoCorrect="off"
+                                  aria-label="Magic Fill JSON input"
+                                />
 
-                                  {!hasMagicInput && (
-                                    <div className="smart-empty-zone">
-                                      <div className="smart-empty-zone-card">
-                                        <Sparkles size={28} color="#7c3aed" />
-                                        <div className="smart-empty-zone-title">Smart-Paste</div>
-                                        <div className="smart-empty-zone-sub">Paste your product JSON here to start the magic...</div>
-                                      </div>
+                                {!hasMagicInput ? (
+                                  <button
+                                    type="button"
+                                    className="smart-paste-zone"
+                                    onClick={() => magicEditorRef.current?.focus()}
+                                  >
+                                    <Sparkles size={22} color="#7c3aed" />
+                                    <div className="smart-paste-title">Minimalist Paste Zone</div>
+                                    <div className="smart-paste-sub">Click here and paste product JSON to trigger intelligence mapping</div>
+                                  </button>
+                                ) : (
+                                  <div className="smart-analyzing-wrap">
+                                    <div className="smart-analyzing-spinner" aria-hidden="true" />
+                                    <div className="smart-analyzing-title">Analyzing Data...</div>
+                                    <div className="smart-analyzing-bars" aria-hidden="true">
+                                      <span />
+                                      <span />
+                                      <span />
                                     </div>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
 
-                              <div className="smart-hub-insights bg-slate-50/50 backdrop-blur-md border-t-2 border-purple-100">
-                                <div className="smart-stats-grid">
-                                  <div className={`smart-stat-pill smart-intel-general ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
-                                  <div className={`smart-stat-pill smart-intel-categories ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
-                                  <div className={`smart-stat-pill smart-intel-specs ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
-                                  <div className={`smart-stat-pill smart-intel-inventory ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                              <div className="smart-hub-insights">
+                                <div className="smart-intelligence-row">
+                                  <div className="smart-ring-shell">
+                                    <div
+                                      className="smart-ring"
+                                      style={{
+                                        background: `conic-gradient(#7c3aed ${ringPercent}%, rgba(226, 232, 240, 0.9) ${ringPercent}% 100%)`,
+                                      }}
+                                    >
+                                      <div className="smart-ring-center">
+                                        <div className="smart-ring-count">{totalMapped}</div>
+                                        <div className="smart-ring-label">Fields Mapped</div>
+                                      </div>
+                                      {ringDots.map((dot, idx) => (
+                                        <span
+                                          key={`ring-dot-${idx}`}
+                                          className={`smart-ring-dot ${ringStates[idx]?.ok ? 'ok' : 'miss'}`}
+                                          style={{ top: dot.top, left: dot.left }}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <div className="smart-summary-stack">
+                                    <div className="smart-stats-grid">
+                                      <div className={`smart-stat-pill ${generalCount > 0 ? 'active' : ''}`}><span className="k">General</span><span className="v">{generalCount}</span></div>
+                                      <div className={`smart-stat-pill ${categoryMatched ? 'active' : ''}`}><span className="k">Categories</span><span className="v">{categoryMatched ? 1 : 0}</span></div>
+                                      <div className={`smart-stat-pill ${specsCount > 0 ? 'active' : ''}`}><span className="k">Specs</span><span className="v">{specsCount}</span></div>
+                                      <div className={`smart-stat-pill ${variantsCount > 0 ? 'active' : ''}`}><span className="k">Inventory</span><span className="v">{variantsCount}</span></div>
+                                    </div>
+
+                                    <div className="smart-intelligence-tag">
+                                      <span className="smart-brain-pulse"><Brain size={14} /></span>
+                                      <span className="smart-category-value">{categoryLabel}</span>
+                                    </div>
+                                  </div>
                                 </div>
 
-                                <div className="smart-category-state">
-                                  <span className="smart-category-label">Matched Category</span>
-                                  {categoryMatched ? (
-                                    <div className={`smart-category-tag ${hasMissingCategoryHierarchy ? 'taxonomy-error' : ''}`}>
-                                      <Folder size={14} color="#6366f1" />
-                                      {hasFullCategoryHierarchy && <span className="smart-ai-active-dot" aria-hidden="true" />}
-                                      <span className="smart-category-crumb">
-                                        {categoryTrail.map((item, idx) => {
-                                          const isLast = idx === categoryTrail.length - 1;
-                                          const isMissing = item === 'Not Found';
-                                          return (
-                                            <React.Fragment key={`${item}-${idx}`}>
-                                              <span className={isMissing ? 'smart-category-missing' : (isLast ? 'smart-category-final' : 'smart-category-parent')}>{item}</span>
-                                              {!isLast && <span className="smart-category-separator">&gt;</span>}
-                                            </React.Fragment>
-                                          );
-                                        })}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <div className="smart-category-tag awaiting">
-                                      <Folder size={14} color="#7c3aed" />
-                                      <span className="smart-category-awaiting">Awaiting Category Match...</span>
-                                    </div>
-                                  )}
+                                <div className="smart-audit-scroller">
+                                  <table className="smart-audit-table">
+                                    <thead>
+                                      <tr>
+                                        <th>ID</th>
+                                        <th>Step</th>
+                                        <th>Type</th>
+                                        <th>Timestamp</th>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {magicAuditRows.length > 0 ? magicAuditRows.map((row) => (
+                                        <tr key={`${row.id}-${row.step}-${row.type}`}>
+                                          <td>{row.id}</td>
+                                          <td>{row.step}</td>
+                                          <td>{row.type}</td>
+                                          <td>{row.timestamp}</td>
+                                          <td>{row.action}</td>
+                                          <td>
+                                            <span className={`smart-audit-status ${row.status === 'Error' ? 'err' : 'ok'}`}>
+                                              {row.status}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      )) : (
+                                        <tr>
+                                          <td colSpan={6} style={{ color: '#64748b' }}>Paste JSON to begin. Validate Blueprint previews actions without applying data.</td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </table>
                                 </div>
 
                                 {magicFillError && (
-                                  <div
-                                    style={{
-                                      marginTop: 4,
-                                      background: 'rgba(254, 242, 242, 0.9)',
-                                      border: '1px solid rgba(252, 165, 165, 0.5)',
-                                      borderRadius: 10,
-                                      padding: '10px 12px',
-                                      color: '#b91c1c',
-                                      fontSize: 12,
-                                      fontWeight: 600,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                    }}
-                                  >
+                                  <div className="smart-error-banner">
                                     <AlertTriangle size={14} />
                                     {magicFillError}
                                   </div>
@@ -2374,7 +2477,7 @@ const ProductForm = () => {
                                       padding: '10px 18px',
                                       fontWeight: 700,
                                       fontSize: 13,
-                                      fontFamily: 'Poppins, sans-serif',
+                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
                                       cursor: 'pointer',
                                       transition: 'all 0.2s ease',
                                     }}
@@ -2384,21 +2487,46 @@ const ProductForm = () => {
 
                                   <button
                                     type="button"
+                                    onClick={handleMagicFillValidate}
+                                    onMouseEnter={() => setIsValidateHovered(true)}
+                                    onMouseLeave={() => setIsValidateHovered(false)}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      background: isValidateHovered ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.95)',
+                                      color: '#5b21b6',
+                                      border: '1px solid rgba(196,181,253,0.85)',
+                                      borderRadius: 12,
+                                      padding: '10px 18px',
+                                      fontWeight: 700,
+                                      fontSize: 13,
+                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <Check size={14} />
+                                    Validate Blueprint
+                                  </button>
+
+                                  <button
+                                    type="button"
                                     className="magic-primary-apply"
                                     onClick={handleMagicFillApply}
                                     onMouseEnter={() => setIsMagicProcessHovered(true)}
                                     onMouseLeave={() => setIsMagicProcessHovered(false)}
                                     style={{
-                                      background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                                      background: isMagicProcessHovered ? 'linear-gradient(135deg, #8b5cf6 0%, #4f46e5 100%)' : 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
                                       color: '#ffffff',
                                       border: 'none',
                                       borderRadius: 12,
                                       padding: '10px 22px',
                                       fontWeight: 700,
                                       fontSize: 13,
-                                      fontFamily: 'Poppins, sans-serif',
+                                      fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
                                       cursor: 'pointer',
-                                      boxShadow: isMagicProcessHovered ? '0 14px 24px -10px rgba(124,58,237,0.45)' : '0 10px 20px -10px rgba(124,58,237,0.35)',
+                                      boxShadow: '0 12px 26px -12px rgba(79, 70, 229, 0.6)',
                                       transition: 'all 0.2s ease',
                                     }}
                                   >
