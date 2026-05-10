@@ -228,8 +228,15 @@ const ProductList = () => {
         boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
         border: '1px solid #e4e4e7',
         padding: 30,
+        minHeight: '700px',
+        width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.3px', margin: 0, color: '#111' }}>
               Product Management
@@ -438,12 +445,14 @@ const ProductList = () => {
           `}</style>
 
           {!loading && rows.length === 0 ? (
-            <div style={{ textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 50 }}>
-              No products found.
+            <div style={{ flex: 1, minHeight: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: '#888', fontSize: 16, fontFamily: 'Poppins, sans-serif', padding: 50 }}>
+              <div style={{ maxWidth: 360 }}>
+                No products found.
+              </div>
             </div>
           ) : (
-            <div className="product-management-scroll">
-              <div style={{ overflowX: 'auto' }}>
+            <div className="product-management-scroll" style={{ flex: 1, minHeight: 0 }}>
+              <div style={{ overflowX: 'auto', minHeight: loading ? '420px' : 'auto', display: loading ? 'flex' : 'block', alignItems: loading ? 'center' : 'stretch', justifyContent: loading ? 'center' : 'flex-start', width: '100%' }}>
               <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
                 <thead>
                   <tr style={{ background: '#f9fafb' }}>
@@ -459,12 +468,20 @@ const ProductList = () => {
                 </thead>
 
                 {loading ? (
-                  <TableSkeleton
-                    rows={5}
-                    cols={8}
-                    productCol={0}
-                    columns={['product', 'text', 'text', 'text', 'text', 'toggle', 'toggle', 'actions']}
-                  />
+                  <tbody>
+                    <tr>
+                      <td colSpan={8} style={{ padding: 0 }}>
+                        <div style={{ minHeight: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <TableSkeleton
+                            rows={5}
+                            cols={8}
+                            productCol={0}
+                            columns={['product', 'text', 'text', 'text', 'text', 'toggle', 'toggle', 'actions']}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
                 ) : (
                 <tbody>
                   {rows.map((product) => {
@@ -613,6 +630,7 @@ const ProductList = () => {
               </div>
             </div>
           )}
+      </div>
       <ConfirmModal
         isOpen={Boolean(productToDelete)}
         title="Are you sure?"
