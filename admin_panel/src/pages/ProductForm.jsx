@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import QuickAddModal from '../components/QuickAddModal';
@@ -891,15 +891,75 @@ const ProductForm = () => {
   };
 
   const handleMagicFillClear = () => {
+    // Clear core data sources
     setMagicFillText('');
     setMagicFillError('');
     setMappedData(null);
     setMagicAuditRows([]);
+
+    // Reset UI states: sync badges, ring, editor
     setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+    setMagicRingCount(0);
     setIsBlueprintEditorOpen(false);
+    setMagicLabPulse(false);
+
+    // Clear any running timers used for paste feedback
+    if (magicLabPulseTimerRef.current) {
+      clearTimeout(magicLabPulseTimerRef.current);
+      magicLabPulseTimerRef.current = null;
+    }
+    if (magicRingTimerRef.current) {
+      clearTimeout(magicRingTimerRef.current);
+      magicRingTimerRef.current = null;
+    }
+
+    // User feedback
     setToastMsg('Blueprint cleared.');
     setToastType('success');
     setTimeout(() => setToastMsg(''), 2500);
+  };
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      if (!navigator?.clipboard?.readText) {
+        setToastMsg('Clipboard not available');
+        setToastType('error');
+        setTimeout(() => setToastMsg(''), 2500);
+        return;
+      }
+
+      const txt = (await navigator.clipboard.readText()) || '';
+      const trimmed = txt.trim();
+      if (!trimmed) {
+        setToastMsg('Clipboard is empty');
+        setToastType('error');
+        setTimeout(() => setToastMsg(''), 2500);
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(trimmed);
+      } catch (err) {
+        setToastMsg('Clipboard does not contain valid JSON');
+        setToastType('error');
+        setTimeout(() => setToastMsg(''), 2500);
+        return;
+      }
+
+      // Set parsed data as mappedData (do not expose raw JSON in UI)
+      setMappedData(parsed);
+      setMagicFillText('');
+      setMagicFillError('');
+      setMagicAuditRows([]);
+
+      // Trigger paste feedback (pulse, ring animation, toast)
+      triggerMagicPasteFeedback();
+    } catch (ex) {
+      setToastMsg('Failed to read clipboard');
+      setToastType('error');
+      setTimeout(() => setToastMsg(''), 2500);
+    }
   };
 
   const triggerMagicPasteFeedback = () => {
@@ -3061,6 +3121,31 @@ const ProductForm = () => {
 
                                 <div className="smart-hub-footer">
                                   <div className="smart-hub-actions">
+                                    <button
+                                      type="button"
+                                      onClick={handlePasteFromClipboard}
+                                      onMouseEnter={() => setIsCancelHovered(true)}
+                                      onMouseLeave={() => setIsCancelHovered(false)}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        background: isCancelHovered ? 'rgba(124,58,237,0.06)' : '#ffffff',
+                                        color: '#5b21b6',
+                                        border: '1px solid rgba(124,58,237,0.12)',
+                                        borderRadius: 12,
+                                        padding: '10px 18px',
+                                        fontWeight: 700,
+                                        fontSize: 13,
+                                        fontFamily: 'Inter, Satoshi, Poppins, sans-serif',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                    >
+                                      <Clipboard size={14} />
+                                      Paste
+                                    </button>
+
                                     <button
                                       type="button"
                                       onClick={handleMagicFillClear}
