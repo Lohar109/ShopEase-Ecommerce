@@ -2272,29 +2272,48 @@ const ProductForm = () => {
               padding: 0,
             }}
           >
-            {/* Featured Magic Fill at top (keeps purple sparkle) */}
+            {/* Featured Magic Fill at top (aligned with stepper) */}
             {(() => {
               const magicStep = STEPS.find((s) => s.key === 'magic');
               const active = activeTab === 'magic';
               return (
-                <div key="magic-featured" style={{ marginBottom: 12, padding: '6px 4px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key="magic-featured" style={{ position: 'relative', paddingBottom: 26 }}>
                   <button
                     type="button"
                     onClick={() => setActiveTab('magic')}
                     style={{
                       border: 'none',
                       background: 'transparent',
+                      width: '100%',
+                      padding: 0,
+                      textAlign: 'left',
+                      cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 10,
-                      padding: 0,
-                      cursor: 'pointer'
                     }}
                   >
-                    <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#a855f7,#7c3aed)', color: '#fff' }}>
-                      <Sparkles size={14} />
-                    </span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{magicStep?.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 999,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'linear-gradient(135deg,#a855f7,#7c3aed)',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: 12,
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Sparkles size={14} />
+                      </span>
+
+                      <span style={{ fontSize: 14, fontWeight: active ? 700 : 600, color: '#111827' }}>{magicStep?.label}</span>
+                    </div>
                   </button>
                 </div>
               );
