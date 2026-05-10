@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
 import {
@@ -25,6 +26,139 @@ const STEPS = [
 const normalizeId = (value) => String(value ?? '').trim();
 const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalizeId(value));
 const MAGIC_FILL_DRAFT_KEY = 'shopease.productform.magicfill.draft';
+
+const MAGIC_LAB_PATHS = [
+  'M52 92 C 120 72, 178 74, 248 98 S 390 130, 512 102',
+  'M38 158 C 116 136, 172 138, 246 158 S 392 202, 522 160',
+  'M60 236 C 138 212, 194 210, 250 230 S 378 272, 500 238',
+  'M116 58 C 176 120, 212 180, 248 244 S 326 318, 430 312',
+  'M424 56 C 388 118, 354 172, 318 232 S 250 308, 168 320',
+  'M180 62 C 212 104, 272 118, 328 112 S 444 90, 506 126',
+];
+
+const MAGIC_LAB_PARTICLES = [
+  { points: [[58, 92], [140, 82], [224, 92], [320, 112], [424, 116], [500, 104]], duration: 3.4, delay: 0 },
+  { points: [[42, 156], [126, 146], [214, 150], [304, 164], [410, 174], [520, 162]], duration: 3.8, delay: 0.4 },
+  { points: [[62, 234], [146, 220], [226, 220], [312, 232], [406, 242], [498, 238]], duration: 4.1, delay: 0.8 },
+  { points: [[430, 58], [384, 112], [344, 166], [302, 220], [264, 260], [250, 292]], duration: 4.3, delay: 1.1 },
+];
+
+const MagicFillLaboratory = ({ mode = 'empty', onFocusEditor }) => {
+  const isProcessing = mode === 'processing';
+  const isSuccess = mode === 'success';
+  const title = isProcessing
+    ? 'Analyzing Data Blueprint...'
+    : isSuccess
+      ? 'Data Synthesized Successfully'
+      : 'Neural Engine Standby...';
+
+  const pulseDuration = isProcessing ? 1.15 : 2;
+  const particleSpeed = isProcessing ? 0.72 : isSuccess ? 0.88 : 1.1;
+  const sparkGlow = isSuccess
+    ? '0 0 30px rgba(34,197,94,0.24), 0 0 58px rgba(124,58,237,0.44)'
+    : isProcessing
+      ? '0 0 34px rgba(124,58,237,0.5), 0 0 62px rgba(168,85,247,0.44)'
+      : '0 0 28px rgba(124,58,237,0.32), 0 0 48px rgba(168,85,247,0.24)';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.985 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      onClick={onFocusEditor}
+      className="relative flex min-h-[264px] w-full cursor-text items-center justify-center overflow-hidden rounded-[28px] border border-white/35 bg-[radial-gradient(circle_at_center,_rgba(168,85,247,0.24)_0%,_rgba(124,58,237,0.14)_34%,_rgba(255,255,255,0.08)_64%,_transparent_82%)] px-4 py-8 shadow-[0_28px_80px_rgba(124,58,237,0.16)] backdrop-blur-xl"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(233,213,255,0.9),transparent_28%),radial-gradient(circle_at_bottom,_rgba(216,180,254,0.35),transparent_52%)] opacity-90" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.14)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
+      <motion.svg
+        viewBox="0 0 560 360"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden="true"
+      >
+        <defs>
+          <filter id="magic-lab-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feColorMatrix
+              in="blur"
+              type="matrix"
+              values="1 0 0 0 0.55  0 1 0 0 0.30  0 0 1 0 0.90  0 0 0 1 0"
+            />
+          </filter>
+        </defs>
+        {MAGIC_LAB_PATHS.map((d, idx) => (
+          <motion.path
+            key={`lab-path-${idx}`}
+            d={d}
+            fill="none"
+            stroke={idx % 2 === 0 ? 'rgba(196,181,253,0.46)' : 'rgba(167,139,250,0.28)'}
+            strokeWidth={idx % 3 === 0 ? 2.4 : 1.6}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0.15, opacity: 0.12 }}
+            animate={{ pathLength: [0.35, 1], opacity: [0.18, 0.72, 0.34] }}
+            transition={{ duration: 5.4, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut', delay: idx * 0.15 }}
+          />
+        ))}
+
+        {MAGIC_LAB_PARTICLES.map((particle, idx) => (
+          <motion.circle
+            key={`lab-particle-${idx}`}
+            r="3.2"
+            fill={isSuccess ? 'rgba(220,252,231,0.98)' : 'rgba(255,255,255,0.95)'}
+            filter="url(#magic-lab-glow)"
+            animate={{
+              cx: particle.points.map(([x]) => x),
+              cy: particle.points.map(([, y]) => y),
+              opacity: [0, 1, 1, 0],
+              scale: [0.35, 1, 0.8, 0.45],
+            }}
+            transition={{
+              duration: particle.duration * particleSpeed,
+              repeat: Infinity,
+              repeatType: 'loop',
+              ease: 'easeInOut',
+              delay: particle.delay,
+              times: [0, 0.22, 0.72, 1],
+            }}
+          />
+        ))}
+      </motion.svg>
+
+      <div className="relative z-10 flex flex-col items-center text-center">
+        <motion.div
+          animate={{
+            scale: [1, isProcessing ? 1.08 : 1.1, 1],
+            boxShadow: [sparkGlow, sparkGlow, sparkGlow],
+          }}
+          transition={{ duration: pulseDuration, repeat: Infinity, ease: 'easeInOut' }}
+          className={`flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br ${isSuccess ? 'from-emerald-500 via-violet-600 to-fuchsia-500 ring-emerald-200/60' : 'from-violet-600 via-purple-600 to-fuchsia-500 ring-white/45'} ring-1`}
+        >
+          <Sparkles className={`h-10 w-10 text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.82)] ${isSuccess ? 'drop-shadow-[0_0_14px_rgba(34,197,94,0.35)]' : ''}`} />
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: isProcessing ? 3.2 : 4.8, repeat: Infinity, ease: 'easeInOut' }}
+          className={`mt-5 rounded-full border px-4 py-2 text-sm font-semibold tracking-wide backdrop-blur-md ${isSuccess ? 'border-emerald-200/70 bg-emerald-50/70 text-emerald-950 shadow-lg shadow-emerald-200/40' : 'border-white/50 bg-white/55 text-violet-950 shadow-lg shadow-violet-200/40'}`}
+        >
+          {title}
+        </motion.div>
+
+        <motion.p
+          animate={{ opacity: [0.55, 0.9, 0.62] }}
+          transition={{ duration: isProcessing ? 2.6 : 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="mt-3 max-w-[360px] text-sm font-medium text-slate-600"
+        >
+          {isProcessing
+            ? 'Mapping incoming blueprint signals through the neural lattice.'
+            : isSuccess
+              ? 'Blueprint mapped. Intelligence ring and summary blocks now rise into view.'
+              : 'Paste JSON to awaken the diagnostic engine and synthesize a blueprint.'}
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+};
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -2820,6 +2954,7 @@ const ProductForm = () => {
                         })();
                         const categoryMatched = Boolean(summarySource && categoryLabel.includes('(ID:'));
                         const totalMapped = generalCount + (categoryMatched ? 1 : 0) + specsCount + variantsCount;
+                        const labMode = isAnalyzing ? 'processing' : summarySource ? 'success' : 'empty';
                         const ringStates = [
                           { key: 'general', label: 'General', ok: generalCount > 0 },
                           { key: 'categories', label: 'Categories', ok: categoryMatched },
@@ -2855,30 +2990,18 @@ const ProductForm = () => {
                                   aria-label="Magic Fill JSON input"
                                 />
 
-                                {!hasMagicInput ? (
-                                  <button
-                                    type="button"
-                                    className="smart-paste-zone"
-                                    onClick={() => magicEditorRef.current?.focus()}
-                                  >
-                                    <Sparkles size={22} color="#7c3aed" />
-                                    <div className="smart-paste-title">Minimalist Paste Zone</div>
-                                    <div className="smart-paste-sub">Click here and paste product JSON to trigger intelligence mapping</div>
-                                  </button>
-                                ) : isAnalyzing ? (
-                                  <div className="smart-analyzing-wrap">
-                                    <div className="smart-analyzing-spinner" aria-hidden="true" />
-                                    <div className="smart-analyzing-title">Analyzing Data...</div>
-                                    <div className="smart-analyzing-bars" aria-hidden="true">
-                                      <span />
-                                      <span />
-                                      <span />
-                                    </div>
-                                  </div>
-                                ) : null}
+                                <MagicFillLaboratory
+                                  mode={labMode}
+                                  onFocusEditor={() => magicEditorRef.current?.focus()}
+                                />
                               </div>
 
-                              <div className="smart-hub-insights">
+                              <motion.div
+                                className="smart-hub-insights"
+                                initial={false}
+                                animate={{ opacity: summarySource || hasMagicInput || isAnalyzing ? 1 : 0.92, y: summarySource || hasMagicInput || isAnalyzing ? 0 : 12 }}
+                                transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+                              >
                                 <div className="smart-intelligence-row">
                                   <div className="smart-ring-shell">
                                     <div
@@ -3226,7 +3349,7 @@ const ProductForm = () => {
                                     {magicFillError}
                                   </div>
                                 )}
-                              </div>
+                              </motion.div>
                             </div>
                           </div>
                         );
