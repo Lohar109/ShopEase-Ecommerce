@@ -84,6 +84,7 @@ const ProductForm = () => {
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
   const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const magicEditorRef = useRef(null);
   const magicPreviewRef = useRef(null);
   const magicSyncTimersRef = useRef([]);
@@ -388,209 +389,214 @@ const ProductForm = () => {
   const runMagicFillWorkflow = (mode = 'apply') => {
     clearMagicSyncTimers();
     const isValidation = mode === 'validate';
+    setIsAnalyzing(true);
 
     try {
-      const data = JSON.parse(magicFillText);
-      const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
+      try {
+        const data = JSON.parse(magicFillText);
+        const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
 
-      if (isValidation) {
-        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
-        setMagicFillError('');
-        setMagicAuditRows(auditRows);
-        setToastMsg('Blueprint validated. Audit log refreshed.');
-        setToastType('success');
-        setTimeout(() => setToastMsg(''), 3000);
-        return;
-      }
+        if (isValidation) {
+          setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+          setMagicFillError('');
+          setMagicAuditRows(auditRows);
+          setToastMsg('Blueprint validated. Audit log refreshed.');
+          setToastType('success');
+          setTimeout(() => setToastMsg(''), 3000);
+          return;
+        }
 
-      setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
+        setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
 
-      const generalTimer = setTimeout(() => {
-        setMagicSyncStates((prev) => ({ ...prev, general: 'green' }));
-      }, 420);
-      const specsPulseTimer = setTimeout(() => {
-        setMagicSyncStates((prev) => ({ ...prev, specifications: 'pulse' }));
-      }, 650);
-      const specsGreenTimer = setTimeout(() => {
-        setMagicSyncStates((prev) => ({ ...prev, specifications: 'green' }));
-      }, 1080);
-      const inventoryPulseTimer = setTimeout(() => {
-        setMagicSyncStates((prev) => ({ ...prev, inventory: 'pulse' }));
-      }, 1320);
-      const inventoryGreenTimer = setTimeout(() => {
-        setMagicSyncStates((prev) => ({ ...prev, inventory: 'green' }));
-      }, 1760);
+        const generalTimer = setTimeout(() => {
+          setMagicSyncStates((prev) => ({ ...prev, general: 'green' }));
+        }, 420);
+        const specsPulseTimer = setTimeout(() => {
+          setMagicSyncStates((prev) => ({ ...prev, specifications: 'pulse' }));
+        }, 650);
+        const specsGreenTimer = setTimeout(() => {
+          setMagicSyncStates((prev) => ({ ...prev, specifications: 'green' }));
+        }, 1080);
+        const inventoryPulseTimer = setTimeout(() => {
+          setMagicSyncStates((prev) => ({ ...prev, inventory: 'pulse' }));
+        }, 1320);
+        const inventoryGreenTimer = setTimeout(() => {
+          setMagicSyncStates((prev) => ({ ...prev, inventory: 'green' }));
+        }, 1760);
 
-      magicSyncTimersRef.current = [generalTimer, specsPulseTimer, specsGreenTimer, inventoryPulseTimer, inventoryGreenTimer];
+        magicSyncTimersRef.current = [generalTimer, specsPulseTimer, specsGreenTimer, inventoryPulseTimer, inventoryGreenTimer];
 
-      if (data.name) {
-        setName(data.name);
-      }
-      if (data.brand) {
-        setBrand(data.brand);
-      }
-      if (data.description) {
-        setDescription(data.description);
-      }
+        if (data.name) {
+          setName(data.name);
+        }
+        if (data.brand) {
+          setBrand(data.brand);
+        }
+        if (data.description) {
+          setDescription(data.description);
+        }
 
-      let matchedAudience = '';
-      const audVal = String(data.audience || '').toLowerCase().trim();
-      if (audVal === 'unisex') matchedAudience = 'unisex';
-      else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
-      else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
-      else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
+        let matchedAudience = '';
+        const audVal = String(data.audience || '').toLowerCase().trim();
+        if (audVal === 'unisex') matchedAudience = 'unisex';
+        else if (audVal === 'men' || audVal === 'man' || audVal === 'male') matchedAudience = 'men';
+        else if (audVal === 'women' || audVal === 'woman' || audVal === 'female') matchedAudience = 'women';
+        else if (audVal === 'kids' || audVal === 'child' || audVal === 'children') matchedAudience = 'kids';
 
-      if (matchedAudience) {
-        setAudience(matchedAudience);
-        setHighlightAudience(false);
-      } else {
-        setAudience('');
-        setHighlightAudience(true);
-      }
+        if (matchedAudience) {
+          setAudience(matchedAudience);
+          setHighlightAudience(false);
+        } else {
+          setAudience('');
+          setHighlightAudience(true);
+        }
 
-      const level1Cats = categories.filter((c) => c.level === 1 || c.parent_id === null);
-      const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
-      const matchedCat = level1Cats.find((c) => String(c.name || '').toLowerCase().trim() === catLabel);
+        const level1Cats = categories.filter((c) => c.level === 1 || c.parent_id === null);
+        const catLabel = String(data.category_label || data.category || '').toLowerCase().trim();
+        const matchedCat = level1Cats.find((c) => String(c.name || '').toLowerCase().trim() === catLabel);
 
-      if (matchedCat) {
-        const catId = normalizeId(matchedCat.id);
-        setCategoryId(catId);
-        setHighlightCategory(false);
+        if (matchedCat) {
+          const catId = normalizeId(matchedCat.id);
+          setCategoryId(catId);
+          setHighlightCategory(false);
 
-        const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
-        if (subCatLabel) {
-          const subCats = categories.filter((c) => normalizeId(c.parent_id) === catId);
-          const matchedSubCat = subCats.find((c) => String(c.name || '').toLowerCase().trim() === subCatLabel);
-          if (matchedSubCat) {
-            const subCatId = normalizeId(matchedSubCat.id);
-            setSubcategoryId(subCatId);
-            setHighlightSubcategory(false);
+          const subCatLabel = String(data.subcategory_label || data.sub_category || '').toLowerCase().trim();
+          if (subCatLabel) {
+            const subCats = categories.filter((c) => normalizeId(c.parent_id) === catId);
+            const matchedSubCat = subCats.find((c) => String(c.name || '').toLowerCase().trim() === subCatLabel);
+            if (matchedSubCat) {
+              const subCatId = normalizeId(matchedSubCat.id);
+              setSubcategoryId(subCatId);
+              setHighlightSubcategory(false);
 
-            const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
-            if (subSubCatLabel) {
-              const subSubCats = categories.filter((c) => normalizeId(c.parent_id) === subCatId);
-              const matchedSubSubCat = subSubCats.find((c) => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
-              if (matchedSubSubCat) {
-                setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
-                setHighlightSubSubcategory(false);
+              const subSubCatLabel = String(data.sub_subcategory_label || data.sub_sub_category || '').toLowerCase().trim();
+              if (subSubCatLabel) {
+                const subSubCats = categories.filter((c) => normalizeId(c.parent_id) === subCatId);
+                const matchedSubSubCat = subSubCats.find((c) => String(c.name || '').toLowerCase().trim() === subSubCatLabel);
+                if (matchedSubSubCat) {
+                  setSubSubcategoryId(normalizeId(matchedSubSubCat.id));
+                  setHighlightSubSubcategory(false);
+                } else {
+                  setSubSubcategoryId('');
+                  setHighlightSubSubcategory(true);
+                }
               } else {
                 setSubSubcategoryId('');
-                setHighlightSubSubcategory(true);
+                setHighlightSubSubcategory(false);
               }
             } else {
+              setSubcategoryId('');
+              setHighlightSubcategory(true);
               setSubSubcategoryId('');
               setHighlightSubSubcategory(false);
             }
           } else {
             setSubcategoryId('');
-            setHighlightSubcategory(true);
+            setHighlightSubcategory(false);
             setSubSubcategoryId('');
             setHighlightSubSubcategory(false);
           }
         } else {
+          setCategoryId('');
+          setHighlightCategory(true);
           setSubcategoryId('');
           setHighlightSubcategory(false);
           setSubSubcategoryId('');
           setHighlightSubSubcategory(false);
         }
-      } else {
-        setCategoryId('');
-        setHighlightCategory(true);
-        setSubcategoryId('');
-        setHighlightSubcategory(false);
-        setSubSubcategoryId('');
-        setHighlightSubSubcategory(false);
+
+        if (Array.isArray(data.specifications)) {
+          const newSpecs = data.specifications.map((s) => ({
+            sk: mk(),
+            key: String(s.key || ''),
+            value: String(s.value || ''),
+          }));
+          if (newSpecs.length > 0) {
+            setSpecs(newSpecs);
+          }
+        } else if (Array.isArray(data.specs)) {
+          const newSpecs = data.specs.map((s) => ({
+            sk: mk(),
+            key: String(s.key || ''),
+            value: String(s.value || ''),
+          }));
+          if (newSpecs.length > 0) {
+            setSpecs(newSpecs);
+          }
+        } else if (data.specifications && typeof data.specifications === 'object') {
+          const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
+            sk: mk(),
+            key: String(k || ''),
+            value: String(v || ''),
+          }));
+          if (newSpecs.length > 0) {
+            setSpecs(newSpecs);
+          }
+        } else if (data.specs && typeof data.specs === 'object') {
+          const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
+            sk: mk(),
+            key: String(k || ''),
+            value: String(v || ''),
+          }));
+          if (newSpecs.length > 0) {
+            setSpecs(newSpecs);
+          }
+        }
+
+        if (Array.isArray(data.inventory || data.variants)) {
+          const varArr = data.inventory || data.variants;
+          const newVariants = varArr.map((v) => {
+            const size = String(v.size || '');
+            const color = String(v.color || '');
+            const priceVal = Number(v.price || 0);
+            const stockVal = Number(v.stock || 0);
+
+            const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
+
+            return {
+              vk: mk(),
+              size,
+              color,
+              price: priceVal,
+              override_discount: false,
+              discount_type: 'Percentage',
+              discount_value: '',
+              stock: stockVal,
+              sku: autoSku,
+              image: mainImage || '',
+              use_separate_gallery: false,
+            };
+          });
+
+          if (newVariants.length > 0) {
+            setVariantRows(newVariants);
+          }
+        }
+
+        setMagicFillError('');
+        setMagicAuditRows(auditRows);
+        setToastMsg('Magic Fill finalized and applied.');
+        setToastType('success');
+        setTimeout(() => setToastMsg(''), 4000);
+      } catch (e) {
+        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+        setMagicFillError('Invalid JSON format: ' + e.message);
+        setMagicAuditRows([
+          {
+            id: 1,
+            step: 'Parse',
+            type: 'JSON',
+            timestamp: formatMagicTimestamp(),
+            action: 'Parse Failed',
+            status: 'Error',
+          },
+        ]);
       }
-
-      if (Array.isArray(data.specifications)) {
-        const newSpecs = data.specifications.map((s) => ({
-          sk: mk(),
-          key: String(s.key || ''),
-          value: String(s.value || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (Array.isArray(data.specs)) {
-        const newSpecs = data.specs.map((s) => ({
-          sk: mk(),
-          key: String(s.key || ''),
-          value: String(s.value || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (data.specifications && typeof data.specifications === 'object') {
-        const newSpecs = Object.entries(data.specifications).map(([k, v]) => ({
-          sk: mk(),
-          key: String(k || ''),
-          value: String(v || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      } else if (data.specs && typeof data.specs === 'object') {
-        const newSpecs = Object.entries(data.specs).map(([k, v]) => ({
-          sk: mk(),
-          key: String(k || ''),
-          value: String(v || ''),
-        }));
-        if (newSpecs.length > 0) {
-          setSpecs(newSpecs);
-        }
-      }
-
-      if (Array.isArray(data.inventory || data.variants)) {
-        const varArr = data.inventory || data.variants;
-        const newVariants = varArr.map((v) => {
-          const size = String(v.size || '');
-          const color = String(v.color || '');
-          const priceVal = Number(v.price || 0);
-          const stockVal = Number(v.stock || 0);
-
-          const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-          const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
-
-          return {
-            vk: mk(),
-            size,
-            color,
-            price: priceVal,
-            override_discount: false,
-            discount_type: 'Percentage',
-            discount_value: '',
-            stock: stockVal,
-            sku: autoSku,
-            image: mainImage || '',
-            use_separate_gallery: false,
-          };
-        });
-
-        if (newVariants.length > 0) {
-          setVariantRows(newVariants);
-        }
-      }
-
-      setMagicFillError('');
-      setMagicAuditRows(auditRows);
-      setToastMsg('Magic Fill finalized and applied.');
-      setToastType('success');
-      setTimeout(() => setToastMsg(''), 4000);
-    } catch (e) {
-      setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
-      setMagicFillError('Invalid JSON format: ' + e.message);
-      setMagicAuditRows([
-        {
-          id: 1,
-          step: 'Parse',
-          type: 'JSON',
-          timestamp: formatMagicTimestamp(),
-          action: 'Parse Failed',
-          status: 'Error',
-        },
-      ]);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -2362,7 +2368,7 @@ const ProductForm = () => {
                                     <div className="smart-paste-title">Minimalist Paste Zone</div>
                                     <div className="smart-paste-sub">Click here and paste product JSON to trigger intelligence mapping</div>
                                   </button>
-                                ) : (
+                                ) : isAnalyzing ? (
                                   <div className="smart-analyzing-wrap">
                                     <div className="smart-analyzing-spinner" aria-hidden="true" />
                                     <div className="smart-analyzing-title">Analyzing Data...</div>
@@ -2372,7 +2378,7 @@ const ProductForm = () => {
                                       <span />
                                     </div>
                                   </div>
-                                )}
+                                ) : null}
                               </div>
 
                               <div className="smart-hub-insights">
