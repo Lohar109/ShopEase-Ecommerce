@@ -89,10 +89,7 @@ const ProductForm = () => {
   const [quickPasteWarning, setQuickPasteWarning] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success');
-  const [audiences, setAudiences] = useState(['unisex', 'men', 'women', 'kids', 'adult dog']);
-  const [showAddAudienceModal, setShowAddAudienceModal] = useState(false);
-  const [newAudienceName, setNewAudienceName] = useState('');
-  const [addingAudience, setAddingAudience] = useState(false);
+  const [audiences] = useState(['unisex', 'men', 'women', 'kids', 'adult dog']);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -172,45 +169,6 @@ const ProductForm = () => {
   const clearMagicSyncTimers = () => {
     magicSyncTimersRef.current.forEach((timerId) => clearTimeout(timerId));
     magicSyncTimersRef.current = [];
-  };
-
-  const openAddAudience = () => {
-    setNewAudienceName('');
-    setShowAddAudienceModal(true);
-  };
-
-  const closeAddAudience = () => {
-    setShowAddAudienceModal(false);
-    setNewAudienceName('');
-  };
-
-  const handleAddAudience = async () => {
-    const name = String(newAudienceName || '').trim();
-    if (!name) return;
-    setAddingAudience(true);
-    try {
-      const key = name.toLowerCase();
-      if (audiences.includes(key)) {
-        setToastType('error');
-        setToastMsg('Audience already exists');
-        setTimeout(() => setToastMsg(''), 2500);
-        return;
-      }
-      const next = [...audiences, key];
-      setAudiences(next);
-      setAudience(key);
-      setToastType('success');
-      setToastMsg('Audience added');
-      setTimeout(() => setToastMsg(''), 2500);
-      setShowAddAudienceModal(false);
-      setNewAudienceName('');
-    } catch (err) {
-      setToastType('error');
-      setToastMsg(err.message || 'Failed to add audience');
-      setTimeout(() => setToastMsg(''), 2500);
-    } finally {
-      setAddingAudience(false);
-    }
   };
 
   const syncMagicScroll = (sourceEl) => {
@@ -1837,22 +1795,6 @@ const ProductForm = () => {
         onClose={closeQuickAdd}
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
-      />
-      <QuickAddModal
-        m={showAddAudienceModal}
-        title={'Add Audience'}
-        val={newAudienceName}
-        setVal={setNewAudienceName}
-        isSubcategory={false}
-        pId={''}
-        setPId={() => {}}
-        img={''}
-        setImg={() => {}}
-        parentOptions={[]}
-        canAdd={Boolean(newAudienceName && newAudienceName.trim())}
-        onClose={closeAddAudience}
-        onAdd={handleAddAudience}
-        loading={addingAudience}
       />
       {showWarningModal && (
         <div
@@ -3530,12 +3472,7 @@ const ProductForm = () => {
 
                       <div style={{ display: 'flex', gap: 16, marginBottom: 18, alignItems: 'flex-end' }}>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                          Target Audience
-                          <button type="button" className="pf-mini-plus-btn" onClick={openAddAudience} title="Quick add audience" style={{ marginLeft: 8 }}>
-                            <span>+</span>
-                          </button>
-                        </label>
+                        <label style={{ fontWeight: 500, marginBottom: 4 }}>Target Audience</label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div style={{ flex: 1 }}>
                             <div className="pf-select-wrap">
