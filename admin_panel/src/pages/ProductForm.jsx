@@ -2347,7 +2347,7 @@ const ProductForm = () => {
                           alignItems: 'center',
                           justifyContent: 'center',
                           border: completed ? '1px solid #bbf7d0' : active ? 'none' : '1px solid #d4d4d8',
-                          background: completed ? '#f0fdf4' : active ? '#ef4444' : '#f4f4f5',
+                          background: completed ? '#f0fdf4' : active ? '#C8507A' : '#f4f4f5',
                           color: completed ? '#16a34a' : active ? '#ffffff' : '#9ca3af',
                           fontWeight: 700,
                           fontSize: 12,
