@@ -608,6 +608,18 @@ const CategoryPage = () => {
           color: #ffffff;
           box-shadow: 0 1px 3px rgba(0,0,0,0.18);
         }
+
+        .btn-update-pink {
+          background: #c8507a;
+          border: 1px solid #c8507a;
+          color: #ffffff;
+          transition: background-color 200ms ease, border-color 200ms ease;
+        }
+
+        .btn-update-pink:hover:not(:disabled) {
+          background: #b13f67;
+          border-color: #b13f67;
+        }
       `}</style>
 
       <main
@@ -1268,12 +1280,10 @@ const CategoryPage = () => {
                 type="button"
                 onClick={handleUpdateCategory}
                 disabled={updatingCategory || !editingName.trim()}
+                className="btn-update-pink"
                 style={{
                   height: 38,
                   borderRadius: 10,
-                  border: '1px solid #111827',
-                  background: '#111827',
-                  color: '#ffffff',
                   padding: '0 14px',
                   fontSize: 14,
                   fontWeight: 600,
