@@ -570,26 +570,7 @@ const ProductList = () => {
                             </div>
                           </td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#334155', textTransform: 'capitalize' }}>{product.audience_name || '-'}</td>
-                          <td style={{ padding: '14px', verticalAlign: 'middle' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, lineHeight: 1.25 }}>
-                              <span
-                                style={{
-                                  fontSize: 12,
-                                  color: productPricing.isDiscounted ? '#9ca3af' : '#6b7280',
-                                  textDecoration: productPricing.isDiscounted ? 'line-through' : 'none',
-                                  fontWeight: 500,
-                                }}
-                              >
-                                MRP: {formatCurrency(productPricing.mrp)}
-                              </span>
-                              <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
-                                Discount: {productPricing.discountLabel}
-                              </span>
-                              <span style={{ fontSize: 13, color: productPricing.isDiscounted ? '#16a34a' : '#111827', fontWeight: 700 }}>
-                                Final: {formatCurrency(productPricing.finalPrice)}
-                              </span>
-                            </div>
-                          </td>
+                          <td style={{ padding: '14px', verticalAlign: 'middle' }} />
                           <td
                             style={{ padding: '14px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}
                             title={productSku || '-'}
