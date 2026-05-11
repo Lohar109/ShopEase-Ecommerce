@@ -4937,22 +4937,22 @@ const ProductForm = () => {
                                     type="button"
                                     initial={{ opacity: 0, y: 5 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    whileHover={(!isUpdatingThis && hasChanges) ? { backgroundColor: '#b13f67', scale: 1.02 } : {}}
+                                    whileHover={(!isUpdatingThis && hasChanges) ? { backgroundColor: '#c0456b', scale: 1.02 } : {}}
                                     whileTap={(!isUpdatingThis && hasChanges) ? { scale: 0.98 } : {}}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
                                     onClick={() => updateDiscountForSpecificVariant(index)}
                                     disabled={isUpdatingThis || !hasChanges}
                                     style={{
-                                      background: '#c8507a',
-                                      color: '#ffffff',
+                                      background: (isUpdatingThis || !hasChanges) ? '#E5E7EB' : '#d6517c',
+                                      color: (isUpdatingThis || !hasChanges) ? '#9CA3AF' : '#ffffff',
                                       border: 'none',
                                       borderRadius: 8,
                                       padding: '8px 16px',
                                       fontSize: 13,
                                       fontWeight: 600,
                                       cursor: (isUpdatingThis || !hasChanges) ? 'not-allowed' : 'pointer',
-                                      opacity: (isUpdatingThis || !hasChanges) ? 0.5 : 1,
+                                      transition: 'all 0.3s ease',
                                       display: 'flex',
                                       alignItems: 'center',
                                       gap: 6,
