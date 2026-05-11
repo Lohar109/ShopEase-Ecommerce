@@ -152,6 +152,12 @@ const ProductList = () => {
     });
   };
 
+  const truncateSku = (sku) => {
+    const text = String(sku || '');
+    if (!text) return '-';
+    return text.length > 10 ? `${text.substring(0, 10)}...` : text;
+  };
+
   const handleConfirmDelete = async () => {
     if (!productToDelete) return;
     setIsDeleting(true);
@@ -536,6 +542,7 @@ const ProductList = () => {
                     const expanded = isExpanded(product.id);
                     const productPricing = getProductPricing(product);
                     const variants = Array.isArray(product.variants) ? product.variants : [];
+                    const productSku = String(product?.sku || variants[0]?.sku || '');
 
                     return (
                       <React.Fragment key={product.id}>
@@ -583,7 +590,12 @@ const ProductList = () => {
                               </span>
                             </div>
                           </td>
-                          <td style={{ padding: '14px', fontSize: 13, color: '#94a3b8' }}>-</td>
+                          <td
+                            style={{ padding: '14px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}
+                            title={productSku || '-'}
+                          >
+                            {truncateSku(productSku)}
+                          </td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>{product.stock ?? 0}</td>
                           <td style={{ padding: '14px', verticalAlign: 'middle' }} onClick={(event) => event.stopPropagation()}>
                             <ToggleSwitch
@@ -691,7 +703,12 @@ const ProductList = () => {
                                   </span>
                                 </div>
                               </td>
-                              <td style={{ padding: '10px 14px', fontSize: 12, color: '#52525b', whiteSpace: 'nowrap' }}>{variant.sku || '-'}</td>
+                              <td
+                                style={{ padding: '10px 14px', fontSize: 12, color: '#52525b', whiteSpace: 'nowrap' }}
+                                title={String(variant?.sku || '-')}
+                              >
+                                {truncateSku(variant?.sku)}
+                              </td>
                               <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>{variant.stock ?? 0}</td>
                               <td style={{ padding: '10px 14px' }} />
                               <td style={{ padding: '10px 14px' }} />
