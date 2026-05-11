@@ -391,6 +391,23 @@ const ProductDetail = () => {
     variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
     variants[0] ||
     {};
+  
+  const basePrice = Number(selectedVariant?.price || 0);
+  const hasDiscount = Boolean(selectedVariant?.override_discount) && Number(selectedVariant?.discount_value) > 0;
+  const discTypeStr = selectedVariant?.discount_type || 'Percentage';
+  const rawDiscVal = Number(selectedVariant?.discount_value) || 0;
+  
+  let computedFinalPrice = basePrice;
+  let savingsVal = 0;
+  
+  if (hasDiscount) {
+    if (String(discTypeStr).toLowerCase() === 'percentage') {
+      savingsVal = basePrice * (rawDiscVal / 100);
+    } else {
+      savingsVal = rawDiscVal;
+    }
+    computedFinalPrice = Math.max(0, basePrice - savingsVal);
+  }
 
   const stockCount = Number(selectedVariant?.stock || 0);
   const stockBarWidth = Math.min(100, Math.max(0, (stockCount / 10) * 100));
@@ -1042,8 +1059,41 @@ const ProductDetail = () => {
                     </div>
                     {/* Purchasing block */}
                     <div className="product-detail-purchasing-block">
-                      <div className="product-detail-price-group">
-                        <div className="product-detail-price">₹ {selectedVariant.price || 'N/A'}<span className="product-detail-tax">All taxes included</span></div>
+                      <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                          <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
+                            ₹ {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                          </span>
+                          
+                          {hasDiscount && (
+                            <>
+                              <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
+                                ₹ {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                              </span>
+                              <span style={{ 
+                                backgroundColor: '#d6517c', 
+                                color: 'white', 
+                                fontSize: '0.7rem', 
+                                fontWeight: 800, 
+                                padding: '3px 8px', 
+                                borderRadius: '6px', 
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                transform: 'translateY(-2px)'
+                              }}>
+                                {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `₹${rawDiscVal} OFF`}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {hasDiscount && (
+                          <div style={{ color: '#d6517c', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
+                            You save ₹ {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                          </div>
+                        )}
+
+                        <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 2 : 4 }}>All taxes included</span>
                       </div>
                       <div className="product-card-actions detail-page-buttons">
                         <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
