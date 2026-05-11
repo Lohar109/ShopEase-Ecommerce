@@ -88,20 +88,68 @@ const ProductList = () => {
 
   const isExpanded = (productId) => exp.includes(String(productId));
 
-  const getBasePrice = (product) => {
-    if (!Array.isArray(product?.variants) || product.variants.length === 0) return null;
-    const prices = product.variants
-      .map((variant) => Number(variant?.price))
-      .filter((price) => Number.isFinite(price));
-    if (prices.length === 0) return null;
-    return Math.min(...prices);
+  const formatCurrency = (value) => (Number.isFinite(value) ? `₹${value.toFixed(2)}` : '-');
+
+  const getVariantPricing = (variant) => {
+    const mrp = Number(variant?.price);
+    const hasMrp = Number.isFinite(mrp);
+    const hasOverride = Boolean(variant?.override_discount);
+    const discountType = String(variant?.discount_type || 'Percentage');
+    const discountValueRaw = Number(variant?.discount_value) || 0;
+
+    if (!hasMrp) {
+      return {
+        mrp: null,
+        finalPrice: null,
+        discountLabel: '-',
+        isDiscounted: false,
+        hasMrp: false,
+      };
+    }
+
+    let finalPrice = mrp;
+    let discountLabel = '-';
+
+    if (hasOverride && discountValueRaw > 0) {
+      if (discountType === 'Fixed') {
+        finalPrice = Math.max(0, mrp - discountValueRaw);
+        discountLabel = `-₹${discountValueRaw.toFixed(2)}`;
+      } else {
+        const pct = Math.min(Math.max(discountValueRaw, 0), 100);
+        finalPrice = Math.max(0, mrp * (1 - pct / 100));
+        discountLabel = `-${pct}%`;
+      }
+    }
+
+    return {
+      mrp,
+      finalPrice,
+      discountLabel,
+      isDiscounted: finalPrice < mrp,
+      hasMrp: true,
+    };
   };
 
-  const getPriceAdjustmentLabel = (variantPrice, basePrice) => {
-    if (!Number.isFinite(variantPrice) || !Number.isFinite(basePrice)) return '-';
-    const delta = variantPrice - basePrice;
-    if (Math.abs(delta) < 0.0001) return '0.00';
-    return `${delta > 0 ? '+' : '-'}${Math.abs(delta).toFixed(2)}`;
+  const getProductPricing = (product) => {
+    const variants = Array.isArray(product?.variants) ? product.variants : [];
+    const pricedVariants = variants
+      .map((variant) => getVariantPricing(variant))
+      .filter((pricing) => pricing.hasMrp);
+
+    if (pricedVariants.length === 0) {
+      return {
+        mrp: null,
+        finalPrice: null,
+        discountLabel: '-',
+        isDiscounted: false,
+      };
+    }
+
+    return pricedVariants.reduce((best, current) => {
+      if (!Number.isFinite(best.finalPrice)) return current;
+      if (!Number.isFinite(current.finalPrice)) return best;
+      return current.finalPrice < best.finalPrice ? current : best;
+    });
   };
 
   const handleConfirmDelete = async () => {
@@ -458,7 +506,7 @@ const ProductList = () => {
                   <tr style={{ background: '#f9fafb' }}>
                     <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Product</th>
                     <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Audience</th>
-                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Base Price / Adj</th>
+                    <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pricing (MRP / Disc / Final)</th>
                     <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>SKU</th>
                     <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Stock</th>
                     <th style={{ padding: '13px 14px', textAlign: 'left', fontWeight: 600, color: '#71717a', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active</th>
@@ -486,7 +534,7 @@ const ProductList = () => {
                 <tbody>
                   {rows.map((product) => {
                     const expanded = isExpanded(product.id);
-                    const basePrice = getBasePrice(product);
+                    const productPricing = getProductPricing(product);
                     const variants = Array.isArray(product.variants) ? product.variants : [];
 
                     return (
@@ -515,8 +563,25 @@ const ProductList = () => {
                             </div>
                           </td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#334155', textTransform: 'capitalize' }}>{product.audience_name || '-'}</td>
-                          <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>
-                            {Number.isFinite(basePrice) ? `₹${basePrice.toFixed(2)}` : '-'}
+                          <td style={{ padding: '14px', verticalAlign: 'middle' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, lineHeight: 1.25 }}>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  color: productPricing.isDiscounted ? '#9ca3af' : '#6b7280',
+                                  textDecoration: productPricing.isDiscounted ? 'line-through' : 'none',
+                                  fontWeight: 500,
+                                }}
+                              >
+                                MRP: {formatCurrency(productPricing.mrp)}
+                              </span>
+                              <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
+                                Discount: {productPricing.discountLabel}
+                              </span>
+                              <span style={{ fontSize: 13, color: productPricing.isDiscounted ? '#16a34a' : '#111827', fontWeight: 700 }}>
+                                Final: {formatCurrency(productPricing.finalPrice)}
+                              </span>
+                            </div>
                           </td>
                           <td style={{ padding: '14px', fontSize: 13, color: '#94a3b8' }}>-</td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>{product.stock ?? 0}</td>
@@ -580,8 +645,7 @@ const ProductList = () => {
                             );
                           }
 
-                          const variantPrice = Number(variant?.price);
-                          const adjustment = getPriceAdjustmentLabel(variantPrice, basePrice);
+                          const variantPricing = getVariantPricing(variant);
 
                           return (
                             <tr
@@ -607,11 +671,25 @@ const ProductList = () => {
                                 <span style={{ fontWeight: 600 }}>Color:</span> {variant.color || '-'}
                               </td>
                               <td style={{ padding: '10px 14px' }} />
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>
-                                {Number.isFinite(variantPrice) ? `₹${variantPrice.toFixed(2)}` : '-'}
-                                <span style={{ color: '#6b7280', marginLeft: 8 }}>
-                                  ({adjustment === '-' ? '-' : `Adj ${adjustment}`})
-                                </span>
+                              <td style={{ padding: '10px 14px', verticalAlign: 'middle' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, lineHeight: 1.25 }}>
+                                  <span
+                                    style={{
+                                      fontSize: 12,
+                                      color: variantPricing.isDiscounted ? '#9ca3af' : '#6b7280',
+                                      textDecoration: variantPricing.isDiscounted ? 'line-through' : 'none',
+                                      fontWeight: 500,
+                                    }}
+                                  >
+                                    MRP: {formatCurrency(variantPricing.mrp)}
+                                  </span>
+                                  <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
+                                    Discount: {variantPricing.discountLabel}
+                                  </span>
+                                  <span style={{ fontSize: 13, color: variantPricing.isDiscounted ? '#16a34a' : '#111827', fontWeight: 700 }}>
+                                    Final: {formatCurrency(variantPricing.finalPrice)}
+                                  </span>
+                                </div>
                               </td>
                               <td style={{ padding: '10px 14px', fontSize: 12, color: '#52525b', whiteSpace: 'nowrap' }}>{variant.sku || '-'}</td>
                               <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>{variant.stock ?? 0}</td>
