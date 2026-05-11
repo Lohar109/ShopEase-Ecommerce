@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Trash2, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
@@ -37,6 +37,25 @@ const CategoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedParents, setExpandedParents] = useState({});
   const [expandedSubs, setExpandedSubs] = useState({});
+  const [indicatorLayout, setIndicatorLayout] = useState({ left: 0, width: 0 });
+  const tabsRef = useRef(null);
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (tabsRef.current) {
+        const activeElement = tabsRef.current.querySelector('.cat-tab.active');
+        if (activeElement) {
+          setIndicatorLayout({
+            left: activeElement.offsetLeft,
+            width: activeElement.offsetWidth
+          });
+        }
+      }
+    };
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [activeTab]);
 
   const loadCategories = async () => {
     try {
@@ -574,39 +593,60 @@ const CategoryPage = () => {
         }
 
         .cat-tabs {
+          position: relative;
           display: flex;
-          gap: 4px;
-          background: #f4f4f5;
-          border-radius: 10px;
-          padding: 4px;
-          margin-bottom: 20px;
+          align-items: center;
+          gap: 32px;
+          background: transparent;
+          padding: 0 0 12px 0;
+          margin-bottom: 28px;
+          border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+          box-shadow: none;
+        }
+
+        .cat-tab-indicator {
+          position: absolute;
+          bottom: -1px;
+          height: 2.5px;
+          display: flex;
+          justify-content: center;
+          transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1;
+        }
+
+        .cat-tab-indicator::after {
+          content: '';
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(to right, #c8507a, #e879f9);
+          border-radius: 999px;
+          box-shadow: 0 1px 6px rgba(200, 80, 122, 0.4);
         }
 
         .cat-tab {
-          flex: 1;
+          position: relative;
+          z-index: 2;
           border: none;
           outline: none;
-          border-radius: 7px;
-          padding: 7px 10px;
-          font-size: 12.5px;
-          font-weight: 600;
-          font-family: Inter, "Plus Jakarta Sans", Poppins, sans-serif;
-          cursor: pointer;
-          transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
-          white-space: nowrap;
           background: transparent;
-          color: #71717a;
+          padding: 4px 0;
+          font-size: 14px;
+          font-weight: 500;
+          font-family: Inter, "Plus Jakarta Sans", sans-serif;
+          cursor: pointer;
+          transition: color 300ms ease;
+          white-space: nowrap;
+          color: #9ca3af;
         }
 
         .cat-tab:hover {
-          background: #e4e4e7;
-          color: #18181b;
+          color: #4b5563;
         }
 
         .cat-tab.active {
-          background: #111827;
-          color: #ffffff;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+          color: #0f172a;
+          font-weight: 600;
+          text-shadow: 0 0.5px 1px rgba(15, 23, 42, 0.08);
         }
 
         .btn-update-pink {
@@ -632,250 +672,257 @@ const CategoryPage = () => {
           minHeight: 0,
         }}
       >
-          <section
-            style={{
-              position: isNarrowScreen ? 'static' : 'sticky',
-              top: 24,
-              alignSelf: 'start',
-              height: isNarrowScreen ? 'auto' : '100%',
-            }}
-          >
-            {/* ── Single unified tabbed card ── */}
-            <div
-              style={{
-                background: '#ffffff',
-                borderRadius: 12,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                border: '1px solid rgba(228,228,231,0.5)',
-                padding: 24,
-                overflow: 'hidden',
-              }}
-            >
-              {/* Heading */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                  Create Category
-                </h2>
-              </div>
-
-              {/* Tab bar */}
-              <div className="cat-tabs">
-                {[
-                  { key: 'main',   label: 'Main' },
-                  { key: 'sub',    label: 'Subcategory' },
-                  { key: 'subsub', label: 'Sub-Subcategory' },
-                ].map(({ key, label }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`cat-tab${activeTab === key ? ' active' : ''}`}
-                    onClick={() => setActiveTab(key)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              {/* ── Main category form ── */}
-              {activeTab === 'main' && (
-                <form onSubmit={addCat} className="category-form space-y-5">
-                  <input
-                    className="category-form-control w-full box-border"
-                    type="text"
-                    value={newCategoryName}
-                    onChange={(event) => setNewCategoryName(event.target.value)}
-                    placeholder="Category name"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={addingCategory}
-                    className="category-form-submit"
-                    style={{
-                      background: '#111827',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '8px 40px',
-                      fontWeight: 600,
-                      cursor: addingCategory ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {addingCategory ? 'Saving...' : 'Save Category'}
-                  </button>
-                </form>
-              )}
-
-              {/* ── Subcategory form ── */}
-              {activeTab === 'sub' && (
-                <form onSubmit={addSubCat} className="category-form space-y-5">
-                  <div className="category-parent-select-wrap">
-                    <select
-                      className="category-form-control category-parent-select w-full box-border"
-                      value={pId}
-                      onChange={(event) => setPId(event.target.value)}
-                      required
-                    >
-                      <option value="">Select parent category</option>
-                      {parentCategoryOptions.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown size={16} className="category-parent-select-icon" />
-                  </div>
-                  <input
-                    className="category-form-control w-full box-border"
-                    type="text"
-                    value={sName}
-                    onChange={(event) => setSName(event.target.value)}
-                    placeholder="Subcategory name"
-                    required
-                  />
-                  <input
-                    className="category-form-control w-full box-border"
-                    type="text"
-                    value={img}
-                    onChange={(event) => setImg(event.target.value)}
-                    placeholder="Subcategory image url"
-                  />
-                  <button
-                    type="submit"
-                    disabled={addingSubcategory}
-                    className="category-form-submit"
-                    style={{
-                      background: '#111827',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '8px 40px',
-                      fontWeight: 600,
-                      cursor: addingSubcategory ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
-                  </button>
-                </form>
-              )}
-
-              {/* ── Sub-Subcategory form ── */}
-              {activeTab === 'subsub' && (
-                <form onSubmit={addSubSubCat} className="category-form space-y-5">
-                  <div className="category-parent-select-wrap">
-                    <select
-                      className="category-form-control category-parent-select w-full box-border"
-                      value={ssPId}
-                      onChange={(event) => setSsPId(event.target.value)}
-                      required
-                    >
-                      <option value="">Select parent subcategory</option>
-                      {subCategoryOptions.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown size={16} className="category-parent-select-icon" />
-                  </div>
-                  <input
-                    className="category-form-control w-full box-border"
-                    type="text"
-                    value={ssName}
-                    onChange={(event) => setSsName(event.target.value)}
-                    placeholder="Sub-subcategory name"
-                    required
-                  />
-                  <input
-                    className="category-form-control w-full box-border"
-                    type="text"
-                    value={ssImg}
-                    onChange={(event) => setSsImg(event.target.value)}
-                    placeholder="Sub-subcategory image url"
-                  />
-                  <button
-                    type="submit"
-                    disabled={addingSubSubcategory}
-                    className="category-form-submit"
-                    style={{
-                      background: '#111827',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '8px 40px',
-                      fontWeight: 600,
-                      cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
-                  </button>
-                </form>
-              )}
-            </div>
-          </section>
-
-          <section
+        <section
+          style={{
+            position: isNarrowScreen ? 'static' : 'sticky',
+            top: 24,
+            alignSelf: 'start',
+            height: isNarrowScreen ? 'auto' : '100%',
+          }}
+        >
+          {/* ── Single unified tabbed card ── */}
+          <div
             style={{
               background: '#ffffff',
               borderRadius: 12,
               boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
               border: '1px solid rgba(228,228,231,0.5)',
-              padding: 22,
-              minHeight: 0,
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
+              padding: 24,
               overflow: 'hidden',
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: '#111827' }}>
-                Category Management
-              </h1>
-
-              <div style={{ maxWidth: 260, width: '100%' }}>
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Search categories"
-                  className="category-search-input"
-                />
-              </div>
+            {/* Heading */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>
+                Create Category
+              </h2>
             </div>
 
-            {error ? (
-              <div style={{ color: '#b91c1c', padding: '18px 6px' }}>{error}</div>
-            ) : !loading && !hasAnyRows ? (
-              <div style={{ color: '#6b7280', padding: '18px 6px' }}>
-                {normalizedSearchTerm ? 'No categories found.' : 'No categories yet.'}
-              </div>
-            ) : (
-              <div className="category-management-scroll">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
-                      <th className="category-table-head-cell" style={{ width: '32%' }}>
-                        Name
-                      </th>
-                      <th className="category-table-head-cell">
-                        Type
-                      </th>
-                      <th className="category-table-head-cell" style={{ width: '42%' }}>
-                        Hierarchy
-                      </th>
-                      <th className="category-table-head-cell" style={{ textAlign: 'right' }}>
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  {loading ? (
-                    <TableSkeleton
-                      rows={5}
-                      cols={4}
-                      columns={['chevronName', 'type', 'text', 'actions']}
-                    />
-                  ) : (
+            {/* Tab bar */}
+            <div className="cat-tabs" ref={tabsRef}>
+              <div
+                className="cat-tab-indicator"
+                style={{
+                  left: indicatorLayout.left,
+                  width: indicatorLayout.width,
+                }}
+              />
+              {[
+                { key: 'main', label: 'Main' },
+                { key: 'sub', label: 'Subcategory' },
+                { key: 'subsub', label: 'Sub-Subcategory' },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`cat-tab${activeTab === key ? ' active' : ''}`}
+                  onClick={() => setActiveTab(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Main category form ── */}
+            {activeTab === 'main' && (
+              <form onSubmit={addCat} className="category-form space-y-5">
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(event) => setNewCategoryName(event.target.value)}
+                  placeholder="Category name"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={addingCategory}
+                  className="category-form-submit"
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 40px',
+                    fontWeight: 600,
+                    cursor: addingCategory ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {addingCategory ? 'Saving...' : 'Save Category'}
+                </button>
+              </form>
+            )}
+
+            {/* ── Subcategory form ── */}
+            {activeTab === 'sub' && (
+              <form onSubmit={addSubCat} className="category-form space-y-5">
+                <div className="category-parent-select-wrap">
+                  <select
+                    className="category-form-control category-parent-select w-full box-border"
+                    value={pId}
+                    onChange={(event) => setPId(event.target.value)}
+                    required
+                  >
+                    <option value="">Select parent category</option>
+                    {parentCategoryOptions.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="category-parent-select-icon" />
+                </div>
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={sName}
+                  onChange={(event) => setSName(event.target.value)}
+                  placeholder="Subcategory name"
+                  required
+                />
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={img}
+                  onChange={(event) => setImg(event.target.value)}
+                  placeholder="Subcategory image url"
+                />
+                <button
+                  type="submit"
+                  disabled={addingSubcategory}
+                  className="category-form-submit"
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 40px',
+                    fontWeight: 600,
+                    cursor: addingSubcategory ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
+                </button>
+              </form>
+            )}
+
+            {/* ── Sub-Subcategory form ── */}
+            {activeTab === 'subsub' && (
+              <form onSubmit={addSubSubCat} className="category-form space-y-5">
+                <div className="category-parent-select-wrap">
+                  <select
+                    className="category-form-control category-parent-select w-full box-border"
+                    value={ssPId}
+                    onChange={(event) => setSsPId(event.target.value)}
+                    required
+                  >
+                    <option value="">Select parent subcategory</option>
+                    {subCategoryOptions.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="category-parent-select-icon" />
+                </div>
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={ssName}
+                  onChange={(event) => setSsName(event.target.value)}
+                  placeholder="Sub-subcategory name"
+                  required
+                />
+                <input
+                  className="category-form-control w-full box-border"
+                  type="text"
+                  value={ssImg}
+                  onChange={(event) => setSsImg(event.target.value)}
+                  placeholder="Sub-subcategory image url"
+                />
+                <button
+                  type="submit"
+                  disabled={addingSubSubcategory}
+                  className="category-form-submit"
+                  style={{
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 40px',
+                    fontWeight: 600,
+                    cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
+
+        <section
+          style={{
+            background: '#ffffff',
+            borderRadius: 12,
+            boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(228,228,231,0.5)',
+            padding: 22,
+            minHeight: 0,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: '#111827' }}>
+              Category Management
+            </h1>
+
+            <div style={{ maxWidth: 260, width: '100%' }}>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search categories"
+                className="category-search-input"
+              />
+            </div>
+          </div>
+
+          {error ? (
+            <div style={{ color: '#b91c1c', padding: '18px 6px' }}>{error}</div>
+          ) : !loading && !hasAnyRows ? (
+            <div style={{ color: '#6b7280', padding: '18px 6px' }}>
+              {normalizedSearchTerm ? 'No categories found.' : 'No categories yet.'}
+            </div>
+          ) : (
+            <div className="category-management-scroll">
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+                    <th className="category-table-head-cell" style={{ width: '32%' }}>
+                      Name
+                    </th>
+                    <th className="category-table-head-cell">
+                      Type
+                    </th>
+                    <th className="category-table-head-cell" style={{ width: '42%' }}>
+                      Hierarchy
+                    </th>
+                    <th className="category-table-head-cell" style={{ textAlign: 'right' }}>
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                {loading ? (
+                  <TableSkeleton
+                    rows={5}
+                    cols={4}
+                    columns={['chevronName', 'type', 'text', 'actions']}
+                  />
+                ) : (
                   <tbody>
                     {parentRows.map((parent) => {
                       const parentId = String(parent.id);
@@ -1187,11 +1234,11 @@ const CategoryPage = () => {
                       );
                     })}
                   </tbody>
-                  )}
-                </table>
-              </div>
-            )}
-          </section>
+                )}
+              </table>
+            </div>
+          )}
+        </section>
       </main>
 
       {isEditModalOpen && (
