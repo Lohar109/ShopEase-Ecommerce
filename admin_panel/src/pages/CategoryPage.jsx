@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Trash2, Edit2 } from 'lucide-react';
+import { ChevronDown, Trash2, Edit2, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
@@ -696,6 +696,7 @@ const CategoryPage = () => {
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>
                 Create Category
               </h2>
+              <Layers size={18} color="#6b7280" />
             </div>
 
             {/* Tab bar */}
