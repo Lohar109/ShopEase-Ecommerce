@@ -598,7 +598,7 @@ const CategoryPage = () => {
           align-items: center;
           gap: 32px;
           background: transparent;
-          padding: 0 0 12px 0;
+          padding: 0 0 6px 0;
           margin-bottom: 28px;
           border-bottom: 1px solid rgba(229, 231, 235, 0.4);
           box-shadow: none;
