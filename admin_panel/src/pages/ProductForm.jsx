@@ -126,6 +126,7 @@ const ProductForm = () => {
   const [showManageAudiencesModal, setShowManageAudiencesModal] = useState(false);
   const [editingAudienceId, setEditingAudienceId] = useState(null);
   const [editingAudienceName, setEditingAudienceName] = useState('');
+  const [isEditAudienceIconHovered, setIsEditAudienceIconHovered] = useState(false);
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -3881,8 +3882,28 @@ const ProductForm = () => {
                           <button type="button" className="pf-mini-plus-btn" onClick={openAudienceModal} title="Quick add audience">
                             <span>+</span>
                           </button>
-                          <button type="button" className="pf-mini-edit-btn" onClick={openManageAudiencesModal} title="Manage audiences" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
-                            <Edit2 size={14} />
+                          <button
+                            type="button"
+                            onClick={openManageAudiencesModal}
+                            onMouseEnter={() => setIsEditAudienceIconHovered(true)}
+                            onMouseLeave={() => setIsEditAudienceIconHovered(false)}
+                            title="Manage audiences"
+                            style={{
+                              width: 34,
+                              height: 34,
+                              borderRadius: 10,
+                              border: isEditAudienceIconHovered ? '1px solid #d1d5db' : '1px solid #e4e4e7',
+                              background: isEditAudienceIconHovered ? '#f3f4f6' : '#ffffff',
+                              color: isEditAudienceIconHovered ? '#1f2937' : '#111827',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              padding: 0
+                            }}
+                          >
+                            <Edit2 size={15} />
                           </button>
                         </label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
