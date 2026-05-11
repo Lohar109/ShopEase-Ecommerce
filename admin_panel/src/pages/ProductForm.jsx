@@ -4845,115 +4845,120 @@ const ProductForm = () => {
                             </div>
 
                             {/* Right Part: Inputs & Price Summary Card horizontally aligned side-by-side */}
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 24 }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 16 }}>
                               {hasOverride && (
-                                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                                  <div style={{ width: 180 }}>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Type</label>
-                                    <div className="pf-select-wrap">
-                                      <select
-                                        className="custom-input pf-select"
-                                        value={discType}
-                                        onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
-                                        style={{
-                                          width: '100%',
-                                          padding: '8px 64px 8px 12px',
-                                          borderRadius: 8,
-                                          border: '1px solid #d1d5db',
-                                          height: 38,
-                                        }}
-                                      >
-                                        <option value="Percentage">Percentage (%)</option>
-                                        <option value="Fixed">Fixed (₹)</option>
-                                      </select>
-                                      <ChevronDown size={16} className="pf-select-icon" style={{ right: 10 }} />
-                                    </div>
-                                  </div>
-                                  <div style={{ width: 100 }}>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Value</label>
-                                    <input
-                                      className="custom-input"
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      placeholder="0"
-                                      value={variant.discount_value || ''}
-                                      onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
-                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
-                                    />
+                                <div style={{ width: 180 }}>
+                                  <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Type</label>
+                                  <div className="pf-select-wrap">
+                                    <select
+                                      className="custom-input pf-select"
+                                      value={discType}
+                                      onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
+                                      style={{
+                                        width: '100%',
+                                        padding: '8px 64px 8px 12px',
+                                        borderRadius: 8,
+                                        border: '1px solid #d1d5db',
+                                        height: 38,
+                                      }}
+                                    >
+                                      <option value="Percentage">Percentage (%)</option>
+                                      <option value="Fixed">Fixed (₹)</option>
+                                    </select>
+                                    <ChevronDown size={16} className="pf-select-icon" style={{ right: 10 }} />
                                   </div>
                                 </div>
                               )}
 
-                              {/* Price Summary Card */}
-                              <div
-                                style={{
-                                  background: '#f8fafc',
-                                  border: '1px solid #e2e8f0',
-                                  borderRadius: 12,
-                                  padding: '12px 16px',
-                                  width: 296,
-                                  minWidth: 296,
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  gap: 8,
-                                  fontFamily: 'Poppins, sans-serif',
-                                }}
-                              >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>Original Price</span>
-                                  <span style={{ fontSize: 13, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
-                                    ₹{originalPrice.toFixed(2)}
-                                  </span>
+                              {/* Nested stack wrapping everything starting from the Value block to effectively scope horizontal bounds */}
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 16 }}>
+                                {/* Top content row holds inputs + price summary card */}
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 24 }}>
+                                  {hasOverride && (
+                                    <div style={{ width: 100 }}>
+                                      <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Value</label>
+                                      <input
+                                        className="custom-input"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0"
+                                        value={variant.discount_value || ''}
+                                        onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
+                                        style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
+                                      />
+                                    </div>
+                                  )}
+
+                                  {/* Price Summary Card (establishes the Right Edge for the wrapper) */}
+                                  <div
+                                    style={{
+                                      background: '#f8fafc',
+                                      border: '1px solid #e2e8f0',
+                                      borderRadius: 12,
+                                      padding: '12px 16px',
+                                      width: 296,
+                                      minWidth: 296,
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      gap: 8,
+                                      fontFamily: 'Poppins, sans-serif',
+                                    }}
+                                  >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>Original Price</span>
+                                      <span style={{ fontSize: 13, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
+                                        ₹{originalPrice.toFixed(2)}
+                                      </span>
+                                    </div>
+                                    {hasOverride && (
+                                      <>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                          <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 400 }}>Discount</span>
+                                          <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>
+                                            {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                          </span>
+                                        </div>
+                                        <div style={{ borderTop: '1px solid #e2e8f0', margin: '2px 0' }} />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                          <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 400 }}>Final Price</span>
+                                          <span style={{ fontSize: 15, color: '#16a34a', fontWeight: 700 }}>
+                                            ₹{finalPrice.toFixed(2)}
+                                          </span>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
-                                {hasOverride && (
-                                  <>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                      <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 400 }}>Discount</span>
-                                      <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>
-                                        {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
-                                      </span>
-                                    </div>
-                                    <div style={{ borderTop: '1px solid #e2e8f0', margin: '2px 0' }} />
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                      <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 400 }}>Final Price</span>
-                                      <span style={{ fontSize: 15, color: '#16a34a', fontWeight: 700 }}>
-                                        ₹{finalPrice.toFixed(2)}
-                                      </span>
-                                    </div>
-                                  </>
+
+                                {/* Action Button: Positioned here automatically aligns to Wrapper Right Edge (Price Box edge) */}
+                                {variant.id && (
+                                  <button
+                                    type="button"
+                                    onClick={() => updateDiscountForSpecificVariant(index)}
+                                    disabled={isUpdatingThis || !hasChanges}
+                                    style={{
+                                      background: '#111827',
+                                      color: '#ffffff',
+                                      border: 'none',
+                                      borderRadius: 8,
+                                      padding: '8px 16px',
+                                      fontSize: 13,
+                                      fontWeight: 600,
+                                      cursor: (isUpdatingThis || !hasChanges) ? 'not-allowed' : 'pointer',
+                                      opacity: (isUpdatingThis || !hasChanges) ? 0.5 : 1,
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 6,
+                                      height: 38
+                                    }}
+                                  >
+                                    {isUpdatingThis ? 'Applying...' : 'Update Discount'}
+                                  </button>
                                 )}
                               </div>
                             </div>
-
-                            {/* Update Discount Action Row */}
-                            {variant.id && (
-                              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -4 }}>
-                                <button
-                                  type="button"
-                                  onClick={() => updateDiscountForSpecificVariant(index)}
-                                  disabled={isUpdatingThis || !hasChanges}
-                                  style={{
-                                    background: '#111827',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    borderRadius: 8,
-                                    padding: '8px 16px',
-                                    fontSize: 13,
-                                    fontWeight: 600,
-                                    cursor: (isUpdatingThis || !hasChanges) ? 'not-allowed' : 'pointer',
-                                    opacity: (isUpdatingThis || !hasChanges) ? 0.5 : 1,
-                                    transition: 'all 0.2s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    height: 38
-                                  }}
-                                >
-                                  {isUpdatingThis ? 'Applying...' : 'Update Discount'}
-                                </button>
-                              </div>
-                            )}
                           </div>
                         );
                       })}
