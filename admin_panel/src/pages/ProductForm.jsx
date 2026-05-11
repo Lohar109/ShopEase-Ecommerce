@@ -123,6 +123,9 @@ const ProductForm = () => {
   const [showAudienceModal, setShowAudienceModal] = useState(false);
   const [audienceName, setAudienceName] = useState('');
   const [addingAudience, setAddingAudience] = useState(false);
+  const [showManageAudiencesModal, setShowManageAudiencesModal] = useState(false);
+  const [editingAudienceId, setEditingAudienceId] = useState(null);
+  const [editingAudienceName, setEditingAudienceName] = useState('');
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -1817,6 +1820,80 @@ const ProductForm = () => {
     }
   };
 
+  const openManageAudiencesModal = () => {
+    setShowManageAudiencesModal(true);
+  };
+
+  const closeManageAudiencesModal = () => {
+    setShowManageAudiencesModal(false);
+    setEditingAudienceId(null);
+    setEditingAudienceName('');
+  };
+
+  const handleEditAudience = async (audienceId, newName) => {
+    const trimmedName = newName.trim();
+    if (!trimmedName) {
+      alert('Name cannot be empty');
+      return;
+    }
+
+    try {
+      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
+      const response = await fetch(`${apiOrigin}/api/audiences/${audienceId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: trimmedName }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update audience');
+      }
+
+      await fetchAudiences();
+      setEditingAudienceId(null);
+      setEditingAudienceName('');
+      setToastMsg('Audience updated successfully.');
+      setToastType('success');
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      alert(err.message || 'Failed to update audience');
+    }
+  };
+
+  const handleDeleteAudience = async (audienceId, audienceName) => {
+    if (!window.confirm(`Delete audience "${audienceName}"? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
+      const response = await fetch(`${apiOrigin}/api/audiences/${audienceId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          alert(result.error || 'Cannot delete this audience as it is in use.');
+          return;
+        }
+        throw new Error(result.error || 'Failed to delete audience');
+      }
+
+      await fetchAudiences();
+      setToastMsg('Audience deleted successfully.');
+      setToastType('success');
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      alert(err.message || 'Failed to delete audience');
+    }
+  };
+
   const activeIdx = Math.max(0, STEPS.findIndex((s) => s.key === activeTab));
   const canPrev = activeIdx > 0;
   const canNext = activeIdx < STEPS.length - 1;
@@ -1927,6 +2004,202 @@ const ProductForm = () => {
         canAdd={Boolean(audienceName.trim())}
         placeholder="Audience Name"
       />
+      {showManageAudiencesModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={closeManageAudiencesModal}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff',
+              borderRadius: 12,
+              maxWidth: 500,
+              width: '100%',
+              maxHeight: '80vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ padding: 20, borderBottom: '1px solid #e4e4e7', background: '#f9fafb' }}>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#111827' }}>Manage Audiences</h2>
+            </div>
+            <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+              {audiences.length === 0 ? (
+                <p style={{ margin: 0, color: '#6b7280', textAlign: 'center', padding: 20 }}>No audiences yet. Click "+" to add one.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {audiences.map((aud) => (
+                    <div
+                      key={aud.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: 12,
+                        background: '#f9fafb',
+                        borderRadius: 8,
+                        border: '1px solid #e4e4e7',
+                      }}
+                    >
+                      {editingAudienceId === aud.id ? (
+                        <>
+                          <input
+                            type="text"
+                            value={editingAudienceName}
+                            onChange={(e) => setEditingAudienceName(e.target.value)}
+                            style={{
+                              flex: 1,
+                              padding: '8px 12px',
+                              borderRadius: 6,
+                              border: '1px solid #d1d5db',
+                              fontFamily: 'Poppins, sans-serif',
+                              fontSize: 14,
+                            }}
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleEditAudience(aud.id, editingAudienceName);
+                              } else if (e.key === 'Escape') {
+                                setEditingAudienceId(null);
+                                setEditingAudienceName('');
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleEditAudience(aud.id, editingAudienceName)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 32,
+                              height: 32,
+                              padding: 0,
+                              background: '#10b981',
+                              border: 'none',
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              color: '#fff',
+                            }}
+                            title="Save"
+                          >
+                            <Check size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingAudienceId(null);
+                              setEditingAudienceName('');
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 32,
+                              height: 32,
+                              padding: 0,
+                              background: '#ef4444',
+                              border: 'none',
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              color: '#fff',
+                            }}
+                            title="Cancel"
+                          >
+                            <span style={{ fontSize: 18, fontWeight: 'bold' }}>×</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ flex: 1, fontSize: 14, color: '#111827', fontWeight: 500 }}>
+                            {aud.name.charAt(0).toUpperCase() + aud.name.slice(1)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingAudienceId(aud.id);
+                              setEditingAudienceName(aud.name);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 32,
+                              height: 32,
+                              padding: 0,
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              color: '#6b7280',
+                            }}
+                            title="Edit"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAudience(aud.id, aud.name)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 32,
+                              height: 32,
+                              padding: 0,
+                              background: 'none',
+                              border: '1px solid #d1d5db',
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              color: '#ef4444',
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div style={{ padding: 16, borderTop: '1px solid #e4e4e7', background: '#f9fafb', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button
+                type="button"
+                onClick={closeManageAudiencesModal}
+                style={{
+                  padding: '8px 16px',
+                  background: '#6b7280',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showWarningModal && (
         <div
           role="dialog"
@@ -3603,10 +3876,13 @@ const ProductForm = () => {
 
                       <div style={{ display: 'flex', gap: 16, marginBottom: 18, alignItems: 'flex-end' }}>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4, gap: 8 }}>
                           Target Audience
                           <button type="button" className="pf-mini-plus-btn" onClick={openAudienceModal} title="Quick add audience">
                             <span>+</span>
+                          </button>
+                          <button type="button" className="pf-mini-edit-btn" onClick={openManageAudiencesModal} title="Manage audiences" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+                            <Edit2 size={14} />
                           </button>
                         </label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
