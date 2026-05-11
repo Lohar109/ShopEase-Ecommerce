@@ -4223,20 +4223,24 @@ const ProductForm = () => {
                         <div data-gallery-form>
                           <div style={{ marginBottom: 12 }}>
                             <label style={{ fontWeight: 500 }}>Variant Selection</label>
-                            <select
-                              value={selectedGalleryVariantId || ''}
-                              onChange={(e) => setSelectedGalleryVariantId(e.target.value || null)}
-                              style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, fontFamily: 'Poppins, sans-serif' }}
-                            >
-                              <option value="">All Variants (Shared Gallery)</option>
-                              {variantRows.length > 0 && variantRows
-                                  .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
-                                .map((variant) => (
-                                  <option key={variant.id} value={variant.id}>
-                                    {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
-                                  </option>
-                                ))}
-                            </select>
+                            <div className="pf-select-wrap" style={{ width: '100%', maxWidth: 300 }}>
+                              <select
+                                className="custom-input pf-select"
+                                value={selectedGalleryVariantId || ''}
+                                onChange={(e) => setSelectedGalleryVariantId(e.target.value || null)}
+                                style={{ width: '100%', padding: '10px 64px 10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, fontFamily: 'Poppins, sans-serif' }}
+                              >
+                                <option value="">All Variants (Shared Gallery)</option>
+                                {variantRows.length > 0 && variantRows
+                                    .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
+                                  .map((variant) => (
+                                    <option key={variant.id} value={variant.id}>
+                                      {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
+                                    </option>
+                                  ))}
+                              </select>
+                              <ChevronDown size={16} className="pf-select-icon" style={{ right: 15 }} />
+                            </div>
                           </div>
                           <div style={{ marginBottom: 12 }}>
                             <label style={{ fontWeight: 500 }}>Color Name</label>
