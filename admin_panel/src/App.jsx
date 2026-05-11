@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import CategoryPage from './pages/CategoryPage';
+import AudienceManagement from './pages/AudienceManagement';
 import ProductList from './pages/ProductList';
 import ProductForm from './pages/ProductForm';
 import DashboardHome from './pages/DashboardHome';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardHome />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/categories" element={<CategoryPage />} />
+          <Route path="/audiences" element={<AudienceManagement />} />
           <Route path="/coupons" element={<CouponsPage />} />
         </Route>
         <Route path="/products/new" element={<ProductForm />} />

@@ -18,7 +18,8 @@ const pool = new Pool({
 // GET /api/audiences - fetch all audiences
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name FROM audiences ORDER BY name');
+    await pool.query('ALTER TABLE audiences ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()');
+    const result = await pool.query('SELECT id, name, created_at FROM audiences ORDER BY created_at DESC, id DESC');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -35,8 +36,9 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    await pool.query('ALTER TABLE audiences ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()');
     const result = await pool.query(
-      'INSERT INTO audiences (name) VALUES ($1) RETURNING id, name',
+      'INSERT INTO audiences (name) VALUES ($1) RETURNING id, name, created_at',
       [normalizedName]
     );
     res.status(201).json(result.rows[0]);
@@ -59,8 +61,9 @@ router.put('/:id', async (req, res) => {
   }
 
   try {
+    await pool.query('ALTER TABLE audiences ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()');
     const result = await pool.query(
-      'UPDATE audiences SET name = $1 WHERE id = $2 RETURNING id, name',
+      'UPDATE audiences SET name = $1 WHERE id = $2 RETURNING id, name, created_at',
       [normalizedName, id]
     );
 
@@ -82,6 +85,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    await pool.query('ALTER TABLE audiences ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()');
     // Check if any products use this audience
     const checkResult = await pool.query(
       'SELECT COUNT(*) as count FROM product WHERE audience = $1',
@@ -96,7 +100,7 @@ router.delete('/:id', async (req, res) => {
 
     // Delete the audience
     const deleteResult = await pool.query(
-      'DELETE FROM audiences WHERE id = $1 RETURNING id, name',
+      'DELETE FROM audiences WHERE id = $1 RETURNING id, name, created_at',
       [id]
     );
 
