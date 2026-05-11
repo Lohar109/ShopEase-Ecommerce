@@ -120,6 +120,9 @@ const ProductForm = () => {
   const [showQuickPasteModal, setShowQuickPasteModal] = useState(false);
   const [quickPasteText, setQuickPasteText] = useState('');
   const [quickPasteWarning, setQuickPasteWarning] = useState('');
+  const [showAudienceModal, setShowAudienceModal] = useState(false);
+  const [audienceName, setAudienceName] = useState('');
+  const [addingAudience, setAddingAudience] = useState(false);
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -1720,6 +1723,17 @@ const ProductForm = () => {
     setM(true);
   };
 
+  const openAudienceModal = () => {
+    setAudienceName('');
+    setShowAudienceModal(true);
+  };
+
+  const closeAudienceModal = () => {
+    if (addingAudience) return;
+    setShowAudienceModal(false);
+    setAudienceName('');
+  };
+
   const closeQuickAdd = () => {
     if (addingQuickCat) return;
     setM(false);
@@ -1762,6 +1776,44 @@ const ProductForm = () => {
       alert(err.message || 'Failed to add category');
     } finally {
       setAddingQuickCat(false);
+    }
+  };
+
+  const handleAddAudience = async () => {
+    const nameValue = audienceName.trim();
+    if (!nameValue) return;
+
+    setAddingAudience(true);
+    try {
+      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
+      const response = await fetch(`${apiOrigin}/api/audiences`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: nameValue }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to add audience');
+      }
+
+      await fetchAudiences();
+      if (result?.id) {
+        setAudience(result.id);
+      }
+
+      setShowAudienceModal(false);
+      setAudienceName('');
+      setToastMsg('Audience added successfully.');
+      setToastType('success');
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      alert(err.message || 'Failed to add audience');
+    } finally {
+      setAddingAudience(false);
     }
   };
 
@@ -1863,6 +1915,17 @@ const ProductForm = () => {
         onClose={closeQuickAdd}
         onAdd={handleQuickAdd}
         loading={addingQuickCat}
+      />
+      <QuickAddModal
+        m={showAudienceModal}
+        title="Add Audience"
+        val={audienceName}
+        setVal={setAudienceName}
+        onClose={closeAudienceModal}
+        onAdd={handleAddAudience}
+        loading={addingAudience}
+        canAdd={Boolean(audienceName.trim())}
+        placeholder="Audience Name"
       />
       {showWarningModal && (
         <div
@@ -3540,7 +3603,12 @@ const ProductForm = () => {
 
                       <div style={{ display: 'flex', gap: 16, marginBottom: 18, alignItems: 'flex-end' }}>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontWeight: 500, marginBottom: 4 }}>Target Audience</label>
+                        <label style={{ fontWeight: 500, display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                          Target Audience
+                          <button type="button" className="pf-mini-plus-btn" onClick={openAudienceModal} title="Quick add audience">
+                            <span>+</span>
+                          </button>
+                        </label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div style={{ flex: 1 }}>
                             <div className="pf-select-wrap">

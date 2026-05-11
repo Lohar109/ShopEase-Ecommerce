@@ -16,6 +16,7 @@ const QuickAddModal = ({
   setImg,
   parentOptions = [],
   canAdd = false,
+  placeholder,
 }) => {
   if (!m) return null;
 
@@ -111,7 +112,7 @@ const QuickAddModal = ({
             type="text"
             value={val}
             onChange={(e) => setVal(e.target.value)}
-            placeholder={s ? 'Subcategory Name' : 'Category Name'}
+            placeholder={placeholder || (s ? 'Subcategory Name' : 'Category Name')}
             autoFocus
             style={inputStyle}
           />
