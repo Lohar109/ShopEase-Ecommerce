@@ -25,7 +25,8 @@ import {
   fetchProductById,
   saveDesignGallery,
   saveProduct,
-  updateProduct
+  updateProduct,
+  updateVariantDiscount
 } from '../services/productService';
 
 const STEPS = [
@@ -1337,6 +1338,19 @@ const ProductForm = () => {
             : [newVar(p?.main_image || '')]
         );
 
+        // Initialize baseline snapshot for comparison tracking
+        const discountSnapshots = {};
+        vs.forEach(v => {
+          if (v.id) {
+            discountSnapshots[v.id] = {
+              override_discount: v.override_discount ?? false,
+              discount_type: v.discount_type || 'Percentage',
+              discount_value: Number(v.discount_value) || 0
+            };
+          }
+        });
+        setSavedVariantDiscounts(discountSnapshots);
+
         setEditProductData(p || null);
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
@@ -1426,6 +1440,39 @@ const ProductForm = () => {
   const [variantRows, setVariantRows] = useState([
     newVar()
   ]);
+  const [savedVariantDiscounts, setSavedVariantDiscounts] = useState({});
+  const [updatingVariantDiscountId, setUpdatingVariantDiscountId] = useState(null);
+
+  const updateDiscountForSpecificVariant = async (idx) => {
+    const variant = variantRows[idx];
+    if (!variant?.id) return;
+    
+    setUpdatingVariantDiscountId(variant.id);
+    try {
+      const payload = {
+        override_discount: !!variant.override_discount,
+        discount_type: variant.discount_type || 'Percentage',
+        discount_value: Number(variant.discount_value) || 0
+      };
+      
+      await updateVariantDiscount(variant.id, payload);
+      
+      setSavedVariantDiscounts(prev => ({
+        ...prev,
+        [variant.id]: payload
+      }));
+      
+      setToastType('success');
+      setToastMsg(`Discount applied to Variant #${idx + 1}`);
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      setToastType('warning');
+      setToastMsg(`Failed: ${err.message}`);
+      setTimeout(() => setToastMsg(''), 3000);
+    } finally {
+      setUpdatingVariantDiscountId(null);
+    }
+  };
 
   // Helper to get product initials
   const getProductInitials = (name) => {
@@ -4735,6 +4782,17 @@ const ProductForm = () => {
                         const discType = variant.discount_type || 'Percentage';
                         const discValue = Number(variant.discount_value) || 0;
 
+                        // Check for unpersisted local changes
+                        const originalSnapshot = savedVariantDiscounts[variant.id];
+                        const hasChanges = !originalSnapshot 
+                          ? true 
+                          : (
+                            Boolean(variant.override_discount) !== Boolean(originalSnapshot.override_discount) ||
+                            variant.discount_type !== originalSnapshot.discount_type ||
+                            Number(variant.discount_value) !== Number(originalSnapshot.discount_value)
+                          );
+                        const isUpdatingThis = updatingVariantDiscountId === variant.id;
+
                         // Safe math calculation
                         let finalPrice = originalPrice;
                         if (hasOverride) {
@@ -4867,6 +4925,35 @@ const ProductForm = () => {
                                 )}
                               </div>
                             </div>
+
+                            {/* Update Discount Action Row */}
+                            {variant.id && (
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -4 }}>
+                                <button
+                                  type="button"
+                                  onClick={() => updateDiscountForSpecificVariant(index)}
+                                  disabled={isUpdatingThis || !hasChanges}
+                                  style={{
+                                    background: '#111827',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: 8,
+                                    padding: '8px 16px',
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    cursor: (isUpdatingThis || !hasChanges) ? 'not-allowed' : 'pointer',
+                                    opacity: (isUpdatingThis || !hasChanges) ? 0.5 : 1,
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    height: 38
+                                  }}
+                                >
+                                  {isUpdatingThis ? 'Applying...' : 'Update Discount'}
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })}

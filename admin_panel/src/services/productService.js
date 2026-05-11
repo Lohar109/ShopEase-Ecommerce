@@ -159,3 +159,19 @@ export async function deleteDesignGallery(galleryId) {
     throw error;
   }
 }
+export async function updateVariantDiscount(variantId, discountData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/variants/${variantId}/discount`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(discountData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update variant discount');
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}

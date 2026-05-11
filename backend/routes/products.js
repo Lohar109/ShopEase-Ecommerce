@@ -5,6 +5,7 @@ const productController = require('../controllers/productController');
 
 
 router.get('/', productController.getAllProducts);
+router.patch('/variants/:id/discount', productController.updateVariantDiscount);
 router.get('/:id', productController.getProductById);
 router.post('/', productController.createProduct);
 router.patch('/:id', productController.updateProductStatus);

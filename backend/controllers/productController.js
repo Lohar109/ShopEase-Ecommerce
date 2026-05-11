@@ -116,9 +116,21 @@ exports.createProduct = async (req, res) => {
     // Insert variants
     for (const v of variants) {
       await client.query(
-        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)` ,
-        [productId, v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false]
+        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)` ,
+        [
+          productId, 
+          v.size, 
+          v.color, 
+          v.price, 
+          v.stock, 
+          v.sku, 
+          v.image, 
+          v.use_separate_gallery || false,
+          v.override_discount || false,
+          v.discount_type || 'Percentage',
+          Number(v.discount_value) || 0
+        ]
       );
     }
 
@@ -220,16 +232,41 @@ exports.updateProduct = async (req, res) => {
         incomingVariantIds.add(variantId);
         await client.query(
           `UPDATE product_variant
-           SET size = $1, color = $2, price = $3, stock = $4, sku = $5, image = $6, use_separate_gallery = $7
-           WHERE id = $8 AND product_id = $9`,
-          [v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false, variantId, id]
+           SET size = $1, color = $2, price = $3, stock = $4, sku = $5, image = $6, use_separate_gallery = $7, override_discount = $8, discount_type = $9, discount_value = $10
+           WHERE id = $11 AND product_id = $12`,
+          [
+            v.size, 
+            v.color, 
+            v.price, 
+            v.stock, 
+            v.sku, 
+            v.image, 
+            v.use_separate_gallery || false, 
+            v.override_discount || false, 
+            v.discount_type || 'Percentage', 
+            Number(v.discount_value) || 0, 
+            variantId, 
+            id
+          ]
         );
       } else {
         const insertedVariant = await client.query(
-          `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
            RETURNING id`,
-          [id, v.size, v.color, v.price, v.stock, v.sku, v.image, v.use_separate_gallery || false]
+          [
+            id, 
+            v.size, 
+            v.color, 
+            v.price, 
+            v.stock, 
+            v.sku, 
+            v.image, 
+            v.use_separate_gallery || false, 
+            v.override_discount || false, 
+            v.discount_type || 'Percentage', 
+            Number(v.discount_value) || 0
+          ]
         );
         incomingVariantIds.add(insertedVariant.rows[0].id);
       }
@@ -320,6 +357,25 @@ exports.deleteProduct = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
     res.json({ message: 'Product deleted', product_id: id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.updateVariantDiscount = async (req, res) => {
+  const { id } = req.params; // Actually variantId
+  const { override_discount, discount_type, discount_value } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE product_variant 
+       SET override_discount = $1, discount_type = $2, discount_value = $3, updated_at = now() 
+       WHERE id = $4 RETURNING id`,
+      [override_discount, discount_type, discount_value, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Variant not found' });
+    }
+    res.json({ message: 'Discount updated successfully', variant_id: id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
