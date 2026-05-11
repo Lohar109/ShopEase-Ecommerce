@@ -5,15 +5,9 @@ import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
 import { addAudience, deleteAudience, fetchAudiences, updateAudience } from '../services/audienceService';
 
-const formatCreatedDate = (value) => {
-  if (!value) return '-';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  }).format(date);
+const formatProductsLabel = (value) => {
+  const count = Number(value) || 0;
+  return `${count} ${count === 1 ? 'Product' : 'Products'}`;
 };
 
 const AudienceManagement = () => {
@@ -382,7 +376,7 @@ const AudienceManagement = () => {
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
                     <th className="audience-table-head-cell" style={{ width: '46%' }}>Name</th>
-                    <th className="audience-table-head-cell" style={{ width: '26%' }}>Created Date</th>
+                    <th className="audience-table-head-cell" style={{ width: '26%' }}>Products</th>
                     <th className="audience-table-head-cell" style={{ textAlign: 'right' }}>Action</th>
                   </tr>
                 </thead>
@@ -395,6 +389,7 @@ const AudienceManagement = () => {
                       const isEditing = editingAudienceId === audienceId;
                       const isUpdating = updatingAudienceId === audienceId;
                       const isDeleting = deletingAudienceId === audienceId;
+                      const productCount = Number(audience.product_count) || 0;
 
                       return (
                         <tr key={audienceId} className="audience-table-row" style={{ borderBottom: '1px solid #f1f5f9' }}>
@@ -431,8 +426,15 @@ const AudienceManagement = () => {
                               </span>
                             )}
                           </td>
-                          <td style={{ padding: '12px 10px', color: '#475569', verticalAlign: 'middle' }}>
-                            {formatCreatedDate(audience.created_at)}
+                          <td
+                            style={{
+                              padding: '12px 10px',
+                              color: productCount === 0 ? '#a1a1aa' : '#475569',
+                              fontWeight: productCount === 0 ? 500 : 600,
+                              verticalAlign: 'middle',
+                            }}
+                          >
+                            {formatProductsLabel(productCount)}
                           </td>
                           <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             {isEditing ? (

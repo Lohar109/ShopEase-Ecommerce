@@ -19,7 +19,17 @@ const pool = new Pool({
 router.get('/', async (req, res) => {
   try {
     await pool.query('ALTER TABLE audiences ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()');
-    const result = await pool.query('SELECT id, name, created_at FROM audiences ORDER BY created_at DESC, id DESC');
+    const result = await pool.query(`
+      SELECT
+        a.id,
+        a.name,
+        a.created_at,
+        COUNT(p.id)::int AS product_count
+      FROM audiences a
+      LEFT JOIN product p ON p.audience = a.id
+      GROUP BY a.id, a.name, a.created_at
+      ORDER BY a.created_at DESC, a.id DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
