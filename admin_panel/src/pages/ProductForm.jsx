@@ -16,6 +16,7 @@ const CrystalIcon = ({ size = 16 }) => (
 );
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import ConfirmModal from '../components/ConfirmModal';
 import QuickAddModal from '../components/QuickAddModal';
 import { addCategory, fetchCategories } from '../services/categoryService';
 import {
@@ -128,6 +129,8 @@ const ProductForm = () => {
   const [editingAudienceName, setEditingAudienceName] = useState('');
   const [isEditAudienceIconHovered, setIsEditAudienceIconHovered] = useState(false);
   const [isCloseAudienceButtonHovered, setIsCloseAudienceButtonHovered] = useState(false);
+  const [audienceToDelete, setAudienceToDelete] = useState(null);
+  const [deletingAudience, setDeletingAudience] = useState(false);
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -1866,14 +1869,17 @@ const ProductForm = () => {
     }
   };
 
-  const handleDeleteAudience = async (audienceId, audienceName) => {
-    if (!window.confirm(`Delete audience "${audienceName}"? This cannot be undone.`)) {
-      return;
-    }
+  const handleDeleteAudience = (audienceId, audienceName) => {
+    setAudienceToDelete({ id: audienceId, name: audienceName });
+  };
 
+  const handleConfirmDeleteAudience = async () => {
+    if (!audienceToDelete) return;
+
+    setDeletingAudience(true);
     try {
       const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
-      const response = await fetch(`${apiOrigin}/api/audiences/${audienceId}`, {
+      const response = await fetch(`${apiOrigin}/api/audiences/${audienceToDelete.id}`, {
         method: 'DELETE',
       });
 
@@ -1891,8 +1897,11 @@ const ProductForm = () => {
       setToastMsg('Audience deleted successfully.');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 3000);
+      setAudienceToDelete(null);
     } catch (err) {
       alert(err.message || 'Failed to delete audience');
+    } finally {
+      setDeletingAudience(false);
     }
   };
 
@@ -2209,6 +2218,16 @@ const ProductForm = () => {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={Boolean(audienceToDelete)}
+        title="Are you sure?"
+        message={audienceToDelete ? `Delete audience "${audienceToDelete.name}"? This action cannot be undone.` : ''}
+        cancelLabel="Cancel"
+        confirmLabel={deletingAudience ? 'Deleting...' : 'Delete'}
+        onCancel={() => setAudienceToDelete(null)}
+        onConfirm={handleConfirmDeleteAudience}
+        isConfirming={deletingAudience}
+      />
       {showWarningModal && (
         <div
           role="dialog"
