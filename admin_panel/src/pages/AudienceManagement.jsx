@@ -18,9 +18,10 @@ const AudienceManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [newAudienceName, setNewAudienceName] = useState('');
   const [addingAudience, setAddingAudience] = useState(false);
-  const [editingAudienceId, setEditingAudienceId] = useState('');
+  const [showEditAudienceModal, setShowEditAudienceModal] = useState(false);
+  const [selectedAudienceId, setSelectedAudienceId] = useState('');
   const [editingAudienceName, setEditingAudienceName] = useState('');
-  const [updatingAudienceId, setUpdatingAudienceId] = useState('');
+  const [updatingAudience, setUpdatingAudience] = useState(false);
   const [audienceToDelete, setAudienceToDelete] = useState(null);
   const [deletingAudienceId, setDeletingAudienceId] = useState('');
 
@@ -91,32 +92,37 @@ const AudienceManagement = () => {
     const audienceId = String(audience?.id || '');
     if (!audienceId) return;
 
-    setEditingAudienceId(audienceId);
+    setSelectedAudienceId(audienceId);
     setEditingAudienceName(String(audience?.name || ''));
+    setShowEditAudienceModal(true);
   };
 
   const cancelEditAudience = () => {
-    setEditingAudienceId('');
+    if (updatingAudience) return;
+    setShowEditAudienceModal(false);
+    setSelectedAudienceId('');
     setEditingAudienceName('');
   };
 
-  const handleSaveAudience = async (audienceId) => {
+  const handleSaveAudience = async () => {
+    if (!selectedAudienceId) return;
+
     const trimmedName = editingAudienceName.trim();
     if (!trimmedName) {
       toast.error('Audience name is required.', { position: 'top-center' });
       return;
     }
 
-    setUpdatingAudienceId(audienceId);
+    setUpdatingAudience(true);
     try {
-      await updateAudience(audienceId, { name: trimmedName });
+      await updateAudience(selectedAudienceId, { name: trimmedName });
       await loadAudiences();
       cancelEditAudience();
       toast.success('Audience updated successfully!', { position: 'top-center' });
     } catch (err) {
       toast.error(err.message || 'Failed to update audience', { position: 'top-center' });
     } finally {
-      setUpdatingAudienceId('');
+      setUpdatingAudience(false);
     }
   };
 
@@ -386,45 +392,15 @@ const AudienceManagement = () => {
                   <tbody>
                     {displayedRows.map((audience) => {
                       const audienceId = String(audience.id);
-                      const isEditing = editingAudienceId === audienceId;
-                      const isUpdating = updatingAudienceId === audienceId;
                       const isDeleting = deletingAudienceId === audienceId;
                       const productCount = Number(audience.product_count) || 0;
 
                       return (
                         <tr key={audienceId} className="audience-table-row" style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
-                            {isEditing ? (
-                              <input
-                                type="text"
-                                value={editingAudienceName}
-                                onChange={(event) => setEditingAudienceName(event.target.value)}
-                                onKeyDown={(event) => {
-                                  if (event.key === 'Enter') {
-                                    handleSaveAudience(audienceId);
-                                  }
-                                  if (event.key === 'Escape') {
-                                    cancelEditAudience();
-                                  }
-                                }}
-                                autoFocus
-                                style={{
-                                  width: '100%',
-                                  boxSizing: 'border-box',
-                                  border: '1px solid #e4e4e7',
-                                  borderRadius: 8,
-                                  height: 40,
-                                  padding: '0 14px',
-                                  fontSize: 14,
-                                  fontFamily: 'Inter, "Plus Jakarta Sans", Poppins, sans-serif',
-                                  outline: 'none',
-                                }}
-                              />
-                            ) : (
-                              <span style={{ fontSize: 14, color: '#111827', fontWeight: 500 }}>
-                                {String(audience.name || '')}
-                              </span>
-                            )}
+                            <span style={{ fontSize: 14, color: '#111827', fontWeight: 500 }}>
+                              {String(audience.name || '')}
+                            </span>
                           </td>
                           <td
                             style={{
@@ -437,99 +413,49 @@ const AudienceManagement = () => {
                             {formatProductsLabel(productCount)}
                           </td>
                           <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                            {isEditing ? (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => handleSaveAudience(audienceId)}
-                                  disabled={isUpdating}
-                                  style={{
-                                    border: '1px solid #e5e7eb',
-                                    background: '#f9fafb',
-                                    color: '#374151',
-                                    borderRadius: 8,
-                                    padding: '6px 9px',
-                                    cursor: isUpdating ? 'not-allowed' : 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    fontWeight: 600,
-                                    fontSize: 12,
-                                  }}
-                                  title="Save audience"
-                                >
-                                  <Edit2 size={14} />
-                                  {isUpdating ? 'Saving...' : 'Save'}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={cancelEditAudience}
-                                  disabled={isUpdating}
-                                  style={{
-                                    border: '1px solid #fecaca',
-                                    background: '#fff1f2',
-                                    color: '#b91c1c',
-                                    borderRadius: 8,
-                                    padding: '6px 9px',
-                                    cursor: isUpdating ? 'not-allowed' : 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    fontWeight: 600,
-                                    fontSize: 12,
-                                  }}
-                                  title="Cancel edit"
-                                >
-                                  Cancel
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => startEditAudience(audience)}
-                                  style={{
-                                    border: '1px solid #e5e7eb',
-                                    background: '#f9fafb',
-                                    color: '#374151',
-                                    borderRadius: 8,
-                                    padding: '6px 9px',
-                                    cursor: 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    fontWeight: 600,
-                                    fontSize: 12,
-                                  }}
-                                  title="Edit audience"
-                                >
-                                  <Edit2 size={14} />
-                                  Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => openDeleteModal(audience)}
-                                  disabled={isDeleting}
-                                  style={{
-                                    border: '1px solid #fecaca',
-                                    background: isDeleting ? '#fee2e2' : '#fff1f2',
-                                    color: '#b91c1c',
-                                    borderRadius: 8,
-                                    padding: '6px 9px',
-                                    cursor: isDeleting ? 'not-allowed' : 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    fontWeight: 600,
-                                    fontSize: 12,
-                                  }}
-                                  title="Delete audience"
-                                >
-                                  <Trash2 size={14} />
-                                  {isDeleting ? 'Deleting...' : 'Delete'}
-                                </button>
-                              </>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => startEditAudience(audience)}
+                              style={{
+                                border: '1px solid #e5e7eb',
+                                background: '#f9fafb',
+                                color: '#374151',
+                                borderRadius: 8,
+                                padding: '6px 9px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                fontWeight: 600,
+                                fontSize: 12,
+                              }}
+                              title="Edit audience"
+                            >
+                              <Edit2 size={14} />
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal(audience)}
+                              disabled={isDeleting}
+                              style={{
+                                border: '1px solid #fecaca',
+                                background: isDeleting ? '#fee2e2' : '#fff1f2',
+                                color: '#b91c1c',
+                                borderRadius: 8,
+                                padding: '6px 9px',
+                                cursor: isDeleting ? 'not-allowed' : 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                fontWeight: 600,
+                                fontSize: 12,
+                              }}
+                              title="Delete audience"
+                            >
+                              <Trash2 size={14} />
+                              {isDeleting ? 'Deleting...' : 'Delete'}
+                            </button>
                           </td>
                         </tr>
                       );
@@ -541,6 +467,108 @@ const AudienceManagement = () => {
           )}
         </section>
       </main>
+
+      {showEditAudienceModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 300,
+            background: 'rgba(15, 23, 42, 0.22)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 420,
+              background: '#ffffff',
+              borderRadius: 14,
+              border: '1px solid #e4e4e7',
+              boxShadow: '0 20px 44px rgba(15, 23, 42, 0.14)',
+              padding: 20,
+              fontFamily: 'Poppins, sans-serif',
+            }}
+          >
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>
+              Edit Audience
+            </h4>
+
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <input
+                type="text"
+                value={editingAudienceName}
+                onChange={(event) => setEditingAudienceName(event.target.value)}
+                placeholder="Audience Name"
+                autoFocus
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    handleSaveAudience();
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  height: 40,
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  padding: '0 16px',
+                  fontSize: 14,
+                  color: '#111827',
+                  background: '#ffffff',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button
+                type="button"
+                onClick={cancelEditAudience}
+                disabled={updatingAudience}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #e4e4e7',
+                  background: 'transparent',
+                  color: '#4b5563',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: updatingAudience ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAudience}
+                disabled={updatingAudience || !editingAudienceName.trim()}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #c8507a',
+                  background: '#c8507a',
+                  color: '#ffffff',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: updatingAudience || !editingAudienceName.trim() ? 'not-allowed' : 'pointer',
+                  opacity: updatingAudience || !editingAudienceName.trim() ? 0.6 : 1,
+                }}
+              >
+                {updatingAudience ? 'Updating...' : 'Update'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmModal
         isOpen={Boolean(audienceToDelete)}
