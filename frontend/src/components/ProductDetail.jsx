@@ -311,6 +311,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+    const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [infoTab, setInfoTab] = useState('description');
   const infoCardDescriptionMeasureRef = useRef(null);
   const infoCardFeatureRowRefs = useRef([]);
@@ -399,6 +400,7 @@ const ProductDetail = () => {
   useEffect(() => {
     if (!id || !selectedColor) {
       setDesignGalleryImages([]);
+        setDesignGalleryVideo(null);
       return;
     }
 
@@ -415,19 +417,23 @@ const ProductDetail = () => {
         if (res.ok) {
           const data = await res.json();
           setDesignGalleryImages(Array.isArray(data?.images) ? data.images : []);
+            setDesignGalleryVideo(data?.video_url || null);
           return;
         }
 
         // No design-specific gallery for this variant/color, fallback to default product images
         if (res.status === 404) {
           setDesignGalleryImages([]);
+            setDesignGalleryVideo(null);
           return;
         }
 
         setDesignGalleryImages([]);
+          setDesignGalleryVideo(null);
       })
       .catch(() => {
         setDesignGalleryImages([]);
+          setDesignGalleryVideo(null);
       });
   }, [id, selectedColor, selectedVariant?.id]);
 
@@ -530,17 +536,19 @@ const ProductDetail = () => {
     }
 
     // Add video if exists
-    if (product.video_url) {
+    // Prefer variant-specific gallery video over product-level video
+    const videoUrl = designGalleryVideo || product.video_url;
+    if (videoUrl) {
       // Must be at index 1 if it exists
       if (items.length > 0) {
-        items.splice(1, 0, { type: 'video', url: product.video_url });
+        items.splice(1, 0, { type: 'video', url: videoUrl });
       } else {
-        items.push({ type: 'video', url: product.video_url });
+        items.push({ type: 'video', url: videoUrl });
       }
     }
 
     return items;
-  }, [product, selectedVariant.image, designGalleryImages]);
+  }, [product, selectedVariant.image, designGalleryImages, designGalleryVideo]);
 
   // Handle auto-advance for the image carousel — pauses when lightbox is open or video is playing
   useEffect(() => {

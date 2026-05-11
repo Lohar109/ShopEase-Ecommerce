@@ -4128,7 +4128,7 @@ const ProductForm = () => {
                             >
                               <option value="">All Variants (Shared Gallery)</option>
                               {variantRows.length > 0 && variantRows
-                                .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
+                                  .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
                                 .map((variant) => (
                                   <option key={variant.id} value={variant.id}>
                                     {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
