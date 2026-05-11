@@ -4932,9 +4932,13 @@ const ProductForm = () => {
                                 </div>
 
                                 {/* Action Button: Positioned here automatically aligns to Wrapper Right Edge (Price Box edge) */}
-                                {variant.id && (
-                                  <button
+                                {variant.id && hasOverride && (
+                                  <motion.button
                                     type="button"
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
                                     onClick={() => updateDiscountForSpecificVariant(index)}
                                     disabled={isUpdatingThis || !hasChanges}
                                     style={{
@@ -4955,7 +4959,7 @@ const ProductForm = () => {
                                     }}
                                   >
                                     {isUpdatingThis ? 'Applying...' : 'Update Discount'}
-                                  </button>
+                                  </motion.button>
                                 )}
                               </div>
                             </div>
