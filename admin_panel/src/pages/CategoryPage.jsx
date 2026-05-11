@@ -25,10 +25,10 @@ const CategoryPage = () => {
   const [ssImg, setSsImg] = useState('');
   const [addingSubSubcategory, setAddingSubSubcategory] = useState(false);
 
-  // Edit mode state
-  const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState('');
   const [editingType, setEditingType] = useState(''); // 'main', 'sub', or 'subsub'
+  const [editingName, setEditingName] = useState('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updatingCategory, setUpdatingCategory] = useState(false);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState('');
@@ -192,25 +192,6 @@ const CategoryPage = () => {
       return;
     }
 
-    if (isEditMode && editingId) {
-      setUpdatingCategory(true);
-      try {
-        await updateCategory(editingId, {
-          name: newCategoryName.trim(),
-          parent_id: null,
-        });
-        toast.success('Category updated successfully!', { position: 'top-center' });
-        cancelEditMode();
-        setNewCategoryName('');
-        await loadCategories();
-      } catch (err) {
-        toast.error('Failed to update category.');
-      } finally {
-        setUpdatingCategory(false);
-      }
-      return;
-    }
-
     setAddingCategory(true);
     try {
       const res = await addCategory({
@@ -237,28 +218,6 @@ const CategoryPage = () => {
     }
     if (!sName.trim()) {
       toast.error('Failed to add category.');
-      return;
-    }
-
-    if (isEditMode && editingId && editingType === 'sub') {
-      setUpdatingCategory(true);
-      try {
-        await updateCategory(editingId, {
-          name: sName.trim(),
-          image: img.trim() || null,
-          parent_id: pId,
-        });
-        toast.success('Subcategory updated successfully!', { position: 'top-center' });
-        cancelEditMode();
-        setSName('');
-        setImg('');
-        setPId('');
-        await loadCategories();
-      } catch (err) {
-        toast.error('Failed to update subcategory.');
-      } finally {
-        setUpdatingCategory(false);
-      }
       return;
     }
 
@@ -295,28 +254,6 @@ const CategoryPage = () => {
       return;
     }
 
-    if (isEditMode && editingId && editingType === 'subsub') {
-      setUpdatingCategory(true);
-      try {
-        await updateCategory(editingId, {
-          name: ssName.trim(),
-          image: ssImg.trim() || null,
-          parent_id: ssPId,
-        });
-        toast.success('Sub-subcategory updated successfully!', { position: 'top-center' });
-        cancelEditMode();
-        setSsName('');
-        setSsImg('');
-        setSsPId('');
-        await loadCategories();
-      } catch (err) {
-        toast.error('Failed to update sub-subcategory.');
-      } finally {
-        setUpdatingCategory(false);
-      }
-      return;
-    }
-
     setAddingSubSubcategory(true);
     try {
       const res = await addCategory({
@@ -339,17 +276,12 @@ const CategoryPage = () => {
     }
   };
 
-  const cancelEditMode = () => {
-    setIsEditMode(false);
+  const closeEditModal = () => {
+    if (updatingCategory) return;
+    setIsEditModalOpen(false);
     setEditingId('');
     setEditingType('');
-    setNewCategoryName('');
-    setSName('');
-    setSsName('');
-    setPId('');
-    setSsPId('');
-    setImg('');
-    setSsImg('');
+    setEditingName('');
   };
 
   const startEditCategory = (category, type) => {
@@ -358,21 +290,46 @@ const CategoryPage = () => {
 
     setEditingId(categoryId);
     setEditingType(type);
-    setIsEditMode(true);
+    setEditingName(String(category?.name || ''));
+    setIsEditModalOpen(true);
+  };
 
-    if (type === 'main') {
-      setNewCategoryName(category.name || '');
-      setActiveTab('main');
-    } else if (type === 'sub') {
-      setSName(category.name || '');
-      setImg(category.image || '');
-      setPId(String(category.parent_id || ''));
-      setActiveTab('sub');
-    } else if (type === 'subsub') {
-      setSsName(category.name || '');
-      setSsImg(category.image || '');
-      setSsPId(String(category.parent_id || ''));
-      setActiveTab('subsub');
+  const editModalTitle =
+    editingType === 'main'
+      ? 'Edit Main Category'
+      : editingType === 'sub'
+        ? 'Edit Subcategory'
+        : 'Edit Sub-Subcategory';
+
+  const editBreadcrumb = editingId ? String(pathById[editingId] || categoryById[editingId]?.name || '') : '';
+
+  const handleUpdateCategory = async () => {
+    const trimmedName = editingName.trim();
+    if (!editingId || !trimmedName) {
+      toast.error('Category name is required.');
+      return;
+    }
+
+    const current = categoryById[editingId];
+    if (!current) {
+      toast.error('Category not found.');
+      return;
+    }
+
+    setUpdatingCategory(true);
+    try {
+      await updateCategory(editingId, {
+        name: trimmedName,
+        image: current.image ?? null,
+        parent_id: current.parent_id ?? null,
+      });
+      await loadCategories();
+      closeEditModal();
+      toast.success('Category updated successfully!', { position: 'top-center' });
+    } catch (err) {
+      toast.error(err?.message || 'Failed to update category.');
+    } finally {
+      setUpdatingCategory(false);
     }
   };
 
@@ -685,26 +642,8 @@ const CategoryPage = () => {
               {/* Heading */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                  {isEditMode ? `Edit ${editingType === 'main' ? 'Category' : editingType === 'sub' ? 'Subcategory' : 'Sub-Subcategory'}` : 'Create Category'}
+                  Create Category
                 </h2>
-                {isEditMode && (
-                  <button
-                    type="button"
-                    onClick={cancelEditMode}
-                    style={{
-                      background: '#fff1f2',
-                      border: '1px solid #fecaca',
-                      color: '#b91c1c',
-                      borderRadius: 8,
-                      padding: '6px 14px',
-                      fontWeight: 600,
-                      fontSize: 12,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                )}
               </div>
 
               {/* Tab bar */}
@@ -738,7 +677,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={isEditMode ? updatingCategory : addingCategory}
+                    disabled={addingCategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -747,10 +686,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: (isEditMode ? updatingCategory : addingCategory) ? 'not-allowed' : 'pointer',
+                      cursor: addingCategory ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {isEditMode ? (updatingCategory ? 'Updating...' : 'Update Category') : (addingCategory ? 'Saving...' : 'Save Category')}
+                    {addingCategory ? 'Saving...' : 'Save Category'}
                   </button>
                 </form>
               )}
@@ -791,7 +730,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={isEditMode && editingType === 'sub' ? updatingCategory : addingSubcategory}
+                    disabled={addingSubcategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -800,10 +739,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: (isEditMode && editingType === 'sub' ? updatingCategory : addingSubcategory) ? 'not-allowed' : 'pointer',
+                      cursor: addingSubcategory ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {isEditMode && editingType === 'sub' ? (updatingCategory ? 'Updating...' : 'Update Subcategory') : (addingSubcategory ? 'Saving...' : 'Save Subcategory')}
+                    {addingSubcategory ? 'Saving...' : 'Save Subcategory'}
                   </button>
                 </form>
               )}
@@ -844,7 +783,7 @@ const CategoryPage = () => {
                   />
                   <button
                     type="submit"
-                    disabled={isEditMode && editingType === 'subsub' ? updatingCategory : addingSubSubcategory}
+                    disabled={addingSubSubcategory}
                     className="category-form-submit"
                     style={{
                       background: '#111827',
@@ -853,10 +792,10 @@ const CategoryPage = () => {
                       borderRadius: 8,
                       padding: '8px 40px',
                       fontWeight: 600,
-                      cursor: (isEditMode && editingType === 'subsub' ? updatingCategory : addingSubSubcategory) ? 'not-allowed' : 'pointer',
+                      cursor: addingSubSubcategory ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {isEditMode && editingType === 'subsub' ? (updatingCategory ? 'Updating...' : 'Update Sub-Subcategory') : (addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory')}
+                    {addingSubSubcategory ? 'Saving...' : 'Save Sub-Subcategory'}
                   </button>
                 </form>
               )}
@@ -1242,6 +1181,112 @@ const CategoryPage = () => {
             )}
           </section>
       </main>
+
+      {isEditModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 300,
+            background: 'rgba(15, 23, 42, 0.22)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 420,
+              background: '#ffffff',
+              borderRadius: 14,
+              border: '1px solid #e4e4e7',
+              boxShadow: '0 20px 44px rgba(15, 23, 42, 0.14)',
+              padding: 20,
+              fontFamily: 'Poppins, sans-serif',
+            }}
+          >
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>{editModalTitle}</h4>
+
+            {!!editBreadcrumb && (
+              <p style={{ margin: '10px 0 0', fontSize: 12, color: '#9ca3af', lineHeight: 1.45 }}>
+                {editBreadcrumb}
+              </p>
+            )}
+
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <input
+                type="text"
+                value={editingName}
+                onChange={(e) => setEditingName(e.target.value)}
+                placeholder="Category Name"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleUpdateCategory();
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  height: 40,
+                  borderRadius: 8,
+                  border: '1px solid #e4e4e7',
+                  padding: '0 16px',
+                  fontSize: 14,
+                  color: '#111827',
+                  background: '#ffffff',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button
+                type="button"
+                onClick={closeEditModal}
+                disabled={updatingCategory}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #fecaca',
+                  background: '#fff1f2',
+                  color: '#b91c1c',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: updatingCategory ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleUpdateCategory}
+                disabled={updatingCategory || !editingName.trim()}
+                style={{
+                  height: 38,
+                  borderRadius: 10,
+                  border: '1px solid #111827',
+                  background: '#111827',
+                  color: '#ffffff',
+                  padding: '0 14px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: updatingCategory || !editingName.trim() ? 'not-allowed' : 'pointer',
+                  opacity: updatingCategory || !editingName.trim() ? 0.6 : 1,
+                }}
+              >
+                {updatingCategory ? 'Updating...' : 'Update'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmModal
         isOpen={isModalOpen}
