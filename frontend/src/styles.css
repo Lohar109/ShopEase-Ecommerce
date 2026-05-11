@@ -2288,14 +2288,16 @@ button:hover {
 
 .shop-subcategory-row {
     display: flex;
+    flex-wrap: nowrap;
     gap: 1.8rem;
     overflow-x: auto;
     padding: 0.85rem 1rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
 
 .shop-subcategory-row::-webkit-scrollbar {
@@ -2320,6 +2322,7 @@ button:hover {
     border-radius: 0;
     overflow: visible;
     position: relative;
+    flex-shrink: 0;
 }
 
 .shop-subcategory-card:hover {
@@ -2384,31 +2387,6 @@ button:hover {
 
 .shop-subcategory-card.is-selected {
     border-color: rgba(200, 80, 122, 0.42);
-}
-
-/* Marquee (infinite loop) styles */
-.shop-subcategory-marquee {
-    width: 100%;
-    overflow: hidden;
-    padding-bottom: 2rem; /* keep breathing room */
-}
-
-.shop-subcategory-marquee-track {
-    display: flex;
-    gap: 1.8rem;
-    align-items: center;
-    flex-wrap: nowrap;
-    will-change: transform;
-    animation: marquee 28s linear infinite;
-}
-
-.shop-subcategory-marquee:hover .shop-subcategory-marquee-track {
-    animation-play-state: paused;
-}
-
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
 }
 
 .subcategory-pro-row::-webkit-scrollbar {
