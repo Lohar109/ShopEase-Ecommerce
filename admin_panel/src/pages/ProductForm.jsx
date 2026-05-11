@@ -2209,26 +2209,6 @@ const ProductForm = () => {
                           >
                             <Edit2 size={16} />
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteAudience(aud.id, aud.name)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: 32,
-                              height: 32,
-                              padding: 0,
-                              background: 'none',
-                              border: '1px solid #d1d5db',
-                              borderRadius: 6,
-                              cursor: 'pointer',
-                              color: '#ef4444',
-                            }}
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
                         </>
                       )}
                     </div>
