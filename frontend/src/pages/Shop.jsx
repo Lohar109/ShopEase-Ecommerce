@@ -205,28 +205,38 @@ const Shop = () => {
       {!isLoading && selectedCategory && activeSubcategories.length > 0 && (
         <div className="shop-subcategory-nav-wrap">
           <div className="shop-subcategory-nav-shell">
-            <div className="shop-subcategory-row" role="navigation" aria-label="Subcategory navigation">
-              {activeSubcategories.map((sub) => {
-                const isSelected = selectedSubcategory === sub.id;
-                return (
-                  <button
-                    key={sub.id}
-                    type="button"
-                    onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
-                    className={`shop-subcategory-card ${isSelected ? 'is-selected' : ''}`}
-                    aria-pressed={isSelected}
+            <div className="shop-subcategory-marquee-viewport" role="navigation" aria-label="Subcategory navigation">
+              <div className="shop-subcategory-primary-row animate-marquee hover:[animation-play-state:paused]">
+                {Array.from({ length: 2 }).map((_, loopIndex) => (
+                  <div
+                    key={`subcategory-loop-${loopIndex}`}
+                    className="shop-subcategory-marquee-group"
+                    aria-hidden={loopIndex === 1}
                   >
-                    <span className="shop-subcategory-card-media" aria-hidden="true">
-                      <img
-                        src={sub.image || `/category-icons/${sub.name}.png`}
-                        alt=""
-                        className="shop-subcategory-card-image"
-                      />
-                    </span>
-                    <span className="shop-subcategory-card-label">{sub.name}</span>
-                  </button>
-                );
-              })}
+                    {activeSubcategories.map((sub) => {
+                      const isSelected = selectedSubcategory === sub.id;
+                      return (
+                        <button
+                          key={`${loopIndex}-${sub.id}`}
+                          type="button"
+                          onClick={() => setSelectedSubcategory(isSelected ? null : sub.id)}
+                          className={`shop-subcategory-card ${isSelected ? 'is-selected' : ''}`}
+                          aria-pressed={isSelected}
+                        >
+                          <span className="shop-subcategory-card-media" aria-hidden="true">
+                            <img
+                              src={sub.image || `/category-icons/${sub.name}.png`}
+                              alt=""
+                              className="shop-subcategory-card-image"
+                            />
+                          </span>
+                          <span className="shop-subcategory-card-label">{sub.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

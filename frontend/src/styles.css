@@ -2286,21 +2286,35 @@ button:hover {
     box-shadow: 0 8px 18px rgba(17, 24, 39, 0.14);
 }
 
-.shop-subcategory-row {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 1.8rem;
-    overflow-x: auto;
-    padding: 0.85rem 1rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
+.shop-subcategory-marquee-viewport {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.shop-subcategory-row::-webkit-scrollbar {
+.shop-subcategory-primary-row {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    flex-wrap: nowrap;
+    padding: 0.5rem 1rem;
+    will-change: transform;
+    animation: marquee 40s linear infinite;
+}
+
+.shop-subcategory-marquee-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 1.8rem;
+}
+
+.shop-subcategory-primary-row:hover {
+    animation-play-state: paused;
+}
+
+.shop-subcategory-primary-row::-webkit-scrollbar {
     display: none;
 }
 
