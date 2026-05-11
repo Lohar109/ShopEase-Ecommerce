@@ -127,6 +127,7 @@ const ProductForm = () => {
   const [editingAudienceId, setEditingAudienceId] = useState(null);
   const [editingAudienceName, setEditingAudienceName] = useState('');
   const [isEditAudienceIconHovered, setIsEditAudienceIconHovered] = useState(false);
+  const [isCloseAudienceButtonHovered, setIsCloseAudienceButtonHovered] = useState(false);
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -2183,16 +2184,23 @@ const ProductForm = () => {
               <button
                 type="button"
                 onClick={closeManageAudiencesModal}
+                onMouseEnter={() => setIsCloseAudienceButtonHovered(true)}
+                onMouseLeave={() => setIsCloseAudienceButtonHovered(false)}
                 style={{
-                  padding: '8px 16px',
-                  background: '#6b7280',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 6,
-                  cursor: 'pointer',
+                  height: 40,
+                  border: '1px solid #fecaca',
+                  borderRadius: 10,
+                  background: isCloseAudienceButtonHovered ? '#fee2e2' : '#fff1f2',
+                  color: isCloseAudienceButtonHovered ? '#b91c1c' : '#dc2626',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 20px',
+                  fontSize: 15,
+                  fontWeight: 600,
                   fontFamily: 'Poppins, sans-serif',
-                  fontSize: 14,
-                  fontWeight: 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
                 }}
               >
                 Close
