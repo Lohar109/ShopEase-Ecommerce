@@ -1544,6 +1544,12 @@ const ProductForm = () => {
       return;
     }
 
+    if (!audience) {
+      alert('Please select an audience.');
+      setHighlightAudience(true);
+      return;
+    }
+
     setSaving(true);
     setDuplicateSkuError(null);
     try {
@@ -3559,7 +3565,7 @@ const ProductForm = () => {
                               >
                                 <option value="">Select an audience</option>
                                 {audiences.map(aud => (
-                                  <option key={aud.id} value={aud.id}>{aud.name}</option>
+                                  <option key={aud.id} value={aud.id}>{aud.name.charAt(0).toUpperCase() + aud.name.slice(1)}</option>
                                 ))}
                               </select>
                               <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />
