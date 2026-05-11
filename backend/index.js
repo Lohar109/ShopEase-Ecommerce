@@ -54,6 +54,10 @@ app.use('/api/products', productsRoute);
 const categoriesRoute = require('./routes/categories');
 app.use('/api/categories', categoriesRoute);
 
+// Audiences route
+const audiencesRoute = require('./routes/audiences');
+app.use('/api/audiences', audiencesRoute);
+
 // Admin route
 const adminRoute = require('./routes/admin');
 app.use('/api/admin', adminRoute);

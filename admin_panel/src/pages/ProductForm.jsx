@@ -69,8 +69,10 @@ const ProductForm = () => {
   const [categoryId, setCategoryId] = useState('');
   const [subcategoryId, setSubcategoryId] = useState('');
   const [subSubcategoryId, setSubSubcategoryId] = useState('');
-  const [audience, setAudience] = useState('unisex');
+  const [audience, setAudience] = useState('');
   const [categories, setCategories] = useState([]);
+  const [audiences, setAudiences] = useState([]);
+  const [audiencesLoading, setAudiencesLoading] = useState(false);
   const [m, setM] = useState(false);
   const [d, setD] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
@@ -82,14 +84,6 @@ const ProductForm = () => {
   const [editingDiscountVariantIndex, setEditingDiscountVariantIndex] = useState(null);
   // Dynamic specifications
   const [specs, setSpecs] = useState([newSpec()]);
-
-  // Quick Paste state
-  const [showQuickPasteModal, setShowQuickPasteModal] = useState(false);
-  const [quickPasteText, setQuickPasteText] = useState('');
-  const [quickPasteWarning, setQuickPasteWarning] = useState('');
-  const [toastMsg, setToastMsg] = useState('');
-  const [toastType, setToastType] = useState('success');
-  const [audiences] = useState(['unisex', 'men', 'women', 'kids', 'adult dog']);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -121,6 +115,11 @@ const ProductForm = () => {
   const [spinnerRowIds, setSpinnerRowIds] = useState(new Set());
   const [magicLabPulse, setMagicLabPulse] = useState(false);
   const [magicRingCount, setMagicRingCount] = useState(0);
+  const [toastMsg, setToastMsg] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [showQuickPasteModal, setShowQuickPasteModal] = useState(false);
+  const [quickPasteText, setQuickPasteText] = useState('');
+  const [quickPasteWarning, setQuickPasteWarning] = useState('');
   const magicLabPulseTimerRef = useRef(null);
   const magicRingTimerRef = useRef(null);
 
@@ -771,8 +770,15 @@ const ProductForm = () => {
         else if (audVal === 'adult dog' || audVal === 'adult dogs') matchedAudience = 'adult dog';
 
         if (matchedAudience) {
-          setAudience(matchedAudience);
-          setHighlightAudience(false);
+          // Find the audience ID by name
+          const matchedAudienceObj = audiences.find((a) => String(a.name || '').toLowerCase().trim() === matchedAudience);
+          if (matchedAudienceObj) {
+            setAudience(matchedAudienceObj.id);
+            setHighlightAudience(false);
+          } else {
+            setAudience('');
+            setHighlightAudience(true);
+          }
         } else {
           setAudience('');
           setHighlightAudience(true);
@@ -1231,8 +1237,28 @@ const ProductForm = () => {
       .catch(() => setCategories([]));
   };
 
+  // Fetch audiences
+  const fetchAudiences = async () => {
+    try {
+      setAudiencesLoading(true);
+      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
+      const response = await fetch(`${apiOrigin}/api/audiences`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch audiences: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setAudiences(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Failed to fetch audiences:', err);
+      setAudiences([]);
+    } finally {
+      setAudiencesLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCats();
+    fetchAudiences();
   }, []);
 
   useEffect(() => {
@@ -1269,7 +1295,7 @@ const ProductForm = () => {
         setSlug(p?.slug || '');
         setBrand(p?.brand || '');
         setDescription(p?.description || '');
-        setAudience(p?.audience || 'unisex');
+        setAudience(p?.audience ? parseInt(p.audience) : '');
         setMainImage(p?.main_image || '');
         setVideoUrl(p?.video_url || '');
 
@@ -1462,7 +1488,7 @@ const ProductForm = () => {
       ds: '',
       c: '',
       s: '',
-      a: 'unisex',
+      a: '',
       m: '',
       vi: '',
       sp: [],
@@ -3516,7 +3542,8 @@ const ProductForm = () => {
                                 className="custom-input pf-select"
                                 value={audience}
                                 onChange={aud => {
-                                  setAudience(aud.target.value);
+                                  const id = aud.target.value ? parseInt(aud.target.value) : '';
+                                  setAudience(id);
                                   setHighlightAudience(false);
                                 }}
                                 style={{
@@ -3530,8 +3557,9 @@ const ProductForm = () => {
                                 }}
                                 required
                               >
+                                <option value="">Select an audience</option>
                                 {audiences.map(aud => (
-                                  <option key={aud} value={aud}>{formatAudienceLabel(aud)}</option>
+                                  <option key={aud.id} value={aud.id}>{aud.name}</option>
                                 ))}
                               </select>
                               <ChevronDown size={16} className="pf-select-icon" style={{ top: 'calc(50% + 2px)' }} />

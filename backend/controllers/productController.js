@@ -55,9 +55,10 @@ exports.getAllProducts = async (req, res) => {
     const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
     const result = await pool.query(`
-      SELECT p.*, c.name AS category_name, COALESCE(vs.total_stock, 0) AS stock
+      SELECT p.*, c.name AS category_name, a.name AS audience_name, COALESCE(vs.total_stock, 0) AS stock
       FROM product p
       LEFT JOIN category c ON p.category_id = c.id
+      LEFT JOIN audiences a ON p.audience = a.id
       LEFT JOIN LATERAL (
         SELECT SUM(pv.stock)::int AS total_stock
         FROM product_variant pv
@@ -91,8 +92,16 @@ exports.createProduct = async (req, res) => {
       images = [],
       specifications = {},
       variants = [],
-      audience = 'unisex'
+      audience
     } = req.body;
+
+    // Validate audience_id exists
+    if (audience) {
+      const audienceResult = await client.query('SELECT id FROM audiences WHERE id = $1', [audience]);
+      if (audienceResult.rowCount === 0) {
+        return res.status(400).json({ error: 'Invalid audience ID' });
+      }
+    }
 
     await client.query('BEGIN');
     // Insert product
@@ -131,7 +140,7 @@ exports.getProductById = async (req, res) => {
   const { id } = req.params;
   try {
     const productResult = await pool.query(
-      `SELECT p.*, c.name AS category_name FROM product p LEFT JOIN category c ON p.category_id = c.id WHERE p.id = $1`,
+      `SELECT p.*, c.name AS category_name, a.name AS audience_name FROM product p LEFT JOIN category c ON p.category_id = c.id LEFT JOIN audiences a ON p.audience = a.id WHERE p.id = $1`,
       [id]
     );
     if (productResult.rows.length === 0) {
@@ -170,9 +179,17 @@ exports.updateProduct = async (req, res) => {
       video_url = '',
       images = [],
       specifications = {},
-      audience = 'unisex',
+      audience,
       variants = []
     } = req.body;
+
+    // Validate audience_id exists
+    if (audience) {
+      const audienceResult = await client.query('SELECT id FROM audiences WHERE id = $1', [audience]);
+      if (audienceResult.rowCount === 0) {
+        return res.status(400).json({ error: 'Invalid audience ID' });
+      }
+    }
 
     await client.query('BEGIN');
     
@@ -230,7 +247,7 @@ exports.updateProduct = async (req, res) => {
 
     // Fetch updated product and variants to return to client
     const productResult2 = await pool.query(
-      `SELECT p.*, c.name AS category_name FROM product p LEFT JOIN category c ON p.category_id = c.id WHERE p.id = $1`,
+      `SELECT p.*, c.name AS category_name, a.name AS audience_name FROM product p LEFT JOIN category c ON p.category_id = c.id LEFT JOIN audiences a ON p.audience = a.id WHERE p.id = $1`,
       [id]
     );
     const variantsResult2 = await pool.query(

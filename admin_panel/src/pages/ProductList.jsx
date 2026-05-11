@@ -514,7 +514,7 @@ const ProductList = () => {
                               </div>
                             </div>
                           </td>
-                          <td style={{ padding: '14px', fontSize: 14, color: '#334155', textTransform: 'capitalize' }}>{product.audience || '-'}</td>
+                          <td style={{ padding: '14px', fontSize: 14, color: '#334155', textTransform: 'capitalize' }}>{product.audience_name || '-'}</td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>
                             {Number.isFinite(basePrice) ? `₹${basePrice.toFixed(2)}` : '-'}
                           </td>
