@@ -4464,15 +4464,24 @@ const ProductForm = () => {
                                 <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                                   <div style={{ width: 180 }}>
                                     <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Type</label>
-                                    <select
-                                      className="custom-input"
-                                      value={discType}
-                                      onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
-                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
-                                    >
-                                      <option value="Percentage">Percentage (%)</option>
-                                      <option value="Fixed">Fixed (₹)</option>
-                                    </select>
+                                    <div className="pf-select-wrap">
+                                      <select
+                                        className="custom-input pf-select"
+                                        value={discType}
+                                        onChange={(e) => handleVariantChange(index, 'discount_type', e.target.value)}
+                                        style={{
+                                          width: '100%',
+                                          padding: '8px 64px 8px 12px',
+                                          borderRadius: 8,
+                                          border: '1px solid #d1d5db',
+                                          height: 38,
+                                        }}
+                                      >
+                                        <option value="Percentage">Percentage (%)</option>
+                                        <option value="Fixed">Fixed (₹)</option>
+                                      </select>
+                                      <ChevronDown size={16} className="pf-select-icon" style={{ right: 10 }} />
+                                    </div>
                                   </div>
                                   <div style={{ width: 100 }}>
                                     <label style={{ fontSize: 12, fontWeight: 500, color: '#4b5563', marginBottom: 4, display: 'block' }}>Value</label>
