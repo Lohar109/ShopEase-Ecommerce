@@ -1,11 +1,12 @@
 import React from 'react';
-import { LayoutGrid, Package, Home, Ticket } from 'lucide-react';
+import { LayoutGrid, Package, Home, Ticket, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', Icon: Home },
   { label: 'Products', path: '/products', Icon: Package },
   { label: 'Categories', path: '/categories', Icon: LayoutGrid },
+  { label: 'Audiences', path: '/audiences', Icon: Users },
   { label: 'Coupons', path: '/coupons', Icon: Ticket },
 ];
 
