@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { Star } from "lucide-react";
@@ -63,6 +63,43 @@ const ProductCard = ({ product }) => {
       : '#10b981';
   const stockFontWeight = stockCount <= 10 ? 700 : 600;
 
+  // Image slideshow state and handlers
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [slideshowInterval, setSlideshowInterval] = useState(null);
+  const images = Array.isArray(product.images) ? product.images : [];
+  const hasMultipleImages = images.length > 1;
+
+  // Cleanup interval on component unmount
+  useEffect(() => {
+    return () => {
+      if (slideshowInterval) {
+        clearInterval(slideshowInterval);
+      }
+    };
+  }, [slideshowInterval]);
+
+  const handleMouseEnter = () => {
+    if (!hasMultipleImages) return;
+    
+    // Start slideshow interval
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 1000);
+    setSlideshowInterval(interval);
+  };
+
+  const handleMouseLeave = () => {
+    // Stop slideshow and reset to first image
+    if (slideshowInterval) {
+      clearInterval(slideshowInterval);
+      setSlideshowInterval(null);
+    }
+    setCurrentImageIndex(0);
+  };
+
+  // Determine which image to display
+  const displayImage = hasMultipleImages ? (images[currentImageIndex] || product.main_image) : product.main_image;
+
   return (
     <div className="product-card"
       style={{
@@ -83,8 +120,22 @@ const ProductCard = ({ product }) => {
       }}
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      <div style={{ position: 'relative', width: '100%' }}>
-        <img src={product.main_image} alt={product.name} className="product-image" style={{ marginBottom: 0, backgroundColor: '#f8fafc' }} />
+      <div
+        style={{ position: 'relative', width: '100%' }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <img
+          src={displayImage}
+          alt={product.name}
+          className="product-image"
+          style={{
+            marginBottom: 0,
+            backgroundColor: '#f8fafc',
+            opacity: 1,
+            transition: 'opacity 0.6s ease-in-out'
+          }}
+        />
         {displayDiscount && (
           <span style={{
             position: 'absolute',
