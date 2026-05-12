@@ -23,7 +23,7 @@
 
 @media (min-width: 1024px) {
   .pdp-left-col {
-    grid-column: span 8 / span 8;
+    grid-column: 1 / -1;
   }
 }
 
@@ -47,6 +47,12 @@
   justify-content: center;
   position: sticky;
   top: 6rem;
+}
+
+/* Rating section - centered and constrained */
+.pdp-rating-section {
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 /* Premium Review Card Styles - Minimalist */

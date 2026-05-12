@@ -882,10 +882,10 @@ const ProductDetail = () => {
 
   return (
     <>
-      {/* Master split layout */}
+      {/* Master single-column layout */}
       <div className="pdp-master-grid">
-        {/* Left: Product Card (8 cols) */}
-        <div className="pdp-left-col">
+        {/* Expanded: Product Card (full width) */}
+        <div className="pdp-left-col" style={{ gridColumn: '1 / -1' }}>
           <div className="product-detail-container">
             <div className="product-detail-main">
               {/* Left: Images */}
@@ -1204,8 +1204,8 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Right: Rate this Product (4 cols) */}
-        <div className="pdp-right-col">
+        {/* Ratings Section - below product details with vertical spacing */}
+        <div className="pdp-rating-section" style={{ gridColumn: '1 / -1', marginTop: '40px', maxWidth: '1200px', margin: '40px auto 0', width: '100%', paddingLeft: '12px', paddingRight: '12px' }}>
           <RateProductForm product={product} />
         </div>
       </div>
