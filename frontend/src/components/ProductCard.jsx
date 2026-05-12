@@ -144,11 +144,11 @@ const ProductCard = ({ product }) => {
           <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>| 213 Reviews</span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
           <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>In Stock</div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '2px' }}>
           {displayMrp !== null && (
             <span className="custom-diagonal-strike" style={{
               fontFamily: "'Poppins', sans-serif",
