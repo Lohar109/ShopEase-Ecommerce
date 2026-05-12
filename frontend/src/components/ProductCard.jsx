@@ -52,7 +52,29 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="product-card" onClick={() => navigate(`/product/${product.id}`)}>
-      <img src={product.main_image} alt={product.name} className="product-image" />
+      <div style={{ position: 'relative', width: '100%' }}>
+        <img src={product.main_image} alt={product.name} className="product-image" />
+        {displayDiscount && (
+          <span style={{
+            position: 'absolute',
+            top: '8px',
+            left: '8px',
+            backgroundColor: '#22c55e',
+            color: '#ffffff',
+            fontSize: '10px',
+            fontWeight: 700,
+            padding: '2px 6px',
+            borderRadius: '4px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.02em',
+            zIndex: 10,
+            pointerEvents: 'none',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.12)'
+          }}>
+            {displayDiscount}
+          </span>
+        )}
+      </div>
       <h3 className="product-title">{product.name}</h3>
       <div className="product-card-info-row">
         <div className="product-card-price-heart-row">
@@ -70,20 +92,6 @@ const ProductCard = ({ product }) => {
               </span>
             )}
 
-            {displayDiscount && (
-              <span style={{
-                backgroundColor: '#22c55e',
-                color: '#ffffff',
-                fontSize: '0.62rem',
-                fontWeight: 700,
-                padding: '2px 5px',
-                borderRadius: '4px',
-                textTransform: 'uppercase',
-                marginLeft: '2px'
-              }}>
-                {displayDiscount}
-              </span>
-            )}
           </div>
 
           <button 
