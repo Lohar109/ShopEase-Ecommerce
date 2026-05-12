@@ -56,7 +56,13 @@ const ProductCard = ({ product }) => {
     ? (discountType === 'percentage' ? `${discountValue}% OFF` : `Rs ${discountValue.toFixed(0)} OFF`)
     : null;
 
-  const priceLabel = displayFinalPrice !== null ? `Rs ${displayFinalPrice.toFixed(2)}` : 'Price on request';
+  const formatCurrency = (val) => {
+    const n = Number(val);
+    if (Number.isNaN(n)) return '';
+    return (n % 1 === 0) ? n.toFixed(0) : n.toFixed(2);
+  };
+
+  const priceLabel = displayFinalPrice !== null ? `Rs ${formatCurrency(displayFinalPrice)}` : 'Price on request';
   const stockCount = Number(product?.stock) || 0;
   const stockLabel = stockCount <= 10
     ? `ONLY ${stockCount} LEFT!`
@@ -227,10 +233,10 @@ const ProductCard = ({ product }) => {
               textDecorationThickness: '1px',
               opacity: 0.9
             }}>
-              {`Rs ${displayMrp.toFixed(2)}`}
+              {`Rs ${formatCurrency(displayMrp)}`}
             </span>
           )}
-          <span style={{
+            <span style={{
             fontFamily: "'Poppins', sans-serif",
             fontSize: '17px',
             fontWeight: 500,
