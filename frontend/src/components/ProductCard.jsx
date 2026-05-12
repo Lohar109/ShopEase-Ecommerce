@@ -51,11 +51,10 @@ const ProductCard = ({ product }) => {
 
   const priceLabel = displayFinalPrice !== null ? `₹${displayFinalPrice.toFixed(2)}` : "Price N/A";
   const stockCount = Number(product?.stock) || 0;
-  const hasUrgentStock = stockCount <= 30;
   const stockLabel = stockCount <= 10
-    ? `⚠️ ONLY ${stockCount} LEFT! HURRY!`
+    ? `ONLY ${stockCount} LEFT!`
     : stockCount <= 30
-      ? 'LOW STOCK'
+      ? 'Low Stock'
       : 'In Stock';
   const stockColor = stockCount <= 10
     ? '#b91c1c'
@@ -86,30 +85,10 @@ const ProductCard = ({ product }) => {
     >
       <div style={{ position: 'relative', width: '100%' }}>
         <img src={product.main_image} alt={product.name} className="product-image" style={{ marginBottom: 0, backgroundColor: '#f8fafc' }} />
-        {hasUrgentStock && (
-          <span style={{
-            position: 'absolute',
-            top: '6px',
-            left: '6px',
-            zIndex: 11,
-            pointerEvents: 'none',
-            backgroundColor: '#dc2626',
-            color: '#ffffff',
-            fontSize: '11px',
-            fontWeight: 800,
-            padding: '4px 8px',
-            borderRadius: '999px',
-            letterSpacing: '0.02em',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.18)',
-            whiteSpace: 'nowrap'
-          }}>
-            {stockCount <= 10 ? 'SELLING FAST!' : 'LIMITED STOCK!'}
-          </span>
-        )}
         {displayDiscount && (
           <span style={{
             position: 'absolute',
-            top: hasUrgentStock ? '34px' : '0',
+            top: '0',
             left: '0',
             margin: '4px',
             backgroundColor: '#22c55e',
