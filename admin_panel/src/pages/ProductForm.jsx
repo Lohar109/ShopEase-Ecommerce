@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
 
+                                      <option value="" disabled hidden>
+                                        Select Value
+                                      </option>
 const CrystalIcon = ({ size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
     <defs>
@@ -1328,7 +1331,7 @@ const ProductForm = () => {
               color: v.color || '',
               price: v.price ?? '',
               override_discount: v.override_discount ?? false,
-              discount_type: v.discount_type || 'Percentage',
+              discount_type: v.discount_type || '',
               discount_value: v.discount_value ?? '',
               stock: v.stock ?? '',
               sku: v.sku || '',
@@ -1344,7 +1347,7 @@ const ProductForm = () => {
           if (v.id) {
             discountSnapshots[v.id] = {
               override_discount: v.override_discount ?? false,
-              discount_type: v.discount_type || 'Percentage',
+              discount_type: v.discount_type || '',
               discount_value: Number(v.discount_value) || 0
             };
           }
@@ -1451,7 +1454,7 @@ const ProductForm = () => {
     try {
       const payload = {
         override_discount: !!variant.override_discount,
-        discount_type: variant.discount_type || 'Percentage',
+        discount_type: variant.discount_type || '',
         discount_value: Number(variant.discount_value) || 0
       };
       
@@ -1497,6 +1500,11 @@ const ProductForm = () => {
     setVariantRows(rows => rows.map((row, i) => {
       if (i !== idx) return row;
       let updated = { ...row, [field]: value };
+      // When enabling discount, reset type and value so placeholder shows
+      if (field === 'override_discount' && value === true) {
+        updated.discount_type = '';
+        updated.discount_value = '';
+      }
       updated.sku = generateSKU(brand, name, updated.color, updated.size);
       return updated;
     }));
@@ -1630,7 +1638,7 @@ const ProductForm = () => {
           color: v.color,
           price: v.price,
           override_discount: v.override_discount,
-          discount_type: v.override_discount ? v.discount_type : 'Percentage',
+          discount_type: v.override_discount ? (v.discount_type || '') : '',
           discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : 0,
           stock: v.stock,
           sku: v.sku,
@@ -1653,7 +1661,7 @@ const ProductForm = () => {
                 color: v.color || '',
                 price: v.price ?? '',
                 override_discount: v.override_discount ?? false,
-                discount_type: v.discount_type || 'Percentage',
+                discount_type: v.discount_type || '',
                 discount_value: v.discount_value ?? '',
                 stock: v.stock ?? '',
                 sku: v.sku || '',
@@ -4759,7 +4767,7 @@ const ProductForm = () => {
                       {variantRows.map((variant, index) => {
                         const originalPrice = Number(variant.price) || 0;
                         const hasOverride = variant.override_discount || false;
-                        const discType = variant.discount_type || 'Percentage';
+                        const discType = variant.discount_type || '';
                         const discValue = Number(variant.discount_value) || 0;
 
                         // Check for unpersisted local changes
@@ -4775,10 +4783,10 @@ const ProductForm = () => {
 
                         // Safe math calculation
                         let finalPrice = originalPrice;
-                        if (hasOverride) {
+                        if (hasOverride && discType) {
                           if (discType === 'Percentage') {
                             finalPrice = originalPrice * (1 - discValue / 100);
-                          } else {
+                          } else if (discType === 'Fixed') {
                             finalPrice = originalPrice - discValue;
                           }
                         }
@@ -4842,6 +4850,7 @@ const ProductForm = () => {
                                         height: 38,
                                       }}
                                     >
+                                      <option value="" disabled>Select Value</option>
                                       <option value="Percentage">Percentage (%)</option>
                                       <option value="Fixed">Fixed (₹)</option>
                                     </select>
@@ -4863,9 +4872,18 @@ const ProductForm = () => {
                                         min="0"
                                         step="0.01"
                                         placeholder="0"
-                                        value={variant.discount_value || ''}
+                                        disabled={!discType}
+                                        value={!discType ? '' : (variant.discount_value || '')}
                                         onChange={(e) => handleVariantChange(index, 'discount_value', e.target.value)}
-                                        style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', height: 38 }}
+                                        style={{ 
+                                          width: '100%', 
+                                          padding: '8px 12px', 
+                                          borderRadius: 8, 
+                                          border: '1px solid #d1d5db', 
+                                          height: 38,
+                                          opacity: !discType ? 0.6 : 1,
+                                          cursor: !discType ? 'not-allowed' : 'text'
+                                        }}
                                       />
                                     </div>
                                   )}
@@ -4887,7 +4905,7 @@ const ProductForm = () => {
                                   >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                       <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>Original Price</span>
-                                      <span style={{ fontSize: 13, textDecoration: hasOverride ? 'line-through' : 'none', color: hasOverride ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
+                                      <span style={{ fontSize: 13, textDecoration: (hasOverride && discType) ? 'line-through' : 'none', color: (hasOverride && discType) ? '#94a3b8' : '#1e293b', fontWeight: 600 }}>
                                         ₹{originalPrice.toFixed(2)}
                                       </span>
                                     </div>
@@ -4896,7 +4914,7 @@ const ProductForm = () => {
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                           <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 400 }}>Discount</span>
                                           <span style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>
-                                            {discType === 'Percentage' ? `${discValue}%` : `₹${discValue.toFixed(2)}`}
+                                            {discType === 'Percentage' ? `${discValue}%` : discType === 'Fixed' ? `₹${discValue.toFixed(2)}` : '—'}
                                           </span>
                                         </div>
                                         <div style={{ borderTop: '1px solid #e2e8f0', margin: '2px 0' }} />
@@ -4999,9 +5017,10 @@ const ProductForm = () => {
             <h3 style={{ marginTop: 0 }}>Custom Discount (Variant {editingDiscountVariantIndex + 1})</h3>
             <div style={{ marginBottom: 12 }}>
               <label>Discount Type</label>
-              <select className="custom-input" value={variantRows[editingDiscountVariantIndex].discount_type || 'Percentage'} onChange={e => handleVariantChange(editingDiscountVariantIndex, 'discount_type', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, marginTop: 4 }}>
-                <option value="Percentage">Percentage</option>
-                <option value="Fixed">Fixed</option>
+              <select className="custom-input" value={variantRows[editingDiscountVariantIndex].discount_type || ''} onChange={e => handleVariantChange(editingDiscountVariantIndex, 'discount_type', e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, marginTop: 4 }}>
+                <option value="" disabled>Select Value</option>
+                <option value="Percentage">Percentage (%)</option>
+                <option value="Fixed">Fixed (₹)</option>
               </select>
             </div>
             <div style={{ marginBottom: 12 }}>
