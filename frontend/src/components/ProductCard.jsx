@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
-import { Star, ArrowUpRight } from "lucide-react";
+import { Star } from "lucide-react";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -181,27 +181,6 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginTop: 'auto', 
-        paddingTop: '8px', 
-        borderTop: '1px solid #f1f5f9'
-      }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', letterSpacing: '0.01em' }}>ShopEase</span>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '2px', 
-          fontSize: '0.8rem', 
-          fontWeight: 600, 
-          color: '#c8507a' 
-        }}>
-          <span>View</span>
-          <ArrowUpRight size={13} strokeWidth={2.5} />
-        </div>
-      </div>
     </div>
   );
 };
