@@ -152,7 +152,7 @@ const ProductCard = ({ product }) => {
           {displayMrp !== null && (
             <span className="custom-diagonal-strike" style={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: '14px',
+              fontSize: '16px',
               color: '#94a3b8',
               fontWeight: 400,
               lineHeight: 1
@@ -162,8 +162,8 @@ const ProductCard = ({ product }) => {
           )}
           <span style={{
             fontFamily: "'Poppins', sans-serif",
-            fontSize: '14px',
-            fontWeight: 400,
+            fontSize: '17px',
+            fontWeight: 500,
             color: '#0f172a',
             lineHeight: 1.1
           }}>
