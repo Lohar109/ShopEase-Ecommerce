@@ -50,6 +50,18 @@ const ProductCard = ({ product }) => {
   }
 
   const priceLabel = displayFinalPrice !== null ? `₹${displayFinalPrice.toFixed(2)}` : "Price N/A";
+  const stockCount = Number(product?.stock) || 0;
+  const stockLabel = stockCount <= 10
+    ? `Only ${stockCount} left!`
+    : stockCount <= 30
+      ? 'Low Stock'
+      : 'In Stock';
+  const stockColor = stockCount <= 10
+    ? '#dc2626'
+    : stockCount <= 30
+      ? '#f97316'
+      : '#10b981';
+  const stockFontWeight = stockCount <= 10 ? 700 : 600;
 
   return (
     <div className="product-card"
@@ -145,7 +157,9 @@ const ProductCard = ({ product }) => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
-          <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>In Stock</div>
+          <div style={{ fontSize: '0.75rem', color: stockColor, fontWeight: stockFontWeight, whiteSpace: 'nowrap', transition: 'color 180ms ease, font-weight 180ms ease' }}>
+            {stockLabel}
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '2px' }}>
