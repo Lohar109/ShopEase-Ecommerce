@@ -158,6 +158,68 @@ const ProductList = () => {
     return text.length > 10 ? `${text.substring(0, 10)}...` : text;
   };
 
+  const renderStockStatus = (stockValue) => {
+    const stock = Number(stockValue) || 0;
+    const isCritical = stock < 5;
+    const isWarning = stock < 20 && !isCritical;
+
+    return (
+      <div
+        title={isWarning ? 'Needs restocking soon' : undefined}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          whiteSpace: 'nowrap',
+          verticalAlign: 'middle'
+        }}
+      >
+        <span
+          style={{
+            fontSize: 13,
+            color: isCritical ? '#dc2626' : isWarning ? '#f97316' : '#111827',
+            fontWeight: isCritical ? 700 : 600
+          }}
+        >
+          {stock}
+        </span>
+        {isCritical ? (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '2px 6px',
+              borderRadius: 999,
+              background: '#fee2e2',
+              color: '#b91c1c',
+              fontSize: 10,
+              fontWeight: 700,
+              lineHeight: 1
+            }}
+          >
+            Critical
+          </span>
+        ) : isWarning ? (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '2px 6px',
+              borderRadius: 999,
+              background: '#ffedd5',
+              color: '#c2410c',
+              fontSize: 10,
+              fontWeight: 700,
+              lineHeight: 1
+            }}
+          >
+            Low
+          </span>
+        ) : null}
+      </div>
+    );
+  };
+
   const handleConfirmDelete = async () => {
     if (!productToDelete) return;
     setIsDeleting(true);
@@ -577,7 +639,9 @@ const ProductList = () => {
                           >
                             {truncateSku(productSku)}
                           </td>
-                          <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>{product.stock ?? 0}</td>
+                          <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>
+                            {renderStockStatus(product.stock)}
+                          </td>
                           <td style={{ padding: '14px', verticalAlign: 'middle' }} onClick={(event) => event.stopPropagation()}>
                             <ToggleSwitch
                               value={Boolean(product.is_active)}
@@ -690,7 +754,9 @@ const ProductList = () => {
                               >
                                 {truncateSku(variant?.sku)}
                               </td>
-                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>{variant.stock ?? 0}</td>
+                              <td style={{ padding: '10px 14px', fontSize: 13, color: '#52525b', fontWeight: 600 }}>
+                                {renderStockStatus(variant.stock)}
+                              </td>
                               <td style={{ padding: '10px 14px' }} />
                               <td style={{ padding: '10px 14px' }} />
                               <td style={{ padding: '10px 14px' }} />
