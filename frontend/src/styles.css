@@ -2639,3 +2639,18 @@ button:hover {
   animation: navPulse 1.6s ease-in-out infinite;
 }
 
+
+.custom-diagonal-strike {
+  position: relative;
+  text-decoration: none !important;
+}
+.custom-diagonal-strike::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top right, transparent 48%, #94a3b8 49%, #94a3b8 51%, transparent 52%);
+  pointer-events: none;
+}
