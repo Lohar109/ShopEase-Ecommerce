@@ -21,20 +21,20 @@ const ProductCard = ({ product }) => {
       const isDisc = Boolean(v.override_discount) && Number(v.discount_value) > 0;
       const dType = String(v.discount_type || 'Percentage').toLowerCase();
       const dVal = Number(v.discount_value) || 0;
-      
+
       let final = base;
       if (isDisc) {
         const save = dType === 'percentage' ? (base * dVal / 100) : dVal;
         final = Math.max(0, base - save);
       }
-      
+
       return { base, final, isDisc, dType, dVal };
     }).filter(o => !isNaN(o.base));
 
     if (mappedVariants.length > 0) {
       // Identify the absolute lowest current price point across options
       const cheapest = mappedVariants.reduce((prev, cur) => cur.final < prev.final ? cur : prev);
-      
+
       displayFinalPrice = cheapest.final;
       if (cheapest.isDisc) {
         displayMrp = cheapest.base;
@@ -57,14 +57,15 @@ const ProductCard = ({ product }) => {
         {displayDiscount && (
           <span style={{
             position: 'absolute',
-            top: '8px',
-            left: '8px',
+            top: '0',
+            left: '0',
+            margin: '4px',
             backgroundColor: '#22c55e',
             color: '#ffffff',
-            fontSize: '10px',
+            fontSize: '13px',
             fontWeight: 700,
-            padding: '2px 6px',
-            borderRadius: '4px',
+            padding: '4px 12px',
+            borderRadius: '6px',
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
             zIndex: 10,
@@ -74,47 +75,50 @@ const ProductCard = ({ product }) => {
             {displayDiscount}
           </span>
         )}
+        <button
+          className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+          style={{ 
+            position: 'absolute', 
+            top: '8px', 
+            right: '8px', 
+            zIndex: 10,
+            padding: '4px'
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          aria-label="Toggle wishlist"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill={isWishlisted ? "#ff3885" : "none"}
+            stroke={isWishlisted ? "#ff3885" : "#333"}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <h3 className="product-title">{product.name}</h3>
       <div className="product-card-info-row">
-        <div className="product-card-price-heart-row">
-          <div className="product-card-pricing-group" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <span className="product-price" style={{ marginBottom: 0 }}>{priceLabel}</span>
-            
-            {displayMrp !== null && (
-              <span style={{ 
-                fontSize: '1.15rem', 
-                fontWeight: 600, 
-                color: '#9ca3af', 
-                textDecoration: 'line-through'
-              }}>
-                ₹{displayMrp.toFixed(2)}
-              </span>
-            )}
+        <div className="product-card-pricing-group" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <span className="product-price" style={{ marginBottom: 0 }}>{priceLabel}</span>
 
-          </div>
-
-          <button 
-            className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              toggleWishlist(product.id); 
-            }}
-            aria-label="Toggle wishlist"
-          >
-            <svg 
-              viewBox="0 0 24 24" 
-              width="22" 
-              height="22" 
-              fill={isWishlisted ? "#ff3885" : "none"}
-              stroke={isWishlisted ? "#ff3885" : "#333"}
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </button>
+          {displayMrp !== null && (
+            <span style={{
+              fontSize: '1.15rem',
+              fontWeight: 600,
+              color: '#9ca3af',
+              textDecoration: 'line-through'
+            }}>
+              ₹{displayMrp.toFixed(2)}
+            </span>
+          )}
         </div>
 
       </div>
