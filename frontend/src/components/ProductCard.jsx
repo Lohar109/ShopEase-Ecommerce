@@ -217,13 +217,15 @@ const ProductCard = ({ product }) => {
         
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
           {displayMrp !== null && (
-            <span className="custom-diagonal-strike" style={{
+            <span style={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: '17px',
+              fontSize: '15px',
               color: '#9ca3af',
               fontWeight: 400,
               lineHeight: 1,
-              textDecoration: 'line-through'
+              textDecoration: 'line-through',
+              textDecorationThickness: '1px',
+              opacity: 0.9
             }}>
               {`Rs ${displayMrp.toFixed(2)}`}
             </span>
