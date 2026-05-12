@@ -171,7 +171,7 @@ const ProductCard = ({ product }) => {
           )}
           <span style={{
             fontSize: '1.35rem',
-            fontWeight: 800,
+            fontWeight: 500,
             color: '#0f172a',
             lineHeight: 1.1
           }}>
