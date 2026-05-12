@@ -1422,18 +1422,6 @@ button:hover {
     transform: scale(1.15);
 }
 
-.product-card-delivery {
-    font-family: 'Poppins', sans-serif;
-    font-size: 11px; /* kept compact for single-line fit */
-    color: #1e8e3e;
-    font-weight: 500;
-    margin: 2px 0 6px; /* reduced bottom margin so it sits higher */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    display: block;
-}
 
 .product-card-actions {
     display: flex;

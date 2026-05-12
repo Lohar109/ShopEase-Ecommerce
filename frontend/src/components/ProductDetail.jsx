@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, Truck } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1052,10 +1052,6 @@ const ProductDetail = () => {
                           </div>
                         </div>
                       ) : null}
-                      <span className="pdp-delivery-text">
-                        <Truck size={14} strokeWidth={2.1} aria-hidden="true" />
-                        <span>Delivered by <strong>Tuesday, April 14</strong></span>
-                      </span>
                     </div>
                     {/* Purchasing block */}
                     <div className="product-detail-purchasing-block">

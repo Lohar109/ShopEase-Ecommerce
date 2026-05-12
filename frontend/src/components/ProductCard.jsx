@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 
-const ProductCard = ({ product, deliveryText = "Delivered by Tuesday, April 14" }) => {
+const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
   const isWishlisted = Array.isArray(wishlist)
@@ -109,7 +109,6 @@ const ProductCard = ({ product, deliveryText = "Delivered by Tuesday, April 14" 
           </button>
         </div>
 
-        <p className="product-card-delivery">{deliveryText}</p>
       </div>
     </div>
   );

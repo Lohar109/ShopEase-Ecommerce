@@ -813,13 +813,6 @@
   }
 }
 
-.pdp-delivery-text {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: #374151;
-  width: fit-content;
-  max-width: 100%;
-}
 
 .product-detail-price-group {
   display: flex;
@@ -831,10 +824,6 @@
   margin-bottom: 16px;
 }
 
-.pdp-delivery-text strong {
-  font-weight: 700;
-  color: #111827;
-}
 
 .product-detail-color-selector {
   margin: 0;
@@ -1598,8 +1587,7 @@
     width: 100%;
   }
 
-  .pdp-scarcity-badge--low,
-  .pdp-delivery-text {
+  .pdp-scarcity-badge--low {
     max-width: 100%;
   }
   cursor: pointer;
