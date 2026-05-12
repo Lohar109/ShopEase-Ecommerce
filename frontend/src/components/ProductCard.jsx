@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
+import { Star, ArrowUpRight } from "lucide-react";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -51,9 +52,27 @@ const ProductCard = ({ product }) => {
   const priceLabel = displayFinalPrice !== null ? `₹${displayFinalPrice.toFixed(2)}` : "Price N/A";
 
   return (
-    <div className="product-card" onClick={() => navigate(`/product/${product.id}`)}>
+    <div className="product-card" 
+      style={{ 
+        backgroundColor: '#ffffff', 
+        backdropFilter: 'none', 
+        WebkitBackdropFilter: 'none',
+        border: '1px solid #f1f5f9', 
+        borderRadius: '12px', 
+        padding: '12px', 
+        height: 'auto', 
+        textAlign: 'left', 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        cursor: 'pointer'
+      }}
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
       <div style={{ position: 'relative', width: '100%' }}>
-        <img src={product.main_image} alt={product.name} className="product-image" />
+        <img src={product.main_image} alt={product.name} className="product-image" style={{ marginBottom: 0, backgroundColor: '#f8fafc' }} />
         {displayDiscount && (
           <span style={{
             position: 'absolute',
@@ -104,23 +123,84 @@ const ProductCard = ({ product }) => {
           </svg>
         </button>
       </div>
-      <h3 className="product-title">{product.name}</h3>
-      <div className="product-card-info-row">
-        <div className="product-card-pricing-group" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-          <span className="product-price" style={{ marginBottom: 0 }}>{priceLabel}</span>
 
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <h3 style={{ 
+          fontFamily: "'Poppins', sans-serif",
+          fontSize: '0.92rem', 
+          fontWeight: 600, 
+          color: '#1e293b', 
+          margin: 0,
+          textAlign: 'left',
+          display: '-webkit-box',
+          WebkitLineClamp: 1,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          lineHeight: 1.4
+        }}>
+          {product.name}
+        </h3>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1px' }}>
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} size={12} fill="#f59e0b" stroke="none" />
+            ))}
+          </div>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1e293b', marginLeft: '2px' }}>4.8</span>
+          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>| 213 Reviews</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Color variant</span>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', border: '1px solid #e2e8f0' }} />
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>In Stock</div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: '4px' }}>
           {displayMrp !== null && (
-            <span style={{
-              fontSize: '1.15rem',
-              fontWeight: 600,
-              color: '#9ca3af',
-              textDecoration: 'line-through'
+            <span style={{ 
+              fontSize: '0.78rem', 
+              color: '#94a3b8', 
+              textDecoration: 'line-through',
+              fontWeight: 500
             }}>
               ₹{displayMrp.toFixed(2)}
             </span>
           )}
+          <span style={{ 
+            fontSize: '1.35rem', 
+            fontWeight: 800, 
+            color: '#0f172a', 
+            lineHeight: 1.1
+          }}>
+            {priceLabel}
+          </span>
         </div>
+      </div>
 
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginTop: 'auto', 
+        paddingTop: '8px', 
+        borderTop: '1px solid #f1f5f9'
+      }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', letterSpacing: '0.01em' }}>ShopEase</span>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '2px', 
+          fontSize: '0.8rem', 
+          fontWeight: 600, 
+          color: '#c8507a' 
+        }}>
+          <span>View</span>
+          <ArrowUpRight size={13} strokeWidth={2.5} />
+        </div>
       </div>
     </div>
   );
