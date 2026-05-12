@@ -10,46 +10,29 @@ const ProductCard = ({ product }) => {
     ? wishlist.some((id) => String(id) === String(product.id))
     : false;
 
-  // Resolve optimal pricing derived from variants (prioritize lowest final price)
-  let displayFinalPrice = null;
-  let displayMrp = null;
-  let displayDiscount = null;
+  // Resolve pricing from the first variant, with a safe fallback for empty inventory data.
+  const firstVariant = Array.isArray(product?.variants) && product.variants.length > 0 ? product.variants[0] : null;
+  const firstVariantPrice = Number(firstVariant?.price);
+  const firstVariantMrp = Number(firstVariant?.mrp);
+  const firstVariantDiscountType = String(firstVariant?.discount_type || 'Percentage').toLowerCase();
+  const firstVariantDiscountValue = Number(firstVariant?.discount_value) || 0;
+  const hasFirstVariantDiscount = Boolean(firstVariant) && firstVariantDiscountValue > 0;
 
-  if (Array.isArray(product.variants) && product.variants.length > 0) {
-    // Fully resolve each variant's dynamic pricing
-    const mappedVariants = product.variants.map(v => {
-      const base = parseFloat(v.price || 0);
-      const isDisc = Boolean(v.override_discount) && Number(v.discount_value) > 0;
-      const dType = String(v.discount_type || 'Percentage').toLowerCase();
-      const dVal = Number(v.discount_value) || 0;
+  const displayFinalPrice = !Number.isNaN(firstVariantPrice) && firstVariantPrice > 0
+    ? firstVariantPrice
+    : !Number.isNaN(Number(product?.price)) && Number(product?.price) > 0
+      ? Number(product.price)
+      : null;
 
-      let final = base;
-      if (isDisc) {
-        const save = dType === 'percentage' ? (base * dVal / 100) : dVal;
-        final = Math.max(0, base - save);
-      }
+  const displayMrp = !Number.isNaN(firstVariantMrp) && firstVariantMrp > 0 ? firstVariantMrp : null;
 
-      return { base, final, isDisc, dType, dVal };
-    }).filter(o => !isNaN(o.base));
+  const displayDiscount = hasFirstVariantDiscount
+    ? (firstVariantDiscountType === 'percentage'
+      ? `${firstVariantDiscountValue}% OFF`
+      : `Rs ${firstVariantDiscountValue.toFixed(0)} OFF`)
+    : null;
 
-    if (mappedVariants.length > 0) {
-      // Identify the absolute lowest current price point across options
-      const cheapest = mappedVariants.reduce((prev, cur) => cur.final < prev.final ? cur : prev);
-
-      displayFinalPrice = cheapest.final;
-      if (cheapest.isDisc) {
-        displayMrp = cheapest.base;
-        displayDiscount = cheapest.dType === 'percentage' ? `${cheapest.dVal}% OFF` : `₹${cheapest.dVal} OFF`;
-      }
-    }
-  } else {
-    const base = parseFloat(product?.price);
-    if (!isNaN(base)) {
-      displayFinalPrice = base;
-    }
-  }
-
-  const priceLabel = displayFinalPrice !== null ? `₹${displayFinalPrice.toFixed(2)}` : "Price N/A";
+  const priceLabel = displayFinalPrice !== null ? `Rs ${displayFinalPrice.toFixed(2)}` : "Price on request";
   const stockCount = Number(product?.stock) || 0;
   const stockLabel = stockCount <= 10
     ? `ONLY ${stockCount} LEFT!`
@@ -217,7 +200,7 @@ const ProductCard = ({ product }) => {
               fontWeight: 400,
               lineHeight: 1
             }}>
-              ₹{displayMrp.toFixed(2)}
+              {`Rs ${displayMrp.toFixed(2)}`}
             </span>
           )}
           <span style={{

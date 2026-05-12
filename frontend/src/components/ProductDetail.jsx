@@ -1101,21 +1101,6 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Video Box - Middle Column */}
-              <div className="product-detail-video-col">
-                <div className="product-detail-video-box">
-                  <video
-                    className="product-detail-video-element"
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                    src={product.video_url || ''}
-                  />
-                </div>
-              </div>
-
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col">
                 <div className="product-detail-header-stack flex flex-col gap-0">
