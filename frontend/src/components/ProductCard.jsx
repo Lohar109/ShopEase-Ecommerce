@@ -128,15 +128,16 @@ const ProductCard = ({ product }) => {
         <h3 style={{
           fontFamily: "'Poppins', sans-serif",
           fontSize: '0.92rem',
-          fontWeight: 600,
+          fontWeight: 500,
           color: '#1e293b',
           margin: 0,
           textAlign: 'left',
           display: '-webkit-box',
-          WebkitLineClamp: 1,
+          WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
-          lineHeight: 1.4
+          lineHeight: 1.4,
+          height: '2.8em'
         }}>
           {product.name}
         </h3>
