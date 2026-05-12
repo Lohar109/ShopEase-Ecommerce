@@ -144,11 +144,7 @@ const ProductCard = ({ product }) => {
           <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>| 213 Reviews</span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Color variant</span>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', border: '1px solid #e2e8f0' }} />
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
           <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>In Stock</div>
         </div>
 
