@@ -202,27 +202,68 @@ nav {
 }
 
 
-.bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
-.from-pink-500 { --tw-gradient-from: #ec4899; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(236, 72, 153, 0)); }
-.to-rose-500 { --tw-gradient-to: #f43f5e; }
-.bg-clip-text { -webkit-background-clip: text; background-clip: text; }
-.text-transparent { color: transparent; -webkit-text-fill-color: transparent; }
-.font-bold { font-weight: 700; }
+.bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-pink-500 {
+    --tw-gradient-from: #ec4899;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(236, 72, 153, 0));
+}
+
+.to-rose-500 {
+    --tw-gradient-to: #f43f5e;
+}
+
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.text-transparent {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.font-bold {
+    font-weight: 700;
+}
 
 @keyframes magicalShimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
+
 .animate-magical-shimmer {
     background-size: 200% auto;
     animation: magicalShimmer 3.5s ease-in-out infinite;
 }
 
 @keyframes subtleSparkleFloat {
-    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.8; filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); }
-    50% { transform: translateY(-1.5px) scale(1.1) rotate(10deg); opacity: 1; filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.7)); }
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 0.8;
+        filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4));
+    }
+
+    50% {
+        transform: translateY(-1.5px) scale(1.1) rotate(10deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.7));
+    }
 }
+
 .animate-sparkle-icon {
     animation: subtleSparkleFloat 2.5s ease-in-out infinite;
     transform-origin: center;
@@ -298,8 +339,15 @@ nav {
 }
 
 @keyframes navPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
 }
 
 .nav-menu-dropdown {
@@ -748,12 +796,10 @@ main {
 .hero-slider-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(9, 9, 11, 0.8) 0%,
-        rgba(9, 9, 11, 0.28) 58%,
-        rgba(9, 9, 11, 0.08) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(9, 9, 11, 0.8) 0%,
+            rgba(9, 9, 11, 0.28) 58%,
+            rgba(9, 9, 11, 0.08) 100%);
 }
 
 .hero-slider-content {
@@ -1296,8 +1342,8 @@ button:hover {
     color: #374151;
 }
 
-.categories + .hero-carousel,
-.categories + .hero-bento {
+.categories+.hero-carousel,
+.categories+.hero-bento {
     margin-top: 0.85rem;
 }
 
@@ -1388,7 +1434,8 @@ button:hover {
 .product-card-info-row {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* tightened vertical gaps */
+    gap: 4px;
+    /* tightened vertical gaps */
     text-align: left;
 }
 
@@ -1464,7 +1511,8 @@ button:hover {
 }
 
 .btn-buy-now {
-    width: 100%; /* Make the button take full width of the card */
+    width: 100%;
+    /* Make the button take full width of the card */
 }
 
 /* Footer */
@@ -1490,7 +1538,7 @@ button:hover {
     margin-bottom: 0.9rem;
 }
 
-.home-footer-column > a {
+.home-footer-column>a {
     display: block;
     width: fit-content;
     color: #cbd5e1;
@@ -1500,7 +1548,7 @@ button:hover {
     transition: color 0.2s ease;
 }
 
-.home-footer-column > a:hover {
+.home-footer-column>a:hover {
     color: #ffffff;
 }
 
@@ -1583,6 +1631,7 @@ button:hover {
 
 /* Media Queries for Mobile Responsiveness */
 @media (max-width: 768px) {
+
     /* Center Navigation Links & Logo */
     nav {
         flex-direction: column;
@@ -1747,10 +1796,12 @@ button:hover {
 }
 
 
-.card-wishlist-btn:hover, .card-wishlist-btn:focus, .card-wishlist-btn:active {
-  background: transparent !important;
-  box-shadow: none !important;
-  outline: none !important;
+.card-wishlist-btn:hover,
+.card-wishlist-btn:focus,
+.card-wishlist-btn:active {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 .wishlist-empty-state {
@@ -2361,7 +2412,7 @@ button:hover {
     object-fit: contain;
     object-position: center;
     display: block;
-    transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
 }
 
 .shop-subcategory-card:hover .shop-subcategory-card-image,
@@ -2508,6 +2559,7 @@ button:hover {
 }
 
 @media (min-width: 1280px) {
+
     .shop-products-grid-four,
     .wishlist-products-grid {
         grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2593,6 +2645,7 @@ button:hover {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2606,51 +2659,102 @@ button:hover {
 }
 
 /* Tailwind Utility Polyfills for Grid Layouts */
-.max-w-7xl { max-width: 80rem; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-.w-full { width: 100%; }
-.grid { display: grid; }
-.gap-6 { gap: 1.5rem; }
-.gap-4 { gap: 1rem; }
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-@media (min-width: 640px) { .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 768px) { .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 1280px) { .xl\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.max-w-7xl {
+    max-width: 80rem;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.grid {
+    display: grid;
+}
+
+.gap-6 {
+    gap: 1.5rem;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+    .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .xl\:grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
 
 /* Custom Marquee Animation Polyfills */
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 .animate-marquee {
-  animation: marquee 40s linear infinite;
+    animation: marquee 40s linear infinite;
 }
 
 .hover\:\[animation-play-state\:paused\]:hover {
-  animation-play-state: paused;
+    animation-play-state: paused;
 }
 
 
 /* Category skeleton shimmer */
 .category-skel-pulse {
-  animation: navPulse 1.6s ease-in-out infinite;
+    animation: navPulse 1.6s ease-in-out infinite;
 }
 
 
 .custom-diagonal-strike {
-  position: relative;
-  text-decoration: none !important;
+    position: relative;
+    text-decoration: none !important;
 }
+
 .custom-diagonal-strike::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(170deg, transparent 49%, currentColor 50%, transparent 51%);
-  pointer-events: none;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(170deg, transparent calc(50% - 0.5px), #64748b calc(50% - 0.5px), #64748b calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    pointer-events: none;
 }

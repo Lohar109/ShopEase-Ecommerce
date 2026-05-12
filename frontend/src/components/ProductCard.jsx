@@ -52,16 +52,16 @@ const ProductCard = ({ product }) => {
   const priceLabel = displayFinalPrice !== null ? `₹${displayFinalPrice.toFixed(2)}` : "Price N/A";
 
   return (
-    <div className="product-card" 
-      style={{ 
-        backgroundColor: '#ffffff', 
-        backdropFilter: 'none', 
+    <div className="product-card"
+      style={{
+        backgroundColor: '#ffffff',
+        backdropFilter: 'none',
         WebkitBackdropFilter: 'none',
-        border: '1px solid #f1f5f9', 
-        borderRadius: '12px', 
-        padding: '12px', 
-        height: 'auto', 
-        textAlign: 'left', 
+        border: '1px solid #f1f5f9',
+        borderRadius: '12px',
+        padding: '12px',
+        height: 'auto',
+        textAlign: 'left',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
@@ -96,10 +96,10 @@ const ProductCard = ({ product }) => {
         )}
         <button
           className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
-          style={{ 
-            position: 'absolute', 
-            top: '8px', 
-            right: '8px', 
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
             zIndex: 10,
             padding: '4px'
           }}
@@ -125,11 +125,11 @@ const ProductCard = ({ product }) => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <h3 style={{ 
+        <h3 style={{
           fontFamily: "'Poppins', sans-serif",
-          fontSize: '0.92rem', 
-          fontWeight: 600, 
-          color: '#1e293b', 
+          fontSize: '0.92rem',
+          fontWeight: 600,
+          color: '#1e293b',
           margin: 0,
           textAlign: 'left',
           display: '-webkit-box',
@@ -161,18 +161,18 @@ const ProductCard = ({ product }) => {
 
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
           {displayMrp !== null && (
-            <span className="custom-diagonal-strike" style={{ 
-              fontSize: '1.1rem', 
-              color: '#94a3b8', 
+            <span className="custom-diagonal-strike" style={{
+              fontSize: '1.1rem',
+              color: '#94a3b8',
               fontWeight: 400
             }}>
               ₹{displayMrp.toFixed(2)}
             </span>
           )}
-          <span style={{ 
-            fontSize: '1.35rem', 
-            fontWeight: 800, 
-            color: '#0f172a', 
+          <span style={{
+            fontSize: '1.35rem',
+            fontWeight: 800,
+            color: '#0f172a',
             lineHeight: 1.1
           }}>
             {priceLabel}
