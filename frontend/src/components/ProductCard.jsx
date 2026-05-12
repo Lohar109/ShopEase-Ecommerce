@@ -96,13 +96,6 @@ const ProductCard = ({ product }) => {
         )}
         <button
           className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
-          style={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            zIndex: 10,
-            padding: '4px'
-          }}
           onClick={(e) => {
             e.stopPropagation();
             toggleWishlist(product.id);
@@ -111,11 +104,10 @@ const ProductCard = ({ product }) => {
         >
           <svg
             viewBox="0 0 24 24"
-            width="22"
-            height="22"
-            fill={isWishlisted ? "#ff3885" : "none"}
-            stroke={isWishlisted ? "#ff3885" : "#333"}
-            strokeWidth="2"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="#374151"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
