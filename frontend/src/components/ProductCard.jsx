@@ -10,29 +10,53 @@ const ProductCard = ({ product }) => {
     ? wishlist.some((id) => String(id) === String(product.id))
     : false;
 
-  // Resolve pricing from the first variant, with a safe fallback for empty inventory data.
+  // Resolve pricing from the first variant, with a safe fallback.
   const firstVariant = Array.isArray(product?.variants) && product.variants.length > 0 ? product.variants[0] : null;
-  const firstVariantPrice = Number(firstVariant?.price);
-  const firstVariantMrp = Number(firstVariant?.mrp);
-  const firstVariantDiscountType = String(firstVariant?.discount_type || 'Percentage').toLowerCase();
-  const firstVariantDiscountValue = Number(firstVariant?.discount_value) || 0;
-  const hasFirstVariantDiscount = Boolean(firstVariant) && firstVariantDiscountValue > 0;
+  const basePrice = firstVariant ? Number(firstVariant.price || 0) : NaN;
+  const variantMrp = firstVariant ? Number(firstVariant.mrp || 0) : NaN;
+  const discountType = firstVariant ? String(firstVariant.discount_type || 'Percentage').toLowerCase() : 'percentage';
+  const discountValue = firstVariant ? Number(firstVariant.discount_value) || 0 : 0;
+  const hasDiscount = Boolean(firstVariant) && discountValue > 0;
 
-  const displayFinalPrice = !Number.isNaN(firstVariantPrice) && firstVariantPrice > 0
-    ? firstVariantPrice
-    : !Number.isNaN(Number(product?.price)) && Number(product?.price) > 0
-      ? Number(product.price)
-      : null;
+  // Compute final price when discount applies
+  let computedFinal = !Number.isNaN(basePrice) ? basePrice : null;
+  if (hasDiscount && computedFinal !== null) {
+    if (discountType === 'percentage') {
+      const save = basePrice * (discountValue / 100);
+      computedFinal = Math.max(0, basePrice - save);
+    } else {
+      computedFinal = Math.max(0, basePrice - discountValue);
+    }
+  }
 
-  const displayMrp = !Number.isNaN(firstVariantMrp) && firstVariantMrp > 0 ? firstVariantMrp : null;
+  let displayFinalPrice = null;
+  let displayMrp = null;
 
-  const displayDiscount = hasFirstVariantDiscount
-    ? (firstVariantDiscountType === 'percentage'
-      ? `${firstVariantDiscountValue}% OFF`
-      : `Rs ${firstVariantDiscountValue.toFixed(0)} OFF`)
+  if (hasDiscount && computedFinal !== null) {
+    displayFinalPrice = computedFinal;
+    // Prefer explicit mrp field if it's greater than final; otherwise show basePrice if that's greater
+    if (!Number.isNaN(variantMrp) && variantMrp > computedFinal) {
+      displayMrp = variantMrp;
+    } else if (!Number.isNaN(basePrice) && basePrice > computedFinal) {
+      displayMrp = basePrice;
+    }
+  } else {
+    // No discount: show original price as primary (prefer mrp if present, else basePrice)
+    if (!Number.isNaN(variantMrp) && variantMrp > 0) {
+      displayFinalPrice = variantMrp;
+    } else if (!Number.isNaN(basePrice) && basePrice > 0) {
+      displayFinalPrice = basePrice;
+    } else {
+      displayFinalPrice = null;
+    }
+    displayMrp = null;
+  }
+
+  const displayDiscount = hasDiscount
+    ? (discountType === 'percentage' ? `${discountValue}% OFF` : `Rs ${discountValue.toFixed(0)} OFF`)
     : null;
 
-  const priceLabel = displayFinalPrice !== null ? `Rs ${displayFinalPrice.toFixed(2)}` : "Price on request";
+  const priceLabel = displayFinalPrice !== null ? `Rs ${displayFinalPrice.toFixed(2)}` : 'Price on request';
   const stockCount = Number(product?.stock) || 0;
   const stockLabel = stockCount <= 10
     ? `ONLY ${stockCount} LEFT!`
@@ -195,10 +219,11 @@ const ProductCard = ({ product }) => {
           {displayMrp !== null && (
             <span className="custom-diagonal-strike" style={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: '16px',
-              color: '#94a3b8',
+              fontSize: '17px',
+              color: '#9ca3af',
               fontWeight: 400,
-              lineHeight: 1
+              lineHeight: 1,
+              textDecoration: 'line-through'
             }}>
               {`Rs ${displayMrp.toFixed(2)}`}
             </span>
