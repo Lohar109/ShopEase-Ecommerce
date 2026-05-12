@@ -165,7 +165,7 @@ const ProductCard = ({ product }) => {
               fontSize: '1.1rem', 
               color: '#94a3b8', 
               textDecoration: 'line-through',
-              fontWeight: 600
+              fontWeight: 400
             }}>
               ₹{displayMrp.toFixed(2)}
             </span>
