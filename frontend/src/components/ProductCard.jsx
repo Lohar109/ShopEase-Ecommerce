@@ -159,13 +159,13 @@ const ProductCard = ({ product }) => {
           <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>In Stock</div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', marginTop: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
           {displayMrp !== null && (
             <span style={{ 
-              fontSize: '0.78rem', 
+              fontSize: '1.1rem', 
               color: '#94a3b8', 
               textDecoration: 'line-through',
-              fontWeight: 500
+              fontWeight: 600
             }}>
               ₹{displayMrp.toFixed(2)}
             </span>
