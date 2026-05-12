@@ -19,6 +19,7 @@ const ProductList = () => {
   const [selectedFilterCategory, setSelectedFilterCategory] = useState('');
   const [selectedFilterSubcategory, setSelectedFilterSubcategory] = useState('');
   const [selectedFilterSubSub, setSelectedFilterSubSub] = useState('');
+  const [lowStockOnly, setLowStockOnly] = useState(false);
   const navigate = useNavigate();
 
   const iconButtonBase = {
@@ -160,8 +161,8 @@ const ProductList = () => {
 
   const renderStockStatus = (stockValue) => {
     const stock = Number(stockValue) || 0;
-    const isCritical = stock < 5;
-    const isWarning = stock < 20 && !isCritical;
+    const isCritical = stock <= 20;
+    const isWarning = stock <= 50 && !isCritical;
 
     return (
       <div
@@ -218,6 +219,11 @@ const ProductList = () => {
         ) : null}
       </div>
     );
+  };
+
+  const getProductStock = (product) => {
+    const stock = Number(product?.stock);
+    return Number.isFinite(stock) ? stock : 0;
   };
 
   const handleConfirmDelete = async () => {
@@ -329,8 +335,12 @@ const ProductList = () => {
       });
     }
 
+    if (lowStockOnly) {
+      result = result.filter((product) => getProductStock(product) <= 50);
+    }
+
     return result;
-  }, [products, searchQuery, selectedFilterCategory, selectedFilterSubcategory, selectedFilterSubSub, categories]);
+  }, [products, searchQuery, selectedFilterCategory, selectedFilterSubcategory, selectedFilterSubSub, categories, lowStockOnly]);
 
   const rows = useMemo(() => filteredProducts, [filteredProducts]);
 
@@ -507,6 +517,39 @@ const ProductList = () => {
               <ChevronDown size={16} color="#71717a" style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: (!selectedFilterSubcategory || filterSubSubOptions.length === 0) ? 0.6 : 1 }} />
             </div>
 
+            <button
+              type="button"
+              onClick={() => setLowStockOnly((prev) => !prev)}
+              aria-pressed={lowStockOnly}
+              style={{
+                height: 42,
+                padding: '0 16px',
+                borderRadius: 10,
+                border: lowStockOnly ? '1px solid #fb7185' : '1px solid #e4e4e7',
+                background: lowStockOnly ? '#fff1f2' : '#ffffff',
+                color: lowStockOnly ? '#be123c' : '#374151',
+                fontSize: 13,
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: lowStockOnly ? '0 0 0 2px rgba(251, 113, 133, 0.12)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <span>Low Stock Only</span>
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: lowStockOnly ? '#be123c' : '#d1d5db'
+                }}
+              />
+            </button>
+
             {(selectedFilterCategory || selectedFilterSubcategory || selectedFilterSubSub || searchQuery) && (
               <button
                 type="button"
@@ -515,6 +558,7 @@ const ProductList = () => {
                   setSelectedFilterSubcategory('');
                   setSelectedFilterSubSub('');
                   setSearchQuery('');
+                  setLowStockOnly(false);
                 }}
                 style={{
                   background: 'none',
