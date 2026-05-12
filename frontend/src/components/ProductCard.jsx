@@ -151,16 +151,19 @@ const ProductCard = ({ product }) => {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
           {displayMrp !== null && (
             <span className="custom-diagonal-strike" style={{
-              fontSize: '1.1rem',
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: '14px',
               color: '#94a3b8',
-              fontWeight: 400
+              fontWeight: 400,
+              lineHeight: 1
             }}>
               ₹{displayMrp.toFixed(2)}
             </span>
           )}
           <span style={{
-            fontSize: '1.35rem',
-            fontWeight: 500,
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '14px',
+            fontWeight: 400,
             color: '#0f172a',
             lineHeight: 1.1
           }}>
