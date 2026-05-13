@@ -535,7 +535,6 @@ const ProductDetail = () => {
                         }
                       }}
                       aria-label="Copy product link"
-                      title="Copy link"
                     >
                       <Share2 size={18} />
                     </button>

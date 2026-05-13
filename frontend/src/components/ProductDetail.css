@@ -2392,17 +2392,22 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background-color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.12s ease;
+  transition: none !important;
+  transform: none !important;
+}
+
+.pdp-floating-share-btn:hover {
+  background-color: #ffffff !important;
+  transform: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
 }
 
 .pdp-floating-share-btn svg {
