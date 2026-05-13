@@ -2464,10 +2464,10 @@
   top: 16px;
   right: 16px;
   z-index: 10001;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.15);
   border: none;
   cursor: pointer;
   display: flex;
@@ -2481,14 +2481,14 @@
 .pdp-lightbox-close-btn:hover,
 .pdp-lightbox-close-btn:focus,
 .pdp-lightbox-close-btn:active {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.15);
   outline: none;
   box-shadow: none;
 }
 
 .pdp-lightbox-close-btn svg {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   stroke: #ffffff;
   stroke-width: 2.5;
   flex-shrink: 0;
