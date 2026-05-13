@@ -58,7 +58,44 @@ const ProductForm = () => {
   const isEditMode = Boolean(id);
   const mk = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const newSpec = () => ({ sk: mk(), key: '', value: '' });
-  const newVar = (img = '') => ({ vk: mk(), size: '', color: '', price: '', override_discount: false, discount_type: 'Percentage', discount_value: '', stock: '', sku: '', image: img, use_separate_gallery: false });
+  const parseVariantSize = (rawSize = '') => {
+    const normalized = String(rawSize || '').trim();
+    if (!normalized) return { size_value: '', size_unit: '', size_info: '' };
+
+    const match = normalized.match(/^([0-9]+(?:\.[0-9]+)?)\s*([a-zA-Z%]+)?\s*(.*)$/);
+    if (!match) return { size_value: normalized, size_unit: '', size_info: '' };
+
+    return {
+      size_value: String(match[1] || '').trim(),
+      size_unit: String(match[2] || '').trim(),
+      size_info: String(match[3] || '').trim(),
+    };
+  };
+
+  const composeVariantSize = (variant = {}) => {
+    const fallback = parseVariantSize(variant?.size || '');
+    const sizeValue = String(variant?.size_value || fallback.size_value || '').trim();
+    const sizeUnit = String(variant?.size_unit || fallback.size_unit || '').trim();
+    const sizeInfo = String(variant?.size_info || fallback.size_info || '').trim();
+    const base = [sizeValue, sizeUnit].filter(Boolean).join(' ');
+    return [base, sizeInfo].filter(Boolean).join(' ').trim();
+  };
+
+  const newVar = (img = '') => ({
+    vk: mk(),
+    size_value: '',
+    size_unit: '',
+    size_info: '',
+    color: '',
+    price: '',
+    override_discount: false,
+    discount_type: 'Percentage',
+    discount_value: '',
+    stock: '',
+    sku: '',
+    image: img,
+    use_separate_gallery: false
+  });
   const [activeTab, setActiveTab] = useState('magic');
   const [saving, setSaving] = useState(false);
   const [duplicateSkuError, setDuplicateSkuError] = useState(null);
@@ -247,7 +284,9 @@ const ProductForm = () => {
     const normalizeInventoryRows = (rows) => {
       const sourceRows = Array.isArray(rows) ? rows : [];
       return sourceRows.map((item) => ({
-        size: String(item?.size || ''),
+        size_value: String(item?.size_value || parseVariantSize(item?.size || '').size_value || ''),
+        size_unit: String(item?.size_unit || parseVariantSize(item?.size || '').size_unit || ''),
+        size_info: String(item?.size_info || parseVariantSize(item?.size || '').size_info || ''),
         color: String(item?.color || ''),
         price: String(item?.price ?? ''),
         stock: String(item?.stock ?? ''),
@@ -282,7 +321,9 @@ const ProductForm = () => {
     if (!variant) return '';
 
     return [
-      variant.size ? `Size: ${variant.size}` : '',
+      variant.size_value ? `Size: ${variant.size_value}` : '',
+      variant.size_unit ? `Unit: ${variant.size_unit}` : '',
+      variant.size_info ? `Extra Info: ${variant.size_info}` : '',
       variant.color ? `Color: ${variant.color}` : '',
       variant.price !== '' ? `Price: ${variant.price}` : '',
       variant.stock !== '' ? `Stock: ${variant.stock}` : '',
@@ -304,7 +345,15 @@ const ProductForm = () => {
       const segmentValue = rest.join(':').trim();
 
       if (!key) return;
-      if (key === 'size') nextVariant.size = segmentValue;
+      if (key === 'size') {
+        const parsedSize = parseVariantSize(segmentValue);
+        nextVariant.size_value = parsedSize.size_value;
+        nextVariant.size_unit = parsedSize.size_unit;
+        nextVariant.size_info = parsedSize.size_info;
+      }
+      else if (key === 'size value') nextVariant.size_value = segmentValue;
+      else if (key === 'unit' || key === 'size unit') nextVariant.size_unit = segmentValue;
+      else if (key === 'extra info' || key === 'size info') nextVariant.size_info = segmentValue;
       else if (key === 'color') nextVariant.color = segmentValue;
       else if (key === 'price') nextVariant.price = segmentValue;
       else if (key === 'stock') nextVariant.stock = segmentValue;
@@ -415,7 +464,7 @@ const ProductForm = () => {
     if (activeBlueprintGroup === 'inventory') {
       commitMagicBlueprintData({
         ...baseData,
-        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size: '', color: '', price: '', stock: '', sku: '', image: '' }],
+        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size_value: '', size_unit: '', size_info: '', color: '', price: '', stock: '', sku: '', image: '' }],
       });
       return;
     }
@@ -523,7 +572,7 @@ const ProductForm = () => {
       const varArr = parsed.inventory || parsed.variants;
       if (Array.isArray(varArr)) {
         variantsCount = varArr.length;
-        const sizes = varArr.map(v => String(v.size || '')).filter(Boolean);
+        const sizes = varArr.map(v => composeVariantSize(v)).filter(Boolean);
         uniqueSizesList = [...new Set(sizes)];
       }
 
@@ -894,7 +943,12 @@ const ProductForm = () => {
         if (Array.isArray(data.inventory || data.variants)) {
           const varArr = data.inventory || data.variants;
           const newVariants = varArr.map((v) => {
-            const size = String(v.size || '');
+            const parsedSize = parseVariantSize(v.size || '');
+            const size = composeVariantSize({
+              size_value: v.size_value || parsedSize.size_value,
+              size_unit: v.size_unit || parsedSize.size_unit,
+              size_info: v.size_info || parsedSize.size_info,
+            });
             const color = String(v.color || '');
             const priceVal = Number(v.price || 0);
             const stockVal = Number(v.stock || 0);
@@ -906,7 +960,9 @@ const ProductForm = () => {
 
             return {
               vk: mk(),
-              size,
+              size_value: String(v.size_value || parsedSize.size_value || ''),
+              size_unit: String(v.size_unit || parsedSize.size_unit || ''),
+              size_info: String(v.size_info || parsedSize.size_info || ''),
               color,
               price: priceVal,
               override_discount: false,
@@ -1109,23 +1165,38 @@ const ProductForm = () => {
           };
 
           const size = getVal(['size', 'sz']);
+          const sizeValue = getVal(['size_value', 'size value', 'value']);
+          const sizeUnit = getVal(['size_unit', 'size unit', 'unit']);
+          const sizeInfo = getVal(['size_info', 'size info', 'extra info', 'info']);
           const color = getVal(['color', 'clr', 'colour']);
           const priceVal = Number(getVal(['price', 'prc', 'rate']));
           const stockVal = Number(getVal(['stock', 'stk', 'qty', 'quantity']));
 
-          if (size === undefined || color === undefined || isNaN(priceVal) || isNaN(stockVal)) {
+          const parsedSize = parseVariantSize(size);
+          const normalizedSizeValue = String(sizeValue ?? parsedSize.size_value ?? '').trim();
+          const normalizedSizeUnit = String(sizeUnit ?? parsedSize.size_unit ?? '').trim();
+          const normalizedSizeInfo = String(sizeInfo ?? parsedSize.size_info ?? '').trim();
+          const fullSize = composeVariantSize({
+            size_value: normalizedSizeValue,
+            size_unit: normalizedSizeUnit,
+            size_info: normalizedSizeInfo,
+          });
+
+          if (!fullSize || color === undefined || isNaN(priceVal) || isNaN(stockVal)) {
             skippedCount++;
             return;
           }
 
           const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
           const cleanColor = String(color).toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const cleanSize = String(size).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const cleanSize = fullSize.toLowerCase().replace(/[^a-z0-9]+/g, '-');
           const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
 
           newVariants.push({
             vk: mk(),
-            size: String(size),
+            size_value: normalizedSizeValue,
+            size_unit: normalizedSizeUnit,
+            size_info: normalizedSizeInfo,
             color: String(color),
             price: priceVal,
             override_discount: false,
@@ -1157,20 +1228,24 @@ const ProductForm = () => {
         const color = parts[1];
         const priceVal = Number(parts[2]);
         const stockVal = Number(parts[3]);
+        const parsedSize = parseVariantSize(size);
+        const fullSize = composeVariantSize(parsedSize);
 
-        if (isNaN(priceVal) || isNaN(stockVal)) {
+        if (!fullSize || isNaN(priceVal) || isNaN(stockVal)) {
           skippedCount++;
           return;
         }
 
         const normalizedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const cleanSize = fullSize.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const autoSku = [normalizedSlug, cleanColor, cleanSize].filter(Boolean).join('-');
 
         newVariants.push({
           vk: mk(),
-          size: size,
+          size_value: parsedSize.size_value,
+          size_unit: parsedSize.size_unit,
+          size_info: parsedSize.size_info,
           color: color,
           price: priceVal,
           override_discount: false,
@@ -1193,7 +1268,7 @@ const ProductForm = () => {
 
     setTimeout(() => {
       setVariantRows(prev => {
-        const filteredPrev = prev.filter(v => v.size || v.color || v.price || v.stock);
+        const filteredPrev = prev.filter(v => composeVariantSize(v) || v.color || v.price || v.stock);
         return [...filteredPrev, ...newVariants];
       });
 
@@ -1327,7 +1402,7 @@ const ProductForm = () => {
             ? vs.map(v => ({
               id: v.id || '',
               vk: mk(),
-              size: v.size || '',
+              ...parseVariantSize(v.size || ''),
               color: v.color || '',
               price: v.price ?? '',
               override_discount: v.override_discount ?? false,
@@ -1505,7 +1580,7 @@ const ProductForm = () => {
         updated.discount_type = '';
         updated.discount_value = '';
       }
-      updated.sku = generateSKU(brand, name, updated.color, updated.size);
+      updated.sku = generateSKU(brand, name, updated.color, composeVariantSize(updated));
       return updated;
     }));
   };
@@ -1515,7 +1590,7 @@ const ProductForm = () => {
     setDuplicateSkuError(null);
     setVariantRows(rows => rows.map(row => ({
       ...row,
-      sku: generateSKU(brand, name, row.color, row.size)
+      sku: generateSKU(brand, name, row.color, composeVariantSize(row))
     })));
     // eslint-disable-next-line
   }, [brand, name]);
@@ -1542,7 +1617,7 @@ const ProductForm = () => {
     const matchedVariant = variantRows.find((variant) => normalizeId(variant.id) === normalizeId(variantId));
     if (!matchedVariant) return 'Variant Gallery';
 
-    const size = matchedVariant.size || 'Size';
+    const size = composeVariantSize(matchedVariant) || 'Size';
     const color = matchedVariant.color || 'Color';
     return `${size} + ${color}`;
   };
@@ -1634,7 +1709,7 @@ const ProductForm = () => {
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         variants: variantRows.map(v => ({
           id: v.id || null,
-          size: v.size,
+          size: composeVariantSize(v),
           color: v.color,
           price: v.price,
           override_discount: v.override_discount,
@@ -1657,7 +1732,7 @@ const ProductForm = () => {
               ? vs.map(v => ({
                 id: v.id || '',
                 vk: mk(),
-                size: v.size || '',
+                ...parseVariantSize(v.size || ''),
                 color: v.color || '',
                 price: v.price ?? '',
                 override_discount: v.override_discount ?? false,
@@ -1976,7 +2051,7 @@ const ProductForm = () => {
       Array.isArray(variantRows) &&
       variantRows.length > 0 &&
       variantRows.every((v) => {
-        const size = String(v?.size || '').trim();
+        const size = composeVariantSize(v);
         const color = String(v?.color || '').trim();
         const price = Number(v?.price);
         const stock = Number(v?.stock);
@@ -2015,7 +2090,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '8% 10% 12% 8% 20% 22% 14% auto';
+  const variantCols = '0.9fr 0.8fr 1.8fr 1fr 1fr 1fr 1.8fr 1.7fr 0.9fr auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -4395,7 +4470,7 @@ const ProductForm = () => {
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                     <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-                      <div style={{ minWidth: 950, padding: '0 4px' }}>
+                      <div style={{ minWidth: 1180, padding: '0 4px' }}>
                         <div
                           style={{
                             display: 'grid',
@@ -4408,6 +4483,8 @@ const ProductForm = () => {
                           }}
                         >
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Size</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Unit</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Color</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Price</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Stock</div>
@@ -4435,7 +4512,9 @@ const ProductForm = () => {
                                   padding: '5px 10px',
                                 }}
                               >
-                                <input className="custom-input" type="text" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="4.2" />
+                                <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="kg" />
+                                <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} placeholder="(3kg + 1.2kg Free)" />
                                 <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
@@ -4594,7 +4673,7 @@ const ProductForm = () => {
                                     .filter((variant) => Boolean(variant.id) && Boolean(variant.use_separate_gallery))
                                   .map((variant) => (
                                     <option key={variant.id} value={variant.id}>
-                                      {variant.size && variant.color ? `${variant.size} + ${variant.color}` : 'Variant'}
+                                      {composeVariantSize(variant) && variant.color ? `${composeVariantSize(variant)} + ${variant.color}` : 'Variant'}
                                     </option>
                                   ))}
                               </select>
@@ -4813,7 +4892,7 @@ const ProductForm = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                                 <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 400 }}>
-                                  Variant #{index + 1} ({variant.size || 'No Size'} / {variant.color || 'No Color'})
+                                  Variant #{index + 1} ({composeVariantSize(variant) || 'No Size'} / {variant.color || 'No Color'})
                                 </h4>
                                 <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b7280' }}>
                                   SKU: {variant.sku || 'N/A'} | Stock: {variant.stock || 0}
