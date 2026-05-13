@@ -2143,3 +2143,202 @@
   .pdp-lightbox-arrow--right { right: 5vw; background: rgba(0,0,0,0.4); }
   .pdp-lightbox-arrow { width: 40px; height: 40px; }
 }
+
+/* Restructured PDP Layout - Right Column */
+.product-detail-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: fit-content;
+  width: 100%;
+  align-self: start;
+}
+
+@media (min-width: 1024px) {
+  .product-detail-info-col {
+    grid-column: span 6 / span 6;
+  }
+}
+
+.product-detail-info-col .product-detail-trust-icons {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.product-detail-color-selector,
+.product-detail-size-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-detail-color-label,
+.product-detail-size-label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-detail-color-label-text,
+.product-detail-size-label-text {
+  margin-right: 0.5rem;
+}
+
+.product-detail-color-label-value,
+.product-detail-size-label-value {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.product-color-thumbs-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.product-color-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.5rem;
+  border: 2px solid #e5e7eb;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.product-color-thumb:hover {
+  border-color: #d1d5db;
+}
+
+.product-color-thumb.active {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+}
+
+.product-color-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.375rem;
+}
+
+.size-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.size-chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.size-chip:hover:not(:disabled) {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.size-chip.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.size-chip.oos {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.pdp-stock-delivery-row {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.pdp-scarcity-badge {
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.pdp-scarcity-badge--oos {
+  color: #dc2626;
+}
+
+.pdp-stock-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pdp-stock-progress-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.pdp-stock-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.pdp-stock-progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Ensure proper layout for action buttons */
+.product-card-actions.detail-page-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btn-card-add-to-cart,
+.btn-card-buy-now {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-card-add-to-cart {
+  background: #ffffff;
+  color: #111827;
+  border: 2px solid #d1d5db;
+}
+
+.btn-card-add-to-cart:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.btn-card-buy-now {
+  background: #111827;
+  color: #ffffff;
+}
+
+.btn-card-buy-now:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.btn-card-buy-now:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

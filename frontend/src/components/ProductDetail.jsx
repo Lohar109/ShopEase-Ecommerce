@@ -571,142 +571,146 @@ const ProductDetail = () => {
                       </div>
                     )}
                   </div>
-
-                  <div className="product-detail-options-under-image">
-                    {/* Color Selector */}
-                    {filteredColors.length > 0 && (
-                      <div className="product-detail-color-selector" aria-label="Color variants">
-                        <p className="product-detail-color-label">
-                          <span className="product-detail-color-label-text">Selected color:</span>
-                          <span className="product-detail-color-label-value">{selectedColor || filteredColors[0]}</span>
-                        </p>
-                        <div className="product-color-thumbs-row">
-                          {filteredColors.map((color) => (
-                            <button
-                              key={color}
-                              type="button"
-                              className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
-                              onClick={() => setSelectedColor(color)}
-                              title={color}
-                              aria-label={`Select color ${color}`}
-                            >
-                              <img
-                                src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
-                                alt={color}
-                                className="product-color-thumb-img"
-                              />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {/* Size Selector */}
-                    {uniqueSizes.length > 0 && (
-                      <div className="product-detail-size-selector" aria-label="Size variants">
-                        <p className="product-detail-size-label">
-                          <span className="product-detail-size-label-text">Selected size:</span>
-                          <span className="product-detail-size-label-value">{selectedSize || uniqueSizes[0]}</span>
-                        </p>
-                        <div className="size-chips">
-                          {uniqueSizes.map((size) => {
-                            const sizeVariant = variants.find(
-                              (v) => v.size === size &&
-                                String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
-                            ) || variants.find((v) => v.size === size);
-                            const isOOS = !sizeVariant || sizeVariant.stock === 0;
-                            return (
-                              <button
-                                key={size}
-                                className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
-                                onClick={() => !isOOS && setSelectedSize(size)}
-                                disabled={isOOS}
-                                title={isOOS ? 'Out of Stock' : size}
-                              >
-                                {size}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                    {/* Scarcity + Delivery row */}
-                    <div className="pdp-stock-delivery-row">
-                      {stockCount === 0 ? (
-                        <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
-                      ) : stockCount > 0 && stockCount <= 10 ? (
-                        <div className="pdp-stock-progress-block" aria-live="polite">
-                          <div className="pdp-stock-progress-label">
-                            <span className="pdp-stock-progress-text">
-                              Only <strong>{stockCount}</strong> left
-                            </span>
-                          </div>
-                          <div className="pdp-stock-progress-track" aria-hidden="true">
-                            <div
-                              className="pdp-stock-progress-fill"
-                              style={{
-                                width: showStockProgress ? `${stockBarWidth}%` : '0%',
-                                backgroundColor: stockBarColor,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                    {/* Purchasing block */}
-                    <div className="product-detail-purchasing-block">
-                      <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-                          <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
-                            ₹ {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                          </span>
-                          
-                          {hasDiscount && (
-                            <>
-                              <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
-                                ₹ {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                              </span>
-                              <span style={{ 
-                                backgroundColor: '#d6517c', 
-                                color: 'white', 
-                                fontSize: '0.7rem', 
-                                fontWeight: 800, 
-                                padding: '3px 8px', 
-                                borderRadius: '6px', 
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                transform: 'translateY(-2px)'
-                              }}>
-                                {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `₹${rawDiscVal} OFF`}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        {hasDiscount && (
-                          <div style={{ color: '#d6517c', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
-                            You save ₹ {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                          </div>
-                        )}
-
-                        <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 2 : 4 }}>All taxes included</span>
-                      </div>
-                      <div className="product-card-actions detail-page-buttons">
-                        <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
-                        <button className="btn-card-buy-now" onClick={handleBuyNow} disabled={isRedirectingToCheckout}>
-                          {isRedirectingToCheckout ? 'Redirecting to checkout...' : 'Buy Now'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
               {/* Right: Details & Actions */}
-              <div className="product-detail-info-col">
+              <div className="product-detail-info-col flex flex-col gap-6">
                 <div className="product-detail-header-stack flex flex-col gap-0">
                   <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-[12px]">{product.name}</h2>
                 </div>
 
-                <div className="product-detail-trust-icons">
+                {/* Color Selector */}
+                {filteredColors.length > 0 && (
+                  <div className="product-detail-color-selector" aria-label="Color variants">
+                    <p className="product-detail-color-label">
+                      <span className="product-detail-color-label-text">Selected color:</span>
+                      <span className="product-detail-color-label-value">{selectedColor || filteredColors[0]}</span>
+                    </p>
+                    <div className="product-color-thumbs-row">
+                      {filteredColors.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          className={`product-color-thumb ${selectedColor === color ? ' active' : ''}`}
+                          onClick={() => setSelectedColor(color)}
+                          title={color}
+                          aria-label={`Select color ${color}`}
+                        >
+                          <img
+                            src={colorThumbnails[color] || getVariantColorImage(color) || product.main_image}
+                            alt={color}
+                            className="product-color-thumb-img"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Size Selector */}
+                {uniqueSizes.length > 0 && (
+                  <div className="product-detail-size-selector" aria-label="Size variants">
+                    <p className="product-detail-size-label">
+                      <span className="product-detail-size-label-text">Selected size:</span>
+                      <span className="product-detail-size-label-value">{selectedSize || uniqueSizes[0]}</span>
+                    </p>
+                    <div className="size-chips">
+                      {uniqueSizes.map((size) => {
+                        const sizeVariant = variants.find(
+                          (v) => v.size === size &&
+                            String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+                        ) || variants.find((v) => v.size === size);
+                        const isOOS = !sizeVariant || sizeVariant.stock === 0;
+                        return (
+                          <button
+                            key={size}
+                            className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
+                            onClick={() => !isOOS && setSelectedSize(size)}
+                            disabled={isOOS}
+                            title={isOOS ? 'Out of Stock' : size}
+                          >
+                            {size}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Scarcity + Delivery row */}
+                <div className="pdp-stock-delivery-row">
+                  {stockCount === 0 ? (
+                    <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
+                  ) : stockCount > 0 && stockCount <= 10 ? (
+                    <div className="pdp-stock-progress-block" aria-live="polite">
+                      <div className="pdp-stock-progress-label">
+                        <span className="pdp-stock-progress-text">
+                          Only <strong>{stockCount}</strong> left
+                        </span>
+                      </div>
+                      <div className="pdp-stock-progress-track" aria-hidden="true">
+                        <div
+                          className="pdp-stock-progress-fill"
+                          style={{
+                            width: showStockProgress ? `${stockBarWidth}%` : '0%',
+                            backgroundColor: stockBarColor,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Price Section */}
+                <div className="product-detail-purchasing-block">
+                  <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                      <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
+                        ₹ {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                      </span>
+                      
+                      {hasDiscount && (
+                        <>
+                          <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
+                            ₹ {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                          </span>
+                          <span style={{ 
+                            backgroundColor: '#d6517c', 
+                            color: 'white', 
+                            fontSize: '0.7rem', 
+                            fontWeight: 800, 
+                            padding: '3px 8px', 
+                            borderRadius: '6px', 
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            transform: 'translateY(-2px)'
+                          }}>
+                            {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `₹${rawDiscVal} OFF`}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {hasDiscount && (
+                      <div style={{ color: '#d6517c', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
+                        You save ₹ {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                      </div>
+                    )}
+
+                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 2 : 4 }}>All taxes included</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="product-card-actions detail-page-buttons">
+                    <button className="btn-card-add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+                    <button className="btn-card-buy-now" onClick={handleBuyNow} disabled={isRedirectingToCheckout}>
+                      {isRedirectingToCheckout ? 'Redirecting to checkout...' : 'Buy Now'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Trust Badges at the very bottom */}
+                <div className="product-detail-trust-icons mt-auto">
                   <div className="trust-icon-item">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
                     <span>Pay on Delivery</span>
