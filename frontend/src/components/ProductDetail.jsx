@@ -801,16 +801,16 @@ const ProductDetail = () => {
                   <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
                       <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
-                        ₹ {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                        Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                       </span>
 
                       {hasDiscount && (
                         <>
                           <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
-                            ₹ {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                            Rs. {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                           </span>
                           <span style={{
-                            backgroundColor: '#d6517c',
+                            backgroundColor: '#28a745',
                             color: 'white',
                             fontSize: '0.7rem',
                             fontWeight: 800,
@@ -820,15 +820,15 @@ const ProductDetail = () => {
                             letterSpacing: '0.5px',
                             transform: 'translateY(-2px)'
                           }}>
-                            {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `₹${rawDiscVal} OFF`}
+                            {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `Rs.${rawDiscVal} OFF`}
                           </span>
                         </>
                       )}
                     </div>
 
                     {hasDiscount && (
-                      <div style={{ color: '#d6517c', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
-                        You save ₹ {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                      <div style={{ color: '#28a745', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
+                        You save Rs. {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                       </div>
                     )}
 
