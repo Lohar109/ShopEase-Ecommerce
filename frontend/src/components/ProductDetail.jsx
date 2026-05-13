@@ -682,26 +682,31 @@ const ProductDetail = () => {
                   {/* Ratings & Sales row */}
                   <div className="product-detail-rating-row flex items-center gap-2 text-sm text-gray-600 mt-1">
                     {(() => {
-                      const rating = Number(product?.rating) || 0;
+                      const rawRating = Number(product?.rating) || 0;
+                      const rating = rawRating > 0 ? rawRating : 4.0; // fallback to 4.0
                       const reviewCount = Number(product?.reviewCount) || 0;
                       const soldCount = product?.soldCount || '0';
-                      const rounded = Math.round(rating);
+                      const filled = Math.round(rating);
+
                       return (
                         <>
-                          <div className="product-detail-stars flex items-center gap-0">
+                          <div className="product-detail-stars flex items-center gap-1" aria-hidden>
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star
                                 key={i}
-                                size={14}
-                                className={i < rounded ? 'text-yellow-400' : 'text-gray-300'}
-                                strokeWidth={1.5}
+                                className={i < filled ? 'product-detail-star-filled' : 'product-detail-star-empty'}
+                                strokeWidth={0}
                               />
                             ))}
                           </div>
-                          <span className="product-detail-rating-number font-medium text-sm text-gray-700">{rating.toFixed(rating % 1 === 0 ? 0 : 1)}</span>
-                          <span className="product-detail-review-count text-gray-500 text-sm">({reviewCount} reviews)</span>
-                          <span className="product-detail-sep text-gray-400">|</span>
-                          <span className="product-detail-sold text-gray-500 text-sm">{soldCount} sold</span>
+
+                          <span className="product-detail-rating-number font-medium text-gray-800">{rating % 1 === 0 ? rating.toFixed(0) : rating.toFixed(1)}</span>
+
+                          <span className="product-detail-review-count">({reviewCount} reviews)</span>
+
+                          <span className="product-detail-vertical-sep" aria-hidden></span>
+
+                          <span className="product-detail-sold">{soldCount} sold</span>
                         </>
                       );
                     })()}
