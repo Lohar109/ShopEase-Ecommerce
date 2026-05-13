@@ -2473,12 +2473,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  transition: background-color 0.2s ease;
+  padding: 0;
 }
 
-.pdp-lightbox-close-btn:hover {
-  background-color: rgba(0, 0, 0, 0.7);
+.pdp-lightbox-close-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  flex-shrink: 0;
 }
 
 .pdp-lightbox-nav-btn {
@@ -2489,18 +2492,21 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  transition: background-color 0.2s ease;
+  padding: 0;
 }
 
-.pdp-lightbox-nav-btn:hover {
-  background-color: rgba(255, 255, 255, 0.25);
+.pdp-lightbox-nav-btn svg {
+  width: 32px;
+  height: 32px;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  flex-shrink: 0;
 }
 
 .pdp-lightbox-nav-prev {
