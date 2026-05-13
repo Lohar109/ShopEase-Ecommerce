@@ -140,6 +140,16 @@ const ProductDetail = () => {
     }
   }, [selectedSize, variants, selectedColor]);
 
+  const formatSizeLabel = (v) => {
+    if (!v) return '';
+    const val = String(v.size_value || '').trim();
+    const unit = String(v.size_unit || '').trim();
+    const info = String(v.size_info || '').trim();
+    if (!val && !unit && !info) return String(v.size || '').trim();
+    const base = [val, unit].filter(Boolean).join(' ');
+    return [base, info].filter(Boolean).join(' ').trim();
+  };
+
   // Find selected variant using selected size and color first, then fallback in order
   const selectedVariant =
     variants.find(
@@ -747,7 +757,7 @@ const ProductDetail = () => {
                   <div className="product-detail-size-selector" aria-label="Size variants">
                     <p className="product-detail-size-label">
                       <span className="product-detail-size-label-text">Selected size:</span>
-                      <span className="product-detail-size-label-value">{selectedSize || uniqueSizes[0]}</span>
+                      <span className="product-detail-size-label-value">{formatSizeLabel(selectedVariant)}</span>
                     </p>
                     <div className="size-chips">
                       {uniqueSizes.map((size) => {
@@ -764,7 +774,7 @@ const ProductDetail = () => {
                             disabled={isOOS}
                             title={isOOS ? 'Out of Stock' : size}
                           >
-                            {size}
+                            {String(sizeVariant?.size_value || size).trim()}
                           </button>
                         );
                       })}
