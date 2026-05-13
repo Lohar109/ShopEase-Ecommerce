@@ -4,7 +4,7 @@ import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package } from "lucide-react";
+import { Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -505,7 +505,41 @@ const ProductDetail = () => {
                       if (current && current.type !== 'video') setShowLightbox(true);
                     }}
                   >
-                    {/* Floating Wishlist Button */}
+                    {/* Floating Share + Wishlist Buttons */}
+                    <button
+                      className="pdp-floating-share-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = window.location.href;
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                          navigator.clipboard.writeText(url).then(() => {
+                            try { toast.success('Link Copied!'); } catch (e) {}
+                          }).catch(() => {
+                            try { toast.error('Failed to copy'); } catch (e) {}
+                          });
+                        } else {
+                          try {
+                            const el = document.createElement('textarea');
+                            el.value = url;
+                            el.setAttribute('readonly', '');
+                            el.style.position = 'absolute';
+                            el.style.left = '-9999px';
+                            document.body.appendChild(el);
+                            el.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(el);
+                            try { toast.success('Link Copied!'); } catch (e) {}
+                          } catch (err) {
+                            try { toast.error('Failed to copy'); } catch (e) {}
+                          }
+                        }
+                      }}
+                      aria-label="Copy product link"
+                      title="Copy link"
+                    >
+                      <Share2 size={18} />
+                    </button>
+
                     <button
                       className={`pdp-floating-wishlist-btn ${isWishlisted ? 'active' : ''}`}
                       onClick={(e) => {

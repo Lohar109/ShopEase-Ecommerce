@@ -2382,3 +2382,31 @@
   stroke: #ef4444 !important;
   transform: scale(1.1);
 }
+
+/* Floating Share Button - PDP Image Gallery (matches wishlist size/style, no hover effects) */
+.pdp-floating-share-btn {
+  position: absolute;
+  top: 1rem;
+  right: 4rem; /* slightly left of wishlist */
+  z-index: 2001;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.12s ease;
+}
+
+.pdp-floating-share-btn svg {
+  stroke-width: 1.5px;
+  stroke: #374151;
+  fill: none;
+}
