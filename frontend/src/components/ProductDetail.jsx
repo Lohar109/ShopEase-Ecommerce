@@ -25,7 +25,7 @@ const ProductDetail = () => {
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(0);
+  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
@@ -296,7 +296,7 @@ const ProductDetail = () => {
   // Reset index when gallery changes
   useEffect(() => {
     setCurrentImageIndex(0);
-    setSelectedThumbnailIndex(0);
+    setSelectedThumbnailIndex(null);
   }, [galleryItems]);
 
   const specificationRows = useMemo(() => {
@@ -599,6 +599,30 @@ const ProductDetail = () => {
                           />
                         )}
                       </div>
+
+                      {/* Pagination Dots */}
+                      {galleryItems.length > 1 && (
+                        <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px', zIndex: 10 }}>
+                          {galleryItems.map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setCurrentImageIndex(i)}
+                              aria-label={`Go to slide ${i + 1}`}
+                              style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                padding: 0,
+                                cursor: 'pointer',
+                                transition: 'all 300ms ease',
+                                backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
+                                transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
