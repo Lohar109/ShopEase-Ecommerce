@@ -345,7 +345,19 @@
 
 /* Ratings row styling */
 .product-detail-rating-row {
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  gap: 8px;
+  line-height: 1;
+}
+
+.product-detail-stars {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .product-detail-stars svg,
