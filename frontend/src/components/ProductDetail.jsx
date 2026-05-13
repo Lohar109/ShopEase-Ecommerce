@@ -27,6 +27,7 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
     const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
   const redirectTimerRef = useRef(null);
@@ -281,16 +282,16 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages, designGalleryVideo]);
 
-  // Handle auto-advance for the image carousel — pauses when video is playing
+  // Handle auto-advance for the image carousel — pauses when video is playing or hovered
   useEffect(() => {
-    if (galleryItems.length <= 1 || isVideoPlaying) return;
+    if (galleryItems.length <= 1 || isVideoPlaying || isHovered) return;
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
-  }, [galleryItems.length, isVideoPlaying]);
+  }, [galleryItems.length, isVideoPlaying, isHovered]);
 
 
   // Reset index when gallery changes
@@ -513,6 +514,8 @@ const ProductDetail = () => {
                   {/* Main Image Display (Right Side) */}
                   <div className="product-detail-main-display" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <div className="product-detail-main-media-box"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
                       style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flexGrow: 1, width: '100%', minHeight: 'auto' }}
                     >
                       {/* Floating Share + Wishlist Buttons */}
@@ -580,7 +583,7 @@ const ProductDetail = () => {
                           display: 'flex', 
                           height: '100%', 
                           width: '100%',
-                          transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)', 
+                          transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)', 
                           transform: `translateX(-${currentImageIndex * 100}%)`
                         }}
                       >
