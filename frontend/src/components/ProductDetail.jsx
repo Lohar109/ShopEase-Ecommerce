@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo, useRef, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
-import { Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
+import { ChevronRight, Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -31,6 +31,7 @@ const ProductDetail = () => {
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentModalIndex, setCurrentModalIndex] = useState(0);
+  const [allCategories, setAllCategories] = useState([]);
   const redirectTimerRef = useRef(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
@@ -74,6 +75,49 @@ const ProductDetail = () => {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    fetch(`${API_ORIGIN}/api/categories`)
+      .then((res) => res.json())
+      .then((data) => setAllCategories(Array.isArray(data) ? data : []))
+      .catch(() => setAllCategories([]));
+  }, []);
+
+  const breadcrumbItems = useMemo(() => {
+    const categoryById = new Map(
+      allCategories
+        .filter((category) => category?.id)
+        .map((category) => [String(category.id), category])
+    );
+
+    const productCategoryId = String(product?.category_id || '').trim();
+    const currentCategory = productCategoryId ? categoryById.get(productCategoryId) : null;
+    if (!currentCategory) return [];
+
+    const lineage = [];
+    let cursor = currentCategory;
+
+    while (cursor) {
+      lineage.unshift(cursor);
+      cursor = cursor.parent_id ? categoryById.get(String(cursor.parent_id)) || null : null;
+    }
+
+    const visibleCategories = lineage.length > 1 ? lineage.slice(-2) : lineage;
+
+    return visibleCategories.map((category, index, array) => {
+      const isLast = index === array.length - 1;
+      const parentCategory = array.length > 1 ? array[0] : category;
+      const query = array.length > 1
+        ? `?category=${encodeURIComponent(parentCategory.name)}&subcategory=${encodeURIComponent(category.name)}`
+        : `?category=${encodeURIComponent(category.name)}`;
+
+      return {
+        label: category.name,
+        to: `/shop${query}`,
+        isLast,
+      };
+    });
+  }, [allCategories, product?.category_id]);
 
   const getAvailableColors = (size) => {
     const filtered = size ? variants.filter((v) => v.size === size) : variants;
@@ -417,6 +461,32 @@ const ProductDetail = () => {
         {/* Expanded: Product Card (full width) */}
         <div className="pdp-left-col" style={{ gridColumn: '1 / -1' }}>
           <div className="product-detail-container">
+            <nav className="product-detail-breadcrumb" aria-label="Breadcrumb">
+              <Link to="/" className="product-detail-breadcrumb-link">
+                Home
+              </Link>
+
+              {breadcrumbItems.map((item, index) => (
+                <React.Fragment key={`${item.label}-${index}`}>
+                  <ChevronRight className="product-detail-breadcrumb-separator" size={12} strokeWidth={2.5} aria-hidden="true" />
+                  {item.isLast ? (
+                    <span className="product-detail-breadcrumb-current">{item.label}</span>
+                  ) : (
+                    <Link to={item.to} className="product-detail-breadcrumb-link">
+                      {item.label}
+                    </Link>
+                  )}
+                </React.Fragment>
+              ))}
+
+              {product?.name && (
+                <>
+                  <ChevronRight className="product-detail-breadcrumb-separator" size={12} strokeWidth={2.5} aria-hidden="true" />
+                  <span className="product-detail-breadcrumb-current">{product.name}</span>
+                </>
+              )}
+            </nav>
+
             <div className="product-detail-main">
               {/* Left: Images */}
               <div className="product-detail-images-col">

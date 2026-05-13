@@ -160,24 +160,65 @@ const Shop = () => {
 
   useEffect(() => {
     const requestedCategory = normalizeCategoryKey(searchParams.get("category"));
-    if (!requestedCategory || mainCategories.length === 0) return;
+    const requestedSubcategory = normalizeCategoryKey(searchParams.get("subcategory"));
+    if (categories.length === 0) return;
 
-    const matchedCategory = mainCategories.find((category) => {
+    const matchesRequestedName = (category, requestedName) => {
       const nameKey = normalizeCategoryKey(category?.name);
-      if (!nameKey) return false;
+      if (!nameKey || !requestedName) return false;
 
       return (
-        nameKey === requestedCategory ||
-        nameKey.startsWith(requestedCategory) ||
-        requestedCategory.startsWith(nameKey)
+        nameKey === requestedName ||
+        nameKey.startsWith(requestedName) ||
+        requestedName.startsWith(nameKey)
       );
-    });
+    };
+
+    const matchedCategory = requestedCategory
+      ? categories.find((category) => matchesRequestedName(category, requestedCategory))
+      : null;
+    const matchedSubcategory = requestedSubcategory
+      ? categories.find((category) => matchesRequestedName(category, requestedSubcategory))
+      : null;
+
+    if (matchedSubcategory?.id) {
+      const parentId = matchedCategory?.id || matchedSubcategory.parent_id || null;
+      setSelectedCategory(parentId);
+      setSelectedSubcategory(matchedSubcategory.id);
+      return;
+    }
 
     if (matchedCategory?.id) {
-      setSelectedCategory(matchedCategory.id);
-      setSelectedSubcategory(null);
+      const isTopLevelCategory = mainCategories.some((category) => String(category.id) === String(matchedCategory.id));
+
+      if (isTopLevelCategory) {
+        setSelectedCategory(matchedCategory.id);
+        setSelectedSubcategory(null);
+        return;
+      }
+
+      setSelectedCategory(matchedCategory.parent_id || null);
+      setSelectedSubcategory(matchedCategory.id);
+      return;
     }
-  }, [searchParams, mainCategories]);
+
+    if (requestedSubcategory) {
+      const subcategoryOnlyMatch = categories.find((category) => matchesRequestedName(category, requestedSubcategory));
+      if (subcategoryOnlyMatch?.id) {
+        setSelectedCategory(subcategoryOnlyMatch.parent_id || null);
+        setSelectedSubcategory(subcategoryOnlyMatch.id);
+      }
+      return;
+    }
+
+    if (requestedCategory) {
+      const topLevelMatch = mainCategories.find((category) => matchesRequestedName(category, requestedCategory));
+      if (topLevelMatch?.id) {
+        setSelectedCategory(topLevelMatch.id);
+        setSelectedSubcategory(null);
+      }
+    }
+  }, [searchParams, mainCategories, categories]);
 
   const getFilteredProducts = () => {
     if (!selectedCategory) return products;

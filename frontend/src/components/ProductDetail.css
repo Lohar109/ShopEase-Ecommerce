@@ -289,6 +289,36 @@
   box-sizing: border-box;
 }
 
+.product-detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.product-detail-breadcrumb-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.product-detail-breadcrumb-link:hover {
+  color: #4b5563;
+}
+
+.product-detail-breadcrumb-current {
+  color: #374151;
+  font-weight: 600;
+}
+
+.product-detail-breadcrumb-separator {
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
 /* Amazon-style 2-column layout */
 .product-detail-main {
   display: grid;
