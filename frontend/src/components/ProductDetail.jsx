@@ -454,23 +454,24 @@ const ProductDetail = () => {
                             style={{
                               position: 'relative',
                               width: '80px',
-                              flex: '1 1 0%',
-                              minHeight: '50px',
+                              aspectRatio: '1/1',
                               borderRadius: '8px',
                               overflow: 'hidden',
                               border: isActive ? '2px solid #111827' : '1px solid #e5e7eb',
                               cursor: 'pointer',
-                              backgroundColor: '#f8fafc',
+                              backgroundColor: '#f9fafb',
+                              padding: '4px',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center'
+                              justifyContent: 'center',
+                              flexShrink: 0
                             }}
                           >
                             {item.type === 'video' ? (
-                              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                              <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <video 
                                   src={item.url} 
-                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain' }} 
                                   muted
                                 />
                                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.15)' }}>
@@ -481,7 +482,7 @@ const ProductDetail = () => {
                               <img
                                 src={item.url}
                                 alt={`Thumbnail ${idx + 1}`}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain' }}
                               />
                             )}
 
@@ -497,7 +498,8 @@ const ProductDetail = () => {
                                 color: '#ffffff',
                                 fontWeight: '600',
                                 fontSize: '14px',
-                                fontFamily: 'Poppins, sans-serif'
+                                fontFamily: 'Poppins, sans-serif',
+                                zIndex: 5
                               }}>
                                 +{remainingCount}
                               </div>
