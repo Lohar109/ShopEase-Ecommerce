@@ -10,71 +10,6 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
-const LightboxModal = ({ items, currentIndex, onClose }) => {
-  const [activeIndex, setActiveIndex] = useState(currentIndex);
-
-  const handlePrev = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
-
-  const handleNext = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    setActiveIndex((prev) => (prev + 1) % items.length);
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') handlePrev();
-      if (e.key === 'ArrowRight') handleNext();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
-  const activeItem = items[activeIndex];
-
-  return (
-    <div className="pdp-lightbox-overlay" onClick={onClose}>
-      <div className="pdp-lightbox-main-container" onClick={(e) => e.stopPropagation()}>
-        <div className="lightbox-controls">
-          <button type="button" className="pdp-lightbox-close pdp-lightbox-arrow-btn" onClick={handlePrev} aria-label="Previous image" disabled={items.length <= 1}>
-            <span aria-hidden="true">&lt;</span>
-          </button>
-          <button type="button" className="pdp-lightbox-close pdp-lightbox-arrow-btn" onClick={handleNext} aria-label="Next image" disabled={items.length <= 1}>
-            <span aria-hidden="true">&gt;</span>
-          </button>
-          <button type="button" className="pdp-lightbox-close" onClick={onClose} aria-label="Close preview">
-            Close
-          </button>
-        </div>
-
-        <div className="pdp-lightbox-content">
-          {activeItem?.type === 'video' ? (
-            <video
-              src={activeItem.url}
-              controls
-              autoPlay
-              loop
-              muted
-              controlsList="nodownload nofullscreen noplaybackrate"
-              className="pdp-lightbox-img"
-              style={{ maxHeight: '80vh', width: 'auto', margin: '0 auto', borderRadius: '0.5rem', background: '#000', display: 'block' }}
-            />
-          ) : (
-            <img
-              src={activeItem?.url}
-              alt="Product preview"
-              className="pdp-lightbox-img"
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
@@ -90,7 +25,6 @@ const ProductDetail = () => {
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showLightbox, setShowLightbox] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
@@ -346,23 +280,17 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages, designGalleryVideo]);
 
-  // Handle auto-advance for the image carousel — pauses when lightbox is open or video is playing
+  // Handle auto-advance for the image carousel — pauses when video is playing
   useEffect(() => {
-    if (galleryItems.length <= 1 || showLightbox || isVideoPlaying) return;
+    if (galleryItems.length <= 1 || isVideoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [galleryItems.length, showLightbox, isVideoPlaying]);
+  }, [galleryItems.length, isVideoPlaying]);
 
-  // Close lightbox on Escape key
-  useEffect(() => {
-    const onKeyDown = (e) => { if (e.key === 'Escape') setShowLightbox(false); };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
 
   // Reset index when gallery changes
   useEffect(() => {
@@ -499,11 +427,7 @@ const ProductDetail = () => {
               <div className="product-detail-images-col">
                 <div className="product-detail-main-display">
                   <div className="product-detail-main-media-box"
-                    style={{ position: 'relative', overflow: 'hidden', cursor: 'zoom-in' }}
-                    onClick={() => {
-                      const current = galleryItems[currentImageIndex];
-                      if (current && current.type !== 'video') setShowLightbox(true);
-                    }}
+                    style={{ position: 'relative', overflow: 'hidden', cursor: 'default' }}
                   >
                     {/* Floating Share + Wishlist Buttons */}
                     <button
@@ -803,14 +727,6 @@ const ProductDetail = () => {
 
       </div>
 
-      {/* Lightbox Modal */}
-      {showLightbox && (
-        <LightboxModal
-          items={galleryItems}
-          currentIndex={currentImageIndex}
-          onClose={() => setShowLightbox(false)}
-        />
-      )}
 
       {/* Specifications Modal - Dynamic & Compact */}
       {showModal && (
