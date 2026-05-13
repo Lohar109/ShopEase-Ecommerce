@@ -4,7 +4,7 @@ import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
-import { ChevronRight, Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
+import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -677,7 +677,35 @@ const ProductDetail = () => {
               {/* Right: Details & Actions */}
               <div className="product-detail-info-col flex flex-col gap-6">
                 <div className="product-detail-header-stack flex flex-col gap-0">
-                  <h2 className="product-detail-title text-2xl font-extrabold text-gray-900 leading-tight mb-[12px]">{product.name}</h2>
+                  <h2 className="product-detail-title text-2xl font-medium text-gray-900 leading-tight mb-[12px]">{product.name}</h2>
+
+                  {/* Ratings & Sales row */}
+                  <div className="product-detail-rating-row flex items-center gap-2 text-sm text-gray-600 mt-1">
+                    {(() => {
+                      const rating = Number(product?.rating) || 0;
+                      const reviewCount = Number(product?.reviewCount) || 0;
+                      const soldCount = product?.soldCount || '0';
+                      const rounded = Math.round(rating);
+                      return (
+                        <>
+                          <div className="product-detail-stars flex items-center gap-0">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                size={14}
+                                className={i < rounded ? 'text-yellow-400' : 'text-gray-300'}
+                                strokeWidth={1.5}
+                              />
+                            ))}
+                          </div>
+                          <span className="product-detail-rating-number font-medium text-sm text-gray-700">{rating.toFixed(rating % 1 === 0 ? 0 : 1)}</span>
+                          <span className="product-detail-review-count text-gray-500 text-sm">({reviewCount} reviews)</span>
+                          <span className="product-detail-sep text-gray-400">|</span>
+                          <span className="product-detail-sold text-gray-500 text-sm">{soldCount} sold</span>
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
 
                 {/* Color Selector */}
