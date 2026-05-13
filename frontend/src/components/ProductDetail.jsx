@@ -588,6 +588,7 @@ const ProductDetail = () => {
                           <div 
                             key={i} 
                             style={{ 
+                              position: 'relative',
                               flex: '0 0 100%', 
                               width: '100%', 
                               height: '100%', 
