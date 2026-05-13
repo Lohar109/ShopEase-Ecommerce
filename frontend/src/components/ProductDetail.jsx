@@ -28,7 +28,7 @@ const ProductDetail = () => {
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-    const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
+  const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
   const redirectTimerRef = useRef(null);
   const navigate = useNavigate();
@@ -106,15 +106,15 @@ const ProductDetail = () => {
     variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
     variants[0] ||
     {};
-  
+
   const basePrice = Number(selectedVariant?.price || 0);
   const hasDiscount = Boolean(selectedVariant?.override_discount) && Number(selectedVariant?.discount_value) > 0;
   const discTypeStr = selectedVariant?.discount_type || 'Percentage';
   const rawDiscVal = Number(selectedVariant?.discount_value) || 0;
-  
+
   let computedFinalPrice = basePrice;
   let savingsVal = 0;
-  
+
   if (hasDiscount) {
     if (String(discTypeStr).toLowerCase() === 'percentage') {
       savingsVal = basePrice * (rawDiscVal / 100);
@@ -132,14 +132,14 @@ const ProductDetail = () => {
   useEffect(() => {
     if (!id || !selectedColor) {
       setDesignGalleryImages([]);
-        setDesignGalleryVideo(null);
+      setDesignGalleryVideo(null);
       return;
     }
 
     // Only pass variant_id if this variant is marked for separate gallery
     const variantId = selectedVariant?.use_separate_gallery ? selectedVariant?.id : null;
     let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`;
-    
+
     if (variantId) {
       url += `?variant_id=${encodeURIComponent(variantId)}`;
     }
@@ -149,23 +149,23 @@ const ProductDetail = () => {
         if (res.ok) {
           const data = await res.json();
           setDesignGalleryImages(Array.isArray(data?.images) ? data.images : []);
-            setDesignGalleryVideo(data?.video_url || null);
+          setDesignGalleryVideo(data?.video_url || null);
           return;
         }
 
         // No design-specific gallery for this variant/color, fallback to default product images
         if (res.status === 404) {
           setDesignGalleryImages([]);
-            setDesignGalleryVideo(null);
+          setDesignGalleryVideo(null);
           return;
         }
 
         setDesignGalleryImages([]);
-          setDesignGalleryVideo(null);
+        setDesignGalleryVideo(null);
       })
       .catch(() => {
         setDesignGalleryImages([]);
-          setDesignGalleryVideo(null);
+        setDesignGalleryVideo(null);
       });
   }, [id, selectedColor, selectedVariant?.id]);
 
@@ -204,12 +204,12 @@ const ProductDetail = () => {
             const variantForColor = variants.find(
               (v) => String(v.color || '').toLowerCase() === String(color).toLowerCase()
             );
-            
+
             let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`;
             if (variantForColor?.use_separate_gallery && variantForColor?.id) {
               url += `?variant_id=${encodeURIComponent(variantForColor.id)}`;
             }
-            
+
             const res = await fetch(url);
             if (res.ok) {
               const data = await res.json();
@@ -288,7 +288,7 @@ const ProductDetail = () => {
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [galleryItems.length, isVideoPlaying, isHovered]);
@@ -326,7 +326,7 @@ const ProductDetail = () => {
     return all;
   }, [product]);
 
-  
+
   if (loading) return <div className="product-detail-loading">Loading...</div>;
   if (error || !product) return <div className="product-detail-error">{error || "Product not found"}</div>;
 
@@ -429,7 +429,7 @@ const ProductDetail = () => {
               {/* Left: Images */}
               <div className="product-detail-images-col">
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'stretch', width: '100%' }}>
-                  
+
                   {/* Vertical Thumbnails (Left Side) */}
                   {galleryItems.length > 1 && (
                     <div style={{
@@ -470,13 +470,13 @@ const ProductDetail = () => {
                           >
                             {item.type === 'video' ? (
                               <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <video 
-                                  src={item.url} 
-                                  style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain' }} 
+                                <video
+                                  src={item.url}
+                                  style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain' }}
                                   muted
                                 />
                                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.15)' }}>
-                                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
                                 </div>
                               </div>
                             ) : (
@@ -526,9 +526,9 @@ const ProductDetail = () => {
                           const url = window.location.href;
                           if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(url).then(() => {
-                              try { toast.success('Link Copied!'); } catch (e) {}
+                              try { toast.success('Link Copied!'); } catch (e) { }
                             }).catch(() => {
-                              try { toast.error('Failed to copy'); } catch (e) {}
+                              try { toast.error('Failed to copy'); } catch (e) { }
                             });
                           } else {
                             try {
@@ -541,9 +541,9 @@ const ProductDetail = () => {
                               el.select();
                               document.execCommand('copy');
                               document.body.removeChild(el);
-                              try { toast.success('Link Copied!'); } catch (e) {}
+                              try { toast.success('Link Copied!'); } catch (e) { }
                             } catch (err) {
-                              try { toast.error('Failed to copy'); } catch (e) {}
+                              try { toast.error('Failed to copy'); } catch (e) { }
                             }
                           }
                         }}
@@ -575,30 +575,30 @@ const ProductDetail = () => {
                       </button>
 
                       {/* Sliding Track Frame */}
-                      <div 
+                      <div
                         className="carousel-track"
-                        style={{ 
-                          position: 'absolute', 
-                          inset: 0, 
-                          display: 'flex', 
-                          height: '100%', 
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          display: 'flex',
+                          height: '100%',
                           width: '100%',
-                          transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)', 
+                          transition: 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)',
                           transform: `translateX(-${currentImageIndex * 100}%)`
                         }}
                       >
                         {galleryItems.map((item, i) => (
-                          <div 
-                            key={i} 
-                            style={{ 
+                          <div
+                            key={i}
+                            style={{
                               position: 'relative',
-                              flex: '0 0 100%', 
-                              width: '100%', 
-                              height: '100%', 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              justifyContent: 'center', 
-                              background: '#f8fafc' 
+                              flex: '0 0 100%',
+                              width: '100%',
+                              height: '100%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: '#f8fafc'
                             }}
                           >
                             {item.type === 'video' ? (
@@ -755,19 +755,19 @@ const ProductDetail = () => {
                       <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
                         ₹ {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                       </span>
-                      
+
                       {hasDiscount && (
                         <>
                           <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
                             ₹ {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                           </span>
-                          <span style={{ 
-                            backgroundColor: '#d6517c', 
-                            color: 'white', 
-                            fontSize: '0.7rem', 
-                            fontWeight: 800, 
-                            padding: '3px 8px', 
-                            borderRadius: '6px', 
+                          <span style={{
+                            backgroundColor: '#d6517c',
+                            color: 'white',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            padding: '3px 8px',
+                            borderRadius: '6px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
                             transform: 'translateY(-2px)'
