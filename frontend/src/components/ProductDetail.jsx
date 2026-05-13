@@ -457,7 +457,7 @@ const ProductDetail = () => {
                               aspectRatio: '1/1',
                               borderRadius: '8px',
                               overflow: 'hidden',
-                              border: isActive ? '2px solid #111827' : '1px solid #e5e7eb',
+                              border: isActive ? '2px solid #e33170' : '1px solid #e5e7eb',
                               cursor: 'pointer',
                               backgroundColor: '#f9fafb',
                               padding: '4px',
