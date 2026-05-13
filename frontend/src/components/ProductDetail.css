@@ -2474,6 +2474,16 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  outline: none;
+  user-select: none;
+}
+
+.pdp-lightbox-close-btn:hover,
+.pdp-lightbox-close-btn:focus,
+.pdp-lightbox-close-btn:active {
+  background-color: rgba(0, 0, 0, 0.5);
+  outline: none;
+  box-shadow: none;
 }
 
 .pdp-lightbox-close-btn svg {
@@ -2499,6 +2509,17 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  outline: none;
+  user-select: none;
+}
+
+.pdp-lightbox-nav-btn:hover,
+.pdp-lightbox-nav-btn:focus,
+.pdp-lightbox-nav-btn:active {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-50%);
+  outline: none;
+  box-shadow: none;
 }
 
 .pdp-lightbox-nav-btn svg {
