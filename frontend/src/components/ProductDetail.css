@@ -313,7 +313,7 @@
 
 @media (min-width: 1024px) {
   .product-detail-images-col {
-    grid-column: span 5 / span 5;
+    grid-column: span 6 / span 6;
   }
 }
 
@@ -321,13 +321,14 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .product-detail-main-media-box {
   width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  aspect-ratio: 3/4;
+  max-width: 380px;
+  margin: 0;
+  aspect-ratio: 4/5;
   position: relative;
   overflow: hidden;
   border-radius: 14px;
@@ -502,8 +503,8 @@
 
 @media (min-width: 1024px) {
   .product-detail-info-col {
-    grid-column: span 7 / span 7;
-    padding-left: 2rem;
+    grid-column: span 6 / span 6;
+    padding-left: 1.5rem;
   }
 }
 
