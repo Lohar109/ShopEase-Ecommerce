@@ -287,7 +287,7 @@ const ProductDetail = () => {
 
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-    }, 2000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [galleryItems.length, isVideoPlaying]);
@@ -571,35 +571,61 @@ const ProductDetail = () => {
                         </svg>
                       </button>
 
-                      {/* Static Main Media Frame */}
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
-                        {galleryItems[currentImageIndex]?.type === 'video' ? (
-                          <video
-                            key={galleryItems[currentImageIndex]?.url}
-                            src={galleryItems[currentImageIndex]?.url}
-                            controls
-                            className="product-detail-main-media"
-                            muted
-                            preload="metadata"
-                            controlsList="nodownload nofullscreen noplaybackrate"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
-                            onPlay={() => setIsVideoPlaying(true)}
-                            onPause={() => setIsVideoPlaying(false)}
-                            onEnded={() => {
-                              setIsVideoPlaying(false);
-                              if (galleryItems.length > 1) {
-                                setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-                              }
+                      {/* Sliding Track Frame */}
+                      <div 
+                        className="carousel-track"
+                        style={{ 
+                          position: 'absolute', 
+                          inset: 0, 
+                          display: 'flex', 
+                          height: '100%', 
+                          width: '100%',
+                          transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)', 
+                          transform: `translateX(-${currentImageIndex * 100}%)`
+                        }}
+                      >
+                        {galleryItems.map((item, i) => (
+                          <div 
+                            key={i} 
+                            style={{ 
+                              flex: '0 0 100%', 
+                              width: '100%', 
+                              height: '100%', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center', 
+                              background: '#f8fafc' 
                             }}
-                          />
-                        ) : (
-                          <img
-                            src={galleryItems[currentImageIndex]?.url}
-                            alt={`${product.name}`}
-                            className="product-detail-main-media"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
-                          />
-                        )}
+                          >
+                            {item.type === 'video' ? (
+                              <video
+                                key={item.url}
+                                src={item.url}
+                                controls
+                                className="product-detail-main-media"
+                                muted
+                                preload="metadata"
+                                controlsList="nodownload nofullscreen noplaybackrate"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                                onPlay={() => setIsVideoPlaying(true)}
+                                onPause={() => setIsVideoPlaying(false)}
+                                onEnded={() => {
+                                  setIsVideoPlaying(false);
+                                  if (galleryItems.length > 1) {
+                                    setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={item.url}
+                                alt={`${product.name} ${i + 1}`}
+                                className="product-detail-main-media"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
+                              />
+                            )}
+                          </div>
+                        ))}
                       </div>
 
                       {/* Pagination Dots */}
