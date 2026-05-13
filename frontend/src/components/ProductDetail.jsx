@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
+import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
 import { Cpu, Monitor, Radio, Zap, Package } from "lucide-react";
 
@@ -96,6 +97,7 @@ const ProductDetail = () => {
   const redirectTimerRef = useRef(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
+  const { wishlist, toggleWishlist } = useContext(WishlistContext);
 
   useEffect(() => {
     return () => {
@@ -104,6 +106,12 @@ const ProductDetail = () => {
       }
     };
   }, []);
+
+  const isWishlisted = useMemo(() => {
+    return Array.isArray(wishlist)
+      ? wishlist.some((wishlistId) => String(wishlistId) === String(product?.id))
+      : false;
+  }, [wishlist, product?.id]);
 
   useEffect(() => {
     setShowStockProgress(false);
@@ -497,6 +505,29 @@ const ProductDetail = () => {
                       if (current && current.type !== 'video') setShowLightbox(true);
                     }}
                   >
+                    {/* Floating Wishlist Button */}
+                    <button
+                      className={`pdp-floating-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(product.id);
+                      }}
+                      aria-label="Toggle wishlist"
+                      title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="20"
+                        height="20"
+                        fill="none"
+                        stroke="#374151"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                    </button>
+
                     <div
                       className="carousel-track"
                       style={{
