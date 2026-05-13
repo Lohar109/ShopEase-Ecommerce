@@ -66,7 +66,8 @@ const ProductDetail = () => {
         setLoading(false);
         // Auto-select first size if available
         if (data.variants && data.variants.length > 0) {
-          setSelectedSize(data.variants[0].size);
+          const firstSize = String(data.variants[0].size_value || '').trim() || String(data.variants[0].size || '').trim();
+          setSelectedSize(firstSize);
           setSelectedColor(data.variants[0].color || null);
         }
       })
@@ -119,8 +120,47 @@ const ProductDetail = () => {
     });
   }, [allCategories, product?.category_id]);
 
+  function parseVariantSize(variant) {
+    const legacySize = String(variant?.size || '').trim();
+    const sizeValue = String(variant?.size_value || '').trim();
+    const sizeUnit = String(variant?.size_unit || '').trim();
+    const sizeInfo = String(variant?.size_info || '').trim();
+
+    if (sizeValue || sizeUnit || sizeInfo) {
+      return {
+        size_value: sizeValue || legacySize,
+        size_unit: sizeUnit,
+        size_info: sizeInfo,
+      };
+    }
+
+    const legacyMatch = legacySize.match(/^([0-9]+(?:\.[0-9]+)?)\s*([a-zA-Z%]+)?\s*(.*)$/);
+    if (!legacyMatch) {
+      return { size_value: legacySize, size_unit: '', size_info: '' };
+    }
+
+    return {
+      size_value: String(legacyMatch[1] || '').trim() || legacySize,
+      size_unit: String(legacyMatch[2] || '').trim(),
+      size_info: String(legacyMatch[3] || '').trim(),
+    };
+  }
+
+  function getVariantSizeValue(variant) {
+    const parsed = parseVariantSize(variant);
+    const source = String(parsed.size_value || variant?.size || '').trim();
+    const numericMatch = source.match(/^([0-9]+(?:\.[0-9]+)?)/);
+    return numericMatch ? numericMatch[1] : source;
+  }
+
+  function getVariantFullSizeLabel(variant) {
+    const parsed = parseVariantSize(variant);
+    const base = [parsed.size_value, parsed.size_unit].filter(Boolean).join(' ');
+    return [base, parsed.size_info].filter(Boolean).join(' ').trim() || String(variant?.size || '').trim();
+  }
+
   const getAvailableColors = (size) => {
-    const filtered = size ? variants.filter((v) => v.size === size) : variants;
+    const filtered = size ? variants.filter((v) => getVariantSizeValue(v) === size) : variants;
     return [...new Set(filtered.map((v) => v.color).filter(Boolean))];
   };
 
@@ -141,23 +181,17 @@ const ProductDetail = () => {
   }, [selectedSize, variants, selectedColor]);
 
   const formatSizeLabel = (v) => {
-    if (!v) return '';
-    const val = String(v.size_value || '').trim();
-    const unit = String(v.size_unit || '').trim();
-    const info = String(v.size_info || '').trim();
-    if (!val && !unit && !info) return String(v.size || '').trim();
-    const base = [val, unit].filter(Boolean).join(' ');
-    return [base, info].filter(Boolean).join(' ').trim();
+    return getVariantFullSizeLabel(v);
   };
 
   // Find selected variant using selected size and color first, then fallback in order
   const selectedVariant =
     variants.find(
       (v) =>
-        (!selectedSize || v.size === selectedSize) &&
+        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
         (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())
     ) ||
-    variants.find((v) => (!selectedSize || v.size === selectedSize)) ||
+    variants.find((v) => (!selectedSize || getVariantSizeValue(v) === selectedSize)) ||
     variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
     variants[0] ||
     {};
@@ -228,7 +262,7 @@ const ProductDetail = () => {
     const normalized = String(colorName || '').toLowerCase();
     const sizeMatched = variants.find(
       (v) =>
-        (!selectedSize || v.size === selectedSize) &&
+        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
         String(v.color || '').toLowerCase() === normalized &&
         Boolean(v.image)
     );
@@ -372,13 +406,12 @@ const ProductDetail = () => {
     return all;
   }, [product]);
 
-
   if (loading) return <div className="product-detail-loading">Loading...</div>;
   if (error || !product) return <div className="product-detail-error">{error || "Product not found"}</div>;
 
 
   // Unique sizes for selector
-  const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+  const uniqueSizes = [...new Set(variants.map(v => getVariantSizeValue(v)).filter(Boolean))];
 
   const resolveVariantToAdd = () => {
     if (uniqueSizes.length > 0 && !selectedSize) {
@@ -389,9 +422,11 @@ const ProductDetail = () => {
     const variantToAdd =
       variants.find(
         (v) =>
-          v.size === selectedSize &&
+          getVariantSizeValue(v) === selectedSize &&
           String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
-      ) || selectedVariant;
+      ) ||
+      variants.find((v) => getVariantSizeValue(v) === selectedSize) ||
+      selectedVariant;
 
     if (!variantToAdd?.id) {
       toast.error("Please select a size");
@@ -411,7 +446,7 @@ const ProductDetail = () => {
     const variantToAdd = resolveVariantToAdd();
     if (!variantToAdd) return;
 
-    const normalizedSize = variantToAdd.size || null;
+    const normalizedSize = getVariantSizeValue(variantToAdd) || variantToAdd.size || null;
     const normalizedColor = variantToAdd.color || null;
     const existsInCart = cartItems.some(
       (item) =>
@@ -762,19 +797,20 @@ const ProductDetail = () => {
                     <div className="size-chips">
                       {uniqueSizes.map((size) => {
                         const sizeVariant = variants.find(
-                          (v) => v.size === size &&
+                          (v) => getVariantSizeValue(v) === size &&
                             String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
-                        ) || variants.find((v) => v.size === size);
+                        ) || variants.find((v) => getVariantSizeValue(v) === size);
                         const isOOS = !sizeVariant || sizeVariant.stock === 0;
+                        const buttonLabel = String(getVariantSizeValue(sizeVariant) || size).trim();
                         return (
                           <button
                             key={size}
                             className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
                             onClick={() => !isOOS && setSelectedSize(size)}
                             disabled={isOOS}
-                            title={isOOS ? 'Out of Stock' : size}
+                            title={isOOS ? 'Out of Stock' : buttonLabel}
                           >
-                            {String(sizeVariant?.size_value || size).trim()}
+                            {buttonLabel}
                           </button>
                         );
                       })}
