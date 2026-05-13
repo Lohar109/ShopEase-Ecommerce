@@ -76,15 +76,21 @@ const ProductForm = () => {
     const fallback = parseVariantSize(variant?.size || '');
     const sizeValue = String(variant?.size_value || fallback.size_value || '').trim();
     const sizeUnit = String(variant?.size_unit || fallback.size_unit || '').trim();
+    const subSize = String(variant?.sub_size || '').trim();
+    const subSizeUnit = String(variant?.sub_size_unit || '').trim();
     const sizeInfo = String(variant?.size_info || fallback.size_info || '').trim();
     const base = [sizeValue, sizeUnit].filter(Boolean).join(' ');
-    return [base, sizeInfo].filter(Boolean).join(' ').trim();
+    const subBase = [subSize, subSizeUnit].filter(Boolean).join(' ');
+    return [base, subBase, sizeInfo].filter(Boolean).join(' ').trim();
   };
 
   const newVar = (img = '') => ({
     vk: mk(),
     size_value: '',
+    sub_size: '',
     size_unit: '',
+    sub_size_unit: '',
+    variety_label: '',
     size_info: '',
     color: '',
     price: '',
@@ -285,7 +291,10 @@ const ProductForm = () => {
       const sourceRows = Array.isArray(rows) ? rows : [];
       return sourceRows.map((item) => ({
         size_value: String(item?.size_value || parseVariantSize(item?.size || '').size_value || ''),
+        sub_size: String(item?.sub_size || ''),
+        variety_label: String(item?.variety_label || ''),
         size_unit: String(item?.size_unit || parseVariantSize(item?.size || '').size_unit || ''),
+        sub_size_unit: String(item?.sub_size_unit || ''),
         size_info: String(item?.size_info || parseVariantSize(item?.size || '').size_info || ''),
         color: String(item?.color || ''),
         price: String(item?.price ?? ''),
@@ -323,6 +332,9 @@ const ProductForm = () => {
     return [
       variant.size_value ? `Size: ${variant.size_value}` : '',
       variant.size_unit ? `Unit: ${variant.size_unit}` : '',
+      variant.sub_size ? `Sub Size: ${variant.sub_size}` : '',
+      variant.sub_size_unit ? `Sub Unit: ${variant.sub_size_unit}` : '',
+      variant.variety_label ? `Variety: ${variant.variety_label}` : '',
       variant.size_info ? `Extra Info: ${variant.size_info}` : '',
       variant.color ? `Color: ${variant.color}` : '',
       variant.price !== '' ? `Price: ${variant.price}` : '',
@@ -353,6 +365,9 @@ const ProductForm = () => {
       }
       else if (key === 'size value') nextVariant.size_value = segmentValue;
       else if (key === 'unit' || key === 'size unit') nextVariant.size_unit = segmentValue;
+      else if (key === 'sub size' || key === 'sub_size' || key === 'subsize') nextVariant.sub_size = segmentValue;
+      else if (key === 'sub unit' || key === 'sub_unit' || key === 'subunit') nextVariant.sub_size_unit = segmentValue;
+      else if (key === 'variety' || key === 'variety label' || key === 'variety_label') nextVariant.variety_label = segmentValue;
       else if (key === 'extra info' || key === 'size info') nextVariant.size_info = segmentValue;
       else if (key === 'color') nextVariant.color = segmentValue;
       else if (key === 'price') nextVariant.price = segmentValue;
@@ -461,10 +476,10 @@ const ProductForm = () => {
     const baseData = getMagicBlueprintData();
     if (!baseData) return;
 
-    if (activeBlueprintGroup === 'inventory') {
+      if (activeBlueprintGroup === 'inventory') {
       commitMagicBlueprintData({
         ...baseData,
-        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size_value: '', size_unit: '', size_info: '', color: '', price: '', stock: '', sku: '', image: '' }],
+        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size_value: '', sub_size: '', size_unit: '', sub_size_unit: '', variety_label: '', size_info: '', color: '', price: '', stock: '', sku: '', image: '' }],
       });
       return;
     }
@@ -1710,6 +1725,7 @@ const ProductForm = () => {
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
+          variety_label: v.variety_label || '',
           color: v.color,
           price: v.price,
           override_discount: v.override_discount,
@@ -1733,6 +1749,9 @@ const ProductForm = () => {
                 id: v.id || '',
                 vk: mk(),
                 ...parseVariantSize(v.size || ''),
+                sub_size: v.sub_size || '',
+                sub_size_unit: v.sub_size_unit || '',
+                variety_label: v.variety_label || '',
                 color: v.color || '',
                 price: v.price ?? '',
                 override_discount: v.override_discount ?? false,
@@ -2090,7 +2109,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '0.9fr 0.8fr 1.8fr 1fr 1fr 1fr 1.8fr 1.7fr 0.9fr auto';
+  const variantCols = '0.7fr 0.6fr 0.6fr 0.6fr 0.6fr 1.5fr 1fr 1fr 1fr 1fr 0.9fr 0.9fr auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -4470,7 +4489,7 @@ const ProductForm = () => {
                     </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                     <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
-                      <div style={{ minWidth: 1180, padding: '0 4px' }}>
+                      <div style={{ minWidth: 1350, padding: '0 4px' }}>
                         <div
                           style={{
                             display: 'grid',
@@ -4483,7 +4502,10 @@ const ProductForm = () => {
                           }}
                         >
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Size</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Variety</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Unit</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Size</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Unit</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Color</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Price</div>
@@ -4513,7 +4535,10 @@ const ProductForm = () => {
                                 }}
                               >
                                 <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="4.2" />
+                                <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="e.g. Classic" />
                                 <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="kg" />
+                                <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="2.5" />
+                                <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="L" />
                                 <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} placeholder="(3kg + 1.2kg Free)" />
                                 <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
