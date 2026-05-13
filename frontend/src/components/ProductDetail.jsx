@@ -29,6 +29,8 @@ const ProductDetail = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [currentModalIndex, setCurrentModalIndex] = useState(0);
   const redirectTimerRef = useRef(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
@@ -439,8 +441,15 @@ const ProductDetail = () => {
                           <div
                             key={idx}
                             onClick={() => {
-                              setCurrentImageIndex(idx);
-                              setSelectedThumbnailIndex(idx);
+                              if (isLastItem) {
+                                // 5th thumbnail with '+X' overlay: open fullscreen modal
+                                setCurrentModalIndex(4); // Start from 5th item
+                                setIsLightboxOpen(true);
+                              } else {
+                                // Regular thumbnails: select normally
+                                setCurrentImageIndex(idx);
+                                setSelectedThumbnailIndex(idx);
+                              }
                             }}
                             style={{
                               position: 'relative',
@@ -769,6 +778,76 @@ const ProductDetail = () => {
                   </div>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen Lightbox Modal */}
+      {isLightboxOpen && (
+        <div className="pdp-fullscreen-lightbox-backdrop">
+          <div className="pdp-fullscreen-lightbox-container">
+            {/* Close Button */}
+            <button
+              className="pdp-lightbox-close-btn"
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Close lightbox"
+            >
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Left Navigation Arrow */}
+            <button
+              className="pdp-lightbox-nav-btn pdp-lightbox-nav-prev"
+              onClick={() => {
+                setCurrentModalIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length);
+              }}
+              aria-label="Previous image"
+            >
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            {/* Main Media Display */}
+            <div className="pdp-lightbox-media-wrapper">
+              {galleryItems[currentModalIndex]?.type === 'video' ? (
+                <video
+                  src={galleryItems[currentModalIndex]?.url}
+                  controls
+                  autoPlay
+                  muted
+                  className="pdp-lightbox-media"
+                  controlsList="nodownload nofullscreen noplaybackrate"
+                />
+              ) : (
+                <img
+                  src={galleryItems[currentModalIndex]?.url}
+                  alt={`Gallery item ${currentModalIndex + 1}`}
+                  className="pdp-lightbox-media"
+                />
+              )}
+            </div>
+
+            {/* Right Navigation Arrow */}
+            <button
+              className="pdp-lightbox-nav-btn pdp-lightbox-nav-next"
+              onClick={() => {
+                setCurrentModalIndex((prev) => (prev + 1) % galleryItems.length);
+              }}
+              aria-label="Next image"
+            >
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+
+            {/* Counter/Indicator */}
+            <div className="pdp-lightbox-counter">
+              {currentModalIndex + 1} / {galleryItems.length}
             </div>
           </div>
         </div>
