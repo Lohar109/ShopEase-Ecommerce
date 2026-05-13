@@ -579,8 +579,8 @@ const ProductDetail = () => {
                             src={galleryItems[currentImageIndex]?.url}
                             controls
                             className="product-detail-main-media"
-                            autoPlay
                             muted
+                            preload="metadata"
                             controlsList="nodownload nofullscreen noplaybackrate"
                             style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
                             onPlay={() => setIsVideoPlaying(true)}
