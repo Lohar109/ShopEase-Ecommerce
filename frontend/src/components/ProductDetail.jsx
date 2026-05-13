@@ -425,140 +425,178 @@ const ProductDetail = () => {
             <div className="product-detail-main">
               {/* Left: Images */}
               <div className="product-detail-images-col">
-                <div className="product-detail-main-display">
-                  <div className="product-detail-main-media-box"
-                    style={{ position: 'relative', overflow: 'hidden', cursor: 'default' }}
-                  >
-                    {/* Floating Share + Wishlist Buttons */}
-                    <button
-                      className="pdp-floating-share-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const url = window.location.href;
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                          navigator.clipboard.writeText(url).then(() => {
-                            try { toast.success('Link Copied!'); } catch (e) {}
-                          }).catch(() => {
-                            try { toast.error('Failed to copy'); } catch (e) {}
-                          });
-                        } else {
-                          try {
-                            const el = document.createElement('textarea');
-                            el.value = url;
-                            el.setAttribute('readonly', '');
-                            el.style.position = 'absolute';
-                            el.style.left = '-9999px';
-                            document.body.appendChild(el);
-                            el.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(el);
-                            try { toast.success('Link Copied!'); } catch (e) {}
-                          } catch (err) {
-                            try { toast.error('Failed to copy'); } catch (e) {}
-                          }
-                        }
-                      }}
-                      aria-label="Copy product link"
-                    >
-                      <Share2 size={18} />
-                    </button>
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'stretch', width: '100%' }}>
+                  
+                  {/* Vertical Thumbnails (Left Side) */}
+                  {galleryItems.length > 1 && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      width: '80px',
+                      flexShrink: 0,
+                      alignSelf: 'stretch',
+                    }}>
+                      {galleryItems.slice(0, 5).map((item, idx) => {
+                        const isLastItem = idx === 4 && galleryItems.length > 5;
+                        const isActive = currentImageIndex === idx;
+                        const remainingCount = galleryItems.length - 4;
 
-                    <button
-                      className={`pdp-floating-wishlist-btn ${isWishlisted ? 'active' : ''}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist(product.id);
-                      }}
-                      aria-label="Toggle wishlist"
-                      title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="#374151"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                      </svg>
-                    </button>
-
-                    <div
-                      className="carousel-track"
-                      style={{
-                        display: 'flex',
-                        height: '100%',
-                        width: '100%',
-                        transition: 'transform 500ms ease-in-out',
-                        transform: `translateX(-${currentImageIndex * 100}%)`
-                      }}
-                    >
-                      {galleryItems.map((item, i) => (
-                        <div key={i} className="carousel-slide" style={{ flex: '0 0 100%', position: 'relative', width: '100%', height: '100%' }}>
-                          {item.type === 'video' ? (
-                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                              <video
-                                src={item.url}
-                                controls
-                                className="product-detail-main-media"
-                                autoPlay={i === currentImageIndex}
-                                muted
-                                controlsList="nodownload nofullscreen noplaybackrate"
-                                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
-                                onPlay={() => setIsVideoPlaying(true)}
-                                onPause={() => setIsVideoPlaying(false)}
-                                onEnded={() => {
-                                  setIsVideoPlaying(false);
-                                  setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-                                }}
-                              />
-                              {/* Overlay covers top 80% — leaves native controls accessible at bottom */}
-                              <div
-                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '80%', zIndex: 10, cursor: 'pointer' }}
-                                onClick={() => { setCurrentImageIndex(i); setShowLightbox(true); }}
-                              />
-                            </div>
-                          ) : (
-                            <img
-                              src={item.url}
-                              alt={`${product.name} gallery ${i + 1}`}
-                              className="product-detail-main-media"
-                              onClick={() => {
-                                setCurrentImageIndex(i);
-                                setShowLightbox(true);
-                              }}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Navigation Dots */}
-                    {galleryItems.length > 1 && (
-                      <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                        {galleryItems.map((_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setCurrentImageIndex(i)}
-                            aria-label={`Go to slide ${i + 1}`}
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => setCurrentImageIndex(idx)}
                             style={{
-                              width: '8px',
-                              height: '8px',
-                              borderRadius: '50%',
-                              border: 'none',
-                              padding: 0,
+                              position: 'relative',
+                              width: '80px',
+                              flex: '1 1 0%',
+                              minHeight: '50px',
+                              borderRadius: '8px',
+                              overflow: 'hidden',
+                              border: isActive ? '2px solid #111827' : '1px solid #e5e7eb',
                               cursor: 'pointer',
-                              transition: 'all 300ms ease',
-                              backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
-                              transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
+                              backgroundColor: '#f8fafc',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            {item.type === 'video' ? (
+                              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                <video 
+                                  src={item.url} 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  muted
+                                />
+                                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.15)' }}>
+                                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                              </div>
+                            ) : (
+                              <img
+                                src={item.url}
+                                alt={`Thumbnail ${idx + 1}`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            )}
+
+                            {/* Plus Overlay for the 5th item */}
+                            {isLastItem && (
+                              <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#ffffff',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                fontFamily: 'Poppins, sans-serif'
+                              }}>
+                                +{remainingCount}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Main Image Display (Right Side) */}
+                  <div className="product-detail-main-display" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <div className="product-detail-main-media-box"
+                      style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flexGrow: 1, width: '100%', minHeight: 'auto' }}
+                    >
+                      {/* Floating Share + Wishlist Buttons */}
+                      <button
+                        className="pdp-floating-share-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = window.location.href;
+                          if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(url).then(() => {
+                              try { toast.success('Link Copied!'); } catch (e) {}
+                            }).catch(() => {
+                              try { toast.error('Failed to copy'); } catch (e) {}
+                            });
+                          } else {
+                            try {
+                              const el = document.createElement('textarea');
+                              el.value = url;
+                              el.setAttribute('readonly', '');
+                              el.style.position = 'absolute';
+                              el.style.left = '-9999px';
+                              document.body.appendChild(el);
+                              el.select();
+                              document.execCommand('copy');
+                              document.body.removeChild(el);
+                              try { toast.success('Link Copied!'); } catch (e) {}
+                            } catch (err) {
+                              try { toast.error('Failed to copy'); } catch (e) {}
+                            }
+                          }
+                        }}
+                        aria-label="Copy product link"
+                      >
+                        <Share2 size={18} />
+                      </button>
+
+                      <button
+                        className={`pdp-floating-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishlist(product.id);
+                        }}
+                        aria-label="Toggle wishlist"
+                        title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          fill="none"
+                          stroke="#374151"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                      </button>
+
+                      {/* Static Main Media Frame */}
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+                        {galleryItems[currentImageIndex]?.type === 'video' ? (
+                          <video
+                            key={galleryItems[currentImageIndex]?.url}
+                            src={galleryItems[currentImageIndex]?.url}
+                            controls
+                            className="product-detail-main-media"
+                            autoPlay
+                            muted
+                            controlsList="nodownload nofullscreen noplaybackrate"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                            onPlay={() => setIsVideoPlaying(true)}
+                            onPause={() => setIsVideoPlaying(false)}
+                            onEnded={() => {
+                              setIsVideoPlaying(false);
+                              if (galleryItems.length > 1) {
+                                setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
+                              }
                             }}
                           />
-                        ))}
+                        ) : (
+                          <img
+                            src={galleryItems[currentImageIndex]?.url}
+                            alt={`${product.name}`}
+                            className="product-detail-main-media"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
+                          />
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
+
                 </div>
               </div>
               {/* Right: Details & Actions */}
