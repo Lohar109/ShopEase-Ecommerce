@@ -27,7 +27,6 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
   const redirectTimerRef = useRef(null);
@@ -282,16 +281,7 @@ const ProductDetail = () => {
     return items;
   }, [product, selectedVariant.image, designGalleryImages, designGalleryVideo]);
 
-  // Handle auto-advance for the image carousel — pauses when video is playing or hovered
-  useEffect(() => {
-    if (galleryItems.length <= 1 || isVideoPlaying || isHovered) return;
 
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [galleryItems.length, isVideoPlaying, isHovered]);
 
 
   // Reset index when gallery changes
@@ -514,8 +504,6 @@ const ProductDetail = () => {
                   {/* Main Image Display (Right Side) */}
                   <div className="product-detail-main-display" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <div className="product-detail-main-media-box"
-                      onMouseEnter={() => setIsHovered(true)}
-                      onMouseLeave={() => setIsHovered(false)}
                       style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flexGrow: 1, width: '100%', minHeight: 'auto' }}
                     >
                       {/* Floating Share + Wishlist Buttons */}
@@ -574,87 +562,30 @@ const ProductDetail = () => {
                         </svg>
                       </button>
 
-                      {/* Sliding Track Frame */}
-                      <div
-                        className="carousel-track"
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          height: '100%',
-                          width: '100%',
-                          transition: 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)',
-                          transform: `translateX(-${currentImageIndex * 100}%)`
-                        }}
-                      >
-                        {galleryItems.map((item, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              position: 'relative',
-                              flex: '0 0 100%',
-                              width: '100%',
-                              height: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: '#f8fafc'
-                            }}
-                          >
-                            {item.type === 'video' ? (
-                              <video
-                                key={item.url}
-                                src={item.url}
-                                controls
-                                className="product-detail-main-media"
-                                muted
-                                preload="metadata"
-                                controlsList="nodownload nofullscreen noplaybackrate"
-                                style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
-                                onPlay={() => setIsVideoPlaying(true)}
-                                onPause={() => setIsVideoPlaying(false)}
-                                onEnded={() => {
-                                  setIsVideoPlaying(false);
-                                  if (galleryItems.length > 1) {
-                                    setCurrentImageIndex((prev) => (prev + 1) % galleryItems.length);
-                                  }
-                                }}
-                              />
-                            ) : (
-                              <img
-                                src={item.url}
-                                alt={`${product.name} ${i + 1}`}
-                                className="product-detail-main-media"
-                                style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
-                              />
-                            )}
-                          </div>
-                        ))}
+                      {/* Static Main Media Frame */}
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+                        {galleryItems[currentImageIndex]?.type === 'video' ? (
+                          <video
+                            key={galleryItems[currentImageIndex]?.url}
+                            src={galleryItems[currentImageIndex]?.url}
+                            controls
+                            className="product-detail-main-media"
+                            muted
+                            preload="metadata"
+                            controlsList="nodownload nofullscreen noplaybackrate"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                            onPlay={() => setIsVideoPlaying(true)}
+                            onPause={() => setIsVideoPlaying(false)}
+                          />
+                        ) : (
+                          <img
+                            src={galleryItems[currentImageIndex]?.url}
+                            alt={`${product.name}`}
+                            className="product-detail-main-media"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
+                          />
+                        )}
                       </div>
-
-                      {/* Pagination Dots */}
-                      {galleryItems.length > 1 && (
-                        <div className="carousel-dots" style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px', zIndex: 10 }}>
-                          {galleryItems.map((_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setCurrentImageIndex(i)}
-                              aria-label={`Go to slide ${i + 1}`}
-                              style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                border: 'none',
-                                padding: 0,
-                                cursor: 'pointer',
-                                transition: 'all 300ms ease',
-                                backgroundColor: i === currentImageIndex ? '#e33170' : '#d1d5db',
-                                transform: i === currentImageIndex ? 'scale(1.3)' : 'scale(1)'
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
 
