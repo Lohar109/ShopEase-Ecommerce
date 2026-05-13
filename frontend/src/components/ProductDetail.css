@@ -289,13 +289,21 @@
   box-sizing: border-box;
 }
 
+.product-detail-breadcrumb-wrap {
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 20px 12px;
+  box-sizing: border-box;
+  background: transparent;
+}
+
 .product-detail-breadcrumb {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   justify-content: flex-start;
   gap: 6px;
-  margin: 0 0 14px;
+  margin: 0;
   padding: 0;
   width: 100%;
   overflow: hidden;

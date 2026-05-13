@@ -460,7 +460,7 @@ const ProductDetail = () => {
       <div className="pdp-master-grid">
         {/* Expanded: Product Card (full width) */}
         <div className="pdp-left-col" style={{ gridColumn: '1 / -1' }}>
-          <div className="product-detail-container">
+          <div className="product-detail-breadcrumb-wrap">
             <nav className="product-detail-breadcrumb" aria-label="Breadcrumb">
               <Link to="/" className="product-detail-breadcrumb-link">
                 Home
@@ -488,7 +488,9 @@ const ProductDetail = () => {
                 </>
               )}
             </nav>
+          </div>
 
+          <div className="product-detail-container">
             <div className="product-detail-main">
               {/* Left: Images */}
               <div className="product-detail-images-col">
