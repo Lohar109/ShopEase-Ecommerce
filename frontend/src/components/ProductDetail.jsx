@@ -25,6 +25,7 @@ const ProductDetail = () => {
   const [colorThumbnails, setColorThumbnails] = useState({});
   const [designGalleryImages, setDesignGalleryImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
@@ -295,6 +296,7 @@ const ProductDetail = () => {
   // Reset index when gallery changes
   useEffect(() => {
     setCurrentImageIndex(0);
+    setSelectedThumbnailIndex(0);
   }, [galleryItems]);
 
   const specificationRows = useMemo(() => {
@@ -439,13 +441,16 @@ const ProductDetail = () => {
                     }}>
                       {galleryItems.slice(0, 5).map((item, idx) => {
                         const isLastItem = idx === 4 && galleryItems.length > 5;
-                        const isActive = currentImageIndex === idx;
+                        const isActive = selectedThumbnailIndex === idx;
                         const remainingCount = galleryItems.length - 4;
 
                         return (
                           <div
                             key={idx}
-                            onClick={() => setCurrentImageIndex(idx)}
+                            onClick={() => {
+                              setCurrentImageIndex(idx);
+                              setSelectedThumbnailIndex(idx);
+                            }}
                             style={{
                               position: 'relative',
                               width: '80px',
