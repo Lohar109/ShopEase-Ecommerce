@@ -482,7 +482,9 @@ const ProductDetail = () => {
               {product?.name && (
                 <>
                   <ChevronRight className="product-detail-breadcrumb-separator" size={12} strokeWidth={2.5} aria-hidden="true" />
-                  <span className="product-detail-breadcrumb-current">{product.name}</span>
+                  <span className="product-detail-breadcrumb-current product-detail-breadcrumb-current--product" title={product.name}>
+                    {product.name}
+                  </span>
                 </>
               )}
             </nav>
