@@ -814,16 +814,6 @@
   left: 0 !important;
 }
 
-.size-chip:hover {
-  background: transparent !important;
-  box-shadow: none !important;
-  transform: none !important;
-  margin: 0 !important;
-  position: relative;
-  top: 0 !important;
-  border-color: #000000 !important;
-}
-
 .size-chip:hover:not(.selected) {
   background: transparent !important;
   box-shadow: none !important;
@@ -850,12 +840,6 @@
   background: transparent !important;
   color: #111827;
   box-shadow: none !important;
-  transform: none !important;
-}
-
-.size-chip.selected:hover {
-  border-color: #000000 !important;
-  background: transparent !important;
   transform: none !important;
 }
 
@@ -2402,17 +2386,7 @@
   left: 0 !important;
 }
 
-.size-chip:hover {
-  background: transparent !important;
-  box-shadow: none !important;
-  transform: none !important;
-  margin: 0 !important;
-  position: relative;
-  top: 0 !important;
-  border-color: #000000 !important;
-}
-
-.size-chip:hover:not(:disabled) {
+.size-chip:hover:not(:disabled):not(.selected) {
   background: transparent !important;
   box-shadow: none !important;
   transform: none !important;
@@ -2438,12 +2412,6 @@
   border-color: #FF1493;
   border-width: 2px;
   box-shadow: none !important;
-  transform: none !important;
-}
-
-.size-chip.selected:hover {
-  border-color: #000000 !important;
-  background: transparent !important;
   transform: none !important;
 }
 
