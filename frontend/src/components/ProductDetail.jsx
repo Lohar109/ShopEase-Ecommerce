@@ -20,6 +20,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSubSize, setSelectedSubSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [filteredColors, setFilteredColors] = useState([]);
   const [colorThumbnails, setColorThumbnails] = useState({});
@@ -66,9 +67,12 @@ const ProductDetail = () => {
         setLoading(false);
         // Auto-select first size if available
         if (data.variants && data.variants.length > 0) {
-          const firstSize = String(data.variants[0].size_value || '').trim() || String(data.variants[0].size || '').trim();
-          setSelectedSize(firstSize);
-          setSelectedColor(data.variants[0].color || null);
+          const firstVariant = data.variants[0];
+          const firstSize = getVariantSizeValue(firstVariant);
+          const firstSubSize = String(firstVariant?.sub_size || '').trim() || null;
+          setSelectedSize(firstSize || null);
+          setSelectedSubSize(firstSubSize);
+          setSelectedColor(firstVariant.color || null);
         }
       })
       .catch(() => {
@@ -153,21 +157,140 @@ const ProductDetail = () => {
     return numericMatch ? numericMatch[1] : source;
   }
 
+  function getVariantSubSizeValue(variant) {
+    return String(variant?.sub_size || '').trim();
+  }
+
+  function getVariantSubSizeUnit(variant) {
+    return String(variant?.sub_size_unit || '').trim();
+  }
+
+  function getVariantVariety(variant) {
+    return String(variant?.variety || variant?.variety_label || '').trim();
+  }
+
   function getVariantFullSizeLabel(variant) {
     const parsed = parseVariantSize(variant);
     const base = [parsed.size_value, parsed.size_unit].filter(Boolean).join(' ');
     return [base, parsed.size_info].filter(Boolean).join(' ').trim() || String(variant?.size || '').trim();
   }
 
-  const getAvailableColors = (size) => {
-    const filtered = size ? variants.filter((v) => getVariantSizeValue(v) === size) : variants;
+  const sizeGroups = useMemo(() => {
+    const grouped = new Map();
+
+    variants.forEach((variant) => {
+      const sizeValue = getVariantSizeValue(variant);
+      if (!sizeValue) return;
+
+      const parsed = parseVariantSize(variant);
+      if (!grouped.has(sizeValue)) {
+        grouped.set(sizeValue, {
+          size_value: sizeValue,
+          size_unit: String(variant?.size_unit || parsed.size_unit || '').trim(),
+          variety: getVariantVariety(variant),
+          items: [],
+        });
+      }
+
+      const group = grouped.get(sizeValue);
+      group.items.push(variant);
+      if (!group.size_unit) {
+        group.size_unit = String(variant?.size_unit || parsed.size_unit || '').trim();
+      }
+      if (!group.variety) {
+        group.variety = getVariantVariety(variant);
+      }
+    });
+
+    return Array.from(grouped.values()).map((group) => {
+      const subOptions = new Map();
+
+      group.items.forEach((variant) => {
+        const subSize = getVariantSubSizeValue(variant);
+        const subSizeUnit = getVariantSubSizeUnit(variant);
+        const optionVariety = getVariantVariety(variant) || group.variety || 'option';
+        const key = subSize || '__default__';
+
+        if (!subOptions.has(key)) {
+          subOptions.set(key, {
+            value: subSize,
+            sub_size_unit: subSizeUnit,
+            label: [subSize, subSizeUnit].filter(Boolean).join(' ').trim() || 'Default',
+            variety: optionVariety,
+            items: [],
+          });
+        }
+
+        const subOption = subOptions.get(key);
+        subOption.items.push(variant);
+        if (!subOption.sub_size_unit && subSizeUnit) {
+          subOption.sub_size_unit = subSizeUnit;
+        }
+        if (!subOption.variety && optionVariety) {
+          subOption.variety = optionVariety;
+        }
+      });
+
+      return {
+        ...group,
+        sub_options: Array.from(subOptions.values()),
+      };
+    });
+  }, [variants]);
+
+  const selectedSizeGroup = useMemo(() => {
+    if (sizeGroups.length === 0) return null;
+    return sizeGroups.find((group) => group.size_value === selectedSize) || sizeGroups[0];
+  }, [sizeGroups, selectedSize]);
+
+  const selectedSubOptions = selectedSizeGroup?.sub_options || [];
+
+  const selectedSubOption = useMemo(() => {
+    if (selectedSubOptions.length === 0) return null;
+    return selectedSubOptions.find((option) => option.value === selectedSubSize) || selectedSubOptions[0];
+  }, [selectedSubOptions, selectedSubSize]);
+
+  const visibleSubOptions = useMemo(
+    () => selectedSubOptions.filter((option) => option.value),
+    [selectedSubOptions]
+  );
+
+  const hasMultipleSubSizes = visibleSubOptions.length > 1;
+
+  useEffect(() => {
+    if (sizeGroups.length === 0) {
+      if (selectedSize !== null) setSelectedSize(null);
+      if (selectedSubSize !== null) setSelectedSubSize(null);
+      return;
+    }
+
+    if (!selectedSizeGroup) {
+      const firstGroup = sizeGroups[0];
+      setSelectedSize(firstGroup.size_value);
+      setSelectedSubSize(firstGroup.sub_options[0]?.value || null);
+      return;
+    }
+
+    const isSubSizeValid = selectedSubOptions.some((option) => option.value === selectedSubSize);
+    if (!isSubSizeValid) {
+      setSelectedSubSize(selectedSubOptions[0]?.value || null);
+    }
+  }, [sizeGroups, selectedSizeGroup, selectedSubOptions, selectedSize, selectedSubSize]);
+
+  const getAvailableColors = (size, subSize) => {
+    const normalizedSubSize = subSize === null || subSize === undefined ? null : String(subSize).trim();
+    const filtered = variants.filter((v) => {
+      if (size && getVariantSizeValue(v) !== size) return false;
+      if (normalizedSubSize !== null && getVariantSubSizeValue(v) !== normalizedSubSize) return false;
+      return true;
+    });
     return [...new Set(filtered.map((v) => v.color).filter(Boolean))];
   };
 
   // Keep available colors in sync with selected size.
   // If selected color becomes invalid for the size, pick first valid color.
   useEffect(() => {
-    const colors = getAvailableColors(selectedSize);
+    const colors = getAvailableColors(selectedSize, selectedSubSize);
     setFilteredColors(colors);
 
     if (colors.length === 0) {
@@ -178,18 +301,20 @@ const ProductDetail = () => {
     if (!selectedColor || !colors.includes(selectedColor)) {
       setSelectedColor(colors[0]);
     }
-  }, [selectedSize, variants, selectedColor]);
-
-  const formatSizeLabel = (v) => {
-    return getVariantFullSizeLabel(v);
-  };
+  }, [selectedSize, selectedSubSize, variants, selectedColor]);
 
   // Find selected variant using selected size and color first, then fallback in order
   const selectedVariant =
     variants.find(
       (v) =>
         (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
+        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim()) &&
         (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())
+    ) ||
+    variants.find(
+      (v) =>
+        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
+        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim())
     ) ||
     variants.find((v) => (!selectedSize || getVariantSizeValue(v) === selectedSize)) ||
     variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
@@ -263,6 +388,7 @@ const ProductDetail = () => {
     const sizeMatched = variants.find(
       (v) =>
         (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
+        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim()) &&
         String(v.color || '').toLowerCase() === normalized &&
         Boolean(v.image)
     );
@@ -410,8 +536,8 @@ const ProductDetail = () => {
   if (error || !product) return <div className="product-detail-error">{error || "Product not found"}</div>;
 
 
-  // Unique sizes for selector
-  const uniqueSizes = [...new Set(variants.map(v => getVariantSizeValue(v)).filter(Boolean))];
+  // Unique main-size keys for selector
+  const uniqueSizes = sizeGroups.map((group) => group.size_value);
 
   const resolveVariantToAdd = () => {
     if (uniqueSizes.length > 0 && !selectedSize) {
@@ -423,7 +549,13 @@ const ProductDetail = () => {
       variants.find(
         (v) =>
           getVariantSizeValue(v) === selectedSize &&
+          (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim()) &&
           String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+      ) ||
+      variants.find(
+        (v) =>
+          getVariantSizeValue(v) === selectedSize &&
+          (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim())
       ) ||
       variants.find((v) => getVariantSizeValue(v) === selectedSize) ||
       selectedVariant;
@@ -788,25 +920,31 @@ const ProductDetail = () => {
                 )}
 
                 {/* Size Selector */}
-                {uniqueSizes.length > 0 && (
+                {sizeGroups.length > 0 && (
                   <div className="product-detail-size-selector" aria-label="Size variants">
                     <p className="product-detail-size-label">
                       <span className="product-detail-size-label-text">Selected size:</span>
-                      <span className="product-detail-size-label-value">{formatSizeLabel(selectedVariant)}</span>
+                      <span className="product-detail-size-label-value">
+                        {[selectedSizeGroup?.size_value, selectedSizeGroup?.size_unit].filter(Boolean).join(' ') || '-'}
+                      </span>
                     </p>
                     <div className="size-chips">
-                      {uniqueSizes.map((size) => {
-                        const sizeVariant = variants.find(
-                          (v) => getVariantSizeValue(v) === size &&
-                            String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
-                        ) || variants.find((v) => getVariantSizeValue(v) === size);
+                      {sizeGroups.map((group) => {
+                        const size = group.size_value;
+                        const sizeVariant = group.items.find(
+                          (v) => String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+                        ) || group.items[0];
                         const isOOS = !sizeVariant || sizeVariant.stock === 0;
-                        const buttonLabel = String(getVariantSizeValue(sizeVariant) || size).trim();
+                        const buttonLabel = String(size || '').trim();
                         return (
                           <button
                             key={size}
                             className={`size-chip${selectedSize === size ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
-                            onClick={() => !isOOS && setSelectedSize(size)}
+                            onClick={() => {
+                              if (isOOS) return;
+                              setSelectedSize(size);
+                              setSelectedSubSize(group.sub_options[0]?.value || null);
+                            }}
                             disabled={isOOS}
                             title={isOOS ? 'Out of Stock' : buttonLabel}
                           >
@@ -815,6 +953,39 @@ const ProductDetail = () => {
                         );
                       })}
                     </div>
+
+                    {hasMultipleSubSizes && (
+                      <div className="product-detail-sub-size-selector" aria-label="Sub-size variants">
+                        <p className="product-detail-size-label">
+                          <span className="product-detail-size-label-text">
+                            Selected ({selectedSubOption?.variety || selectedSizeGroup?.variety || 'option'}):
+                          </span>
+                          <span className="product-detail-size-label-value">{selectedSubOption?.label || '-'}</span>
+                        </p>
+                        <div className="size-chips">
+                          {visibleSubOptions.map((option) => {
+                            const isActive = (selectedSubOption?.value || null) === option.value;
+                            const optionVariant = option.items.find(
+                              (v) => String(v.color || '').toLowerCase() === String(selectedColor || '').toLowerCase()
+                            ) || option.items[0];
+                            const isOOS = !optionVariant || optionVariant.stock === 0;
+                            const buttonLabel = [option.value, option.sub_size_unit].filter(Boolean).join(' ').trim();
+
+                            return (
+                              <button
+                                key={`${selectedSizeGroup?.size_value}-${option.value}`}
+                                className={`size-chip${isActive ? ' selected' : ''}${isOOS ? ' oos' : ''}`}
+                                onClick={() => !isOOS && setSelectedSubSize(option.value || null)}
+                                disabled={isOOS}
+                                title={isOOS ? 'Out of Stock' : buttonLabel}
+                              >
+                                {buttonLabel}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

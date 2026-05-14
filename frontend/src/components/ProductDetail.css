@@ -2364,6 +2364,13 @@
   flex-wrap: wrap;
 }
 
+.product-detail-sub-size-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
 .size-chip {
   padding: 0.5rem 1rem;
   border: 1.5px solid #d1d5db;
