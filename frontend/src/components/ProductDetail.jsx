@@ -720,10 +720,12 @@ const ProductDetail = () => {
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '12px',
+                      gap: '8px',
                       width: '80px',
                       flexShrink: 0,
                       alignSelf: 'stretch',
+                      justifyContent: 'space-between',
+                      padding: '0',
                     }}>
                       {galleryItems.slice(0, 5).map((item, idx) => {
                         const isLastItem = idx === 4 && galleryItems.length > 5;
@@ -757,7 +759,8 @@ const ProductDetail = () => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              flexShrink: 0
+                              flex: '1 1 auto',
+                              minHeight: '0'
                             }}
                           >
                             {item.type === 'video' ? (
@@ -804,9 +807,9 @@ const ProductDetail = () => {
                   )}
 
                   {/* Main Image Display (Right Side) */}
-                  <div className="product-detail-main-display" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <div className="product-detail-main-display" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: '0' }}>
                     <div className="product-detail-main-media-box"
-                      style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flexGrow: 1, width: '100%', minHeight: 'auto' }}
+                      style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flex: 1, width: '100%', minHeight: '0' }}
                     >
                       {/* Floating Share + Wishlist Buttons */}
                       <button
