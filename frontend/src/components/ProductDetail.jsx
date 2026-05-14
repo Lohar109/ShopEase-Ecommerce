@@ -30,6 +30,7 @@ const ProductDetail = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [designGalleryVideo, setDesignGalleryVideo] = useState(null);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentModalIndex, setCurrentModalIndex] = useState(0);
   const [allCategories, setAllCategories] = useState([]);
@@ -329,6 +330,11 @@ const ProductDetail = () => {
     }
   }, [selectedSize, selectedSubSize, variants, selectedColor]);
 
+  // Reset quantity back to 1 whenever variant changes
+  useEffect(() => {
+    setQuantity(1);
+  }, [selectedVariant]);
+
   const basePrice = Number(selectedVariant?.price || 0);
   const hasDiscount = Boolean(selectedVariant?.override_discount) && Number(selectedVariant?.discount_value) > 0;
   const discTypeStr = selectedVariant?.discount_type || 'Percentage';
@@ -613,7 +619,7 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     const variantToAdd = resolveVariantToAdd();
     if (!variantToAdd) return;
-    addToCart(product, variantToAdd);
+    addToCart(product, variantToAdd, quantity);
   };
 
   const handleBuyNow = () => {
@@ -638,7 +644,7 @@ const ProductDetail = () => {
       size: normalizedSize,
       color: normalizedColor,
       price: variantToAdd.price ?? null,
-      quantity: 1,
+      quantity: quantity,
     };
 
     const nextCartItems = existsInCart ? cartItems : [...cartItems, nextCartItem];
@@ -650,7 +656,7 @@ const ProductDetail = () => {
     const memberDiscount = -5000;
     const nextGrandTotal = nextTotal + platformFee + memberDiscount;
 
-    addToCart(product, variantToAdd);
+    addToCart(product, variantToAdd, quantity);
     setIsRedirectingToCheckout(true);
 
     if (redirectTimerRef.current) {
@@ -1093,6 +1099,84 @@ const ProductDetail = () => {
                     )}
 
                     <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 2 : 4 }}>All taxes included</span>
+                  </div>
+
+                  {/* Quantity Selector */}
+                  <div className="product-detail-quantity-selector" style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '24px 0' }}>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 500, color: '#374151' }}>Quantity:</span>
+                    <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden', height: '40px', background: '#fff' }}>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        disabled={quantity <= 1 || stockCount === 0}
+                        style={{
+                          width: '40px',
+                          height: '100%',
+                          border: 'none',
+                          background: (quantity <= 1 || stockCount === 0) ? '#f9fafb' : '#fff',
+                          color: (quantity <= 1 || stockCount === 0) ? '#9ca3af' : '#374151',
+                          cursor: (quantity <= 1 || stockCount === 0) ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1.2rem',
+                          fontWeight: 500,
+                          padding: 0,
+                          transition: 'background 0.2s ease'
+                        }}
+                        onMouseEnter={e => { if (quantity > 1 && stockCount > 0) e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = (quantity <= 1 || stockCount === 0) ? '#f9fafb' : '#fff'; }}
+                      >
+                        &minus;
+                      </button>
+                      <span style={{
+                        minWidth: '40px',
+                        textAlign: 'center',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        color: '#111827',
+                        borderLeft: '1.5px solid #e5e7eb',
+                        borderRight: '1.5px solid #e5e7eb',
+                        padding: '0 12px',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: '#fff'
+                      }}>
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => Math.min(stockCount, prev + 1))}
+                        disabled={quantity >= stockCount || stockCount === 0}
+                        style={{
+                          width: '40px',
+                          height: '100%',
+                          border: 'none',
+                          background: (quantity >= stockCount || stockCount === 0) ? '#f9fafb' : '#fff',
+                          color: (quantity >= stockCount || stockCount === 0) ? '#9ca3af' : '#374151',
+                          cursor: (quantity >= stockCount || stockCount === 0) ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1.2rem',
+                          fontWeight: 500,
+                          padding: 0,
+                          transition: 'background 0.2s ease'
+                        }}
+                        onMouseEnter={e => { if (quantity < stockCount && stockCount > 0) e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = (quantity >= stockCount || stockCount === 0) ? '#f9fafb' : '#fff'; }}
+                      >
+                        &#43;
+                      </button>
+                    </div>
+                    {stockCount > 0 && (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600, color: '#10b981' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} />
+                        In Stock
+                      </span>
+                    )}
                   </div>
 
                   {/* Action Buttons */}

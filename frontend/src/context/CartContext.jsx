@@ -19,7 +19,7 @@ const loadCartFromStorage = () => {
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(loadCartFromStorage);
 
-  const addToCart = (product, selectedVariant) => {
+  const addToCart = (product, selectedVariant, quantity = 1) => {
     if (!product?.id || !selectedVariant?.id) return;
     const normalizedSize = selectedVariant.size || null;
     const normalizedColor = selectedVariant.color || null;
@@ -48,7 +48,7 @@ export const CartProvider = ({ children }) => {
         size: normalizedSize,
         color: normalizedColor,
         price: selectedVariant.price ?? null,
-        quantity: 1,
+        quantity,
       },
     ]);
     toast.success('Added to Cart');
