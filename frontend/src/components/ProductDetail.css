@@ -2492,17 +2492,15 @@
 .btn-card-add-to-cart {
   background: #ffffff;
   color: #111827;
-  border: 1.5px solid #1f2937;
+  border: 1px solid #1f2937;
 }
 
 .btn-card-add-to-cart:hover {
   background: #f3f4f6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
 }
 
 .btn-card-add-to-cart:active {
-  transform: translateY(0);
+  background: #efefef;
 }
 
 .btn-card-buy-now {
