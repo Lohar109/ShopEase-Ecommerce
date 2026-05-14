@@ -2481,46 +2481,62 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
+  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-sizing: border-box;
+  outline: none;
 }
 
 .btn-card-add-to-cart {
   background: #ffffff;
   color: #111827;
-  border: 1px solid #1f2937;
+  border: 2px solid #000000;
+  box-shadow: none;
 }
 
 .btn-card-add-to-cart:hover {
-  background: #f3f4f6;
+  background: #ffffff;
+  border-color: #000000;
+  box-shadow: none;
 }
 
 .btn-card-add-to-cart:active {
-  background: #efefef;
+  background: #ffffff;
+  border-color: #000000;
+  box-shadow: none;
+}
+
+.btn-card-add-to-cart:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .btn-card-buy-now {
   background: #111827;
   color: #ffffff;
+  border: 2px solid #111827;
+  box-shadow: none;
 }
 
 .btn-card-buy-now:hover:not(:disabled) {
   background: #0f172a;
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-color: #0f172a;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-card-buy-now:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-card-buy-now:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Floating Wishlist Button - PDP Image Gallery */

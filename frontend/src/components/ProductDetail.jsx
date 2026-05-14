@@ -1171,7 +1171,17 @@ const ProductDetail = () => {
 
                   {/* Action Buttons */}
                   <div className="product-card-actions detail-page-buttons">
-                    <button className="btn-card-add-to-cart" onClick={handleAddToCart}>
+                    <button
+                      className="btn-card-add-to-cart"
+                      onClick={handleAddToCart}
+                      type="button"
+                      style={{
+                        backgroundColor: '#ffffff',
+                        color: '#111827',
+                        border: '2px solid #000000',
+                        boxShadow: 'none',
+                      }}
+                    >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="9" cy="21" r="1"></circle>
                         <circle cx="20" cy="21" r="1"></circle>
@@ -1179,7 +1189,18 @@ const ProductDetail = () => {
                       </svg>
                       Add to Cart
                     </button>
-                    <button className="btn-card-buy-now" onClick={handleBuyNow} disabled={isRedirectingToCheckout}>
+                    <button
+                      className="btn-card-buy-now"
+                      onClick={handleBuyNow}
+                      disabled={isRedirectingToCheckout}
+                      type="button"
+                      style={{
+                        backgroundColor: '#111827',
+                        color: '#ffffff',
+                        border: '2px solid #111827',
+                        boxShadow: 'none',
+                      }}
+                    >
                       {isRedirectingToCheckout ? 'Redirecting to checkout...' : 'Buy Now'}
                     </button>
                   </div>
