@@ -1096,7 +1096,7 @@ const ProductDetail = () => {
                       )}
                     </div>
 
-                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 8 : 4 }}>All taxes included</span>
+                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 4 : 2 }}>All taxes included</span>
                   </div>
 
                   {/* Quantity Selector */}
