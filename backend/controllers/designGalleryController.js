@@ -150,36 +150,38 @@ exports.getGalleryByProductAndColor = async (req, res) => {
   const galleryVariantId = normalizeUuidOrNull(variant_id);
 
   try {
-    let query;
-    let params;
-
+    // Prefer variant-specific gallery when available, but always fall back to
+    // the shared color gallery so color images do not disappear when galleries
+    // are stored at the product/color level.
     if (galleryVariantId) {
-      // Fetch variant-specific gallery
-      query = `SELECT *
-       FROM product_design_gallery
-       WHERE product_id = $1 AND variant_id = $2
-       ORDER BY created_at ASC
-       LIMIT 1`;
-      params = [product_id, galleryVariantId];
-    } else {
-      // Fetch shared gallery (color-based)
-      query = `SELECT *
-       FROM product_design_gallery
-       WHERE product_id = $1 AND lower(color_name) = lower($2) AND variant_id IS NULL
-       ORDER BY created_at ASC
-       LIMIT 1`;
-      params = [product_id, color_name];
+      const variantResult = await pool.query(
+        `SELECT *
+         FROM product_design_gallery
+         WHERE product_id = $1 AND variant_id = $2
+         ORDER BY created_at ASC
+         LIMIT 1`,
+        [product_id, galleryVariantId]
+      );
+
+      if (variantResult.rowCount > 0) {
+        return res.json(variantResult.rows[0]);
+      }
     }
 
-    const result = await pool.query(query, params);
+    const sharedResult = await pool.query(
+      `SELECT *
+       FROM product_design_gallery
+       WHERE product_id = $1 AND lower(trim(color_name)) = lower(trim($2)) AND variant_id IS NULL
+       ORDER BY created_at ASC
+       LIMIT 1`,
+      [product_id, color_name]
+    );
 
-    if (result.rowCount === 0) {
-      // Return 200 with empty data instead of 404 to avoid console errors
-      // Frontend will gracefully fall back to product images
+    if (sharedResult.rowCount === 0) {
       return res.json({ images: [], video_url: null });
     }
 
-    res.json(result.rows[0]);
+    res.json(sharedResult.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
