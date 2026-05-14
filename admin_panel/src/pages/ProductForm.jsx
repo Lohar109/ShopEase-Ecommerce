@@ -4535,22 +4535,22 @@ const ProductForm = () => {
                                 }}
                               >
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="4.2" />
+                                  <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="kg" />
+                                  <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} placeholder="(3kg + 1.2kg Free)" />
+                                  <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="e.g. Classic" />
+                                  <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="2.5" />
+                                  <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="L" />
+                                  <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
