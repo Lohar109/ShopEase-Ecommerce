@@ -90,6 +90,7 @@ const ProductForm = () => {
     sub_size: '',
     size_unit: '',
     sub_size_unit: '',
+    variety: '',
     variety_label: '',
     size_info: '',
     color: '',
@@ -978,6 +979,10 @@ const ProductForm = () => {
               size_value: String(v.size_value || parsedSize.size_value || ''),
               size_unit: String(v.size_unit || parsedSize.size_unit || ''),
               size_info: String(v.size_info || parsedSize.size_info || ''),
+              variety: String(v.variety || v.variety_label || ''),
+              variety_label: String(v.variety_label || v.variety || ''),
+              sub_size: String(v.sub_size || ''),
+              sub_size_unit: String(v.sub_size_unit || ''),
               color,
               price: priceVal,
               override_discount: false,
@@ -1418,6 +1423,13 @@ const ProductForm = () => {
               id: v.id || '',
               vk: mk(),
               ...parseVariantSize(v.size || ''),
+              size_value: String(v.size_value || parseVariantSize(v.size || '').size_value || ''),
+              size_unit: String(v.size_unit || parseVariantSize(v.size || '').size_unit || ''),
+              size_info: String(v.size_info || parseVariantSize(v.size || '').size_info || ''),
+              variety: String(v.variety || v.variety_label || ''),
+              variety_label: String(v.variety_label || v.variety || ''),
+              sub_size: String(v.sub_size || ''),
+              sub_size_unit: String(v.sub_size_unit || ''),
               color: v.color || '',
               price: v.price ?? '',
               override_discount: v.override_discount ?? false,
@@ -4551,7 +4563,7 @@ const ProductForm = () => {
                                   <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="text" value={variant.variety || variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
