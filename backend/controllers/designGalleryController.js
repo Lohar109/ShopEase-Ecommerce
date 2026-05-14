@@ -174,7 +174,9 @@ exports.getGalleryByProductAndColor = async (req, res) => {
     const result = await pool.query(query, params);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Design gallery not found' });
+      // Return 200 with empty data instead of 404 to avoid console errors
+      // Frontend will gracefully fall back to product images
+      return res.json({ images: [], video_url: null });
     }
 
     res.json(result.rows[0]);

@@ -344,43 +344,38 @@ const ProductDetail = () => {
 
   // Fetch design-specific gallery when color changes
   useEffect(() => {
-    if (!id || !selectedColor) {
-      setDesignGalleryImages([]);
-      setDesignGalleryVideo(null);
+    // Don't attempt to fetch design gallery until we have product id, color,
+    // and a concrete selected variant id.
+    if (!id || !selectedColor || !selectedVariant?.id) {
+      if (designGalleryImages.length !== 0) setDesignGalleryImages([]);
+      if (designGalleryVideo !== null) setDesignGalleryVideo(null);
       return;
     }
 
-    // Only pass variant_id if this variant is marked for separate gallery
-    const variantId = selectedVariant?.use_separate_gallery ? selectedVariant?.id : null;
-    let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(selectedColor)}`;
+    const loadDesignGallery = async () => {
+      const variantId = selectedVariant.id;
+      // Backend route: /api/design-gallery/:product_id/:color_name
+      const url = `${API_ORIGIN}/api/design-gallery/${encodeURIComponent(id)}/${encodeURIComponent(selectedColor)}?variant_id=${encodeURIComponent(variantId)}`;
 
-    if (variantId) {
-      url += `?variant_id=${encodeURIComponent(variantId)}`;
-    }
-
-    fetch(url)
-      .then(async (res) => {
+      try {
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setDesignGalleryImages(Array.isArray(data?.images) ? data.images : []);
           setDesignGalleryVideo(data?.video_url || null);
-          return;
-        }
-
-        // No design-specific gallery for this variant/color, fallback to default product images
-        if (res.status === 404) {
+        } else {
+          // Fallback to empty on any error
           setDesignGalleryImages([]);
           setDesignGalleryVideo(null);
-          return;
         }
+      } catch {
+        // Fallback to empty on network error
+        setDesignGalleryImages([]);
+        setDesignGalleryVideo(null);
+      }
+    };
 
-        setDesignGalleryImages([]);
-        setDesignGalleryVideo(null);
-      })
-      .catch(() => {
-        setDesignGalleryImages([]);
-        setDesignGalleryVideo(null);
-      });
+    loadDesignGallery();
   }, [id, selectedColor, selectedVariant?.id]);
 
   const getVariantColorImage = (colorName) => {
@@ -402,8 +397,8 @@ const ProductDetail = () => {
   };
 
   useEffect(() => {
-    if (!id || filteredColors.length === 0) {
-      setColorThumbnails({});
+    if (!id || filteredColors.length === 0 || !variants || variants.length === 0) {
+      if (Object.keys(colorThumbnails).length !== 0) setColorThumbnails({});
       return;
     }
 
@@ -414,26 +409,24 @@ const ProductDetail = () => {
         filteredColors.map(async (color) => {
           let thumbnail = '';
 
-          try {
-            // Try variant-specific gallery first if variant has use_separate_gallery enabled
-            const variantForColor = variants.find(
-              (v) => String(v.color || '').toLowerCase() === String(color).toLowerCase()
-            );
+          // Try variant-specific gallery first when a concrete variant id exists.
+          const variantForColor = variants.find(
+            (v) => String(v.color || '').toLowerCase() === String(color).toLowerCase()
+          );
 
-            let url = `${API_ORIGIN}/api/design-gallery/${id}/${encodeURIComponent(color)}`;
-            if (variantForColor?.use_separate_gallery && variantForColor?.id) {
-              url += `?variant_id=${encodeURIComponent(variantForColor.id)}`;
-            }
-
-            const res = await fetch(url);
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data?.images) && data.images.length > 0) {
-                thumbnail = data.images[0];
+          if (variantForColor?.id) {
+            try {
+              const url = `${API_ORIGIN}/api/design-gallery/${encodeURIComponent(id)}/${encodeURIComponent(color)}?variant_id=${encodeURIComponent(variantForColor.id)}`;
+              const res = await fetch(url);
+              if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data?.images) && data.images.length > 0) {
+                  thumbnail = data.images[0];
+                }
               }
+            } catch {
+              // Fall back to variant image below.
             }
-          } catch {
-            // Fall back to variant image below.
           }
 
           if (!thumbnail) {
