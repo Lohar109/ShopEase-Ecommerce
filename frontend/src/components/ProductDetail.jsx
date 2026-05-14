@@ -259,7 +259,26 @@ const ProductDetail = () => {
 
   const hasMultipleSubSizes = visibleSubOptions.length > 1;
 
+  // Find selected variant using selected size and color first, then fallback in order
+  const selectedVariant =
+    variants.find(
+      (v) =>
+        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
+        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim()) &&
+        (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())
+    ) ||
+    variants.find(
+      (v) =>
+        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
+        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim())
+    ) ||
+    variants.find((v) => (!selectedSize || getVariantSizeValue(v) === selectedSize)) ||
+    variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
+    variants[0] ||
+    null;
+
   const selectedSizeLabel = useMemo(() => {
+    if (!selectedVariant) return '';
     const parsed = parseVariantSize(selectedVariant);
     return [parsed.size_value, parsed.size_unit, parsed.size_info].filter(Boolean).join(' ').trim();
   }, [selectedVariant]);
@@ -309,24 +328,6 @@ const ProductDetail = () => {
       setSelectedColor(colors[0]);
     }
   }, [selectedSize, selectedSubSize, variants, selectedColor]);
-
-  // Find selected variant using selected size and color first, then fallback in order
-  const selectedVariant =
-    variants.find(
-      (v) =>
-        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
-        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim()) &&
-        (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())
-    ) ||
-    variants.find(
-      (v) =>
-        (!selectedSize || getVariantSizeValue(v) === selectedSize) &&
-        (selectedSubSize === null || getVariantSubSizeValue(v) === String(selectedSubSize).trim())
-    ) ||
-    variants.find((v) => (!selectedSize || getVariantSizeValue(v) === selectedSize)) ||
-    variants.find((v) => (!selectedColor || String(v.color || '').toLowerCase() === String(selectedColor).toLowerCase())) ||
-    variants[0] ||
-    {};
 
   const basePrice = Number(selectedVariant?.price || 0);
   const hasDiscount = Boolean(selectedVariant?.override_discount) && Number(selectedVariant?.discount_value) > 0;
@@ -516,7 +517,7 @@ const ProductDetail = () => {
 
     // Final fallback if no gallery images are present
     if (items.length === 0) {
-      if (selectedVariant.image) {
+      if (selectedVariant?.image) {
         items.push({ type: 'image', url: selectedVariant.image });
       } else if (product.main_image) {
         items.push({ type: 'image', url: product.main_image });
@@ -536,7 +537,7 @@ const ProductDetail = () => {
     }
 
     return items;
-  }, [product, selectedVariant.image, designGalleryImages, designGalleryVideo]);
+  }, [product, selectedVariant?.image, designGalleryImages, designGalleryVideo]);
 
 
 
