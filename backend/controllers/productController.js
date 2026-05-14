@@ -29,6 +29,47 @@ const normalizeUuidOrNull = (value) => {
     : null;
 };
 
+const normalizeVariantForDb = (v) => {
+  const {
+    size_value,
+    size_unit,
+    size_info,
+    variety,
+    variety_label,
+    sub_size,
+    sub_size_unit,
+    size,
+    color,
+    price,
+    stock,
+    sku,
+    image,
+    use_separate_gallery,
+    override_discount,
+    discount_type,
+    discount_value
+  } = v;
+
+  return {
+    size_value: size_value ? String(size_value).trim() : null,
+    size_unit: size_unit ? String(size_unit).trim() : null,
+    size_info: size_info ? String(size_info).trim() : null,
+    variety: variety ? String(variety).trim() : (variety_label ? String(variety_label).trim() : null),
+    sub_size: sub_size ? String(sub_size).trim() : null,
+    sub_size_unit: sub_size_unit ? String(sub_size_unit).trim() : null,
+    size: size ? String(size).trim() : null,
+    color: color ? String(color).trim() : null,
+    price: price !== '' && price !== null ? Number(price) : null,
+    stock: stock !== '' && stock !== null ? Number(stock) : null,
+    sku: sku ? String(sku).trim() : null,
+    image: image ? String(image).trim() : null,
+    use_separate_gallery: use_separate_gallery || false,
+    override_discount: override_discount || false,
+    discount_type: discount_type || 'Percentage',
+    discount_value: discount_value !== '' && discount_value !== null ? Number(discount_value) : 0
+  };
+};
+
 exports.getAllProducts = async (req, res) => {
   try {
     const { audience, category_id } = req.query;
@@ -115,21 +156,28 @@ exports.createProduct = async (req, res) => {
 
     // Insert variants
     for (const v of variants) {
+      const normalized = normalizeVariantForDb(v);
       await client.query(
-        `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)` ,
+        `INSERT INTO product_variant (product_id, size, size_value, size_unit, size_info, variety, sub_size, sub_size_unit, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)` ,
         [
-          productId, 
-          v.size, 
-          v.color, 
-          v.price, 
-          v.stock, 
-          v.sku, 
-          v.image, 
-          v.use_separate_gallery || false,
-          v.override_discount || false,
-          v.discount_type || 'Percentage',
-          Number(v.discount_value) || 0
+          productId,
+          normalized.size,
+          normalized.size_value,
+          normalized.size_unit,
+          normalized.size_info,
+          normalized.variety,
+          normalized.sub_size,
+          normalized.sub_size_unit,
+          normalized.color,
+          normalized.price,
+          normalized.stock,
+          normalized.sku,
+          normalized.image,
+          normalized.use_separate_gallery,
+          normalized.override_discount,
+          normalized.discount_type,
+          normalized.discount_value
         ]
       );
     }
@@ -230,42 +278,56 @@ exports.updateProduct = async (req, res) => {
 
       if (variantId && existingVariantIds.has(variantId)) {
         incomingVariantIds.add(variantId);
+        const normalized = normalizeVariantForDb(v);
         await client.query(
           `UPDATE product_variant
-           SET size = $1, color = $2, price = $3, stock = $4, sku = $5, image = $6, use_separate_gallery = $7, override_discount = $8, discount_type = $9, discount_value = $10
-           WHERE id = $11 AND product_id = $12`,
+           SET size = $1, size_value = $2, size_unit = $3, size_info = $4, variety = $5, sub_size = $6, sub_size_unit = $7, color = $8, price = $9, stock = $10, sku = $11, image = $12, use_separate_gallery = $13, override_discount = $14, discount_type = $15, discount_value = $16
+           WHERE id = $17 AND product_id = $18`,
           [
-            v.size, 
-            v.color, 
-            v.price, 
-            v.stock, 
-            v.sku, 
-            v.image, 
-            v.use_separate_gallery || false, 
-            v.override_discount || false, 
-            v.discount_type || 'Percentage', 
-            Number(v.discount_value) || 0, 
-            variantId, 
+            normalized.size,
+            normalized.size_value,
+            normalized.size_unit,
+            normalized.size_info,
+            normalized.variety,
+            normalized.sub_size,
+            normalized.sub_size_unit,
+            normalized.color,
+            normalized.price,
+            normalized.stock,
+            normalized.sku,
+            normalized.image,
+            normalized.use_separate_gallery,
+            normalized.override_discount,
+            normalized.discount_type,
+            normalized.discount_value,
+            variantId,
             id
           ]
         );
       } else {
+        const normalized = normalizeVariantForDb(v);
         const insertedVariant = await client.query(
-          `INSERT INTO product_variant (product_id, size, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          `INSERT INTO product_variant (product_id, size, size_value, size_unit, size_info, variety, sub_size, sub_size_unit, color, price, stock, sku, image, use_separate_gallery, override_discount, discount_type, discount_value)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
            RETURNING id`,
           [
-            id, 
-            v.size, 
-            v.color, 
-            v.price, 
-            v.stock, 
-            v.sku, 
-            v.image, 
-            v.use_separate_gallery || false, 
-            v.override_discount || false, 
-            v.discount_type || 'Percentage', 
-            Number(v.discount_value) || 0
+            id,
+            normalized.size,
+            normalized.size_value,
+            normalized.size_unit,
+            normalized.size_info,
+            normalized.variety,
+            normalized.sub_size,
+            normalized.sub_size_unit,
+            normalized.color,
+            normalized.price,
+            normalized.stock,
+            normalized.sku,
+            normalized.image,
+            normalized.use_separate_gallery,
+            normalized.override_discount,
+            normalized.discount_type,
+            normalized.discount_value
           ]
         );
         incomingVariantIds.add(insertedVariant.rows[0].id);
