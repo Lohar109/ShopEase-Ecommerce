@@ -2109,7 +2109,7 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '0.7fr 0.6fr 0.6fr 0.6fr 0.6fr 1.5fr 1fr 1fr 1fr 1fr 0.9fr 0.9fr auto';
+  const variantCols = '0.7fr 0.6fr 1.5fr 1.8fr 0.7fr 0.6fr 1fr 1fr 0.8fr auto';
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -4502,11 +4502,11 @@ const ProductForm = () => {
                           }}
                         >
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Size</div>
-                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Variety</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Unit</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
+                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Variety</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Size</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Unit</div>
-                          <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Color</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Price</div>
                           <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Stock</div>
@@ -4535,11 +4535,11 @@ const ProductForm = () => {
                                 }}
                               >
                                 <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="4.2" />
-                                <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="e.g. Classic" />
                                 <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="kg" />
+                                <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} placeholder="(3kg + 1.2kg Free)" />
+                                <input className="custom-input" type="text" value={variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety_label', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="e.g. Classic" />
                                 <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="2.5" />
                                 <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} placeholder="L" />
-                                <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} placeholder="(3kg + 1.2kg Free)" />
                                 <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
