@@ -37,6 +37,8 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
+  // In-memory cache to dedupe design-gallery requests across renders
+  const designGalleryCacheRef = useRef(new Map());
 
   useEffect(() => {
     return () => {
@@ -354,25 +356,44 @@ const ProductDetail = () => {
 
     const loadDesignGallery = async () => {
       const variantId = selectedVariant.id;
-      // Backend route: /api/design-gallery/:product_id/:color_name
       const url = `${API_ORIGIN}/api/design-gallery/${encodeURIComponent(id)}/${encodeURIComponent(selectedColor)}?variant_id=${encodeURIComponent(variantId)}`;
 
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          setDesignGalleryImages(Array.isArray(data?.images) ? data.images : []);
-          setDesignGalleryVideo(data?.video_url || null);
-        } else {
-          // Fallback to empty on any error
-          setDesignGalleryImages([]);
-          setDesignGalleryVideo(null);
-        }
-      } catch {
-        // Fallback to empty on network error
-        setDesignGalleryImages([]);
-        setDesignGalleryVideo(null);
+      // Dedupe requests using cache. Store either resolved data or a pending promise.
+      const cache = designGalleryCacheRef.current;
+      if (cache.has(url)) {
+        const cached = await cache.get(url);
+        setDesignGalleryImages(Array.isArray(cached?.images) ? cached.images : []);
+        setDesignGalleryVideo(cached?.video_url || null);
+        return;
       }
+
+      const pending = (async () => {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            // Normalize to object with images & video_url
+            const normalized = { images: Array.isArray(data?.images) ? data.images : [], video_url: data?.video_url || null };
+            cache.set(url, Promise.resolve(normalized));
+            return normalized;
+          }
+
+          // On 404 or other non-ok, cache empty result (so we don't hammer server)
+          const empty = { images: [], video_url: null };
+          cache.set(url, Promise.resolve(empty));
+          return empty;
+        } catch (err) {
+          const empty = { images: [], video_url: null };
+          cache.set(url, Promise.resolve(empty));
+          return empty;
+        }
+      })();
+
+      // store pending promise immediately to dedupe concurrent callers
+      cache.set(url, pending);
+      const result = await pending;
+      setDesignGalleryImages(result.images);
+      setDesignGalleryVideo(result.video_url);
     };
 
     loadDesignGallery();
@@ -417,12 +438,34 @@ const ProductDetail = () => {
           if (variantForColor?.id) {
             try {
               const url = `${API_ORIGIN}/api/design-gallery/${encodeURIComponent(id)}/${encodeURIComponent(color)}?variant_id=${encodeURIComponent(variantForColor.id)}`;
-              const res = await fetch(url);
-              if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data?.images) && data.images.length > 0) {
-                  thumbnail = data.images[0];
-                }
+              const cache = designGalleryCacheRef.current;
+              if (cache.has(url)) {
+                const cached = await cache.get(url);
+                if (Array.isArray(cached?.images) && cached.images.length > 0) thumbnail = cached.images[0];
+              } else {
+                // fetch and cache
+                const pending = (async () => {
+                  try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                      const data = await res.json();
+                      const normalized = { images: Array.isArray(data?.images) ? data.images : [], video_url: data?.video_url || null };
+                      cache.set(url, Promise.resolve(normalized));
+                      return normalized;
+                    }
+                    const empty = { images: [], video_url: null };
+                    cache.set(url, Promise.resolve(empty));
+                    return empty;
+                  } catch (err) {
+                    const empty = { images: [], video_url: null };
+                    cache.set(url, Promise.resolve(empty));
+                    return empty;
+                  }
+                })();
+
+                cache.set(url, pending);
+                const data = await pending;
+                if (Array.isArray(data?.images) && data.images.length > 0) thumbnail = data.images[0];
               }
             } catch {
               // Fall back to variant image below.
