@@ -340,17 +340,21 @@ const ProductDetail = () => {
   const discTypeStr = selectedVariant?.discount_type || 'Percentage';
   const rawDiscVal = Number(selectedVariant?.discount_value) || 0;
 
-  let computedFinalPrice = basePrice;
-  let savingsVal = 0;
+  // Unit price calculations
+  let unitSavingsVal = 0;
 
   if (hasDiscount) {
     if (String(discTypeStr).toLowerCase() === 'percentage') {
-      savingsVal = basePrice * (rawDiscVal / 100);
+      unitSavingsVal = basePrice * (rawDiscVal / 100);
     } else {
-      savingsVal = rawDiscVal;
+      unitSavingsVal = rawDiscVal;
     }
-    computedFinalPrice = Math.max(0, basePrice - savingsVal);
   }
+
+  // Total price calculations (multiplied by quantity)
+  const totalBasePrice = basePrice * quantity;
+  const totalSavingsVal = unitSavingsVal * quantity;
+  const computedFinalPrice = Math.max(0, totalBasePrice - totalSavingsVal);
 
   const stockCount = Number(selectedVariant?.stock || 0);
   const stockBarWidth = Math.min(100, Math.max(0, (stockCount / 10) * 100));
@@ -1073,7 +1077,7 @@ const ProductDetail = () => {
                       {hasDiscount && (
                         <>
                           <span style={{ fontSize: '1.125rem', textDecoration: 'line-through', color: '#9ca3af', fontWeight: 500 }}>
-                            Rs. {basePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                            Rs. {totalBasePrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                           </span>
                           <span style={{
                             backgroundColor: '#28a745',
@@ -1094,7 +1098,7 @@ const ProductDetail = () => {
 
                     {hasDiscount && (
                       <div style={{ color: '#28a745', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
-                        You save Rs. {savingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                        You save Rs. {totalSavingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                       </div>
                     )}
 
