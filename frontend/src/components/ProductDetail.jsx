@@ -958,7 +958,7 @@ const ProductDetail = () => {
                       <div className="product-detail-sub-size-selector" aria-label="Sub-size variants">
                         <p className="product-detail-size-label">
                           <span className="product-detail-size-label-text">
-                            Selected ({selectedSubOption?.variety || selectedSizeGroup?.variety || 'option'}):
+                            Selected {selectedSubOption?.variety || selectedSizeGroup?.variety || 'option'}:
                           </span>
                           <span className="product-detail-size-label-value">{selectedSubOption?.label || '-'}</span>
                         </p>
