@@ -2481,7 +2481,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2507,6 +2507,13 @@
   background: #ffffff;
   border-color: #000000;
   box-shadow: none;
+}
+
+.btn-card-add-to-cart:hover,
+.btn-card-add-to-cart:active,
+.btn-card-add-to-cart:focus,
+.btn-card-add-to-cart:focus-visible {
+  transform: none;
 }
 
 .btn-card-add-to-cart:focus {
