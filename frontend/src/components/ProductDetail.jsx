@@ -1123,10 +1123,8 @@ const ProductDetail = () => {
                           fontSize: '1.2rem',
                           fontWeight: 500,
                           padding: 0,
-                          transition: 'background 0.2s ease'
+                          transition: 'none'
                         }}
-                        onMouseEnter={e => { if (quantity > 1 && stockCount > 0) e.currentTarget.style.background = '#f3f4f6'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = (quantity <= 1 || stockCount === 0) ? '#f9fafb' : '#fff'; }}
                       >
                         &minus;
                       </button>
@@ -1165,10 +1163,8 @@ const ProductDetail = () => {
                           fontSize: '1.2rem',
                           fontWeight: 500,
                           padding: 0,
-                          transition: 'background 0.2s ease'
+                          transition: 'none'
                         }}
-                        onMouseEnter={e => { if (quantity < stockCount && stockCount > 0) e.currentTarget.style.background = '#f3f4f6'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = (quantity >= stockCount || stockCount === 0) ? '#f9fafb' : '#fff'; }}
                       >
                         &#43;
                       </button>
