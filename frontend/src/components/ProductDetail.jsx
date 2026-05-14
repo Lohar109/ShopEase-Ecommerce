@@ -1107,6 +1107,7 @@ const ProductDetail = () => {
                     <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden', height: '40px', background: '#fff' }}>
                       <button
                         type="button"
+                        className="product-detail-quantity-btn"
                         onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                         disabled={quantity <= 1 || stockCount === 0}
                         style={{
@@ -1148,6 +1149,7 @@ const ProductDetail = () => {
                       </span>
                       <button
                         type="button"
+                        className="product-detail-quantity-btn"
                         onClick={() => setQuantity(prev => Math.min(stockCount, prev + 1))}
                         disabled={quantity >= stockCount || stockCount === 0}
                         style={{
@@ -1171,12 +1173,6 @@ const ProductDetail = () => {
                         &#43;
                       </button>
                     </div>
-                    {stockCount > 0 && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600, color: '#10b981' }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} />
-                        In Stock
-                      </span>
-                    )}
                   </div>
 
                   {/* Action Buttons */}

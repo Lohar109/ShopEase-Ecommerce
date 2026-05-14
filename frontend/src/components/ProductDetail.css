@@ -2718,3 +2718,15 @@
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
 }
+
+/* Quantity Selector Flat Buttons Override */
+.product-detail-quantity-btn {
+  margin: 0 !important;
+  transform: none !important;
+  transition: background 0.2s ease !important;
+}
+.product-detail-quantity-btn:hover {
+  transform: none !important;
+  top: 0 !important;
+  box-shadow: none !important;
+}
