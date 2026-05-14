@@ -11,53 +11,56 @@ import DashboardHome from './pages/DashboardHome';
 import CouponsPage from './pages/CouponsPage';
 import CouponForm from './pages/CouponForm';
 import AdminLayout from './components/AdminLayout';
+import { AdminProvider } from './context/AdminContext';
 
 function App() {
   return (
-    <Router>
-      <Toaster
-        position="top-right"
-        gutter={10}
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#ffffff',
-            color: '#111827',
-            borderRadius: '12px',
-            boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
-            border: '1px solid #e4e4e7',
-            padding: '10px 12px',
-            animation: 'toast-slide-in 220ms ease-out',
-          },
-          success: {
-            iconTheme: {
-              primary: '#16a34a',
-              secondary: '#ffffff',
+    <AdminProvider>
+      <Router>
+        <Toaster
+          position="top-right"
+          gutter={10}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#ffffff',
+              color: '#111827',
+              borderRadius: '12px',
+              boxShadow: '0 10px 28px rgba(15, 23, 42, 0.12)',
+              border: '1px solid #e4e4e7',
+              padding: '10px 12px',
+              animation: 'toast-slide-in 220ms ease-out',
             },
-          },
-          error: {
-            iconTheme: {
-              primary: '#dc2626',
-              secondary: '#ffffff',
+            success: {
+              iconTheme: {
+                primary: '#16a34a',
+                secondary: '#ffffff',
+              },
             },
-          },
-        }}
-      />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route element={<AdminLayout />}>
-          <Route path="/dashboard" element={<DashboardHome />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/categories" element={<CategoryPage />} />
-          <Route path="/audiences" element={<AudienceManagement />} />
-          <Route path="/coupons" element={<CouponsPage />} />
-        </Route>
-        <Route path="/products/new" element={<ProductForm />} />
-        <Route path="/products/:id/edit" element={<ProductForm />} />
-        <Route path="/coupons/new" element={<CouponForm />} />
-        <Route path="/coupons/edit/:id" element={<CouponForm />} />
-      </Routes>
-    </Router>
+            error: {
+              iconTheme: {
+                primary: '#dc2626',
+                secondary: '#ffffff',
+              },
+            },
+          }}
+        />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/categories" element={<CategoryPage />} />
+            <Route path="/audiences" element={<AudienceManagement />} />
+            <Route path="/coupons" element={<CouponsPage />} />
+          </Route>
+          <Route path="/products/new" element={<ProductForm />} />
+          <Route path="/products/:id/edit" element={<ProductForm />} />
+          <Route path="/coupons/new" element={<CouponForm />} />
+          <Route path="/coupons/edit/:id" element={<CouponForm />} />
+        </Routes>
+      </Router>
+    </AdminProvider>
   );
 }
 

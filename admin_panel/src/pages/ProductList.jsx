@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { useAdmin } from '../context/AdminContext';
 import TableSkeleton from '../components/TableSkeleton';
 import ConfirmModal from '../components/ConfirmModal';
-import { fetchCategories } from '../services/categoryService';
 import { deleteProduct, fetchProductById, fetchProducts, updateProductStatus } from '../services/productService';
 
 const ProductList = () => {
@@ -21,6 +21,14 @@ const ProductList = () => {
   const [selectedFilterSubSub, setSelectedFilterSubSub] = useState('');
   const [lowStockOnly, setLowStockOnly] = useState(false);
   const navigate = useNavigate();
+  const {
+    products: cachedProducts,
+    categories: cachedCategories,
+    getProducts: getCachedProducts,
+    getCategories: getCachedCategories,
+    updateProduct: syncProduct,
+    deleteProduct: syncDeleteProduct,
+  } = useAdmin();
 
   const iconButtonBase = {
     width: 34,
@@ -232,6 +240,7 @@ const ProductList = () => {
     try {
       await deleteProduct(productToDelete);
       setProducts((prev) => prev.filter((product) => product.id !== productToDelete));
+      syncDeleteProduct(productToDelete);
       setExp((prev) => prev.filter((id) => id !== String(productToDelete)));
       setProductToDelete(null);
     } catch (err) {
@@ -252,6 +261,7 @@ const ProductList = () => {
 
     try {
       await updateProductStatus(productId, { [field]: nextValue });
+      syncProduct({ ...product, [field]: nextValue });
     } catch (err) {
       setProducts((prev) => prev.map((item) => (item.id === productId ? { ...item, [field]: !nextValue } : item)));
       alert(err.message || 'Failed to update status');
@@ -261,9 +271,35 @@ const ProductList = () => {
   };
 
   useEffect(() => {
+    let active = true;
+
+    const cachedHasHydratedVariants = Array.isArray(cachedProducts)
+      && cachedProducts.length > 0
+      && cachedProducts.every((product) => Array.isArray(product?.variants));
+
+    if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+      setCategories(cachedCategories);
+    }
+
+    if (cachedHasHydratedVariants) {
+      setProducts(cachedProducts);
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+
     const loadProducts = async () => {
       try {
-        const [data, catsData] = await Promise.all([fetchProducts(), fetchCategories()]);
+        setLoading(true);
+        setError('');
+
+        const [data, catsData] = await Promise.all([
+          cachedProducts.length > 0 ? Promise.resolve(cachedProducts) : getCachedProducts(),
+          cachedCategories.length > 0 ? Promise.resolve(cachedCategories) : getCachedCategories(),
+        ]);
+
+        if (!active) return;
         setCategories(Array.isArray(catsData) ? catsData : []);
         const list = Array.isArray(data) ? data : [];
 
@@ -278,16 +314,21 @@ const ProductList = () => {
           })
         );
 
+        if (!active) return;
         setProducts(hydrated);
+        hydrated.forEach((product) => syncProduct(product));
       } catch (err) {
         setError(err.message || 'Failed to load products');
       } finally {
-        setLoading(false);
-      }
+        if (active) setLoading(false);
+      }, [cachedProducts, cachedCategories, getCachedProducts, getCachedCategories, syncProduct]);
     };
 
     loadProducts();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [cachedProducts, cachedCategories, syncProduct]);
 
   const filterSubcategoryOptions = useMemo(
     () => categories.filter(c => String(c.parent_id) === String(selectedFilterCategory)),

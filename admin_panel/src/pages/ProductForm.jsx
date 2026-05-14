@@ -17,11 +17,12 @@ const CrystalIcon = ({ size = 16 }) => (
     </g>
   </svg>
 );
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ConfirmModal from '../components/ConfirmModal';
 import QuickAddModal from '../components/QuickAddModal';
-import { addCategory, fetchCategories } from '../services/categoryService';
+import { useAdmin } from '../context/AdminContext';
+import { addCategory } from '../services/categoryService';
 import {
   deleteDesignGallery,
   fetchDesignGalleries,
@@ -148,6 +149,16 @@ const ProductForm = () => {
   const [highlightSubSubcategory, setHighlightSubSubcategory] = useState(false);
   const [highlightAudience, setHighlightAudience] = useState(false);
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
+  const {
+    categories: cachedCategories,
+    audiences: cachedAudiences,
+    getCategories: getCachedCategories,
+    getAudiences: getCachedAudiences,
+    addCategory: syncAddCategory,
+    addAudience: syncAddAudience,
+    updateAudience: syncUpdateAudience,
+    deleteAudience: syncDeleteAudience,
+  } = useAdmin();
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
   const [magicAuditRows, setMagicAuditRows] = useState([]);
   const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
@@ -1341,26 +1352,40 @@ const ProductForm = () => {
   }, [name]);
 
   // Fetch categories
-  const fetchCats = () => {
-    return fetchCategories()
-      .then((data) => setCategories(Array.isArray(data) ? data : []))
-      .catch(() => setCategories([]));
+  const fetchCats = async () => {
+    try {
+      if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+        setCategories(cachedCategories);
+        return cachedCategories;
+      }
+
+      const data = await getCachedCategories();
+      const nextCategories = Array.isArray(data) ? data : [];
+      setCategories(nextCategories);
+      return nextCategories;
+    } catch {
+      setCategories([]);
+      return [];
+    }
   };
 
   // Fetch audiences
   const fetchAudiences = async () => {
     try {
-      setAudiencesLoading(true);
-      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
-      const response = await fetch(`${apiOrigin}/api/audiences`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch audiences: ${response.statusText}`);
+      if (Array.isArray(cachedAudiences) && cachedAudiences.length > 0) {
+        setAudiences(cachedAudiences);
+        return cachedAudiences;
       }
-      const data = await response.json();
-      setAudiences(Array.isArray(data) ? data : []);
+
+      setAudiencesLoading(true);
+      const data = await getCachedAudiences();
+      const nextAudiences = Array.isArray(data) ? data : [];
+      setAudiences(nextAudiences);
+      return nextAudiences;
     } catch (err) {
       console.error('Failed to fetch audiences:', err);
       setAudiences([]);
+      return [];
     } finally {
       setAudiencesLoading(false);
     }
@@ -1372,7 +1397,13 @@ const ProductForm = () => {
   }, []);
 
   useEffect(() => {
-    const refreshCategories = () => fetchCats();
+    const refreshCategories = () => {
+      if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+        setCategories(cachedCategories);
+        return;
+      }
+      fetchCats();
+    };
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') refreshCategories();
     };
@@ -1930,7 +1961,8 @@ const ProductForm = () => {
         parent_id: (t === 'subcategory' || t === 'subsubcategory') ? pId : null,
       });
 
-      await fetchCats();
+      syncAddCategory(created);
+      setCategories((prev) => [...prev.filter((category) => String(category.id) !== String(created?.id)), created]);
 
       if (t === 'subsubcategory') {
         setSubSubcategoryId(String(created?.id || ''));
@@ -1976,7 +2008,8 @@ const ProductForm = () => {
         throw new Error(result.error || 'Failed to add audience');
       }
 
-      await fetchAudiences();
+      syncAddAudience(result);
+      setAudiences((prev) => [...prev.filter((aud) => String(aud.id) !== String(result?.id)), result]);
       if (result?.id) {
         setAudience(result.id);
       }
@@ -2026,7 +2059,8 @@ const ProductForm = () => {
         throw new Error(result.error || 'Failed to update audience');
       }
 
-      await fetchAudiences();
+      syncUpdateAudience(result);
+      setAudiences((prev) => prev.map((aud) => (String(aud.id) === String(result?.id) ? result : aud)));
       setEditingAudienceId(null);
       setEditingAudienceName('');
       setToastMsg('Audience updated successfully.');
@@ -2061,7 +2095,8 @@ const ProductForm = () => {
         throw new Error(result.error || 'Failed to delete audience');
       }
 
-      await fetchAudiences();
+      syncDeleteAudience(audienceToDelete.id);
+      setAudiences((prev) => prev.filter((aud) => String(aud.id) !== String(audienceToDelete.id)));
       setToastMsg('Audience deleted successfully.');
       setToastType('success');
       setTimeout(() => setToastMsg(''), 3000);
@@ -2788,14 +2823,14 @@ const ProductForm = () => {
         borderBottom: '1px solid #f4f4f5'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'start', minWidth: 0 }}>
-          <button
-            type="button"
+          <Link
+            to="/products"
             className="pf-ghost-back-btn"
-            onClick={() => navigate('/products')}
+            style={{ textDecoration: 'none' }}
           >
             <ArrowLeft size={14} />
             Back
-          </button>
+          </Link>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'center', minWidth: 0 }}>

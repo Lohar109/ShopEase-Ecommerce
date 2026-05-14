@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Edit2, Trash2, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAdmin } from '../context/AdminContext';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
-import { addAudience, deleteAudience, fetchAudiences, updateAudience } from '../services/audienceService';
+import { addAudience, deleteAudience, updateAudience } from '../services/audienceService';
 
 const formatProductsLabel = (value) => {
   const count = Number(value) || 0;
@@ -24,11 +25,18 @@ const AudienceManagement = () => {
   const [updatingAudience, setUpdatingAudience] = useState(false);
   const [audienceToDelete, setAudienceToDelete] = useState(null);
   const [deletingAudienceId, setDeletingAudienceId] = useState('');
+  const {
+    audiences: cachedAudiences,
+    getAudiences: getCachedAudiences,
+    addAudience: syncAddAudience,
+    updateAudience: syncUpdateAudience,
+    deleteAudience: syncDeleteAudience,
+  } = useAdmin();
 
   const loadAudiences = async () => {
     try {
       setError('');
-      const data = await fetchAudiences();
+      const data = await getCachedAudiences();
       setAudiences(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message || 'Failed to load audiences');
@@ -39,8 +47,14 @@ const AudienceManagement = () => {
   };
 
   useEffect(() => {
+    if (Array.isArray(cachedAudiences) && cachedAudiences.length > 0) {
+      setAudiences(cachedAudiences);
+      setLoading(false);
+      return;
+    }
+
     loadAudiences();
-  }, []);
+  }, [cachedAudiences]);
 
   useEffect(() => {
     const onResize = () => setIsNarrowScreen(window.innerWidth < 1100);
@@ -77,9 +91,10 @@ const AudienceManagement = () => {
 
     setAddingAudience(true);
     try {
-      await addAudience({ name: trimmedName });
+      const created = await addAudience({ name: trimmedName });
+      syncAddAudience(created);
+      setAudiences((prev) => [...prev.filter((audience) => String(audience.id) !== String(created.id)), created]);
       setNewAudienceName('');
-      await loadAudiences();
       toast.success('Audience added successfully!', { position: 'top-center' });
     } catch (err) {
       toast.error(err.message || 'Failed to add audience', { position: 'top-center' });
@@ -115,8 +130,9 @@ const AudienceManagement = () => {
 
     setUpdatingAudience(true);
     try {
-      await updateAudience(selectedAudienceId, { name: trimmedName });
-      await loadAudiences();
+      const updated = await updateAudience(selectedAudienceId, { name: trimmedName });
+      syncUpdateAudience(updated);
+      setAudiences((prev) => prev.map((audience) => (String(audience.id) === String(updated.id) ? updated : audience)));
       cancelEditAudience();
       toast.success('Audience updated successfully!', { position: 'top-center' });
     } catch (err) {
@@ -143,7 +159,8 @@ const AudienceManagement = () => {
     setDeletingAudienceId(audienceToDelete.id);
     try {
       await deleteAudience(audienceToDelete.id);
-      await loadAudiences();
+      syncDeleteAudience(audienceToDelete.id);
+      setAudiences((prev) => prev.filter((audience) => String(audience.id) !== String(audienceToDelete.id)));
       setAudienceToDelete(null);
       toast.success('Audience deleted successfully!', { position: 'top-center' });
     } catch (err) {

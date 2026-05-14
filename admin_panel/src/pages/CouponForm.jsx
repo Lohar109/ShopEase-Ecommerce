@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check, CalendarDays, Info, Trash2 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createCoupon, fetchCouponById, updateCoupon } from '../services/couponService';
-import { fetchCategories } from '../services/categoryService';
+import { useAdmin } from '../context/AdminContext';
 import CategoryMultiSelect from '../components/CategoryMultiSelect';
 import ProductMultiSelect from '../components/ProductMultiSelect';
 import ConfirmModal from '../components/ConfirmModal';
@@ -38,12 +38,22 @@ const CouponForm = () => {
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const {
+    categories: cachedCategories,
+    getCategories: getCachedCategories,
+  } = useAdmin();
 
   useEffect(() => {
     const loadCategories = async () => {
       try {
+        if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+          setCategories(cachedCategories);
+          setLoadingCategories(false);
+          return;
+        }
+
         setLoadingCategories(true);
-        const data = await fetchCategories();
+        const data = await getCachedCategories();
         setCategories(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Failed to load categories:', err);
@@ -53,7 +63,7 @@ const CouponForm = () => {
       }
     };
     loadCategories();
-  }, []);
+  }, [cachedCategories, getCachedCategories]);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -317,9 +327,8 @@ const CouponForm = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'start', minWidth: 0 }}>
-          <button
-            type="button"
-            onClick={() => navigate('/coupons')}
+          <Link
+            to="/coupons"
             style={{
               border: 'none',
               height: 36,
@@ -332,12 +341,13 @@ const CouponForm = () => {
               gap: 6,
               cursor: 'pointer',
               fontSize: 13,
-              fontWeight: 600
+              fontWeight: 600,
+              textDecoration: 'none'
             }}
           >
             <ArrowLeft size={14} />
             Back
-          </button>
+          </Link>
         </div>
 
         <h2 style={{ margin: 0, justifySelf: 'center', fontSize: 24, fontWeight: 700, color: '#18181b', letterSpacing: '-0.02em' }}>

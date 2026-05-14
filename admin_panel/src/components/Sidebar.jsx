@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutGrid, Package, Home, Ticket, Users } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', Icon: Home },
@@ -11,7 +11,6 @@ const navItems = [
 ];
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
 
   return (
@@ -57,10 +56,9 @@ const Sidebar = () => {
         {navItems.map(({ label, path, Icon }) => {
           const isActive = location.pathname === path || location.pathname.startsWith(`${path}/`);
           return (
-            <button
+            <Link
               key={path}
-              type="button"
-              onClick={() => navigate(path)}
+              to={path}
               style={{
                 width: '100%',
                 display: 'flex',
@@ -77,11 +75,13 @@ const Sidebar = () => {
                 cursor: 'pointer',
                 boxSizing: 'border-box',
                 transition: 'all 200ms ease',
+                textDecoration: 'none',
+                textAlign: 'left',
               }}
             >
               <Icon size={16} strokeWidth={isActive ? 2.3 : 2} color={isActive ? '#c8507a' : '#71717a'} />
               <span>{label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>

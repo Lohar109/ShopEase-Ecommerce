@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Trash2, Edit2, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAdmin } from '../context/AdminContext';
 import ConfirmModal from '../components/ConfirmModal';
 import TableSkeleton from '../components/TableSkeleton';
-import { addCategory, deleteCategory, fetchCategories, updateCategory } from '../services/categoryService';
+import { addCategory, deleteCategory, updateCategory } from '../services/categoryService';
 
 const CategoryPage = () => {
   const [isNarrowScreen, setIsNarrowScreen] = useState(window.innerWidth < 1100);
@@ -39,6 +40,13 @@ const CategoryPage = () => {
   const [expandedSubs, setExpandedSubs] = useState({});
   const [indicatorLayout, setIndicatorLayout] = useState({ left: 0, width: 0 });
   const tabsRef = useRef(null);
+  const {
+    categories: cachedCategories,
+    getCategories: getCachedCategories,
+    addCategory: syncAddCategory,
+    updateCategory: syncUpdateCategory,
+    deleteCategory: syncDeleteCategory,
+  } = useAdmin();
 
   useEffect(() => {
     const updateIndicator = () => {
@@ -60,7 +68,7 @@ const CategoryPage = () => {
   const loadCategories = async () => {
     try {
       setError('');
-      const data = await fetchCategories();
+      const data = await getCachedCategories();
       setCategories(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message || 'Failed to load categories');
@@ -71,8 +79,14 @@ const CategoryPage = () => {
   };
 
   useEffect(() => {
+    if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+      setCategories(cachedCategories);
+      setLoading(false);
+      return;
+    }
+
     loadCategories();
-  }, []);
+  }, [cachedCategories]);
 
   useEffect(() => {
     const onResize = () => setIsNarrowScreen(window.innerWidth < 1100);
@@ -218,10 +232,11 @@ const CategoryPage = () => {
         parent_id: null,
       });
       if (res) {
+        syncAddCategory(res);
+        setCategories((prev) => [...prev.filter((category) => String(category.id) !== String(res.id)), res]);
         toast.success('Category added successfully!', { position: 'top-center' });
       }
       setNewCategoryName('');
-      await loadCategories();
     } catch (err) {
       toast.error('Failed to add category.');
     } finally {
@@ -249,12 +264,13 @@ const CategoryPage = () => {
         level: 2,
       });
       if (res) {
+        syncAddCategory(res);
+        setCategories((prev) => [...prev.filter((category) => String(category.id) !== String(res.id)), res]);
         toast.success('Category added successfully!', { position: 'top-center' });
       }
       setSName('');
       setImg('');
       setPId('');
-      await loadCategories();
     } catch (err) {
       toast.error('Failed to add category.');
     } finally {
@@ -282,12 +298,13 @@ const CategoryPage = () => {
         level: 3,
       });
       if (res) {
+        syncAddCategory(res);
+        setCategories((prev) => [...prev.filter((category) => String(category.id) !== String(res.id)), res]);
         toast.success('Sub-subcategory added successfully!', { position: 'top-center' });
       }
       setSsName('');
       setSsImg('');
       setSsPId('');
-      await loadCategories();
     } catch (err) {
       toast.error('Failed to add sub-subcategory.');
     } finally {
@@ -337,12 +354,13 @@ const CategoryPage = () => {
 
     setUpdatingCategory(true);
     try {
-      await updateCategory(editingId, {
+      const updated = await updateCategory(editingId, {
         name: trimmedName,
         image: current.image ?? null,
         parent_id: current.parent_id ?? null,
       });
-      await loadCategories();
+      syncUpdateCategory(updated);
+      setCategories((prev) => prev.map((category) => (String(category.id) === String(updated.id) ? updated : category)));
       closeEditModal();
       toast.success('Category updated successfully!', { position: 'top-center' });
     } catch (err) {
@@ -372,7 +390,8 @@ const CategoryPage = () => {
     setDeletingCategoryId(targetId);
     try {
       await deleteCategory(targetId);
-      await loadCategories();
+      syncDeleteCategory(targetId);
+      setCategories((prev) => prev.filter((category) => String(category.id) !== String(targetId)));
       setIsModalOpen(false);
       setTargetId('');
       toast.success('Category deleted successfully', {

@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { deleteCoupon, fetchCoupons, updateCouponStatus } from '../services/couponService';
+import { useAdmin } from '../context/AdminContext';
+import { deleteCoupon, updateCouponStatus } from '../services/couponService';
 import ConfirmModal from '../components/ConfirmModal';
 
 const ToggleSwitch = ({ value, onToggle, disabled }) => {
@@ -60,6 +61,12 @@ const CouponsPage = () => {
   const [updatingStatus, setUpdatingStatus] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetCouponId, setTargetCouponId] = useState('');
+  const {
+    coupons: cachedCoupons,
+    getCoupons: getCachedCoupons,
+    updateCoupon: syncUpdateCoupon,
+    deleteCoupon: syncDeleteCoupon,
+  } = useAdmin();
 
   const sortedCoupons = useMemo(() => (
     [...coupons].sort((a, b) => new Date(a.expiry_date) - new Date(b.expiry_date))
@@ -68,9 +75,15 @@ const CouponsPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
+        if (Array.isArray(cachedCoupons) && cachedCoupons.length > 0) {
+          setCoupons(cachedCoupons);
+          setLoading(false);
+          return;
+        }
+
         setLoading(true);
         setError('');
-        const data = await fetchCoupons();
+        const data = await getCachedCoupons();
         setCoupons(data);
       } catch (err) {
         setError(err.message || 'Failed to load coupons');
@@ -80,7 +93,7 @@ const CouponsPage = () => {
     };
 
     load();
-  }, []);
+  }, [cachedCoupons, getCachedCoupons]);
 
   const handleToggleActive = async (coupon) => {
     const nextValue = !coupon.is_active;
@@ -90,6 +103,7 @@ const CouponsPage = () => {
     try {
       const updated = await updateCouponStatus(coupon.id, nextValue);
       setCoupons((prev) => prev.map((item) => (item.id === coupon.id ? { ...item, ...updated } : item)));
+      syncUpdateCoupon({ ...coupon, ...updated });
     } catch (err) {
       setCoupons((prev) => prev.map((item) => (item.id === coupon.id ? { ...item, is_active: coupon.is_active } : item)));
       toast.error(err.message || 'Failed to update status');
@@ -116,6 +130,7 @@ const CouponsPage = () => {
     try {
       await deleteCoupon(targetCouponId);
       setCoupons((prev) => prev.filter((coupon) => coupon.id !== targetCouponId));
+      syncDeleteCoupon(targetCouponId);
       setIsModalOpen(false);
       setTargetCouponId('');
       toast.success('Coupon deleted successfully', {
