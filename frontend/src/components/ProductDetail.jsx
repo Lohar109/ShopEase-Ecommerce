@@ -259,6 +259,11 @@ const ProductDetail = () => {
 
   const hasMultipleSubSizes = visibleSubOptions.length > 1;
 
+  const selectedSizeLabel = useMemo(() => {
+    const parsed = parseVariantSize(selectedVariant);
+    return [parsed.size_value, parsed.size_unit, parsed.size_info].filter(Boolean).join(' ').trim();
+  }, [selectedVariant]);
+
   useEffect(() => {
     if (sizeGroups.length === 0) {
       if (selectedSize !== null) setSelectedSize(null);
@@ -960,9 +965,7 @@ const ProductDetail = () => {
                   <div className="product-detail-size-selector" aria-label="Size variants">
                     <p className="product-detail-size-label">
                       <span className="product-detail-size-label-text">Selected size:</span>
-                      <span className="product-detail-size-label-value">
-                        {[selectedSizeGroup?.size_value, selectedSizeGroup?.size_unit].filter(Boolean).join(' ') || '-'}
-                      </span>
+                      <span className="product-detail-size-label-value">{selectedSizeLabel || '-'}</span>
                     </p>
                     <div className="size-chips">
                       {sizeGroups.map((group) => {
