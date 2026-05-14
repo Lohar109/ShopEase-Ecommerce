@@ -1096,13 +1096,7 @@ const ProductDetail = () => {
                       )}
                     </div>
 
-                    {hasDiscount && (
-                      <div style={{ color: '#28a745', fontSize: '0.82rem', fontWeight: 600, marginTop: 0 }}>
-                        You save Rs. {totalSavingsVal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                      </div>
-                    )}
-
-                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 2 : 4 }}>All taxes included</span>
+                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 8 : 4 }}>All taxes included</span>
                   </div>
 
                   {/* Quantity Selector */}
