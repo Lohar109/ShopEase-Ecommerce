@@ -124,6 +124,19 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .text-gray-400 { color: #9ca3af; }
         .text-right { text-align: right; }
         
+        /* Brand Coloring */
+        .text-brand { color: #FF6B6B; }
+        .brand-icon-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 9999px;
+          background-color: rgba(255, 107, 107, 0.08);
+          flex-shrink: 0;
+        }
+        
         /* Step 3 specifications typography */
         .spec-link { 
           display: inline-block; 
@@ -190,7 +203,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
               <div className="flex flex-col" aria-label="Product key highlights">
                 {highlightsList.map((bullet, idx) => (
                   <div key={idx} className="flex items-center gap-3 py-2">
-                    <DynamicIcon name={bullet.icon} className="w-5 h-5 text-gray-600" />
+                    <div className="brand-icon-container">
+                      <DynamicIcon name={bullet.icon} className="w-5 h-5 text-brand" />
+                    </div>
                     <span className="text-base text-gray-600 font-medium">{bullet.text}</span>
                   </div>
                 ))}
