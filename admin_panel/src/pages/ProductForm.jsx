@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -41,6 +41,7 @@ const STEPS = [
   { key: 'inventory', label: 'Inventory' },
   { key: 'galleries', label: 'Galleries' },
   { key: 'offers', label: 'Offers' },
+  { key: 'overview', label: 'Overview' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -2147,6 +2148,7 @@ const ProductForm = () => {
       inventory,
       galleries,
       offers,
+      overview: true,
     };
   }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError]);
 
@@ -5141,6 +5143,18 @@ const ProductForm = () => {
                           </div>
                         );
                       })}
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'overview' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Layout size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview</h3>
+                    </div>
+                    <div style={{ color: '#6b7280', fontSize: 14, lineHeight: 1.6, fontFamily: 'Poppins, sans-serif' }}>
+                      Select 'Save Product' or 'Update Product' in the header to persist product attributes, media arrays, and inventory configurations into active distribution.
                     </div>
                   </>
                 )}
