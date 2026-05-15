@@ -725,7 +725,7 @@ const ProductDetail = () => {
           </div>
 
           <div className="product-detail-container">
-            <div className="product-detail-main">
+            <div className="product-detail-main" style={{ gap: '18px' }}>
               {/* Left: Images */}
               <div className="product-detail-images-col">
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'stretch', width: '100%' }}>
@@ -824,7 +824,7 @@ const ProductDetail = () => {
                   {/* Main Image Display (Right Side) */}
                   <div className="product-detail-main-display" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: '0' }}>
                     <div className="product-detail-main-media-box"
-                      style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flex: 1, width: '100%', minHeight: '0' }}
+                      style={{ position: 'relative', overflow: 'hidden', cursor: 'default', flex: 1, width: '100%', minHeight: '0', maxWidth: '445px', aspectRatio: '4/5' }}
                     >
                       {/* Floating Share + Wishlist Buttons */}
                       <button
@@ -902,7 +902,7 @@ const ProductDetail = () => {
                             src={galleryItems[currentImageIndex]?.url}
                             alt={`${product.name}`}
                             className="product-detail-main-media"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', cursor: 'default' }}
                           />
                         )}
                       </div>
@@ -1251,13 +1251,13 @@ const ProductDetail = () => {
                     <div className="pdp-overview-left">
                       <h2>Organize Everything. Simplify Your Space.</h2>
                       <p>
-                        Maximize your living and workspaces with our versatile organizers. Crafted for optimal functionality, 
-                        each component streamlines your clutter to create clean, structured environments. Perfect for homes, 
+                        Maximize your living and workspaces with our versatile organizers. Crafted for optimal functionality,
+                        each component streamlines your clutter to create clean, structured environments. Perfect for homes,
                         dorms, and offices seeking modern utility.
                       </p>
                       <ul className="pdp-overview-bullets">
                         <li>
-                          <strong>Multi-purpose storage:</strong> Seamlessly accommodates office supplies, daily essentials, 
+                          <strong>Multi-purpose storage:</strong> Seamlessly accommodates office supplies, daily essentials,
                           and accessories.
                         </li>
                         <li>
@@ -1287,7 +1287,7 @@ const ProductDetail = () => {
                             <p>Ideal for arranging stationary, electronics, and writing utensils cleanly.</p>
                           </div>
                         </div>
-                        
+
                         <div className="pdp-usecase-card">
                           <div className="pdp-usecase-img-wrapper">
                             <img src="/assets/makeup_organizer_usecase.png" alt="Makeup Organizer Use Case" className="pdp-usecase-img" />
