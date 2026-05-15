@@ -1076,10 +1076,6 @@ const ProductDetail = () => {
                           </span>
                         </>
                       )}
-
-                      <span className="product-detail-tax" style={{ fontSize: '0.875rem', color: '#6b7280', marginLeft: '8px' }}>
-                        Inclusive of all taxes
-                      </span>
                     </div>
                   </div>
 
