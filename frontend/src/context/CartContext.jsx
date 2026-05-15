@@ -48,6 +48,7 @@ export const CartProvider = ({ children }) => {
         size: normalizedSize,
         color: normalizedColor,
         price: selectedVariant.price ?? null,
+        mrp: selectedVariant.mrp ?? null,
         quantity,
       },
     ]);

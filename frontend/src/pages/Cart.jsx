@@ -26,7 +26,10 @@ const Cart = () => {
 
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
   const platformFee = 250;
-  const memberDiscount = -5000;
+  
+  // Calculate actual discount based on MRP vs Selling Price
+  const memberDiscount = -Math.max(0, cartItems.reduce((acc, item) => acc + (Number(item.mrp || item.price || 0) * Number(item.quantity || 1)) - (Number(item.price || 0) * Number(item.quantity || 1)), 0));
+  
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
 
@@ -61,7 +64,7 @@ const Cart = () => {
   const appliedCouponSavings = getCouponSavings(appliedCoupon);
   const selectedCouponSavings = getCouponSavings(selectedCoupon);
   const newGrandTotal = subtotal + platformFee + memberDiscount - appliedCouponSavings;
-  const savingsAmount = Math.abs(memberDiscount) - platformFee + appliedCouponSavings;
+  const savingsAmount = Math.abs(memberDiscount) + appliedCouponSavings;
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
