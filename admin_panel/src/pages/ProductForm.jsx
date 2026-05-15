@@ -5265,14 +5265,14 @@ const ProductForm = () => {
 
                   return (
                     <>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eef0f3', paddingBottom: 20, marginBottom: 28 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, borderBottom: '1px solid #eef0f3', paddingBottom: 20, marginBottom: 28 }}>
                         <div className="pf-section-title" style={{ marginBottom: 0 }}>
                           <span className="pf-section-title-icon"><Layout size={16} /></span>
-                          <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview Configuration</h3>
+                          <h3 style={{ fontSize: 22, fontWeight: 700, color: '#111', margin: 0, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Overview Configuration</h3>
                         </div>
 
                         {/* Sub-Stepper */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start' }}>
                           {[
                             { step: 1, label: 'Intro' },
                             { step: 2, label: 'Use Cases' },
