@@ -152,16 +152,24 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .spec-link { 
           display: inline-block; 
           font-size: 0.875rem; 
-          font-weight: 600; 
-          color: #2563eb; 
+          font-weight: 500 !important; 
+          color: #c21f58ff !important; 
           cursor: pointer; 
           text-decoration: none; 
-          padding: 0;
+          padding: 0 !important;
           text-align: left;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          transform: none !important;
+          transition: none !important;
         }
         .spec-link:hover {
-          text-decoration: underline;
-          color: #1d4ed8;
+          text-decoration: underline !important;
+          color: #c21f58ff !important;
+          background: transparent !important;
+          transform: none !important;
+          box-shadow: none !important;
         }
         
         .relative { position: relative; }
