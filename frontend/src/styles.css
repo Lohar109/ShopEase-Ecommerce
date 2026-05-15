@@ -1452,13 +1452,13 @@ button:hover {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #fce7f3;
+    background-color: #ffffff;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     border: none;
     cursor: pointer;
     padding: 0;
@@ -1467,8 +1467,8 @@ button:hover {
 
 .card-wishlist-btn:hover {
     transform: scale(1.08);
-    background-color: #fbcfe8;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 .product-card-price-heart-row {
@@ -1485,8 +1485,8 @@ button:hover {
 
 .card-wishlist-btn:hover svg,
 .card-wishlist-btn.active svg {
-    fill: #e33170 !important;
-    stroke: #e33170 !important;
+    fill: #ef4444 !important;
+    stroke: #ef4444 !important;
     transform: scale(1.1);
 }
 
