@@ -9,8 +9,8 @@ const DynamicIcon = ({ name, className }) => {
   return <IconComponent className={className} />;
 };
 
-const ProductOverview = ({ overview, specifications, setActiveTab }) => {
-  // Added active console logging tracker per instructions
+const ProductOverview = ({ overview, product, specifications, setActiveTab }) => {
+  // console logging tracker per instructions
   console.log('Overview Content:', overview);
 
   // Safe guard against null prop
@@ -18,8 +18,14 @@ const ProductOverview = ({ overview, specifications, setActiveTab }) => {
     return null;
   }
 
-  const { intro } = overview;
-  const bullets = intro.bullets || [];
+  // Logic refinements based on console log inspection:
+  // Highlights location resolution
+  const highlightsList = Array.isArray(overview.highlights) 
+    ? overview.highlights 
+    : (Array.isArray(overview.intro?.bullets) ? overview.intro.bullets : []);
+  
+  // Specifications key resolution (supports both product.specs and product.specifications)
+  const activeSpecs = product?.specs || product?.specifications || specifications || {};
   const useCases = Array.isArray(overview.use_cases) ? overview.use_cases : [];
 
   return (
@@ -146,18 +152,19 @@ const ProductOverview = ({ overview, specifications, setActiveTab }) => {
         {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* Left Column (col-span-4): Heading, Refined Description, and Clean Highlights */}
+          {/* Left Column (col-span-4): Dynamic Heading, Refined Description, and Conditional Highlights */}
           <div className="lg:col-span-4 flex flex-col text-left">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-6">
-              {intro.heading}
+              {product?.name}
             </h2>
             
-            {/* Strict exact description renderer instructed by user */}
-            {overview?.intro?.description && <p className='text-gray-500 text-lg mb-8 leading-relaxed'>{overview.intro.description}</p>}
+            {/* Exact description renderer checking .text key instructed by user */}
+            {overview?.intro?.text && <p className='text-gray-500 text-lg mb-8 leading-relaxed'>{overview.intro.text}</p>}
 
-            {bullets.length > 0 && (
+            {/* Highlights List - hidden if missing from both possible root locations */}
+            {highlightsList && highlightsList.length > 0 && (
               <div className="flex flex-col" aria-label="Product key highlights">
-                {bullets.map((bullet, idx) => (
+                {highlightsList.map((bullet, idx) => (
                   <div key={idx} className="flex items-center gap-3 py-2">
                     <DynamicIcon name={bullet.icon} className="w-5 h-5 text-gray-600" />
                     <span className="text-base text-gray-700 font-medium">{bullet.text}</span>
@@ -210,9 +217,9 @@ const ProductOverview = ({ overview, specifications, setActiveTab }) => {
             </h3>
             
             <div className="flex-1 mb-4 overflow-hidden">
-              {specifications && Object.keys(specifications).length > 0 ? (
+              {activeSpecs && Object.keys(activeSpecs).length > 0 ? (
                 <div className="flex flex-col gap-2.5">
-                  {Object.entries(specifications).slice(0, 5).map(([key, value], idx) => (
+                  {Object.entries(activeSpecs).slice(0, 5).map(([key, value], idx) => (
                     <div key={idx} className="flex items-center justify-between border-b py-1 text-sm gap-4">
                       <span className="font-bold text-gray-900 capitalize">{key}</span>
                       <span className="text-gray-500 text-right">{String(value)}</span>

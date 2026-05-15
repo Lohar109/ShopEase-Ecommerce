@@ -1246,6 +1246,7 @@ const ProductDetail = () => {
                 {activeTab === 'Overview' && (
                   <ProductOverview 
                     overview={product?.overview} 
+                    product={product}
                     specifications={product?.specifications}
                     setActiveTab={setActiveTab}
                   />
