@@ -40,6 +40,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .gap-4 { gap: 1rem; }
         .gap-3 { gap: 0.75rem; }
         .gap-2 { gap: 0.5rem; }
+        .gap-1\\.5 { gap: 0.375rem; }
         
         .mt-12 { margin-top: 3rem; }
         .mt-0\\.5 { margin-top: 0.125rem; }
@@ -51,6 +52,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         
         .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
         .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-0\\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
         .pb-4 { padding-bottom: 1rem; }
         .p-6 { padding: 1.5rem; }
         
@@ -262,9 +264,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             <div className="flex-1 mb-4 overflow-hidden">
               {activeSpecs && Object.keys(activeSpecs).length > 0 ? (
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-1.5">
                   {Object.entries(activeSpecs).slice(0, 5).map(([key, value], idx) => (
-                    <div key={idx} className="flex items-center justify-between border-b py-1 text-sm gap-4">
+                    <div key={idx} className="flex items-center justify-between border-b py-0.5 text-sm gap-4">
                       <span className="font-normal text-gray-900 capitalize">{key}</span>
                       <span className="text-gray-500 text-right">{String(value)}</span>
                     </div>
