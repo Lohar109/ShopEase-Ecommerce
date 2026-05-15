@@ -9,7 +9,10 @@ const DynamicIcon = ({ name, className }) => {
   return <IconComponent className={className} />;
 };
 
-const ProductOverview = ({ overview }) => {
+const ProductOverview = ({ overview, specifications, setActiveTab }) => {
+  // Added active console logging tracker per instructions
+  console.log('Overview Content:', overview);
+
   // Safe guard against null prop
   if (!overview || !overview.intro) {
     return null;
@@ -38,14 +41,18 @@ const ProductOverview = ({ overview }) => {
         .mb-8 { margin-bottom: 2rem; }
         
         .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
         .pb-4 { padding-bottom: 1rem; }
         .p-6 { padding: 1.5rem; }
         
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
         .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
         .flex-shrink-0 { flex-shrink: 0; }
+        .flex-1 { flex: 1 1 0%; }
         .block { display: block; }
+        .h-full { height: 100%; }
         
         .overflow-hidden { overflow: hidden; }
         .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -58,8 +65,12 @@ const ProductOverview = ({ overview }) => {
         
         .bg-white { background-color: #ffffff; }
         .bg-gray-50 { background-color: #f9fafb; }
+        .bg-transparent { background-color: transparent; }
         .border { border: 1px solid #e5e7eb; }
+        .border-b { border-bottom: 1px solid #f3f4f6; }
+        .border-none { border: none; }
         .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-50 { border-color: #f9fafb; }
         
         .rounded-2xl { border-radius: 1rem; }
         .rounded-3xl { border-radius: 1.5rem; }
@@ -83,6 +94,7 @@ const ProductOverview = ({ overview }) => {
         .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
         .text-base { font-size: 1rem; line-height: 1.5rem; }
         .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; }
         
         .font-bold { font-weight: 700; }
         .font-semibold { font-weight: 600; }
@@ -95,6 +107,24 @@ const ProductOverview = ({ overview }) => {
         .text-gray-700 { color: #374151; }
         .text-gray-600 { color: #4b5563; }
         .text-gray-500 { color: #6b7280; }
+        .text-right { text-align: right; }
+        
+        /* Step 3 specifications typography */
+        .spec-link { 
+          display: inline-block; 
+          margin-top: auto; 
+          font-size: 0.875rem; 
+          font-weight: 600; 
+          color: #2563eb; 
+          cursor: pointer; 
+          text-decoration: none; 
+          padding: 0;
+          text-align: left;
+        }
+        .spec-link:hover {
+          text-decoration: underline;
+          color: #1d4ed8;
+        }
         
         /* Responsive grids */
         .grid-cols-1 { grid-template-columns: 1fr; }
@@ -122,9 +152,8 @@ const ProductOverview = ({ overview }) => {
               {intro.heading}
             </h2>
             
-            <p className="text-gray-500 text-lg leading-relaxed block mb-8">
-              {intro.description}
-            </p>
+            {/* Strict exact description renderer instructed by user */}
+            {overview?.intro?.description && <p className='text-gray-500 text-lg mb-8 leading-relaxed'>{overview.intro.description}</p>}
 
             {bullets.length > 0 && (
               <div className="flex flex-col" aria-label="Product key highlights">
@@ -173,40 +202,73 @@ const ProductOverview = ({ overview }) => {
         {/* Bottom Section (4-Column Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
           
-          {/* Specifications */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+          {/* Step 3: Specifications Map Tracker */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 flex-shrink-0">
               <Icons.Cpu className="w-5 h-5 text-gray-600" />
               Specifications
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed">Detailed technical specifications pending.</div>
+            
+            <div className="flex-1 mb-4 overflow-hidden">
+              {specifications && Object.keys(specifications).length > 0 ? (
+                <div className="flex flex-col gap-2.5">
+                  {Object.entries(specifications).slice(0, 5).map(([key, value], idx) => (
+                    <div key={idx} className="flex items-center justify-between border-b py-1 text-sm gap-4">
+                      <span className="font-bold text-gray-900 capitalize">{key}</span>
+                      <span className="text-gray-500 text-right">{String(value)}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500 leading-relaxed">Detailed technical specifications pending.</div>
+              )}
+            </div>
+
+            <button 
+              type="button"
+              className="spec-link border-none bg-transparent"
+              onClick={(e) => {
+                e.preventDefault();
+                if (setActiveTab) {
+                  setActiveTab('Specifications');
+                  setTimeout(() => {
+                    const tabSection = document.querySelector('.pdp-tab-content-wrapper');
+                    if (tabSection) {
+                      tabSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }, 80);
+                }
+              }}
+            >
+              View full details →
+            </button>
           </div>
 
           {/* What's in the Box */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 flex-shrink-0">
               <Icons.Package className="w-5 h-5 text-gray-600" />
               What's in the Box
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed">Component inventory mapping pending.</div>
+            <div className="text-sm text-gray-500 leading-relaxed flex-1">Component inventory mapping pending.</div>
           </div>
 
           {/* Perfect For */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 flex-shrink-0">
               <Icons.Compass className="w-5 h-5 text-gray-600" />
               Perfect For
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed">Scenario context mapping pending.</div>
+            <div className="text-sm text-gray-500 leading-relaxed flex-1">Scenario context mapping pending.</div>
           </div>
 
           {/* Why You'll Love It */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 flex-shrink-0">
               <Icons.Heart className="w-5 h-5 text-gray-600" />
               Why You'll Love It
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed">Value proposition outlines pending.</div>
+            <div className="text-sm text-gray-500 leading-relaxed flex-1">Value proposition outlines pending.</div>
           </div>
 
         </div>

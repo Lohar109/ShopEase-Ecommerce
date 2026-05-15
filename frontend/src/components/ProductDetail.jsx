@@ -1244,7 +1244,11 @@ const ProductDetail = () => {
 
               <div className="pdp-tab-content-wrapper">
                 {activeTab === 'Overview' && (
-                  <ProductOverview overview={product?.overview} />
+                  <ProductOverview 
+                    overview={product?.overview} 
+                    specifications={product?.specifications}
+                    setActiveTab={setActiveTab}
+                  />
                 )}
 
                 {activeTab === 'Specifications' && (
