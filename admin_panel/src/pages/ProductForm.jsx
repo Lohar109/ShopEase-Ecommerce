@@ -5803,24 +5803,36 @@ const ProductForm = () => {
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Perfect For Scenarios</label>
                             {(overviewData.perfect_for || []).map((pf, idx) => (
-                              <div key={`perfect-${idx}`} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 160px' }}>
-                                  <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
-                                    {renderIcon(pf.icon)}
-                                  </div>
-                                  <select
-                                    className="custom-input"
-                                    value={pf.icon || 'Smile'}
-                                    onChange={(e) => {
-                                      const updated = [...(overviewData.perfect_for || [])];
-                                      updated[idx] = { ...updated[idx], icon: e.target.value };
-                                      setOverviewData(prev => ({ ...prev, perfect_for: updated }));
-                                    }}
-                                    style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
-                                  >
-                                    {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
-                                  </select>
+                              <div key={`perfect-${idx}`} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'center' }}>
+                                {/* Col 1: Icon Preview Box */}
+                                <div style={{
+                                  width: 45,
+                                  height: 45,
+                                  minWidth: 45,
+                                  border: '1px solid #d1d5db',
+                                  borderRadius: 12,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: '#c8507a',
+                                  background: '#f9fafb',
+                                }}>
+                                  {renderIcon(pf.icon)}
                                 </div>
+
+                                {/* Col 2: Searchable Icon Select */}
+                                <IconSearchableSelect
+                                  value={pf.icon}
+                                  onChange={(newIcon) => {
+                                    const updated = [...(overviewData.perfect_for || [])];
+                                    updated[idx] = { ...updated[idx], icon: newIcon };
+                                    setOverviewData(prev => ({ ...prev, perfect_for: updated }));
+                                  }}
+                                  iconCategories={typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES : []}
+                                  renderIcon={renderIcon}
+                                />
+
+                                {/* Col 3: Scenario Context */}
                                 <input
                                   className="custom-input"
                                   type="text"
@@ -5831,7 +5843,7 @@ const ProductForm = () => {
                                     setOverviewData(prev => ({ ...prev, perfect_for: updated }));
                                   }}
                                   placeholder="e.g. Workspaces, Makeup Counters, Bedrooms..."
-                                  style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                                 />
                                 <button
                                   type="button"
