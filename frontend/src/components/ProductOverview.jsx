@@ -43,6 +43,8 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .gap-1\\.5 { gap: 0.375rem; }
         
         .mt-12 { margin-top: 3rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mt-6 { margin-top: 1.5rem; }
         .mt-0\\.5 { margin-top: 0.125rem; }
         .mb-2 { margin-bottom: 0.5rem; }
         .mb-3 { margin-bottom: 0.75rem; }
@@ -148,7 +150,6 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         /* Step 3 specifications typography */
         .spec-link { 
           display: inline-block; 
-          margin-top: auto; 
           font-size: 0.875rem; 
           font-weight: 600; 
           color: #2563eb; 
@@ -262,7 +263,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
               Specifications
             </h3>
 
-            <div className="flex-1 mb-4 overflow-hidden">
+            <div className="overflow-hidden">
               {activeSpecs && Object.keys(activeSpecs).length > 0 ? (
                 <div className="flex flex-col gap-1.5">
                   {Object.entries(activeSpecs).slice(0, 5).map(([key, value], idx) => (
@@ -279,7 +280,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             <button
               type="button"
-              className="spec-link border-none bg-transparent"
+              className="spec-link border-none bg-transparent mt-6"
               onClick={(e) => {
                 e.preventDefault();
                 if (setActiveTab) {
