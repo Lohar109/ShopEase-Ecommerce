@@ -34,6 +34,7 @@ const ProductDetail = () => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentModalIndex, setCurrentModalIndex] = useState(0);
   const [allCategories, setAllCategories] = useState([]);
+  const [activeTab, setActiveTab] = useState('Overview');
   const redirectTimerRef = useRef(null);
   const navigate = useNavigate();
   const { cartItems, addToCart } = useCart();
@@ -1244,6 +1245,118 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Tabbed Navigation Section */}
+            <div className="pdp-tabs-container">
+              <div className="pdp-tabs-nav">
+                {['Overview', 'Specifications', "What's in the Box", 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
+                  const isActive = activeTab === tab;
+                  const label = tab === 'Reviews' ? `Reviews (${product?.reviewCount ?? '328'})` : tab;
+                  return (
+                    <button
+                      key={tab}
+                      className={`pdp-tab-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab)}
+                      type="button"
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="pdp-tab-content-wrapper">
+                {activeTab === 'Overview' && (
+                  <div className="pdp-tab-content pdp-overview-tab">
+                    <div className="pdp-overview-left">
+                      <h2>Organize Everything. Simplify Your Space.</h2>
+                      <p>
+                        Maximize your living and workspaces with our versatile organizers. Crafted for optimal functionality, 
+                        each component streamlines your clutter to create clean, structured environments. Perfect for homes, 
+                        dorms, and offices seeking modern utility.
+                      </p>
+                      <ul className="pdp-overview-bullets">
+                        <li>
+                          <strong>Multi-purpose storage:</strong> Seamlessly accommodates office supplies, daily essentials, 
+                          and accessories.
+                        </li>
+                        <li>
+                          <strong>Durable quality:</strong> Built with heavy-duty, premium materials that stand the test of time.
+                        </li>
+                        <li>
+                          <strong>Space-saving footprint:</strong> Compact profile that maximizes vertical storage without hogging surfaces.
+                        </li>
+                        <li>
+                          <strong>Modern aesthetics:</strong> Sleek designs with subtle visual cues that adapt nicely to any interior.
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="pdp-overview-right">
+                      <div className="pdp-usecase-grid">
+                        <div className="pdp-usecase-card">
+                          <div className="pdp-usecase-img-wrapper">
+                            <img src="/assets/desk_organizer_usecase.png" alt="Desk Organizer Use Case" className="pdp-usecase-img" />
+                          </div>
+                          <div className="pdp-usecase-body">
+                            <div className="pdp-usecase-badge">
+                              <div className="pdp-usecase-icon-circle">
+                                <Cpu size={16} strokeWidth={2} />
+                              </div>
+                              <h3>Desk Organizer</h3>
+                            </div>
+                            <p>Ideal for arranging stationary, electronics, and writing utensils cleanly.</p>
+                          </div>
+                        </div>
+                        
+                        <div className="pdp-usecase-card">
+                          <div className="pdp-usecase-img-wrapper">
+                            <img src="/assets/makeup_organizer_usecase.png" alt="Makeup Organizer Use Case" className="pdp-usecase-img" />
+                          </div>
+                          <div className="pdp-usecase-body">
+                            <div className="pdp-usecase-badge">
+                              <div className="pdp-usecase-icon-circle">
+                                <Zap size={16} strokeWidth={2} />
+                              </div>
+                              <h3>Makeup Organizer</h3>
+                            </div>
+                            <p>Keep beauty blenders, brushes, palettes, and lipsticks beautifully arranged.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'Specifications' && (
+                  <div className="pdp-tab-content pdp-specs-tab">
+                    {(!product?.specifications || Object.keys(product.specifications).length === 0) ? (
+                      <p className="no-specs-message" style={{ textAlign: 'center', color: '#6b7280', padding: '2rem' }}>
+                        No specifications available for this product.
+                      </p>
+                    ) : (
+                      <div className="pdp-specs-list">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="pdp-spec-row">
+                            <span className="spec-label">{key.toUpperCase()}</span>
+                            <span className="spec-value">{formatSpecificationValue(value)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {['What\'s in the Box', 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
+                  if (activeTab !== tab) return null;
+                  return (
+                    <div key={tab} className="pdp-tab-content pdp-placeholder-content">
+                      <h3>{tab}</h3>
+                      <p>Detailed data for {tab.toLowerCase()} will be loaded shortly. Enjoy premium product walkthroughs soon!</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
