@@ -2852,26 +2852,25 @@
 }
 
 .pdp-tab-btn {
-  background: transparent;
+  background: transparent !important;
   border: none;
   border-bottom: 2px solid transparent;
   padding: 1rem 0.25rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #6b7280; /* Gray 500 text */
+  color: #6b7280; /* text-gray-500 */
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
   font-family: 'Poppins', sans-serif;
+  transform: none !important;
+  transition: none !important; /* Stop the lift / movement */
 }
 
-.pdp-tab-btn:hover {
-  color: #111827;
-}
+/* Hover effect is strictly cursor-pointer, no color/lift animations */
 
 .pdp-tab-btn.active {
-  color: #000000; /* Bold text */
-  font-weight: 700;
+  color: #000000; /* text-black */
+  font-weight: 700; /* bold */
   border-bottom: 2px solid #000000; /* border-b-2 border-black */
 }
 
