@@ -2774,3 +2774,55 @@
   top: 0 !important;
   box-shadow: none !important;
 }
+
+/* Trust Badges Section */
+.pdp-trust-badges {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .pdp-trust-badges {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pdp-trust-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.pdp-trust-badge-icon {
+  color: #4b5563; /* Gray 600 equivalent */
+  flex-shrink: 0;
+}
+
+.pdp-trust-badge-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.pdp-trust-badge-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1f2937; /* Gray 800 - small, bold, dark */
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}
+
+.pdp-trust-badge-subtext {
+  font-size: 0.6875rem; /* Even smaller text */
+  color: #6b7280; /* text-gray-500 equivalent */
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}

@@ -4,7 +4,7 @@ import "./ProductDetail.css";
 import { useCart } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
-import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2 } from "lucide-react";
+import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2, Truck, RotateCcw, ShieldCheck, Award } from "lucide-react";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1210,6 +1210,38 @@ const ProductDetail = () => {
                     >
                       {isRedirectingToCheckout ? 'Redirecting to checkout...' : 'Buy Now'}
                     </button>
+                  </div>
+
+                  {/* Trust Badges Section */}
+                  <div className="pdp-trust-badges">
+                    <div className="pdp-trust-badge-item">
+                      <Truck size={22} strokeWidth={1.25} className="pdp-trust-badge-icon" />
+                      <div className="pdp-trust-badge-content">
+                        <span className="pdp-trust-badge-title">Free Delivery</span>
+                        <span className="pdp-trust-badge-subtext">On orders above ₹499</span>
+                      </div>
+                    </div>
+                    <div className="pdp-trust-badge-item">
+                      <RotateCcw size={22} strokeWidth={1.25} className="pdp-trust-badge-icon" />
+                      <div className="pdp-trust-badge-content">
+                        <span className="pdp-trust-badge-title">7 Days Return</span>
+                        <span className="pdp-trust-badge-subtext">No questions asked</span>
+                      </div>
+                    </div>
+                    <div className="pdp-trust-badge-item">
+                      <ShieldCheck size={22} strokeWidth={1.25} className="pdp-trust-badge-icon" />
+                      <div className="pdp-trust-badge-content">
+                        <span className="pdp-trust-badge-title">Secure Payment</span>
+                        <span className="pdp-trust-badge-subtext">100% protected</span>
+                      </div>
+                    </div>
+                    <div className="pdp-trust-badge-item">
+                      <Award size={22} strokeWidth={1.25} className="pdp-trust-badge-icon" />
+                      <div className="pdp-trust-badge-content">
+                        <span className="pdp-trust-badge-title">Top Quality</span>
+                        <span className="pdp-trust-badge-subtext">Premium materials</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
