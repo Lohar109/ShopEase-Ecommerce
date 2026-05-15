@@ -55,6 +55,127 @@ const formatAudienceLabel = (aud) => {
     .join(' ');
 };
 
+const IconSearchableSelect = ({ value, onChange, iconOptions, renderIcon }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchTerm('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredOptions = (iconOptions || []).filter(option =>
+    String(option).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelect = (option) => {
+    onChange(option);
+    setSearchTerm('');
+    setIsOpen(false);
+  };
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative', flex: '0 0 160px' }}>
+      <div style={{ position: 'relative' }}>
+        <input
+          className="custom-input"
+          type="text"
+          value={isOpen ? searchTerm : (value || '')}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            if (!isOpen) setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          placeholder={isOpen ? "Search icons..." : (value || "Select Icon")}
+          style={{
+            width: '100%',
+            padding: '10px 34px 10px 14px',
+            borderRadius: 12,
+            border: '1px solid #a0a0a0',
+            cursor: 'text',
+            background: '#fff',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            right: 12,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            color: '#9ca3af',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <ChevronDown size={16} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+        </div>
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            right: 0,
+            maxHeight: '200px',
+            overflowY: 'auto',
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            zIndex: 999,
+            padding: '6px',
+          }}
+        >
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option) => {
+              const isSelected = value === option;
+              return (
+                <div
+                  key={option}
+                  onClick={() => handleSelect(option)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    backgroundColor: isSelected ? '#f3f4f6' : 'transparent',
+                    transition: 'background-color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <span style={{ color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                    {renderIcon(option)}
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#374151', fontWeight: isSelected ? 600 : 500 }}>
+                    {option}
+                  </span>
+                </div>
+              );
+            })
+          ) : (
+            <div style={{ padding: '12px', textAlign: 'center', color: '#9ca3af', fontSize: '12px' }}>
+              No matching icons
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -5410,23 +5531,16 @@ const ProductForm = () => {
                                     {renderIcon(b.icon)}
                                   </div>
 
-                                  {/* Col 2: Icon Name Input */}
-                                  <input
-                                    className="custom-input"
-                                    type="text"
-                                    value={b.icon || ''}
-                                    onChange={(e) => {
+                                  {/* Col 2: Searchable Icon Select */}
+                                  <IconSearchableSelect
+                                    value={b.icon}
+                                    onChange={(newIcon) => {
                                       const updated = [...(overviewData.intro?.bullets || [])];
-                                      updated[idx] = { ...updated[idx], icon: e.target.value };
+                                      updated[idx] = { ...updated[idx], icon: newIcon };
                                       setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
                                     }}
-                                    placeholder="Icon (e.g. Truck)"
-                                    style={{
-                                      flex: '0 0 150px',
-                                      padding: '10px 14px',
-                                      borderRadius: 12,
-                                      border: '1px solid #a0a0a0',
-                                    }}
+                                    iconOptions={iconOptions}
+                                    renderIcon={renderIcon}
                                   />
 
                                   {/* Col 3: Highlight Description */}
