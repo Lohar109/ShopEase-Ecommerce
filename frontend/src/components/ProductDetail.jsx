@@ -902,7 +902,7 @@ const ProductDetail = () => {
                             src={galleryItems[currentImageIndex]?.url}
                             alt={`${product.name}`}
                             className="product-detail-main-media"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', cursor: 'default' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'default' }}
                           />
                         )}
                       </div>
