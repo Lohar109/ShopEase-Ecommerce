@@ -38,9 +38,27 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
+
+  // Debug log to verify process.env configuration
+  console.log('[DEBUG] Incoming userController login. Current ENV admin credentials:', {
+    envEmail: process.env.ADMIN_EMAIL,
+    envPassword: process.env.ADMIN_PASSWORD
+  });
+
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
+
+  // Compare against Admin Credentials from process.env
+  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    const token = jwt.sign(
+      { userId: 'admin', email: email, role: 'admin' },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '24h' }
+    );
+    return res.json({ token, message: 'Admin Login Successful' });
+  }
+
   try {
     const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (userResult.rows.length === 0) {
