@@ -2853,25 +2853,43 @@
 
 .pdp-tab-btn {
   background: transparent !important;
-  border: none;
-  border-bottom: 2px solid transparent;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
   padding: 1rem 0.25rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #6b7280; /* text-gray-500 */
-  cursor: pointer;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: pointer !important;
   white-space: nowrap;
   font-family: 'Poppins', sans-serif;
   transform: none !important;
   transition: none !important; /* Stop the lift / movement */
+  box-shadow: none !important;
+  border-radius: 0 !important; /* Strip inherited rounded borders */
 }
 
-/* Hover effect is strictly cursor-pointer, no color/lift animations */
+/* Completely neutralize global button:hover effects */
+.pdp-tab-btn:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  color: #6b7280 !important;
+}
 
 .pdp-tab-btn.active {
-  color: #000000; /* text-black */
-  font-weight: 700; /* bold */
-  border-bottom: 2px solid #000000; /* border-b-2 border-black */
+  color: #000000 !important; /* text-black */
+  font-weight: 700 !important; /* bold */
+  border-bottom: 2px solid #000000 !important; /* border-b-2 border-black */
+}
+
+.pdp-tab-btn.active:hover {
+  color: #000000 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .pdp-tab-content-wrapper {
