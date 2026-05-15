@@ -5272,7 +5272,7 @@ const ProductForm = () => {
                         </div>
 
                         {/* Sub-Stepper */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>
                           {[
                             { step: 1, label: 'Intro' },
                             { step: 2, label: 'Use Cases' },
