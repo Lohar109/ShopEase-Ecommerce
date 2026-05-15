@@ -45,6 +45,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .mt-12 { margin-top: 3rem; }
         .mt-8 { margin-top: 2rem; }
         .mt-6 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 1rem; }
         .mt-0\\.5 { margin-top: 0.125rem; }
         .mb-2 { margin-bottom: 0.5rem; }
         .mb-3 { margin-bottom: 0.75rem; }
@@ -259,7 +260,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Step 3: Specifications Map Tracker */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               Specifications
             </h3>
 
@@ -280,7 +281,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             <button
               type="button"
-              className="spec-link border-none bg-transparent mt-6"
+              className="spec-link border-none bg-transparent mt-4"
               onClick={(e) => {
                 e.preventDefault();
                 if (setActiveTab) {
@@ -300,7 +301,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* What's in the Box */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               What's in the Box
             </h3>
             <div className="text-sm text-gray-500 leading-relaxed flex-1">Component inventory mapping pending.</div>
@@ -308,13 +309,13 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Perfect For */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               Perfect For
             </h3>
             <div className="flex-1 mb-4 overflow-hidden">
               <div className="flex flex-col">
                 {Array.isArray(overview?.perfect_for) && overview.perfect_for.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 mb-4">
+                  <div key={idx} className="flex items-start gap-3 mb-3">
                     <DynamicIcon name={item?.icon} className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
                     <span className="text-[13px] text-gray-500 leading-snug flex-1">{item?.label || item?.text}</span>
                   </div>
@@ -325,13 +326,13 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Why You'll Love It */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               Why You'll Love It
             </h3>
             <div className="flex-1 mb-4 overflow-hidden">
               <div className="flex flex-col">
                 {Array.isArray(overview?.why_love_it) && overview.why_love_it.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 mb-4">
+                  <div key={idx} className="flex items-start gap-3 mb-3">
                     <DynamicIcon name={item?.icon} className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
                     <span className="text-[13px] text-gray-500 leading-snug flex-1">{item?.text || item?.label}</span>
                   </div>
