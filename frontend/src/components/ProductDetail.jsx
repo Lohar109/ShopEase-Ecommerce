@@ -1074,7 +1074,7 @@ const ProductDetail = () => {
                         <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
                           Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                         </span>
-                        <span className="product-detail-tax" style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 400 }}>
+                        <span className="product-detail-tax" style={{ fontSize: '13px', color: '#6b7280' }}>
                           Inclusive of all taxes
                         </span>
                       </div>
