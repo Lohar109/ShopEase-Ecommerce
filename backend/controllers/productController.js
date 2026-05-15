@@ -174,7 +174,8 @@ exports.createProduct = async (req, res) => {
       images = [],
       specifications = {},
       variants = [],
-      audience
+      audience,
+      overview = {}
     } = req.body;
 
     // Validate audience_id exists
@@ -188,10 +189,10 @@ exports.createProduct = async (req, res) => {
     await client.query('BEGIN');
     // Insert product
     const productResult = await client.query(
-      `INSERT INTO product (name, slug, brand, description, category_id, main_image, images, specifications, audience)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO product (name, slug, brand, description, category_id, main_image, images, specifications, audience, overview)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING id` ,
-      [name, slug, brand, description, category_id, main_image, images, specifications, audience]
+      [name, slug, brand, description, category_id, main_image, images, specifications, audience, overview]
     );
     const productId = productResult.rows[0].id;
 
@@ -281,7 +282,8 @@ exports.updateProduct = async (req, res) => {
       images = [],
       specifications = {},
       audience,
-      variants = []
+      variants = [],
+      overview = {}
     } = req.body;
 
     // Validate audience_id exists
@@ -297,9 +299,9 @@ exports.updateProduct = async (req, res) => {
     // Update product
     const productResult = await client.query(
       `UPDATE product 
-       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10 
-       WHERE id = $11 RETURNING id`,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, id]
+       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11
+       WHERE id = $12 RETURNING id`,
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, id]
     );
 
     if (productResult.rows.length === 0) {

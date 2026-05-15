@@ -121,6 +121,11 @@ const ProductForm = () => {
   const [subcategoryId, setSubcategoryId] = useState('');
   const [subSubcategoryId, setSubSubcategoryId] = useState('');
   const [audience, setAudience] = useState('');
+  const [overview, setOverview] = useState({
+    intro: { heading: '', text: '' },
+    bullets: [''],
+    use_cases: [{ image: '', title: '', description: '' }]
+  });
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
   const [audiencesLoading, setAudiencesLoading] = useState(false);
@@ -1440,6 +1445,18 @@ const ProductForm = () => {
         setAudience(p?.audience ? parseInt(p.audience) : '');
         setMainImage(p?.main_image || '');
         setVideoUrl(p?.video_url || '');
+        
+        const loadedOverview = p?.overview || {};
+        setOverview({
+          intro: {
+            heading: loadedOverview.intro?.heading || '',
+            text: loadedOverview.intro?.text || '',
+          },
+          bullets: Array.isArray(loadedOverview.bullets) && loadedOverview.bullets.length > 0 ? loadedOverview.bullets : [''],
+          use_cases: Array.isArray(loadedOverview.use_cases) && loadedOverview.use_cases.length > 0 
+            ? loadedOverview.use_cases 
+            : [{ image: '', title: '', description: '' }]
+        });
 
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
@@ -1766,6 +1783,20 @@ const ProductForm = () => {
         video_url: videoUrl,
         images: galleryImages.filter(Boolean),
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
+        overview: {
+          intro: {
+            heading: String(overview.intro?.heading || '').trim(),
+            text: String(overview.intro?.text || '').trim(),
+          },
+          bullets: (overview.bullets || []).map((b) => String(b || '').trim()).filter(Boolean),
+          use_cases: (overview.use_cases || [])
+            .map((uc) => ({
+              image: String(uc.image || '').trim(),
+              title: String(uc.title || '').trim(),
+              description: String(uc.description || '').trim(),
+            }))
+            .filter((uc) => uc.image || uc.title || uc.description),
+        },
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
@@ -2137,8 +2168,20 @@ const ProductForm = () => {
 
     const galleries = isEditMode ? Array.isArray(designGalleries) && designGalleries.length > 0 : false;
 
-    const offers = true;
+    const offers =
+      Array.isArray(variantRows) &&
+      variantRows.some((v) => {
+        const isOverride = Boolean(v?.override_discount);
+        const discountVal = Number(v?.discount_value);
+        return isOverride && Number.isFinite(discountVal) && discountVal > 0;
+      });
+
     const magic = Boolean(magicFillText.trim() && !magicFillError);
+
+    const overviewHeadingValid = Boolean(overview?.intro?.heading?.trim());
+    const overviewBulletsValid = Array.isArray(overview?.bullets) && overview.bullets.some((b) => String(b || '').trim() !== '');
+    const overviewUseCasesValid = Array.isArray(overview?.use_cases) && overview.use_cases.some((uc) => String(uc?.title || '').trim() !== '' || String(uc?.description || '').trim() !== '' || String(uc?.image || '').trim() !== '');
+    const overviewStepValid = overviewHeadingValid && (overviewBulletsValid || overviewUseCasesValid);
 
     return {
       magic,
@@ -2148,9 +2191,9 @@ const ProductForm = () => {
       inventory,
       galleries,
       offers,
-      overview: true,
+      overview: overviewStepValid,
     };
-  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError]);
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overview]);
 
   const goNext = () => {
     if (!canNext) return;
@@ -5151,10 +5194,196 @@ const ProductForm = () => {
                   <>
                     <div className="pf-section-title">
                       <span className="pf-section-title-icon"><Layout size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview</h3>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview Configuration</h3>
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: 14, lineHeight: 1.6, fontFamily: 'Poppins, sans-serif' }}>
-                      Select 'Save Product' or 'Update Product' in the header to persist product attributes, media arrays, and inventory configurations into active distribution.
+
+                    {/* Intro Section */}
+                    <div style={{ display: 'grid', gap: 16, marginBottom: 24 }}>
+                      <div>
+                        <label style={{ fontWeight: 500 }}>Intro Heading</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={overview.intro?.heading || ''}
+                          onChange={(e) =>
+                            setOverview((prev) => ({
+                              ...prev,
+                              intro: { ...prev.intro, heading: e.target.value },
+                            }))
+                          }
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          placeholder="e.g. Organize Everything. Simplify Your Space."
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontWeight: 500 }}>Intro Paragraph Text</label>
+                        <textarea
+                          className="custom-input"
+                          rows={3}
+                          value={overview.intro?.text || ''}
+                          onChange={(e) =>
+                            setOverview((prev) => ({
+                              ...prev,
+                              intro: { ...prev.intro, text: e.target.value },
+                            }))
+                          }
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, resize: 'vertical' }}
+                          placeholder="Provide a comprehensive overview paragraph for the product..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Bullets Section */}
+                    <div style={{ marginBottom: 24 }}>
+                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Key Features & Bullets</label>
+                      {(overview.bullets || []).map((bullet, idx) => (
+                        <div key={`bullet-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={bullet}
+                            onChange={(e) => {
+                              const updated = [...(overview.bullets || [])];
+                              updated[idx] = e.target.value;
+                              setOverview((prev) => ({ ...prev, bullets: updated }));
+                            }}
+                            placeholder="e.g. Multi-purpose storage: Seamlessly accommodates supplies."
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (overview.bullets || []).filter((_, i) => i !== idx);
+                              setOverview((prev) => ({ ...prev, bullets: updated }));
+                            }}
+                            title="Remove bullet"
+                            style={{
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: 8,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="pf-outline-accent-btn"
+                        onClick={() => setOverview((prev) => ({ ...prev, bullets: [...(prev.bullets || []), ''] }))}
+                        style={{ marginTop: 8, gap: 4, display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Plus size={14} /> Add Bullet
+                      </button>
+                    </div>
+
+                    {/* Use Cases Section */}
+                    <div style={{ marginBottom: 12 }}>
+                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Product Use Cases</label>
+                      {(overview.use_cases || []).map((uc, idx) => (
+                        <div
+                          key={`use-case-${idx}`}
+                          style={{
+                            padding: 16,
+                            border: '1px solid #eceff3',
+                            borderRadius: 16,
+                            background: '#fafbfc',
+                            marginBottom: 16,
+                            position: 'relative',
+                          }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (overview.use_cases || []).filter((_, i) => i !== idx);
+                              setOverview((prev) => ({ ...prev, use_cases: updated }));
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: 12,
+                              right: 12,
+                              background: '#fef2f2',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: 8,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                            title="Remove use case"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+                            <div>
+                              <label style={{ fontSize: 12, color: '#666' }}>Title</label>
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={uc.title || ''}
+                                onChange={(e) => {
+                                  const updated = [...(overview.use_cases || [])];
+                                  updated[idx] = { ...updated[idx], title: e.target.value };
+                                  setOverview((prev) => ({ ...prev, use_cases: updated }));
+                                }}
+                                style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                                placeholder="e.g. Desk Organizer"
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: 12, color: '#666' }}>Image URL</label>
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={uc.image || ''}
+                                onChange={(e) => {
+                                  const updated = [...(overview.use_cases || [])];
+                                  updated[idx] = { ...updated[idx], image: e.target.value };
+                                  setOverview((prev) => ({ ...prev, use_cases: updated }));
+                                }}
+                                style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                                placeholder="e.g. /assets/desk_organizer_usecase.png"
+                              />
+                            </div>
+                          </div>
+                          <div style={{ marginTop: 12 }}>
+                            <label style={{ fontSize: 12, color: '#666' }}>Description</label>
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={uc.description || ''}
+                              onChange={(e) => {
+                                const updated = [...(overview.use_cases || [])];
+                                updated[idx] = { ...updated[idx], description: e.target.value };
+                                setOverview((prev) => ({ ...prev, use_cases: updated }));
+                              }}
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                              placeholder="Explain this specific use case..."
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="pf-outline-accent-btn"
+                        onClick={() =>
+                          setOverview((prev) => ({
+                            ...prev,
+                            use_cases: [...(prev.use_cases || []), { image: '', title: '', description: '' }],
+                          }))
+                        }
+                        style={{ gap: 4, display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Plus size={14} /> Add Use Case
+                      </button>
                     </div>
                   </>
                 )}
