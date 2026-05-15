@@ -24,12 +24,16 @@ const Cart = () => {
   const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
   const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
 
-  const subtotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
+  const totalMRP = cartItems.reduce(
+    (sum, item) => sum + Number(item.mrp ?? item.price ?? 0) * Number(item.quantity || 1),
+    0
+  );
+  const totalSellingPrice = cartItems.reduce(
+    (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+    0
+  );
+  const totalDiscount = Math.max(0, totalMRP - totalSellingPrice);
   const platformFee = 250;
-  
-  // Calculate actual discount based on MRP vs Selling Price
-  const memberDiscount = -Math.max(0, cartItems.reduce((acc, item) => acc + (Number(item.mrp || item.price || 0) * Number(item.quantity || 1)) - (Number(item.price || 0) * Number(item.quantity || 1)), 0));
-  
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
 
@@ -52,9 +56,9 @@ const Cart = () => {
     const dValue = Number(coupon.discount_value) || (coupon.discountValue && Number(coupon.discountValue.value)) || 0;
 
     if (dType === 'fixed' || dType === 'flat') {
-      return Math.min(dValue, subtotal + platformFee + Math.abs(memberDiscount));
+      return Math.min(dValue, totalMRP + platformFee - totalDiscount);
     }
-    const rawSavings = (subtotal * dValue) / 100;
+    const rawSavings = (totalMRP * dValue) / 100;
     const cap = coupon.maxCap ?? rawSavings;
     return Math.min(rawSavings, cap);
   };
@@ -63,8 +67,8 @@ const Cart = () => {
   const selectedCoupon = availableCoupons.find((coupon) => coupon.code === selectedCouponCode) || null;
   const appliedCouponSavings = getCouponSavings(appliedCoupon);
   const selectedCouponSavings = getCouponSavings(selectedCoupon);
-  const newGrandTotal = subtotal + platformFee + memberDiscount - appliedCouponSavings;
-  const savingsAmount = Math.abs(memberDiscount) + appliedCouponSavings;
+  const newGrandTotal = totalMRP + platformFee - totalDiscount - appliedCouponSavings;
+  const savingsAmount = totalDiscount;
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
@@ -537,7 +541,7 @@ const Cart = () => {
                   <h3>Price Details</h3>
                   <div className="cart-summary-row">
                     <span>Subtotal</span>
-                    <strong>₹ {subtotal.toFixed(2)}</strong>
+                    <strong>₹ {totalMRP.toFixed(2)}</strong>
                   </div>
                   <div className="cart-summary-row">
                     <span className="cart-summary-title">
@@ -549,7 +553,7 @@ const Cart = () => {
                     <span className="cart-summary-title">
                       Discount <ChevronDown size={14} aria-hidden="true" />
                     </span>
-                    <strong className="cart-summary-discount">-₹ {Math.abs(memberDiscount).toFixed(2)}</strong>
+                    <strong className="cart-summary-discount">-₹ {totalDiscount.toFixed(2)}</strong>
                   </div>
                   {appliedCoupon && (
                     <div className="cart-summary-row cart-summary-coupon-row">

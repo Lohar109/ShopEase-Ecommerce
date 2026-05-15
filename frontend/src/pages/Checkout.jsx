@@ -14,22 +14,20 @@ const Checkout = () => {
   const shippingAddress = state?.shippingAddress || JSON.parse(window.localStorage.getItem('shopease_address') || 'null') || {};
   const deliveryMethod = state?.deliveryMethod || 'standard';
 
-  const subtotal = useMemo(
+  const totalMRP = useMemo(
+    () => cartItems.reduce((sum, item) => sum + Number(item.mrp ?? item.price ?? 0) * Number(item.quantity || 1), 0),
+    [cartItems]
+  );
+  const totalSellingPrice = useMemo(
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0),
     [cartItems]
   );
   const platformFee = 250;
   const deliveryFee = deliveryMethod === 'express' ? 149 : 0;
-  
-  // Calculate actual discount based on MRP vs Selling Price
-  const actualDiscount = useMemo(() => {
-    const totalMRP = cartItems.reduce((acc, item) => acc + (Number(item.mrp || item.price || 0) * Number(item.quantity || 1)), 0);
-    const totalSellingPrice = cartItems.reduce((acc, item) => acc + (Number(item.price || 0) * Number(item.quantity || 1)), 0);
-    return Math.max(0, totalMRP - totalSellingPrice);
-  }, [cartItems]);
-  
-  const grandTotal = subtotal + platformFee + deliveryFee - actualDiscount;
-  const savingsAmount = actualDiscount;
+  const totalDiscount = Math.max(0, totalMRP - totalSellingPrice);
+
+  const grandTotal = totalMRP + platformFee + deliveryFee - totalDiscount;
+  const savingsAmount = totalDiscount;
 
   const formattedAddress = [
     shippingAddress.fullName,
@@ -114,7 +112,7 @@ const Checkout = () => {
             <h3>Price Details</h3>
             <div className="cart-summary-row">
               <span>Subtotal</span>
-              <strong>₹ {subtotal.toFixed(2)}</strong>
+              <strong>₹ {totalMRP.toFixed(2)}</strong>
             </div>
             <div className="cart-summary-row">
               <span className="cart-summary-title">
@@ -132,7 +130,7 @@ const Checkout = () => {
               <span className="cart-summary-title">
                 Discount <ChevronDown size={14} aria-hidden="true" />
               </span>
-              <strong className="cart-summary-discount">-₹ {actualDiscount.toFixed(2)}</strong>
+              <strong className="cart-summary-discount">-₹ {totalDiscount.toFixed(2)}</strong>
             </div>
             <div className="cart-summary-row grand-total">
               <span>Grand Total</span>
