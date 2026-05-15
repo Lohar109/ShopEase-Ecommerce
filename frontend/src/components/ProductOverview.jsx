@@ -125,7 +125,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .text-right { text-align: right; }
         
         /* Brand Coloring */
-        .text-brand { color: #FF6B6B; }
+        .text-brand { color: #c21f58ff; }
         .brand-icon-container {
           display: flex;
           align-items: center;
