@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard, Cpu, Zap, Award, Shield, Truck, Package, Home, Briefcase, Heart, Smile, Star, Gift, Clock, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, HelpCircle, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard, Cpu, Zap, Award, Shield, Truck, Package, Home, Briefcase, Heart, Smile, Star, Gift, Clock, ThumbsUp } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -5242,24 +5242,26 @@ const ProductForm = () => {
                 {activeTab === 'overview' && (() => {
                   const iconOptions = ['Check', 'Smile', 'Heart', 'Layout', 'Sparkles', 'Star', 'Gift', 'Zap', 'Award', 'Cpu', 'Shield', 'Truck', 'Package', 'Home', 'Briefcase', 'Clock', 'ThumbsUp'];
                   const renderIcon = (name) => {
-                    switch (name) {
-                      case 'Cpu': return <Cpu size={16} />;
-                      case 'Zap': return <Zap size={16} />;
-                      case 'Award': return <Award size={16} />;
-                      case 'Shield': return <Shield size={16} />;
-                      case 'Truck': return <Truck size={16} />;
-                      case 'Package': return <Package size={16} />;
-                      case 'Home': return <Home size={16} />;
-                      case 'Briefcase': return <Briefcase size={16} />;
-                      case 'Heart': return <Heart size={16} />;
-                      case 'Smile': return <Smile size={16} />;
-                      case 'Star': return <Star size={16} />;
-                      case 'Gift': return <Gift size={16} />;
-                      case 'Clock': return <Clock size={16} />;
-                      case 'ThumbsUp': return <ThumbsUp size={16} />;
-                      case 'Layout': return <Layout size={16} />;
-                      case 'Sparkles': return <Sparkles size={16} />;
-                      default: return <Check size={16} />;
+                    const lower = String(name || '').trim().toLowerCase();
+                    switch (lower) {
+                      case 'cpu': return <Cpu size={16} />;
+                      case 'zap': return <Zap size={16} />;
+                      case 'award': return <Award size={16} />;
+                      case 'shield': return <Shield size={16} />;
+                      case 'truck': return <Truck size={16} />;
+                      case 'package': return <Package size={16} />;
+                      case 'home': return <Home size={16} />;
+                      case 'briefcase': return <Briefcase size={16} />;
+                      case 'heart': return <Heart size={16} />;
+                      case 'smile': return <Smile size={16} />;
+                      case 'star': return <Star size={16} />;
+                      case 'gift': return <Gift size={16} />;
+                      case 'clock': return <Clock size={16} />;
+                      case 'thumbsup': return <ThumbsUp size={16} />;
+                      case 'layout': return <Layout size={16} />;
+                      case 'sparkles': return <Sparkles size={16} />;
+                      case 'check': return <Check size={16} />;
+                      default: return <HelpCircle size={16} />;
                     }
                   };
 
@@ -5392,23 +5394,42 @@ const ProductForm = () => {
                               <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 10 }}>Key Features & Highlights</label>
                               {(overviewData.intro?.bullets || []).map((b, idx) => (
                                 <div key={`bullet-${idx}`} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'center' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 140px' }}>
-                                    <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
-                                      {renderIcon(b.icon)}
-                                    </div>
-                                    <select
-                                      className="custom-input"
-                                      value={b.icon || 'Check'}
-                                      onChange={(e) => {
-                                        const updated = [...(overviewData.intro?.bullets || [])];
-                                        updated[idx] = { ...updated[idx], icon: e.target.value };
-                                        setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
-                                      }}
-                                      style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
-                                    >
-                                      {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
-                                    </select>
+                                  {/* Col 1: Icon Preview Box */}
+                                  <div style={{
+                                    width: 45,
+                                    height: 45,
+                                    minWidth: 45,
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: 12,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: '#c8507a',
+                                    background: '#f9fafb',
+                                  }}>
+                                    {renderIcon(b.icon)}
                                   </div>
+
+                                  {/* Col 2: Icon Name Input */}
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={b.icon || ''}
+                                    onChange={(e) => {
+                                      const updated = [...(overviewData.intro?.bullets || [])];
+                                      updated[idx] = { ...updated[idx], icon: e.target.value };
+                                      setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
+                                    }}
+                                    placeholder="Icon (e.g. Truck)"
+                                    style={{
+                                      flex: '0 0 150px',
+                                      padding: '10px 14px',
+                                      borderRadius: 12,
+                                      border: '1px solid #a0a0a0',
+                                    }}
+                                  />
+
+                                  {/* Col 3: Highlight Description */}
                                   <input
                                     className="custom-input"
                                     type="text"
@@ -5419,7 +5440,7 @@ const ProductForm = () => {
                                       setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
                                     }}
                                     placeholder="e.g. High grade acrylic material..."
-                                    style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                                   />
                                   <button
                                     type="button"
