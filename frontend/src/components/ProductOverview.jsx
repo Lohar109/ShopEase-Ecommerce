@@ -155,7 +155,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           font-weight: 500 !important; 
           color: #c21f58ff !important; 
           cursor: pointer; 
-          text-decoration: none; 
+          text-decoration: none !important; 
           padding: 0 !important;
           text-align: left;
           background: transparent !important;
@@ -165,7 +165,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           transition: none !important;
         }
         .spec-link:hover {
-          text-decoration: underline !important;
+          text-decoration: none !important;
           color: #c21f58ff !important;
           background: transparent !important;
           transform: none !important;
