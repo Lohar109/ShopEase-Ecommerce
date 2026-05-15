@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
 import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2, Truck, RotateCcw, ShieldCheck, Award } from "lucide-react";
+import ProductOverview from "./ProductOverview";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -688,6 +689,8 @@ const ProductDetail = () => {
     return String(value);
   };
 
+  console.log("Product Overview Data:", product?.overview);
+
   return (
     <>
       {/* Master single-column layout */}
@@ -1241,64 +1244,7 @@ const ProductDetail = () => {
 
               <div className="pdp-tab-content-wrapper">
                 {activeTab === 'Overview' && (
-                  <div className="pdp-tab-content pdp-overview-tab">
-                    <div className="pdp-overview-left">
-                      <h2>Organize Everything. Simplify Your Space.</h2>
-                      <p>
-                        Maximize your living and workspaces with our versatile organizers. Crafted for optimal functionality,
-                        each component streamlines your clutter to create clean, structured environments. Perfect for homes,
-                        dorms, and offices seeking modern utility.
-                      </p>
-                      <ul className="pdp-overview-bullets">
-                        <li>
-                          <strong>Multi-purpose storage:</strong> Seamlessly accommodates office supplies, daily essentials,
-                          and accessories.
-                        </li>
-                        <li>
-                          <strong>Durable quality:</strong> Built with heavy-duty, premium materials that stand the test of time.
-                        </li>
-                        <li>
-                          <strong>Space-saving footprint:</strong> Compact profile that maximizes vertical storage without hogging surfaces.
-                        </li>
-                        <li>
-                          <strong>Modern aesthetics:</strong> Sleek designs with subtle visual cues that adapt nicely to any interior.
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="pdp-overview-right">
-                      <div className="pdp-usecase-grid">
-                        <div className="pdp-usecase-card">
-                          <div className="pdp-usecase-img-wrapper">
-                            <img src="/assets/desk_organizer_usecase.png" alt="Desk Organizer Use Case" className="pdp-usecase-img" />
-                          </div>
-                          <div className="pdp-usecase-body">
-                            <div className="pdp-usecase-badge">
-                              <div className="pdp-usecase-icon-circle">
-                                <Cpu size={16} strokeWidth={2} />
-                              </div>
-                              <h3>Desk Organizer</h3>
-                            </div>
-                            <p>Ideal for arranging stationary, electronics, and writing utensils cleanly.</p>
-                          </div>
-                        </div>
-
-                        <div className="pdp-usecase-card">
-                          <div className="pdp-usecase-img-wrapper">
-                            <img src="/assets/makeup_organizer_usecase.png" alt="Makeup Organizer Use Case" className="pdp-usecase-img" />
-                          </div>
-                          <div className="pdp-usecase-body">
-                            <div className="pdp-usecase-badge">
-                              <div className="pdp-usecase-icon-circle">
-                                <Zap size={16} strokeWidth={2} />
-                              </div>
-                              <h3>Makeup Organizer</h3>
-                            </div>
-                            <p>Keep beauty blenders, brushes, palettes, and lipsticks beautifully arranged.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ProductOverview overview={product?.overview} />
                 )}
 
                 {activeTab === 'Specifications' && (
