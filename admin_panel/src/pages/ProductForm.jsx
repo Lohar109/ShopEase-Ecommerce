@@ -5875,24 +5875,36 @@ const ProductForm = () => {
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Why You'll Love It (Value Proposition)</label>
                             {(overviewData.why_love_it || []).map((w, idx) => (
-                              <div key={`love-${idx}`} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 160px' }}>
-                                  <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
-                                    {renderIcon(w.icon)}
-                                  </div>
-                                  <select
-                                    className="custom-input"
-                                    value={w.icon || 'Heart'}
-                                    onChange={(e) => {
-                                      const updated = [...(overviewData.why_love_it || [])];
-                                      updated[idx] = { ...updated[idx], icon: e.target.value };
-                                      setOverviewData(prev => ({ ...prev, why_love_it: updated }));
-                                    }}
-                                    style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
-                                  >
-                                    {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
-                                  </select>
+                              <div key={`love-${idx}`} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'center' }}>
+                                {/* Col 1: Icon Preview Box */}
+                                <div style={{
+                                  width: 45,
+                                  height: 45,
+                                  minWidth: 45,
+                                  border: '1px solid #d1d5db',
+                                  borderRadius: 12,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: '#c8507a',
+                                  background: '#f9fafb',
+                                }}>
+                                  {renderIcon(w.icon)}
                                 </div>
+
+                                {/* Col 2: Searchable Icon Select */}
+                                <IconSearchableSelect
+                                  value={w.icon}
+                                  onChange={(newIcon) => {
+                                    const updated = [...(overviewData.why_love_it || [])];
+                                    updated[idx] = { ...updated[idx], icon: newIcon };
+                                    setOverviewData(prev => ({ ...prev, why_love_it: updated }));
+                                  }}
+                                  iconCategories={typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES : []}
+                                  renderIcon={renderIcon}
+                                />
+
+                                {/* Col 3: Value Proposition Description */}
                                 <input
                                   className="custom-input"
                                   type="text"
@@ -5903,7 +5915,7 @@ const ProductForm = () => {
                                     setOverviewData(prev => ({ ...prev, why_love_it: updated }));
                                   }}
                                   placeholder="e.g. Durable design that stands the test of time..."
-                                  style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                                 />
                                 <button
                                   type="button"
