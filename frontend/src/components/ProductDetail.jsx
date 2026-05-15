@@ -1052,15 +1052,10 @@ const ProductDetail = () => {
                 {/* Price Section */}
                 <div className="product-detail-purchasing-block">
                   <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                        <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
-                          Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                        </span>
-                        <span className="product-detail-tax" style={{ fontSize: '13px', color: '#6b7280' }}>
-                          Inclusive of all taxes
-                        </span>
-                      </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
+                        Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                      </span>
 
                       {hasDiscount && (
                         <>
@@ -1075,13 +1070,16 @@ const ProductDetail = () => {
                             padding: '3px 8px',
                             borderRadius: '6px',
                             textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                            transform: 'translateY(-2px)'
+                            letterSpacing: '0.5px'
                           }}>
                             {String(discTypeStr).toLowerCase() === 'percentage' ? `${rawDiscVal}% OFF` : `Rs.${rawDiscVal} OFF`}
                           </span>
                         </>
                       )}
+
+                      <span className="product-detail-tax" style={{ fontSize: '0.875rem', color: '#6b7280', marginLeft: '8px' }}>
+                        Inclusive of all taxes
+                      </span>
                     </div>
                   </div>
 
