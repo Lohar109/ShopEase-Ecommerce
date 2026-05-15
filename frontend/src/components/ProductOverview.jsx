@@ -253,7 +253,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Step 3: Specifications Map Tracker */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-normal mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 flex-shrink-0">
               Specifications
             </h3>
 
@@ -294,7 +294,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* What's in the Box */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-normal mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 flex-shrink-0">
               What's in the Box
             </h3>
             <div className="text-sm text-gray-500 leading-relaxed flex-1">Component inventory mapping pending.</div>
@@ -302,7 +302,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Perfect For */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-normal mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 flex-shrink-0">
               Perfect For
             </h3>
             <div className="text-sm text-gray-500 leading-relaxed flex-1">Scenario context mapping pending.</div>
@@ -310,7 +310,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
           {/* Why You'll Love It */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <h3 className="text-lg font-normal mb-4 text-gray-900 flex-shrink-0">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 flex-shrink-0">
               Why You'll Love It
             </h3>
             <div className="text-sm text-gray-500 leading-relaxed flex-1">Value proposition outlines pending.</div>
