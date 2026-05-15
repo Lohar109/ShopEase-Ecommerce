@@ -130,12 +130,15 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 2.25rem;
-          height: 2.25rem;
+          width: 2rem;
+          height: 2rem;
           border-radius: 9999px;
           background-color: rgba(255, 107, 107, 0.08);
           flex-shrink: 0;
         }
+        .w-4 { width: 1rem; }
+        .h-4 { height: 1rem; }
+        .space-y-2\\.5 > * + * { margin-top: 0.625rem; }
         
         /* Step 3 specifications typography */
         .spec-link { 
@@ -200,11 +203,11 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             {/* Highlights List - hidden if missing from both possible root locations */}
             {highlightsList && highlightsList.length > 0 && (
-              <div className="flex flex-col" aria-label="Product key highlights">
+              <div className="flex flex-col space-y-2.5" aria-label="Product key highlights">
                 {highlightsList.map((bullet, idx) => (
-                  <div key={idx} className="flex items-center gap-3 py-2">
+                  <div key={idx} className="flex items-center gap-3">
                     <div className="brand-icon-container">
-                      <DynamicIcon name={bullet.icon} className="w-5 h-5 text-brand" />
+                      <DynamicIcon name={bullet.icon} className="w-4 h-4 text-brand" />
                     </div>
                     <span className="text-base text-gray-600 font-medium">{bullet.text}</span>
                   </div>
