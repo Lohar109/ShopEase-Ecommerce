@@ -20,133 +20,183 @@ const ProductOverview = ({ overview }) => {
   const useCases = Array.isArray(overview.use_cases) ? overview.use_cases : [];
 
   return (
-    <div className="product-overview-root w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-      
-      {/* Top Layout: 12-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-16 md:mb-24">
+    <>
+      {/* CSS Overrides: Explicit backing for requested Tailwind utility layouts since PostCSS is absent */}
+      <style>{`
+        .grid { display: grid; }
+        .items-start { align-items: flex-start; }
+        .gap-8 { gap: 2rem; }
+        .gap-6 { gap: 1.5rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-2 { gap: 0.5rem; }
         
-        {/* Left Column: Intro Details (col-span-4) */}
-        <div className="flex flex-col lg:col-span-4 text-left">
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6">
-            {intro.heading}
-          </h2>
+        .mt-12 { margin-top: 3rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .pb-4 { padding-bottom: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        
+        .overflow-hidden { overflow: hidden; }
+        .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .snap-x { scroll-snap-type: x mandatory; }
+        .snap-start { scroll-snap-align: start; }
+        
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .border { border: 1px solid #e5e7eb; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .transition-shadow { transition: box-shadow 0.2s; }
+        .hover\\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
+        .aspect-\\[4\\/5\\] { aspect-ratio: 4/5; }
+        .object-cover { object-fit: cover; }
+        
+        .w-5 { width: 1.25rem; }
+        .h-5 { height: 1.25rem; }
+        
+        /* Typography mappings */
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .leading-tight { line-height: 1.25; }
+        .leading-relaxed { line-height: 1.625; }
+        
+        .text-gray-900 { color: #111827; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-500 { color: #6b7280; }
+        
+        /* Responsive grids */
+        .grid-cols-1 { grid-template-columns: 1fr; }
+        
+        @media (min-width: 768px) {
+          .md\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (min-width: 1024px) {
+          .lg\\:grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
+          .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+          .lg\\:col-span-4 { grid-column: span 4 / span 4; }
+          .lg\\:col-span-8 { grid-column: span 8 / span 8; }
+        }
+      `}</style>
+
+      <div className="product-overview-root w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {/* Top Section: 12-Column Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <p className="text-base md:text-lg text-gray-500 leading-relaxed mb-8">
-            {intro.description}
-          </p>
+          {/* Left Column (col-span-4): Heading, Description, and Highlights */}
+          <div className="lg:col-span-4 flex flex-col text-left">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-6">
+              {intro.heading}
+            </h2>
+            
+            <p className="text-base text-gray-500 leading-relaxed mb-8">
+              {intro.description}
+            </p>
 
-          {/* Highlights List (list-none format) */}
-          {bullets.length > 0 && (
-            <div className="flex flex-col gap-4" aria-label="Key highlights">
-              {bullets.map((bullet, idx) => (
-                <div key={idx} className="flex items-center gap-3 py-1">
-                  <DynamicIcon 
-                    name={bullet.icon} 
-                    className="w-5 h-5 text-gray-400 stroke-[2]" 
-                  />
-                  <span className="text-base font-semibold text-gray-700 tracking-tight antialiased">
-                    {bullet.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Use Case Gallery (col-span-8) */}
-        <div className="lg:col-span-8 w-full overflow-hidden">
-          {useCases.length > 0 ? (
-            <div className="flex flex-row overflow-x-auto gap-6 pb-6 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: 'thin' }}>
-              {useCases.map((item, idx) => {
-                // Extract imageUrl: supports string array or object array
-                const imageUrl = typeof item === 'string' ? item : (item?.image || '');
-                if (!imageUrl) return null;
-
-                return (
-                  <div 
-                    key={idx} 
-                    className="min-w-[280px] md:min-w-[340px] flex-shrink-0 rounded-3xl overflow-hidden aspect-[4/5] bg-gray-50 border border-gray-100 shadow-sm transition-all duration-300 snap-start group relative"
-                  >
-                    <img 
-                      src={imageUrl} 
-                      alt={`Use Case Visualization ${idx + 1}`} 
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" 
-                    />
+            {bullets.length > 0 && (
+              <div className="flex flex-col" aria-label="Product key highlights">
+                {bullets.map((bullet, idx) => (
+                  <div key={idx} className="flex items-center gap-3 py-2">
+                    <DynamicIcon name={bullet.icon} className="w-5 h-5 text-gray-600" />
+                    <span className="text-base text-gray-700 font-medium">{bullet.text}</span>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="w-full h-full min-h-[360px] bg-gray-50 rounded-3xl flex flex-col items-center justify-center border border-gray-100 text-center p-8">
-              <div className="flex flex-col items-center gap-3 text-gray-400 max-w-xs">
-                <Icons.Image className="w-10 h-10 stroke-[1.25]" />
-                <p className="text-sm font-bold tracking-wide uppercase text-[11px]">Use Cases Pending</p>
-                <p className="text-xs text-gray-400 leading-normal">Configure image assets in your dashboard to populate this interactive gallery.</p>
+                ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Right Column (col-span-8): Use Case Gallery */}
+          <div className="lg:col-span-8 overflow-hidden w-full">
+            {useCases.length > 0 ? (
+              <div className="flex overflow-x-auto gap-4 snap-x pb-4" style={{ scrollbarWidth: 'thin' }}>
+                {useCases.map((item, idx) => {
+                  const imageUrl = typeof item === 'string' ? item : (item?.image || '');
+                  if (!imageUrl) return null;
+                  return (
+                    <div key={idx} className="min-w-[280px] aspect-[4/5] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50">
+                      <img src={imageUrl} alt={`Use Case ${idx + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="w-full aspect-[16/9] min-h-[280px] bg-gray-50 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-gray-400 p-6 text-center">
+                <Icons.Image className="w-10 h-10 mb-2 opacity-60" />
+                <p className="text-sm font-semibold uppercase tracking-wider">No Use Cases Set</p>
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        {/* Bottom Section (4-Column Grid) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+          
+          {/* Specifications */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+              <Icons.Cpu className="w-5 h-5 text-gray-600" />
+              Specifications
+            </h3>
+            <div className="text-sm text-gray-500 leading-relaxed">Detailed technical specifications pending.</div>
+          </div>
+
+          {/* What's in the Box */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+              <Icons.Package className="w-5 h-5 text-gray-600" />
+              What's in the Box
+            </h3>
+            <div className="text-sm text-gray-500 leading-relaxed">Component inventory mapping pending.</div>
+          </div>
+
+          {/* Perfect For */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+              <Icons.Compass className="w-5 h-5 text-gray-600" />
+              Perfect For
+            </h3>
+            <div className="text-sm text-gray-500 leading-relaxed">Scenario context mapping pending.</div>
+          </div>
+
+          {/* Why You'll Love It */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+              <Icons.Heart className="w-5 h-5 text-gray-600" />
+              Why You'll Love It
+            </h3>
+            <div className="text-sm text-gray-500 leading-relaxed">Value proposition outlines pending.</div>
+          </div>
+
         </div>
 
       </div>
-
-      {/* Bottom Layout: 4-Column Grid for Remaining Specs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 border-t border-gray-100 pt-12">
-        
-        {/* Specifications Card */}
-        <div className="bg-white border border-gray-200/70 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-              <Icons.Cpu className="w-4 h-4" />
-            </div>
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wider">Specifications</h3>
-          </div>
-          <div className="h-24 flex items-center justify-center border-dashed border border-gray-200 rounded-xl bg-gray-50/30">
-            <span className="text-xs text-gray-400 font-medium">Details pending</span>
-          </div>
-        </div>
-
-        {/* What's in the Box Card */}
-        <div className="bg-white border border-gray-200/70 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
-              <Icons.Package className="w-4 h-4" />
-            </div>
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wider">What's in the Box</h3>
-          </div>
-          <div className="h-24 flex items-center justify-center border-dashed border border-gray-200 rounded-xl bg-gray-50/30">
-            <span className="text-xs text-gray-400 font-medium">Details pending</span>
-          </div>
-        </div>
-
-        {/* Perfect For Card */}
-        <div className="bg-white border border-gray-200/70 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-              <Icons.Compass className="w-4 h-4" />
-            </div>
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wider">Perfect For</h3>
-          </div>
-          <div className="h-24 flex items-center justify-center border-dashed border border-gray-200 rounded-xl bg-gray-50/30">
-            <span className="text-xs text-gray-400 font-medium">Details pending</span>
-          </div>
-        </div>
-
-        {/* Why You'll Love It Card */}
-        <div className="bg-white border border-gray-200/70 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-2 rounded-lg bg-pink-50 text-pink-600">
-              <Icons.Heart className="w-4 h-4" />
-            </div>
-            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wider">Why You'll Love It</h3>
-          </div>
-          <div className="h-24 flex items-center justify-center border-dashed border border-gray-200 rounded-xl bg-gray-50/30">
-            <span className="text-xs text-gray-400 font-medium">Details pending</span>
-          </div>
-        </div>
-
-      </div>
-      
-    </div>
+    </>
   );
 };
 
