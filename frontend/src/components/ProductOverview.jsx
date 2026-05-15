@@ -42,6 +42,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .gap-2 { gap: 0.5rem; }
         
         .mt-12 { margin-top: 3rem; }
+        .mt-0\\.5 { margin-top: 0.125rem; }
         .mb-2 { margin-bottom: 0.5rem; }
         .mb-3 { margin-bottom: 0.75rem; }
         .mb-4 { margin-bottom: 1rem; }
@@ -115,6 +116,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         
         .tracking-tight { letter-spacing: -0.025em; }
         .leading-tight { line-height: 1.25; }
+        .leading-snug { line-height: 1.375; }
         .leading-relaxed { line-height: 1.625; }
         
         .text-gray-900 { color: #111827; }
@@ -305,7 +307,16 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
               Perfect For
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed flex-1">Scenario context mapping pending.</div>
+            <div className="flex-1 mb-4 overflow-hidden">
+              <div className="flex flex-col">
+                {Array.isArray(overview?.perfect_for) && overview.perfect_for.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 mb-4">
+                    <DynamicIcon name={item?.icon} className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600 leading-snug flex-1">{item?.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Why You'll Love It */}
