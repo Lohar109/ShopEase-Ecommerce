@@ -153,10 +153,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .animate-marquee {
           display: flex;
           animation: marquee 25s linear infinite;
-        }
-        
-        .hover\\:pause-animation:hover {
-          animation-play-state: paused;
+          animation-play-state: running;
         }
         
         /* Responsive grids */
@@ -204,7 +201,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           {/* Right Column (col-span-7): Image Scale Restricting Use Case Gallery */}
           <div className="lg:col-span-7 relative overflow-hidden w-full">
             {useCases.length > 0 ? (
-              <div className="animate-marquee hover:pause-animation flex w-max py-2">
+              <div className="animate-marquee flex w-max py-2">
                 {[...useCases, ...useCases].map((item, idx) => {
                   const imageUrl = typeof item === 'string' ? item : (item?.image || '');
                   if (!imageUrl) return null;
