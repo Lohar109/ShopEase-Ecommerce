@@ -107,6 +107,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .text-base { font-size: 1rem; line-height: 1.5rem; }
         .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
         .text-xs { font-size: 0.75rem; }
+        .text-\\[13px\\] { font-size: 13px; }
         
         .font-bold { font-weight: 700; }
         .font-semibold { font-weight: 600; }
@@ -312,7 +313,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                 {Array.isArray(overview?.perfect_for) && overview.perfect_for.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 mb-4">
                     <DynamicIcon name={item?.icon} className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-600 leading-snug flex-1">{item?.text}</span>
+                    <span className="text-[13px] text-gray-500 leading-snug flex-1">{item?.label || item?.text}</span>
                   </div>
                 ))}
               </div>
@@ -324,7 +325,16 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 flex-shrink-0">
               Why You'll Love It
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed flex-1">Value proposition outlines pending.</div>
+            <div className="flex-1 mb-4 overflow-hidden">
+              <div className="flex flex-col">
+                {Array.isArray(overview?.why_love_it) && overview.why_love_it.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 mb-4">
+                    <DynamicIcon name={item?.icon} className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
+                    <span className="text-[13px] text-gray-500 leading-snug flex-1">{item?.text || item?.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
         </div>
