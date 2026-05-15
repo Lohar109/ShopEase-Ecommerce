@@ -262,7 +262,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                 <div className="flex flex-col gap-2.5">
                   {Object.entries(activeSpecs).slice(0, 5).map(([key, value], idx) => (
                     <div key={idx} className="flex items-center justify-between border-b py-1 text-sm gap-4">
-                      <span className="font-bold text-gray-900 capitalize">{key}</span>
+                      <span className="font-normal text-gray-900 capitalize">{key}</span>
                       <span className="text-gray-500 text-right">{String(value)}</span>
                     </div>
                   ))}
