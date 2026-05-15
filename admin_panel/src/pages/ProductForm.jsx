@@ -5263,6 +5263,28 @@ const ProductForm = () => {
                     }
                   };
 
+                  const subStepValidStates = {
+                    1: (() => {
+                      const heading = String(overviewData.intro?.heading || '').trim();
+                      const desc = String(overviewData.intro?.text || '').trim();
+                      const hasBullet = Array.isArray(overviewData.intro?.bullets) &&
+                        overviewData.intro.bullets.some(b => String(b?.text || '').trim() !== '');
+                      return Boolean(heading && desc && hasBullet);
+                    })(),
+                    2: (() => {
+                      return Array.isArray(overviewData.use_cases) &&
+                        overviewData.use_cases.some(uc => String(uc?.image || '').trim() !== '' && String(uc?.label || '').trim() !== '');
+                    })(),
+                    3: (() => {
+                      return Array.isArray(overviewData.perfect_for) &&
+                        overviewData.perfect_for.some(pf => String(pf?.label || '').trim() !== '');
+                    })(),
+                    4: (() => {
+                      return Array.isArray(overviewData.why_love_it) &&
+                        overviewData.why_love_it.some(w => String(w?.text || '').trim() !== '');
+                    })(),
+                  };
+
                   return (
                     <>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, borderBottom: '1px solid #eef0f3', paddingBottom: 20, marginBottom: 28 }}>
@@ -5281,13 +5303,13 @@ const ProductForm = () => {
                           ].map((item, index, arr) => {
                             const stepNum = item.step;
                             const isActive = activeSubStep === stepNum;
-                            const isCompleted = activeSubStep > stepNum;
+                            const isStepValid = Boolean(subStepValidStates[stepNum]);
                             return (
                               <React.Fragment key={stepNum}>
                                 <button
                                   type="button"
                                   onClick={() => setActiveSubStep(stepNum)}
-                                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: 'none', background: 'none', padding: '4px 8px', borderRadius: 8, transition: 'all 0.2s ease', opacity: (isCompleted || isActive) ? 1 : 0.55 }}
+                                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: 'none', background: 'none', padding: '4px 8px', borderRadius: 8, transition: 'all 0.2s ease', opacity: (isStepValid || isActive) ? 1 : 0.55 }}
                                   title={`Navigate to ${item.label}`}
                                 >
                                   <div style={{
@@ -5299,20 +5321,29 @@ const ProductForm = () => {
                                     justifyContent: 'center',
                                     fontSize: 11,
                                     fontWeight: 700,
-                                    background: isActive ? '#c8507a' : (isCompleted ? '#22c55e' : '#f3f4f6'),
-                                    color: (isActive || isCompleted) ? '#fff' : '#6b7280',
-                                    border: isCompleted ? '2px solid #22c55e' : (isActive ? '2px solid #c8507a' : '2px solid #d1d5db'),
+                                    background: isStepValid ? '#22c55e' : (isActive ? '#c8507a' : '#f3f4f6'),
+                                    color: (isStepValid || isActive) ? '#fff' : '#6b7280',
+                                    border: isStepValid ? 'none' : (isActive ? 'none' : '1px solid #d1d5db'),
                                     transition: 'all 0.2s'
                                   }}>
-                                    {isCompleted ? <Check size={13} /> : stepNum}
+                                    {isStepValid ? <Check size={13} /> : stepNum}
                                   </div>
-                                  <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? '#c8507a' : '#4b5563' }}>
+                                  <span style={{ fontSize: 12, fontWeight: (isActive || isStepValid) ? 700 : 500, color: isStepValid ? '#22c55e' : (isActive ? '#c8507a' : '#4b5563') }}>
                                     {item.label}
                                   </span>
                                 </button>
-                                {index < arr.length - 1 && (
-                                  <div style={{ width: 20, height: 2, background: isCompleted ? '#22c55e' : '#e4e4e7', borderRadius: 1 }} />
-                                )}
+                                {index < arr.length - 1 && (() => {
+                                  const isLineConnected = Boolean(subStepValidStates[stepNum] && subStepValidStates[stepNum + 1]);
+                                  return (
+                                    <div style={{ 
+                                      width: 20, 
+                                      height: 2, 
+                                      background: isLineConnected ? '#22c55e' : '#e4e4e7', 
+                                      borderRadius: 1,
+                                      transition: 'all 0.2s ease'
+                                    }} />
+                                  );
+                                })()}
                               </React.Fragment>
                             );
                           })}
