@@ -168,7 +168,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
             </h3>
 
             {/* Exact description renderer checking .text key instructed by user - lightened with font-normal & shrunk to text-sm */}
-            {overview?.intro?.text && <p className='text-gray-400 text-sm mb-8 leading-relaxed font-normal'>{overview.intro.text}</p>}
+            {overview?.intro?.text && <p className='text-gray-400 text-base mb-4 leading-relaxed font-normal'>{overview.intro.text}</p>}
 
             {/* Highlights List - hidden if missing from both possible root locations */}
             {highlightsList && highlightsList.length > 0 && (
