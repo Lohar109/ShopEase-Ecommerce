@@ -5674,79 +5674,7 @@ const ProductForm = () => {
                         )}
                       </div>
 
-                      {/* Local Sub-step Nav Controls */}
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 32, paddingTop: 20, borderTop: '1px solid #eef0f3' }}>
-                        {activeSubStep > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => setActiveSubStep(prev => prev - 1)}
-                            style={{ 
-                              padding: '10px 22px', 
-                              borderRadius: 12, 
-                              border: '1px solid #d4d4d8', 
-                              background: '#ffffff', 
-                              fontWeight: 600, 
-                              color: '#3f3f46', 
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#f4f4f5'}
-                            onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
-                          >
-                            Back
-                          </button>
-                        )}
 
-                        {activeSubStep < 4 ? (
-                          <button
-                            type="button"
-                            onClick={() => setActiveSubStep(prev => prev + 1)}
-                            style={{ 
-                              padding: '10px 26px', 
-                              borderRadius: 12, 
-                              border: 'none', 
-                              background: '#c8507a', 
-                              color: '#ffffff', 
-                              fontWeight: 600, 
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 6px rgba(200, 80, 122, 0.2)'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#b04267'}
-                            onMouseLeave={e => e.currentTarget.style.background = '#c8507a'}
-                          >
-                            Next
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOverviewSubstepperCompleted(true);
-                              setToastType('success');
-                              setToastMsg('Overview configuration marked complete!');
-                              setTimeout(() => setToastMsg(''), 3000);
-                            }}
-                            style={{ 
-                              padding: '10px 26px', 
-                              borderRadius: 12, 
-                              border: 'none', 
-                              background: '#16a34a', 
-                              color: '#ffffff', 
-                              fontWeight: 600, 
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 6px rgba(22, 163, 74, 0.2)',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 6
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#15803d'}
-                            onMouseLeave={e => e.currentTarget.style.background = '#16a34a'}
-                          >
-                            <Check size={16} /> Mark Complete
-                          </button>
-                        )}
-                      </div>
                     </>
                   );
                 })()}
