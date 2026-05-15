@@ -20,10 +20,10 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
   // Logic refinements based on console log inspection:
   // Highlights location resolution
-  const highlightsList = Array.isArray(overview.highlights) 
-    ? overview.highlights 
+  const highlightsList = Array.isArray(overview.highlights)
+    ? overview.highlights
     : (Array.isArray(overview.intro?.bullets) ? overview.intro.bullets : []);
-  
+
   // Specifications key resolution (supports both product.specs and product.specifications)
   const activeSpecs = product?.specs || product?.specifications || specifications || {};
   const useCases = Array.isArray(overview.use_cases) ? overview.use_cases : [];
@@ -101,6 +101,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         /* Typography mappings */
         .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
         .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
         .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
         .text-base { font-size: 1rem; line-height: 1.5rem; }
         .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
@@ -156,18 +157,18 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
       `}</style>
 
       <div className="product-overview-root w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
+
         {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter & strict items-start top alignment */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
-          {/* Left Column (col-span-5): Dynamic Small Heading, Refined Description, and Conditional Highlights */}
+
+          {/* Left Column (col-span-5): Dynamic Product Name h3, Refined Description, and Conditional Highlights */}
           <div className="lg:col-span-5 flex flex-col text-left m-0 p-0">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight mb-3 max-w-md">
+            <h3 className="text-xl font-bold tracking-tight text-gray-900 leading-tight mb-3 max-w-md">
               {product?.name}
-            </h2>
-            
-            {/* Exact description renderer checking .text key instructed by user - lightened with font-normal */}
-            {overview?.intro?.text && <p className='text-gray-400 text-lg mb-8 leading-relaxed font-normal'>{overview.intro.text}</p>}
+            </h3>
+
+            {/* Exact description renderer checking .text key instructed by user - lightened with font-normal & shrunk to text-sm */}
+            {overview?.intro?.text && <p className='text-gray-400 text-sm mb-8 leading-relaxed font-normal'>{overview.intro.text}</p>}
 
             {/* Highlights List - hidden if missing from both possible root locations */}
             {highlightsList && highlightsList.length > 0 && (
@@ -189,16 +190,16 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                 {useCases.map((item, idx) => {
                   const imageUrl = typeof item === 'string' ? item : (item?.image || '');
                   if (!imageUrl) return null;
-                  
+
                   return (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="min-w-[280px] h-[400px] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50"
                     >
-                      <img 
-                        src={imageUrl} 
-                        alt={`Use Case ${idx + 1}`} 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={imageUrl}
+                        alt={`Use Case ${idx + 1}`}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   );
@@ -216,14 +217,14 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
         {/* Bottom Section (4-Column Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-          
+
           {/* Step 3: Specifications Map Tracker */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 flex-shrink-0">
               <Icons.Cpu className="w-5 h-5 text-gray-600" />
               Specifications
             </h3>
-            
+
             <div className="flex-1 mb-4 overflow-hidden">
               {activeSpecs && Object.keys(activeSpecs).length > 0 ? (
                 <div className="flex flex-col gap-2.5">
@@ -239,7 +240,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
               )}
             </div>
 
-            <button 
+            <button
               type="button"
               className="spec-link border-none bg-transparent"
               onClick={(e) => {
