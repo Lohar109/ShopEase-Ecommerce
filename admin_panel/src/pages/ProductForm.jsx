@@ -5507,7 +5507,7 @@ const ProductForm = () => {
                     })(),
                     2: (() => {
                       return Array.isArray(overviewData.use_cases) &&
-                        overviewData.use_cases.some(uc => String(uc?.image || '').trim() !== '' && String(uc?.label || '').trim() !== '');
+                        overviewData.use_cases.some(uc => String(uc?.image || '').trim() !== '');
                     })(),
                     3: (() => {
                       return Array.isArray(overviewData.perfect_for) &&
@@ -5697,25 +5697,10 @@ const ProductForm = () => {
                         {activeSubStep === 2 && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Product Use Cases</label>
-                            {(overviewData.use_cases || []).map((uc, idx) => (
-                              <div
-                                key={`usecase-${idx}`}
-                                style={{ padding: 18, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 16, position: 'relative' }}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const updated = (overviewData.use_cases || []).filter((_, i) => i !== idx);
-                                    setOverviewData(prev => ({ ...prev, use_cases: updated }));
-                                  }}
-                                  style={{ position: 'absolute', top: 14, right: 14, border: 'none', background: '#fee2e2', color: '#ef4444', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'inline-flex' }}
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                                  <div>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Image URL</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                              {(overviewData.use_cases || []).map((uc, idx) => (
+                                <div key={`usecase-${idx}`} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                  <div style={{ flex: 1 }}>
                                     <input
                                       className="custom-input"
                                       type="text"
@@ -5725,76 +5710,33 @@ const ProductForm = () => {
                                         updated[idx] = { ...updated[idx], image: e.target.value };
                                         setOverviewData(prev => ({ ...prev, use_cases: updated }));
                                       }}
-                                      placeholder="e.g. https://cloudinary.com/example.jpg"
-                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
+                                      placeholder="e.g. https://cloudinary.com/use-case-image.jpg"
+                                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                                     />
                                   </div>
-                                  <div>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Select Visual Icon</label>
-                                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                                      <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
-                                        {renderIcon(uc.icon)}
-                                      </div>
-                                      <select
-                                        className="custom-input"
-                                        value={uc.icon || 'Layout'}
-                                        onChange={(e) => {
-                                          const updated = [...(overviewData.use_cases || [])];
-                                          updated[idx] = { ...updated[idx], icon: e.target.value };
-                                          setOverviewData(prev => ({ ...prev, use_cases: updated }));
-                                        }}
-                                        style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 10, border: '1px solid #a0a0a0', appearance: 'none' }}
-                                      >
-                                        {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
-                                      </select>
-                                    </div>
-                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = (overviewData.use_cases || []).filter((_, i) => i !== idx);
+                                      setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                    }}
+                                    style={{ padding: 8, background: '#fef2f2', border: 'none', borderRadius: 8, cursor: 'pointer', color: '#ef4444', display: 'inline-flex' }}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
                                 </div>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14, marginTop: 14 }}>
-                                  <div>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Label Title</label>
-                                    <input
-                                      className="custom-input"
-                                      type="text"
-                                      value={uc.label || ''}
-                                      onChange={(e) => {
-                                        const updated = [...(overviewData.use_cases || [])];
-                                        updated[idx] = { ...updated[idx], label: e.target.value };
-                                        setOverviewData(prev => ({ ...prev, use_cases: updated }));
-                                      }}
-                                      placeholder="e.g. Desk Organizer"
-                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Use Case Context (Optional)</label>
-                                    <input
-                                      className="custom-input"
-                                      type="text"
-                                      value={uc.description || ''}
-                                      onChange={(e) => {
-                                        const updated = [...(overviewData.use_cases || [])];
-                                        updated[idx] = { ...updated[idx], description: e.target.value };
-                                        setOverviewData(prev => ({ ...prev, use_cases: updated }));
-                                      }}
-                                      placeholder="e.g. Perfect for sorting pens, markers, and files cleanly..."
-                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                             <button
                               type="button"
                               className="pf-outline-accent-btn"
                               onClick={() => setOverviewData(prev => ({
                                 ...prev,
-                                use_cases: [...(prev.use_cases || []), { image: '', icon: 'Layout', label: '', description: '' }]
+                                use_cases: [...(prev.use_cases || []), { image: '' }]
                               }))}
-                              style={{ width: 'max-content', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                              style={{ width: 'max-content', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6 }}
                             >
-                              <Plus size={14} /> Add Use Case Card
+                              <Plus size={14} /> Add Image
                             </button>
                           </div>
                         )}
