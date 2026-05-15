@@ -604,7 +604,7 @@
 .product-detail-info-col {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 0px;
   width: 100%;
   max-width: 42rem;
 }
@@ -1048,7 +1048,7 @@
 
 .product-detail-purchasing-block {
   width: 100%;
-  margin-top: 6px; /* reduced spacing between delivery info and price */
+  margin-top: 0; /* minimal spacing between delivery info and price */
 }
 
 /* Action Buttons */
