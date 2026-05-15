@@ -2781,8 +2781,9 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem 0.75rem;
   border-top: 1px solid #f3f4f6;
-  padding-top: 1.5rem;
-  margin-top: 1.5rem;
+  padding-top: 1rem; /* Reduced from 1.5rem */
+  padding-bottom: 0.5rem; /* Tightened bottom */
+  margin-top: 1rem; /* Reduced from 1.5rem */
   width: 100%;
 }
 
