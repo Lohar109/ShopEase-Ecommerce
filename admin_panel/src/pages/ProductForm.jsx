@@ -151,7 +151,7 @@ const IconSearchableSelect = ({ value, onChange, iconCategories, renderIcon }) =
             position: 'absolute',
             top: 'calc(100% + 6px)',
             left: 0,
-            width: '260px',
+            right: 0,
             maxHeight: '280px',
             overflowY: 'auto',
             backgroundColor: '#ffffff',
@@ -199,7 +199,15 @@ const IconSearchableSelect = ({ value, onChange, iconCategories, renderIcon }) =
                       <span style={{ color: '#c8507a', display: 'flex', alignItems: 'center' }}>
                         {renderIcon(option)}
                       </span>
-                      <span style={{ fontSize: '13px', color: '#374151', fontWeight: isSelected ? 600 : 500 }}>
+                      <span style={{ 
+                        fontSize: '13px', 
+                        color: '#374151', 
+                        fontWeight: isSelected ? 600 : 500,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        flex: 1
+                      }}>
                         {option}
                       </span>
                     </div>
