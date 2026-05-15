@@ -321,14 +321,14 @@ const ProductList = () => {
         setError(err.message || 'Failed to load products');
       } finally {
         if (active) setLoading(false);
-      }, [cachedProducts, cachedCategories, getCachedProducts, getCachedCategories, syncProduct]);
+      }
     };
 
     loadProducts();
     return () => {
       active = false;
     };
-  }, [cachedProducts, cachedCategories, syncProduct]);
+  }, [cachedProducts, cachedCategories, getCachedProducts, getCachedCategories, syncProduct]);
 
   const filterSubcategoryOptions = useMemo(
     () => categories.filter(c => String(c.parent_id) === String(selectedFilterCategory)),
