@@ -1462,13 +1462,18 @@ button:hover {
     border: none;
     cursor: pointer;
     padding: 0;
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
+    transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.card-wishlist-btn:hover {
+.card-wishlist-btn:hover:not(.active) {
     transform: scale(1.08);
-    background-color: #ffffff;
+    background-color: #fce7f3;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.card-wishlist-btn.active {
+    background-color: #fce7f3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .product-card-price-heart-row {
@@ -1480,14 +1485,17 @@ button:hover {
 
 .card-wishlist-btn svg {
     stroke-width: 1.5px;
-    transition: fill 0.3s ease, stroke 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: fill 300ms cubic-bezier(0.34, 1.56, 0.64, 1), stroke 300ms cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.card-wishlist-btn:hover svg,
+.card-wishlist-btn:hover:not(.active) svg {
+    fill: #e33170;
+    stroke: #e33170;
+}
+
 .card-wishlist-btn.active svg {
-    fill: #ef4444 !important;
-    stroke: #ef4444 !important;
-    transform: scale(1.1);
+    fill: #e33170;
+    stroke: #e33170;
 }
 
 

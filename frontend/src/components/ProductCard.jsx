@@ -182,8 +182,8 @@ const ProductCard = ({ product }) => {
             viewBox="0 0 24 24"
             width="18"
             height="18"
-            fill="none"
-            stroke="#374151"
+            fill={isWishlisted ? "#e33170" : "none"}
+            stroke={isWishlisted ? "#e33170" : "#374151"}
             strokeLinecap="round"
             strokeLinejoin="round"
           >
