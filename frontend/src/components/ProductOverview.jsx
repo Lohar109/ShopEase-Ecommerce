@@ -59,6 +59,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .flex-1 { flex: 1 1 0%; }
         .block { display: block; }
         .h-full { height: 100%; }
+        .max-w-md { max-width: 28rem; }
         
         .overflow-hidden { overflow: hidden; }
         .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -89,7 +90,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .object-cover { object-fit: cover; }
         
         /* Fixed Dimension Controls */
-        .min-w-\\[320px\\] { min-width: 320px; flex-shrink: 0; }
+        .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
         .h-\\[400px\\] { height: 400px; }
         
         .w-5 { width: 1.25rem; }
@@ -97,6 +98,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         
         /* Typography mappings */
         .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
         .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
         .text-base { font-size: 1rem; line-height: 1.5rem; }
         .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
@@ -142,8 +144,8 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         @media (min-width: 1024px) {
           .lg\\:grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
           .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-          .lg\\:col-span-4 { grid-column: span 4 / span 4; }
-          .lg\\:col-span-8 { grid-column: span 8 / span 8; }
+          .lg\\:col-span-5 { grid-column: span 5 / span 5; }
+          .lg\\:col-span-7 { grid-column: span 7 / span 7; }
         }
       `}</style>
 
@@ -152,9 +154,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* Left Column (col-span-4): Dynamic Heading, Refined Description, and Conditional Highlights */}
-          <div className="lg:col-span-4 flex flex-col text-left">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-6">
+          {/* Left Column (col-span-5): Dynamic Small Heading, Refined Description, and Conditional Highlights */}
+          <div className="lg:col-span-5 flex flex-col text-left">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight mb-6 max-w-md">
               {product?.name}
             </h2>
             
@@ -167,15 +169,15 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                 {highlightsList.map((bullet, idx) => (
                   <div key={idx} className="flex items-center gap-3 py-2">
                     <DynamicIcon name={bullet.icon} className="w-5 h-5 text-gray-600" />
-                    <span className="text-base text-gray-700 font-medium">{bullet.text}</span>
+                    <span className="text-base text-gray-600 font-medium">{bullet.text}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Right Column (col-span-8): Image Scale Restricting Use Case Gallery */}
-          <div className="lg:col-span-8 overflow-hidden w-full">
+          {/* Right Column (col-span-7): Image Scale Restricting Use Case Gallery */}
+          <div className="lg:col-span-7 overflow-hidden w-full">
             {useCases.length > 0 ? (
               <div className="flex overflow-x-auto gap-4 snap-x pb-4 no-scrollbar">
                 {useCases.map((item, idx) => {
@@ -185,7 +187,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                   return (
                     <div 
                       key={idx} 
-                      className="min-w-[320px] h-[400px] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50"
+                      className="min-w-[280px] h-[400px] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50"
                     >
                       <img 
                         src={imageUrl} 
