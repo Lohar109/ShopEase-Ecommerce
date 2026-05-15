@@ -648,6 +648,10 @@ const ProductDetail = () => {
       size: normalizedSize,
       color: normalizedColor,
       price: variantToAdd.price ?? null,
+      mrp: variantToAdd.mrp ?? null,
+      discount_type: variantToAdd.discount_type ?? null,
+      discount_value: variantToAdd.discount_value ?? null,
+      override_discount: variantToAdd.override_discount ?? false,
       quantity: quantity,
     };
 

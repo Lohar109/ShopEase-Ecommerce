@@ -49,6 +49,9 @@ export const CartProvider = ({ children }) => {
         color: normalizedColor,
         price: selectedVariant.price ?? null,
         mrp: selectedVariant.mrp ?? null,
+        discount_type: selectedVariant.discount_type ?? null,
+        discount_value: selectedVariant.discount_value ?? null,
+        override_discount: selectedVariant.override_discount ?? false,
         quantity,
       },
     ]);

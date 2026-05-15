@@ -24,15 +24,34 @@ const Cart = () => {
   const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
   const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
 
-  const totalMRP = cartItems.reduce(
-    (sum, item) => sum + Number(item.mrp ?? item.price ?? 0) * Number(item.quantity || 1),
-    0
-  );
-  const totalSellingPrice = cartItems.reduce(
-    (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
-    0
-  );
-  const totalDiscount = Math.max(0, totalMRP - totalSellingPrice);
+  let totalMRP = 0;
+  let totalDiscount = 0;
+
+  cartItems.forEach((item) => {
+    const qty = Number(item.quantity || 1);
+    const originalPrice = Number(item.mrp ?? item.price ?? 0);
+    totalMRP += originalPrice * qty;
+
+    let savingsPerUnit = 0;
+    const isPercentage = String(item.discount_type || '').toLowerCase() === 'percentage';
+    const isFixed = String(item.discount_type || '').toLowerCase() === 'fixed';
+    const discountVal = Number(item.discount_value || 0);
+
+    if (discountVal > 0 && isPercentage) {
+      savingsPerUnit = (originalPrice * discountVal) / 100;
+    } else if (discountVal > 0 && isFixed) {
+      savingsPerUnit = discountVal;
+    } else {
+      const m = Number(item.mrp || 0);
+      const p = Number(item.price || 0);
+      savingsPerUnit = Math.max(0, m - p);
+    }
+
+    totalDiscount += savingsPerUnit * qty;
+  });
+
+  const totalSellingPrice = Math.max(0, totalMRP - totalDiscount);
+  const cartTotal = totalSellingPrice;
   const platformFee = 250;
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
@@ -130,7 +149,7 @@ const Cart = () => {
     return `${API_ORIGIN}/${src}`;
   };
 
-  const cartTotal = cartItems.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
+  // Removed duplicate cartTotal calculation as it is now dynamically calculated in the top engine block
 
   const availableOffers = [
     {

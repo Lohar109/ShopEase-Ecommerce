@@ -14,17 +14,38 @@ const Checkout = () => {
   const shippingAddress = state?.shippingAddress || JSON.parse(window.localStorage.getItem('shopease_address') || 'null') || {};
   const deliveryMethod = state?.deliveryMethod || 'standard';
 
-  const totalMRP = useMemo(
-    () => cartItems.reduce((sum, item) => sum + Number(item.mrp ?? item.price ?? 0) * Number(item.quantity || 1), 0),
-    [cartItems]
-  );
-  const totalSellingPrice = useMemo(
-    () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0),
-    [cartItems]
-  );
+  const { totalMRP, totalDiscount } = useMemo(() => {
+    let mrpAccum = 0;
+    let discAccum = 0;
+
+    cartItems.forEach((item) => {
+      const qty = Number(item.quantity || 1);
+      const originalPrice = Number(item.mrp ?? item.price ?? 0);
+      mrpAccum += originalPrice * qty;
+
+      let savingsPerUnit = 0;
+      const isPercentage = String(item.discount_type || '').toLowerCase() === 'percentage';
+      const isFixed = String(item.discount_type || '').toLowerCase() === 'fixed';
+      const discountVal = Number(item.discount_value || 0);
+
+      if (discountVal > 0 && isPercentage) {
+        savingsPerUnit = (originalPrice * discountVal) / 100;
+      } else if (discountVal > 0 && isFixed) {
+        savingsPerUnit = discountVal;
+      } else {
+        const m = Number(item.mrp || 0);
+        const p = Number(item.price || 0);
+        savingsPerUnit = Math.max(0, m - p);
+      }
+
+      discAccum += savingsPerUnit * qty;
+    });
+
+    return { totalMRP: mrpAccum, totalDiscount: discAccum };
+  }, [cartItems]);
+
   const platformFee = 250;
   const deliveryFee = deliveryMethod === 'express' ? 149 : 0;
-  const totalDiscount = Math.max(0, totalMRP - totalSellingPrice);
 
   const grandTotal = totalMRP + platformFee + deliveryFee - totalDiscount;
   const savingsAmount = totalDiscount;
