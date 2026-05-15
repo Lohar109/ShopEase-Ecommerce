@@ -42,6 +42,8 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .gap-2 { gap: 0.5rem; }
         
         .mt-12 { margin-top: 3rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
         .mb-4 { margin-bottom: 1rem; }
         .mb-6 { margin-bottom: 1.5rem; }
         .mb-8 { margin-bottom: 2rem; }
@@ -107,6 +109,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .font-bold { font-weight: 700; }
         .font-semibold { font-weight: 600; }
         .font-medium { font-weight: 500; }
+        .font-normal { font-weight: 400; }
+        .font-light { font-weight: 300; }
+        
         .tracking-tight { letter-spacing: -0.025em; }
         .leading-tight { line-height: 1.25; }
         .leading-relaxed { line-height: 1.625; }
@@ -115,6 +120,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .text-gray-700 { color: #374151; }
         .text-gray-600 { color: #4b5563; }
         .text-gray-500 { color: #6b7280; }
+        .text-gray-400 { color: #9ca3af; }
         .text-right { text-align: right; }
         
         /* Step 3 specifications typography */
@@ -151,17 +157,17 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
       <div className="product-overview-root w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter */}
+        {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter & strict items-start top alignment */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column (col-span-5): Dynamic Small Heading, Refined Description, and Conditional Highlights */}
-          <div className="lg:col-span-5 flex flex-col text-left">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight mb-6 max-w-md">
+          <div className="lg:col-span-5 flex flex-col text-left m-0 p-0">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight mb-3 max-w-md">
               {product?.name}
             </h2>
             
-            {/* Exact description renderer checking .text key instructed by user */}
-            {overview?.intro?.text && <p className='text-gray-500 text-lg mb-8 leading-relaxed'>{overview.intro.text}</p>}
+            {/* Exact description renderer checking .text key instructed by user - lightened with font-normal */}
+            {overview?.intro?.text && <p className='text-gray-400 text-lg mb-8 leading-relaxed font-normal'>{overview.intro.text}</p>}
 
             {/* Highlights List - hidden if missing from both possible root locations */}
             {highlightsList && highlightsList.length > 0 && (
