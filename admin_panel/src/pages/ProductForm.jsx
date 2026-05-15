@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard } from 'lucide-react';
+import { ArrowLeft, Box, Check, ChevronDown, Image, Info, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard, Cpu, Zap, Award, Shield, Truck, Package, Home, Briefcase, Heart, Smile, Star, Gift, Clock, ThumbsUp } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -121,10 +121,13 @@ const ProductForm = () => {
   const [subcategoryId, setSubcategoryId] = useState('');
   const [subSubcategoryId, setSubSubcategoryId] = useState('');
   const [audience, setAudience] = useState('');
-  const [overview, setOverview] = useState({
-    intro: { heading: '', text: '' },
-    bullets: [''],
-    use_cases: [{ image: '', title: '', description: '' }]
+  const [activeSubStep, setActiveSubStep] = useState(1);
+  const [overviewSubstepperCompleted, setOverviewSubstepperCompleted] = useState(false);
+  const [overviewData, setOverviewData] = useState({
+    intro: { heading: '', text: '', bullets: [{ icon: 'Check', text: '' }] },
+    use_cases: [{ image: '', icon: 'Layout', label: '', description: '' }],
+    perfect_for: [{ icon: 'Smile', label: '' }],
+    why_love_it: [{ icon: 'Heart', text: '' }]
   });
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
@@ -1447,16 +1450,44 @@ const ProductForm = () => {
         setVideoUrl(p?.video_url || '');
         
         const loadedOverview = p?.overview || {};
-        setOverview({
+        
+        const safeBullets = (() => {
+          const bulletsArray = Array.isArray(loadedOverview.intro?.bullets) 
+            ? loadedOverview.intro.bullets 
+            : (Array.isArray(loadedOverview.bullets) ? loadedOverview.bullets : []);
+          if (bulletsArray.length === 0) return [{ icon: 'Check', text: '' }];
+          return bulletsArray.map(b => typeof b === 'string' ? { icon: 'Check', text: b } : { icon: b.icon || 'Check', text: b.text || '' });
+        })();
+
+        const safeUseCases = (() => {
+          const ucArray = Array.isArray(loadedOverview.use_cases) ? loadedOverview.use_cases : [];
+          if (ucArray.length === 0) return [{ image: '', icon: 'Layout', label: '', description: '' }];
+          return ucArray.map(uc => ({
+            image: uc.image || '',
+            icon: uc.icon || 'Layout',
+            label: uc.label || uc.title || '',
+            description: uc.description || ''
+          }));
+        })();
+
+        setOverviewData({
           intro: {
             heading: loadedOverview.intro?.heading || '',
             text: loadedOverview.intro?.text || '',
+            bullets: safeBullets,
           },
-          bullets: Array.isArray(loadedOverview.bullets) && loadedOverview.bullets.length > 0 ? loadedOverview.bullets : [''],
-          use_cases: Array.isArray(loadedOverview.use_cases) && loadedOverview.use_cases.length > 0 
-            ? loadedOverview.use_cases 
-            : [{ image: '', title: '', description: '' }]
+          use_cases: safeUseCases,
+          perfect_for: Array.isArray(loadedOverview.perfect_for) && loadedOverview.perfect_for.length > 0
+            ? loadedOverview.perfect_for.map(pf => ({ icon: pf.icon || 'Smile', label: pf.label || '' }))
+            : [{ icon: 'Smile', label: '' }],
+          why_love_it: Array.isArray(loadedOverview.why_love_it) && loadedOverview.why_love_it.length > 0
+            ? loadedOverview.why_love_it.map(w => ({ icon: w.icon || 'Heart', text: w.text || '' }))
+            : [{ icon: 'Heart', text: '' }]
         });
+
+        if (loadedOverview.intro?.heading && (safeBullets.some(b => b.text) || safeUseCases.some(u => u.label))) {
+          setOverviewSubstepperCompleted(true);
+        }
 
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
@@ -1785,17 +1816,32 @@ const ProductForm = () => {
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
-            heading: String(overview.intro?.heading || '').trim(),
-            text: String(overview.intro?.text || '').trim(),
+            heading: String(overviewData.intro?.heading || '').trim(),
+            text: String(overviewData.intro?.text || '').trim(),
+            bullets: (overviewData.intro?.bullets || [])
+              .map(b => ({ icon: String(b.icon || 'Check').trim(), text: String(b.text || '').trim() }))
+              .filter(b => b.text)
           },
-          bullets: (overview.bullets || []).map((b) => String(b || '').trim()).filter(Boolean),
-          use_cases: (overview.use_cases || [])
-            .map((uc) => ({
+          use_cases: (overviewData.use_cases || [])
+            .map(uc => ({
               image: String(uc.image || '').trim(),
-              title: String(uc.title || '').trim(),
-              description: String(uc.description || '').trim(),
+              icon: String(uc.icon || 'Layout').trim(),
+              label: String(uc.label || '').trim(),
+              description: String(uc.description || '').trim()
             }))
-            .filter((uc) => uc.image || uc.title || uc.description),
+            .filter(uc => uc.label || uc.image || uc.description),
+          perfect_for: (overviewData.perfect_for || [])
+            .map(pf => ({
+              icon: String(pf.icon || 'Smile').trim(),
+              label: String(pf.label || '').trim()
+            }))
+            .filter(pf => pf.label),
+          why_love_it: (overviewData.why_love_it || [])
+            .map(w => ({
+              icon: String(w.icon || 'Heart').trim(),
+              text: String(w.text || '').trim()
+            }))
+            .filter(w => w.text)
         },
         variants: variantRows.map(v => ({
           id: v.id || null,
@@ -2178,10 +2224,13 @@ const ProductForm = () => {
 
     const magic = Boolean(magicFillText.trim() && !magicFillError);
 
-    const overviewHeadingValid = Boolean(overview?.intro?.heading?.trim());
-    const overviewBulletsValid = Array.isArray(overview?.bullets) && overview.bullets.some((b) => String(b || '').trim() !== '');
-    const overviewUseCasesValid = Array.isArray(overview?.use_cases) && overview.use_cases.some((uc) => String(uc?.title || '').trim() !== '' || String(uc?.description || '').trim() !== '' || String(uc?.image || '').trim() !== '');
-    const overviewStepValid = overviewHeadingValid && (overviewBulletsValid || overviewUseCasesValid);
+    const overviewHeadingValid = Boolean(overviewData?.intro?.heading?.trim());
+    const overviewBulletsValid = Array.isArray(overviewData?.intro?.bullets) && overviewData.intro.bullets.some((b) => String(b?.text || '').trim() !== '');
+    const overviewUseCasesValid = Array.isArray(overviewData?.use_cases) && overviewData.use_cases.some((uc) => String(uc?.label || '').trim() !== '');
+    
+    const dataValid = overviewHeadingValid && (overviewBulletsValid || overviewUseCasesValid);
+    const isCompletedViaSubstepper = Boolean(overviewSubstepperCompleted);
+    const overviewStepValid = dataValid || isCompletedViaSubstepper;
 
     return {
       magic,
@@ -2193,7 +2242,7 @@ const ProductForm = () => {
       offers,
       overview: overviewStepValid,
     };
-  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overview]);
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overviewData, overviewSubstepperCompleted]);
 
   const goNext = () => {
     if (!canNext) return;
@@ -5190,203 +5239,486 @@ const ProductForm = () => {
                   </>
                 )}
 
-                {activeTab === 'overview' && (
-                  <>
-                    <div className="pf-section-title">
-                      <span className="pf-section-title-icon"><Layout size={16} /></span>
-                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview Configuration</h3>
-                    </div>
+                {activeTab === 'overview' && (() => {
+                  const iconOptions = ['Check', 'Smile', 'Heart', 'Layout', 'Sparkles', 'Star', 'Gift', 'Zap', 'Award', 'Cpu', 'Shield', 'Truck', 'Package', 'Home', 'Briefcase', 'Clock', 'ThumbsUp'];
+                  const renderIcon = (name) => {
+                    switch (name) {
+                      case 'Cpu': return <Cpu size={16} />;
+                      case 'Zap': return <Zap size={16} />;
+                      case 'Award': return <Award size={16} />;
+                      case 'Shield': return <Shield size={16} />;
+                      case 'Truck': return <Truck size={16} />;
+                      case 'Package': return <Package size={16} />;
+                      case 'Home': return <Home size={16} />;
+                      case 'Briefcase': return <Briefcase size={16} />;
+                      case 'Heart': return <Heart size={16} />;
+                      case 'Smile': return <Smile size={16} />;
+                      case 'Star': return <Star size={16} />;
+                      case 'Gift': return <Gift size={16} />;
+                      case 'Clock': return <Clock size={16} />;
+                      case 'ThumbsUp': return <ThumbsUp size={16} />;
+                      case 'Layout': return <Layout size={16} />;
+                      case 'Sparkles': return <Sparkles size={16} />;
+                      default: return <Check size={16} />;
+                    }
+                  };
 
-                    {/* Intro Section */}
-                    <div style={{ display: 'grid', gap: 16, marginBottom: 24 }}>
-                      <div>
-                        <label style={{ fontWeight: 500 }}>Intro Heading</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={overview.intro?.heading || ''}
-                          onChange={(e) =>
-                            setOverview((prev) => ({
-                              ...prev,
-                              intro: { ...prev.intro, heading: e.target.value },
-                            }))
-                          }
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                          placeholder="e.g. Organize Everything. Simplify Your Space."
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontWeight: 500 }}>Intro Paragraph Text</label>
-                        <textarea
-                          className="custom-input"
-                          rows={3}
-                          value={overview.intro?.text || ''}
-                          onChange={(e) =>
-                            setOverview((prev) => ({
-                              ...prev,
-                              intro: { ...prev.intro, text: e.target.value },
-                            }))
-                          }
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4, resize: 'vertical' }}
-                          placeholder="Provide a comprehensive overview paragraph for the product..."
-                        />
-                      </div>
-                    </div>
-
-                    {/* Bullets Section */}
-                    <div style={{ marginBottom: 24 }}>
-                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Key Features & Bullets</label>
-                      {(overview.bullets || []).map((bullet, idx) => (
-                        <div key={`bullet-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={bullet}
-                            onChange={(e) => {
-                              const updated = [...(overview.bullets || [])];
-                              updated[idx] = e.target.value;
-                              setOverview((prev) => ({ ...prev, bullets: updated }));
-                            }}
-                            placeholder="e.g. Multi-purpose storage: Seamlessly accommodates supplies."
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updated = (overview.bullets || []).filter((_, i) => i !== idx);
-                              setOverview((prev) => ({ ...prev, bullets: updated }));
-                            }}
-                            title="Remove bullet"
-                            style={{
-                              background: '#fef2f2',
-                              color: '#ef4444',
-                              border: 'none',
-                              borderRadius: 8,
-                              padding: 8,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                  return (
+                    <>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eef0f3', paddingBottom: 20, marginBottom: 28 }}>
+                        <div className="pf-section-title" style={{ marginBottom: 0 }}>
+                          <span className="pf-section-title-icon"><Layout size={16} /></span>
+                          <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Overview Configuration</h3>
                         </div>
-                      ))}
-                      <button
-                        type="button"
-                        className="pf-outline-accent-btn"
-                        onClick={() => setOverview((prev) => ({ ...prev, bullets: [...(prev.bullets || []), ''] }))}
-                        style={{ marginTop: 8, gap: 4, display: 'inline-flex', alignItems: 'center' }}
-                      >
-                        <Plus size={14} /> Add Bullet
-                      </button>
-                    </div>
 
-                    {/* Use Cases Section */}
-                    <div style={{ marginBottom: 12 }}>
-                      <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Product Use Cases</label>
-                      {(overview.use_cases || []).map((uc, idx) => (
-                        <div
-                          key={`use-case-${idx}`}
-                          style={{
-                            padding: 16,
-                            border: '1px solid #eceff3',
-                            borderRadius: 16,
-                            background: '#fafbfc',
-                            marginBottom: 16,
-                            position: 'relative',
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updated = (overview.use_cases || []).filter((_, i) => i !== idx);
-                              setOverview((prev) => ({ ...prev, use_cases: updated }));
-                            }}
-                            style={{
-                              position: 'absolute',
-                              top: 12,
-                              right: 12,
-                              background: '#fef2f2',
-                              color: '#ef4444',
-                              border: 'none',
-                              borderRadius: 8,
-                              padding: 8,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                            title="Remove use case"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+                        {/* Sub-Stepper */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {[
+                            { step: 1, label: 'Intro' },
+                            { step: 2, label: 'Use Cases' },
+                            { step: 3, label: 'Perfect For' },
+                            { step: 4, label: 'Value' }
+                          ].map((item, index, arr) => {
+                            const stepNum = item.step;
+                            const isActive = activeSubStep === stepNum;
+                            const isCompleted = activeSubStep > stepNum;
+                            return (
+                              <React.Fragment key={stepNum}>
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveSubStep(stepNum)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: 'none', background: 'none', padding: '4px 8px', borderRadius: 8, transition: 'all 0.2s ease', opacity: (isCompleted || isActive) ? 1 : 0.55 }}
+                                  title={`Navigate to ${item.label}`}
+                                >
+                                  <div style={{
+                                    width: 26,
+                                    height: 26,
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    background: isActive ? '#c8507a' : (isCompleted ? '#22c55e' : '#f3f4f6'),
+                                    color: (isActive || isCompleted) ? '#fff' : '#6b7280',
+                                    border: isCompleted ? '2px solid #22c55e' : (isActive ? '2px solid #c8507a' : '2px solid #d1d5db'),
+                                    transition: 'all 0.2s'
+                                  }}>
+                                    {isCompleted ? <Check size={13} /> : stepNum}
+                                  </div>
+                                  <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? '#c8507a' : '#4b5563' }}>
+                                    {item.label}
+                                  </span>
+                                </button>
+                                {index < arr.length - 1 && (
+                                  <div style={{ width: 20, height: 2, background: isCompleted ? '#22c55e' : '#e4e4e7', borderRadius: 1 }} />
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Content Rendering per Sub-Step */}
+                      <div style={{ minHeight: 320, display: 'flex', flexDirection: 'column' }}>
+                        {activeSubStep === 1 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                             <div>
-                              <label style={{ fontSize: 12, color: '#666' }}>Title</label>
+                              <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 6 }}>Intro Heading</label>
                               <input
                                 className="custom-input"
                                 type="text"
-                                value={uc.title || ''}
-                                onChange={(e) => {
-                                  const updated = [...(overview.use_cases || [])];
-                                  updated[idx] = { ...updated[idx], title: e.target.value };
-                                  setOverview((prev) => ({ ...prev, use_cases: updated }));
-                                }}
-                                style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                                placeholder="e.g. Desk Organizer"
+                                value={overviewData.intro?.heading || ''}
+                                onChange={(e) =>
+                                  setOverviewData((prev) => ({
+                                    ...prev,
+                                    intro: { ...prev.intro, heading: e.target.value },
+                                  }))
+                                }
+                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                placeholder="e.g. Organize Everything. Simplify Your Space."
                               />
                             </div>
+                            
                             <div>
-                              <label style={{ fontSize: 12, color: '#666' }}>Image URL</label>
-                              <input
+                              <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 6 }}>Intro Description</label>
+                              <textarea
                                 className="custom-input"
-                                type="text"
-                                value={uc.image || ''}
-                                onChange={(e) => {
-                                  const updated = [...(overview.use_cases || [])];
-                                  updated[idx] = { ...updated[idx], image: e.target.value };
-                                  setOverview((prev) => ({ ...prev, use_cases: updated }));
-                                }}
-                                style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                                placeholder="e.g. /assets/desk_organizer_usecase.png"
+                                rows={3}
+                                value={overviewData.intro?.text || ''}
+                                onChange={(e) =>
+                                  setOverviewData((prev) => ({
+                                    ...prev,
+                                    intro: { ...prev.intro, text: e.target.value },
+                                  }))
+                                }
+                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', resize: 'vertical' }}
+                                placeholder="e.g. Maximize your living and workspaces with this durable, multi-purpose storage solution..."
                               />
                             </div>
+
+                            <div>
+                              <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 10 }}>Key Features & Highlights</label>
+                              {(overviewData.intro?.bullets || []).map((b, idx) => (
+                                <div key={`bullet-${idx}`} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'center' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 140px' }}>
+                                    <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                                      {renderIcon(b.icon)}
+                                    </div>
+                                    <select
+                                      className="custom-input"
+                                      value={b.icon || 'Check'}
+                                      onChange={(e) => {
+                                        const updated = [...(overviewData.intro?.bullets || [])];
+                                        updated[idx] = { ...updated[idx], icon: e.target.value };
+                                        setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
+                                      }}
+                                      style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
+                                    >
+                                      {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
+                                    </select>
+                                  </div>
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={b.text || ''}
+                                    onChange={(e) => {
+                                      const updated = [...(overviewData.intro?.bullets || [])];
+                                      updated[idx] = { ...updated[idx], text: e.target.value };
+                                      setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
+                                    }}
+                                    placeholder="e.g. High grade acrylic material..."
+                                    style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = (overviewData.intro?.bullets || []).filter((_, i) => i !== idx);
+                                      setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
+                                    }}
+                                    style={{ padding: 8, background: '#fef2f2', border: 'none', borderRadius: 8, cursor: 'pointer', color: '#ef4444', display: 'inline-flex' }}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                className="pf-outline-accent-btn"
+                                onClick={() => setOverviewData((prev) => ({
+                                  ...prev,
+                                  intro: { ...prev.intro, bullets: [...(prev.intro?.bullets || []), { icon: 'Check', text: '' }] }
+                                }))}
+                                style={{ marginTop: 6, gap: 6, display: 'inline-flex', alignItems: 'center' }}
+                              >
+                                <Plus size={14} /> Add Highlight
+                              </button>
+                            </div>
                           </div>
-                          <div style={{ marginTop: 12 }}>
-                            <label style={{ fontSize: 12, color: '#666' }}>Description</label>
-                            <input
-                              className="custom-input"
-                              type="text"
-                              value={uc.description || ''}
-                              onChange={(e) => {
-                                const updated = [...(overview.use_cases || [])];
-                                updated[idx] = { ...updated[idx], description: e.target.value };
-                                setOverview((prev) => ({ ...prev, use_cases: updated }));
-                              }}
-                              style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
-                              placeholder="Explain this specific use case..."
-                            />
+                        )}
+
+                        {activeSubStep === 2 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Product Use Cases</label>
+                            {(overviewData.use_cases || []).map((uc, idx) => (
+                              <div
+                                key={`usecase-${idx}`}
+                                style={{ padding: 18, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 16, position: 'relative' }}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = (overviewData.use_cases || []).filter((_, i) => i !== idx);
+                                    setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                  }}
+                                  style={{ position: 'absolute', top: 14, right: 14, border: 'none', background: '#fee2e2', color: '#ef4444', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'inline-flex' }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                                  <div>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Image URL</label>
+                                    <input
+                                      className="custom-input"
+                                      type="text"
+                                      value={uc.image || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(overviewData.use_cases || [])];
+                                        updated[idx] = { ...updated[idx], image: e.target.value };
+                                        setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                      }}
+                                      placeholder="e.g. https://cloudinary.com/example.jpg"
+                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Select Visual Icon</label>
+                                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                                      <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                                        {renderIcon(uc.icon)}
+                                      </div>
+                                      <select
+                                        className="custom-input"
+                                        value={uc.icon || 'Layout'}
+                                        onChange={(e) => {
+                                          const updated = [...(overviewData.use_cases || [])];
+                                          updated[idx] = { ...updated[idx], icon: e.target.value };
+                                          setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                        }}
+                                        style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 10, border: '1px solid #a0a0a0', appearance: 'none' }}
+                                      >
+                                        {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14, marginTop: 14 }}>
+                                  <div>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Label Title</label>
+                                    <input
+                                      className="custom-input"
+                                      type="text"
+                                      value={uc.label || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(overviewData.use_cases || [])];
+                                        updated[idx] = { ...updated[idx], label: e.target.value };
+                                        setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                      }}
+                                      placeholder="e.g. Desk Organizer"
+                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label style={{ fontSize: 12, fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 4 }}>Use Case Context (Optional)</label>
+                                    <input
+                                      className="custom-input"
+                                      type="text"
+                                      value={uc.description || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(overviewData.use_cases || [])];
+                                        updated[idx] = { ...updated[idx], description: e.target.value };
+                                        setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                      }}
+                                      placeholder="e.g. Perfect for sorting pens, markers, and files cleanly..."
+                                      style={{ width: '100%', padding: '8px 12px', borderRadius: 10, border: '1px solid #a0a0a0' }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              className="pf-outline-accent-btn"
+                              onClick={() => setOverviewData(prev => ({
+                                ...prev,
+                                use_cases: [...(prev.use_cases || []), { image: '', icon: 'Layout', label: '', description: '' }]
+                              }))}
+                              style={{ width: 'max-content', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            >
+                              <Plus size={14} /> Add Use Case Card
+                            </button>
                           </div>
-                        </div>
-                      ))}
-                      <button
-                        type="button"
-                        className="pf-outline-accent-btn"
-                        onClick={() =>
-                          setOverview((prev) => ({
-                            ...prev,
-                            use_cases: [...(prev.use_cases || []), { image: '', title: '', description: '' }],
-                          }))
-                        }
-                        style={{ gap: 4, display: 'inline-flex', alignItems: 'center' }}
-                      >
-                        <Plus size={14} /> Add Use Case
-                      </button>
-                    </div>
-                  </>
-                )}
+                        )}
+
+                        {activeSubStep === 3 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Perfect For Scenarios</label>
+                            {(overviewData.perfect_for || []).map((pf, idx) => (
+                              <div key={`perfect-${idx}`} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 160px' }}>
+                                  <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                                    {renderIcon(pf.icon)}
+                                  </div>
+                                  <select
+                                    className="custom-input"
+                                    value={pf.icon || 'Smile'}
+                                    onChange={(e) => {
+                                      const updated = [...(overviewData.perfect_for || [])];
+                                      updated[idx] = { ...updated[idx], icon: e.target.value };
+                                      setOverviewData(prev => ({ ...prev, perfect_for: updated }));
+                                    }}
+                                    style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
+                                  >
+                                    {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
+                                  </select>
+                                </div>
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  value={pf.label || ''}
+                                  onChange={(e) => {
+                                    const updated = [...(overviewData.perfect_for || [])];
+                                    updated[idx] = { ...updated[idx], label: e.target.value };
+                                    setOverviewData(prev => ({ ...prev, perfect_for: updated }));
+                                  }}
+                                  placeholder="e.g. Workspaces, Makeup Counters, Bedrooms..."
+                                  style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = (overviewData.perfect_for || []).filter((_, i) => i !== idx);
+                                    setOverviewData(prev => ({ ...prev, perfect_for: updated }));
+                                  }}
+                                  style={{ padding: 8, background: '#fef2f2', border: 'none', borderRadius: 8, cursor: 'pointer', color: '#ef4444', display: 'inline-flex' }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              className="pf-outline-accent-btn"
+                              onClick={() => setOverviewData(prev => ({
+                                ...prev,
+                                perfect_for: [...(prev.perfect_for || []), { icon: 'Smile', label: '' }]
+                              }))}
+                              style={{ width: 'max-content', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            >
+                              <Plus size={14} /> Add Destination Scenario
+                            </button>
+                          </div>
+                        )}
+
+                        {activeSubStep === 4 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <label style={{ fontWeight: 500, color: '#1f2937', display: 'block' }}>Why You'll Love It (Value Proposition)</label>
+                            {(overviewData.why_love_it || []).map((w, idx) => (
+                              <div key={`love-${idx}`} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', position: 'relative', flex: '0 0 160px' }}>
+                                  <div style={{ position: 'absolute', left: 10, color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                                    {renderIcon(w.icon)}
+                                  </div>
+                                  <select
+                                    className="custom-input"
+                                    value={w.icon || 'Heart'}
+                                    onChange={(e) => {
+                                      const updated = [...(overviewData.why_love_it || [])];
+                                      updated[idx] = { ...updated[idx], icon: e.target.value };
+                                      setOverviewData(prev => ({ ...prev, why_love_it: updated }));
+                                    }}
+                                    style={{ width: '100%', padding: '8px 10px 8px 34px', borderRadius: 12, border: '1px solid #a0a0a0', appearance: 'none', cursor: 'pointer' }}
+                                  >
+                                    {iconOptions.map(name => <option key={name} value={name}>{name}</option>)}
+                                  </select>
+                                </div>
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  value={w.text || ''}
+                                  onChange={(e) => {
+                                    const updated = [...(overviewData.why_love_it || [])];
+                                    updated[idx] = { ...updated[idx], text: e.target.value };
+                                    setOverviewData(prev => ({ ...prev, why_love_it: updated }));
+                                  }}
+                                  placeholder="e.g. Durable design that stands the test of time..."
+                                  style={{ flex: 1, padding: '8px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = (overviewData.why_love_it || []).filter((_, i) => i !== idx);
+                                    setOverviewData(prev => ({ ...prev, why_love_it: updated }));
+                                  }}
+                                  style={{ padding: 8, background: '#fef2f2', border: 'none', borderRadius: 8, cursor: 'pointer', color: '#ef4444', display: 'inline-flex' }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              className="pf-outline-accent-btn"
+                              onClick={() => setOverviewData(prev => ({
+                                ...prev,
+                                why_love_it: [...(prev.why_love_it || []), { icon: 'Heart', text: '' }]
+                              }))}
+                              style={{ width: 'max-content', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            >
+                              <Plus size={14} /> Add Value Proposition
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Local Sub-step Nav Controls */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 32, paddingTop: 20, borderTop: '1px solid #eef0f3' }}>
+                        {activeSubStep > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setActiveSubStep(prev => prev - 1)}
+                            style={{ 
+                              padding: '10px 22px', 
+                              borderRadius: 12, 
+                              border: '1px solid #d4d4d8', 
+                              background: '#ffffff', 
+                              fontWeight: 600, 
+                              color: '#3f3f46', 
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#f4f4f5'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
+                          >
+                            Back
+                          </button>
+                        )}
+
+                        {activeSubStep < 4 ? (
+                          <button
+                            type="button"
+                            onClick={() => setActiveSubStep(prev => prev + 1)}
+                            style={{ 
+                              padding: '10px 26px', 
+                              borderRadius: 12, 
+                              border: 'none', 
+                              background: '#c8507a', 
+                              color: '#ffffff', 
+                              fontWeight: 600, 
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 6px rgba(200, 80, 122, 0.2)'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#b04267'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#c8507a'}
+                          >
+                            Next
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOverviewSubstepperCompleted(true);
+                              setToastType('success');
+                              setToastMsg('Overview configuration marked complete!');
+                              setTimeout(() => setToastMsg(''), 3000);
+                            }}
+                            style={{ 
+                              padding: '10px 26px', 
+                              borderRadius: 12, 
+                              border: 'none', 
+                              background: '#16a34a', 
+                              color: '#ffffff', 
+                              fontWeight: 600, 
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 6px rgba(22, 163, 74, 0.2)',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#15803d'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#16a34a'}
+                          >
+                            <Check size={16} /> Mark Complete
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
