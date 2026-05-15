@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Box, Check, ChevronDown, Image, Info, HelpCircle, Layout, Layers, Plus, Trash2, AlertTriangle, Video, Edit2, Sparkles, Brain, Folder, Clipboard, Cpu, Zap, Award, Shield, Truck, Package, Home, Briefcase, Heart, Smile, Star, Gift, Clock, ThumbsUp } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Award, BadgeCheck, Bath, BatteryCharging, Bed, Bluetooth, Box, Brain, Briefcase, Check, ChevronDown, Clipboard, Clock, Code, Coffee, Cpu, Crown, Database, Diamond, Droplets, Edit2, Fingerprint, Flower, Folder, Gift, Globe, Hammer, HardDrive, Headphones, Heart, HelpCircle, Home, Image, Info, Keyboard, Lamp, Layers, Layout, Leaf, MapPin, Medal, Monitor, Moon, Mouse, Package, Palette, PenTool, Plane, Plus, Recycle, Ruler, Scale, Scissors, Shield, ShieldCheck, Ship, ShoppingBag, Smartphone, Smile, Sofa, Sparkles, Star, Sun, ThumbsUp, Trash2, Truck, Utensils, Verified, Video, Wifi, Wind, Wrench, Zap } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -55,7 +55,30 @@ const formatAudienceLabel = (aud) => {
     .join(' ');
 };
 
-const IconSearchableSelect = ({ value, onChange, iconOptions, renderIcon }) => {
+const ICON_CATEGORIES = [
+  {
+    group: "Trust & Quality",
+    icons: ["Award", "BadgeCheck", "ShieldCheck", "Star", "Medal", "Verified", "ThumbsUp", "Heart", "Sparkles", "Zap", "Fingerprint", "Crown"]
+  },
+  {
+    group: "Shipping & Service",
+    icons: ["Truck", "Box", "Package", "Globe", "Clock", "Plane", "Ship", "ShoppingBag", "Gift", "Headphones", "MapPin"]
+  },
+  {
+    group: "Home & Lifestyle",
+    icons: ["Home", "Bed", "Sofa", "Lamp", "Bath", "Utensils", "Coffee", "Leaf", "Recycle", "Droplets", "Wind", "Sun", "Moon", "Flower"]
+  },
+  {
+    group: "Tech & Specs",
+    icons: ["Smartphone", "Monitor", "Cpu", "Code", "Database", "BatteryCharging", "Wifi", "Bluetooth", "HardDrive", "Mouse", "Keyboard"]
+  },
+  {
+    group: "Materials & Design",
+    icons: ["Layers", "Layout", "Scissors", "PenTool", "Ruler", "Palette", "Hammer", "Wrench", "Diamond", "Scale"]
+  }
+];
+
+const IconSearchableSelect = ({ value, onChange, iconCategories, renderIcon }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef(null);
@@ -71,9 +94,12 @@ const IconSearchableSelect = ({ value, onChange, iconOptions, renderIcon }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredOptions = (iconOptions || []).filter(option =>
-    String(option).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCategories = (iconCategories || []).map(group => {
+    const matchedIcons = (group.icons || []).filter(icon =>
+      String(icon).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    return { ...group, icons: matchedIcons };
+  }).filter(group => group.icons.length > 0);
 
   const handleSelect = (option) => {
     onChange(option);
@@ -125,8 +151,8 @@ const IconSearchableSelect = ({ value, onChange, iconOptions, renderIcon }) => {
             position: 'absolute',
             top: 'calc(100% + 6px)',
             left: 0,
-            right: 0,
-            maxHeight: '200px',
+            width: '260px',
+            maxHeight: '280px',
             overflowY: 'auto',
             backgroundColor: '#ffffff',
             border: '1px solid #e5e7eb',
@@ -136,35 +162,51 @@ const IconSearchableSelect = ({ value, onChange, iconOptions, renderIcon }) => {
             padding: '6px',
           }}
         >
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option) => {
-              const isSelected = value === option;
-              return (
-                <div
-                  key={option}
-                  onClick={() => handleSelect(option)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    backgroundColor: isSelected ? '#f3f4f6' : 'transparent',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
-                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  <span style={{ color: '#c8507a', display: 'flex', alignItems: 'center' }}>
-                    {renderIcon(option)}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#374151', fontWeight: isSelected ? 600 : 500 }}>
-                    {option}
-                  </span>
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((group, gIdx) => (
+              <div key={group.group || gIdx}>
+                <div style={{
+                  padding: '6px 12px',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#9ca3af',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  borderTop: gIdx > 0 ? '1px solid #f3f4f6' : 'none',
+                  marginTop: gIdx > 0 ? '4px' : 0
+                }}>
+                  {group.group}
                 </div>
-              );
-            })
+                {(group.icons || []).map((option) => {
+                  const isSelected = value === option;
+                  return (
+                    <div
+                      key={option}
+                      onClick={() => handleSelect(option)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#f3f4f6' : 'transparent',
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+                      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      <span style={{ color: '#c8507a', display: 'flex', alignItems: 'center' }}>
+                        {renderIcon(option)}
+                      </span>
+                      <span style={{ fontSize: '13px', color: '#374151', fontWeight: isSelected ? 600 : 500 }}>
+                        {option}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ))
           ) : (
             <div style={{ padding: '12px', textAlign: 'center', color: '#9ca3af', fontSize: '12px' }}>
               No matching icons
@@ -5361,7 +5403,10 @@ const ProductForm = () => {
                 )}
 
                 {activeTab === 'overview' && (() => {
-                  const iconOptions = ['Check', 'Smile', 'Heart', 'Layout', 'Sparkles', 'Star', 'Gift', 'Zap', 'Award', 'Cpu', 'Shield', 'Truck', 'Package', 'Home', 'Briefcase', 'Clock', 'ThumbsUp'];
+                  const iconOptions = Array.from(new Set([
+                    'Check', 'Smile', 'Heart', 'Layout', 'Sparkles', 'Star', 'Gift', 'Zap', 'Award', 'Cpu', 'Shield', 'Truck', 'Package', 'Home', 'Briefcase', 'Clock', 'ThumbsUp',
+                    ...(typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES.flatMap(cat => cat.icons) : [])
+                  ]));
                   const renderIcon = (name) => {
                     const lower = String(name || '').trim().toLowerCase();
                     switch (lower) {
@@ -5382,6 +5427,64 @@ const ProductForm = () => {
                       case 'layout': return <Layout size={16} />;
                       case 'sparkles': return <Sparkles size={16} />;
                       case 'check': return <Check size={16} />;
+                      
+                      // Trust & Quality
+                      case 'badgecheck': return <BadgeCheck size={16} />;
+                      case 'shieldcheck': return <ShieldCheck size={16} />;
+                      case 'medal': return <Medal size={16} />;
+                      case 'verified': return <Verified size={16} />;
+                      case 'fingerprint': return <Fingerprint size={16} />;
+                      case 'crown': return <Crown size={16} />;
+                      
+                      // Shipping & Service
+                      case 'box': return <Box size={16} />;
+                      case 'globe': return <Globe size={16} />;
+                      case 'plane': return <Plane size={16} />;
+                      case 'ship': return <Ship size={16} />;
+                      case 'shoppingbag': return <ShoppingBag size={16} />;
+                      case 'headphones': return <Headphones size={16} />;
+                      case 'mappin': return <MapPin size={16} />;
+                      
+                      // Home & Lifestyle
+                      case 'bed': return <Bed size={16} />;
+                      case 'sofa': return <Sofa size={16} />;
+                      case 'lamp': return <Lamp size={16} />;
+                      case 'bath': return <Bath size={16} />;
+                      case 'utensils': return <Utensils size={16} />;
+                      case 'coffee': return <Coffee size={16} />;
+                      case 'leaf': return <Leaf size={16} />;
+                      case 'recycle': return <Recycle size={16} />;
+                      case 'droplets': return <Droplets size={16} />;
+                      case 'wind': return <Wind size={16} />;
+                      case 'sun': return <Sun size={16} />;
+                      case 'moon': return <Moon size={16} />;
+                      case 'flower': return <Flower size={16} />;
+                      case 'flowers': return <Flower size={16} />;
+                      
+                      // Tech & Specs
+                      case 'smartphone': return <Smartphone size={16} />;
+                      case 'monitor': return <Monitor size={16} />;
+                      case 'code': return <Code size={16} />;
+                      case 'database': return <Database size={16} />;
+                      case 'batterycharging': return <BatteryCharging size={16} />;
+                      case 'wifi': return <Wifi size={16} />;
+                      case 'bluetooth': return <Bluetooth size={16} />;
+                      case 'harddrive': return <HardDrive size={16} />;
+                      case 'mouse': return <Mouse size={16} />;
+                      case 'keyboard': return <Keyboard size={16} />;
+                      
+                      // Materials & Design
+                      case 'layers': return <Layers size={16} />;
+                      case 'scissors': return <Scissors size={16} />;
+                      case 'pentool': return <PenTool size={16} />;
+                      case 'ruler': return <Ruler size={16} />;
+                      case 'palette': return <Palette size={16} />;
+                      case 'hammer': return <Hammer size={16} />;
+                      case 'wrench': return <Wrench size={16} />;
+                      case 'tool': return <Wrench size={16} />;
+                      case 'diamond': return <Diamond size={16} />;
+                      case 'scale': return <Scale size={16} />;
+
                       default: return <HelpCircle size={16} />;
                     }
                   };
@@ -5539,7 +5642,7 @@ const ProductForm = () => {
                                       updated[idx] = { ...updated[idx], icon: newIcon };
                                       setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
                                     }}
-                                    iconOptions={iconOptions}
+                                    iconCategories={typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES : []}
                                     renderIcon={renderIcon}
                                   />
 
