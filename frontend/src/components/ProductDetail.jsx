@@ -1047,29 +1047,7 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {/* Scarcity + Delivery row */}
-                <div className="pdp-stock-delivery-row">
-                  {stockCount === 0 ? (
-                    <span className="pdp-scarcity-badge pdp-scarcity-badge--oos">Out of Stock</span>
-                  ) : stockCount > 0 && stockCount <= 10 ? (
-                    <div className="pdp-stock-progress-block" aria-live="polite">
-                      <div className="pdp-stock-progress-label">
-                        <span className="pdp-stock-progress-text">
-                          Only <strong>{stockCount}</strong> left
-                        </span>
-                      </div>
-                      <div className="pdp-stock-progress-track" aria-hidden="true">
-                        <div
-                          className="pdp-stock-progress-fill"
-                          style={{
-                            width: showStockProgress ? `${stockBarWidth}%` : '0%',
-                            backgroundColor: stockBarColor,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+
 
                 {/* Price Section */}
                 <div className="product-detail-purchasing-block">
