@@ -1070,9 +1070,14 @@ const ProductDetail = () => {
                 <div className="product-detail-purchasing-block">
                   <div className="product-detail-price-group" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-                      <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
-                        Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                        <span className="product-detail-price" style={{ fontSize: '1.875rem', fontWeight: 800, color: '#111827' }}>
+                          Rs. {computedFinalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="product-detail-tax" style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: 400 }}>
+                          Inclusive of all taxes
+                        </span>
+                      </div>
 
                       {hasDiscount && (
                         <>
@@ -1095,8 +1100,6 @@ const ProductDetail = () => {
                         </>
                       )}
                     </div>
-
-                    <span className="product-detail-tax" style={{ display: 'block', marginTop: hasDiscount ? 4 : 2 }}>All taxes included</span>
                   </div>
 
                   {/* Quantity Selector */}
