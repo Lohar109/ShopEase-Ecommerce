@@ -25,6 +25,7 @@ const ProductOverview = ({ overview }) => {
       <style>{`
         .grid { display: grid; }
         .items-start { align-items: flex-start; }
+        .gap-10 { gap: 2.5rem; }
         .gap-8 { gap: 2rem; }
         .gap-6 { gap: 1.5rem; }
         .gap-4 { gap: 1rem; }
@@ -44,11 +45,16 @@ const ProductOverview = ({ overview }) => {
         .flex-col { flex-direction: column; }
         .items-center { align-items: center; }
         .flex-shrink-0 { flex-shrink: 0; }
+        .block { display: block; }
         
         .overflow-hidden { overflow: hidden; }
         .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .snap-x { scroll-snap-type: x mandatory; }
         .snap-start { scroll-snap-align: start; }
+        
+        /* Scrollbar-free design helper */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .bg-white { background-color: #ffffff; }
         .bg-gray-50 { background-color: #f9fafb; }
@@ -63,9 +69,11 @@ const ProductOverview = ({ overview }) => {
         
         .w-full { width: 100%; }
         .h-full { height: 100%; }
-        .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
-        .aspect-\\[4\\/5\\] { aspect-ratio: 4/5; }
         .object-cover { object-fit: cover; }
+        
+        /* Fixed Dimension Controls */
+        .min-w-\\[320px\\] { min-width: 320px; flex-shrink: 0; }
+        .h-\\[400px\\] { height: 400px; }
         
         .w-5 { width: 1.25rem; }
         .h-5 { height: 1.25rem; }
@@ -105,16 +113,16 @@ const ProductOverview = ({ overview }) => {
 
       <div className="product-overview-root w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* Top Section: 12-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Top Section: 12-Column Grid with explicitly wider gap-10 gutter */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* Left Column (col-span-4): Heading, Description, and Highlights */}
+          {/* Left Column (col-span-4): Heading, Refined Description, and Clean Highlights */}
           <div className="lg:col-span-4 flex flex-col text-left">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-6">
               {intro.heading}
             </h2>
             
-            <p className="text-base text-gray-500 leading-relaxed mb-8">
+            <p className="text-gray-500 text-lg leading-relaxed block mb-8">
               {intro.description}
             </p>
 
@@ -130,16 +138,24 @@ const ProductOverview = ({ overview }) => {
             )}
           </div>
 
-          {/* Right Column (col-span-8): Use Case Gallery */}
+          {/* Right Column (col-span-8): Image Scale Restricting Use Case Gallery */}
           <div className="lg:col-span-8 overflow-hidden w-full">
             {useCases.length > 0 ? (
-              <div className="flex overflow-x-auto gap-4 snap-x pb-4" style={{ scrollbarWidth: 'thin' }}>
+              <div className="flex overflow-x-auto gap-4 snap-x pb-4 no-scrollbar">
                 {useCases.map((item, idx) => {
                   const imageUrl = typeof item === 'string' ? item : (item?.image || '');
                   if (!imageUrl) return null;
+                  
                   return (
-                    <div key={idx} className="min-w-[280px] aspect-[4/5] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50">
-                      <img src={imageUrl} alt={`Use Case ${idx + 1}`} className="w-full h-full object-cover" />
+                    <div 
+                      key={idx} 
+                      className="min-w-[320px] h-[400px] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50"
+                    >
+                      <img 
+                        src={imageUrl} 
+                        alt={`Use Case ${idx + 1}`} 
+                        className="w-full h-full object-cover" 
+                      />
                     </div>
                   );
                 })}
