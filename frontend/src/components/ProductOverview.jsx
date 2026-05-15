@@ -141,6 +141,24 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           color: #1d4ed8;
         }
         
+        .relative { position: relative; }
+        .w-max { width: max-content; }
+        .mr-4 { margin-right: 1rem; }
+        
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        
+        .animate-marquee {
+          display: flex;
+          animation: marquee 25s linear infinite;
+        }
+        
+        .hover\\:pause-animation:hover {
+          animation-play-state: paused;
+        }
+        
         /* Responsive grids */
         .grid-cols-1 { grid-template-columns: 1fr; }
         
@@ -184,21 +202,21 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           </div>
 
           {/* Right Column (col-span-7): Image Scale Restricting Use Case Gallery */}
-          <div className="lg:col-span-7 overflow-hidden w-full">
+          <div className="lg:col-span-7 relative overflow-hidden w-full">
             {useCases.length > 0 ? (
-              <div className="flex overflow-x-auto gap-4 snap-x pb-4 no-scrollbar">
-                {useCases.map((item, idx) => {
+              <div className="animate-marquee hover:pause-animation flex w-max py-2">
+                {[...useCases, ...useCases].map((item, idx) => {
                   const imageUrl = typeof item === 'string' ? item : (item?.image || '');
                   if (!imageUrl) return null;
 
                   return (
                     <div
                       key={idx}
-                      className="min-w-[280px] h-[400px] rounded-3xl overflow-hidden shadow-sm snap-start flex-shrink-0 bg-gray-50"
+                      className="min-w-[280px] h-[400px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
                     >
                       <img
                         src={imageUrl}
-                        alt={`Use Case ${idx + 1}`}
+                        alt={`Use Case ${(idx % useCases.length) + 1}`}
                         className="w-full h-full object-cover"
                       />
                     </div>
