@@ -42,6 +42,7 @@ const STEPS = [
   { key: 'galleries', label: 'Galleries' },
   { key: 'offers', label: 'Offers' },
   { key: 'overview', label: 'Overview' },
+  { key: 'inclusions', label: 'Inclusions' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -299,6 +300,12 @@ const ProductForm = () => {
     use_cases: [{ image: '', icon: 'Layout', label: '', description: '' }],
     perfect_for: [{ icon: 'Smile', label: '' }],
     why_love_it: [{ icon: 'Heart', text: '' }]
+  });
+  const [inclusionsData, setInclusionsData] = useState({
+    title: '',
+    description: '',
+    heroImage: '',
+    items: [{ text: '' }]
   });
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
@@ -1714,6 +1721,16 @@ const ProductForm = () => {
         setSavedVariantDiscounts(discountSnapshots);
 
         setEditProductData(p || null);
+
+        const loadedInclusions = p?.package_inclusions || {};
+        setInclusionsData({
+          title: loadedInclusions.title || '',
+          description: loadedInclusions.description || '',
+          heroImage: loadedInclusions.hero_image || '',
+          items: Array.isArray(loadedInclusions.items) && loadedInclusions.items.length > 0
+            ? loadedInclusions.items.map(i => ({ text: i.text || '' }))
+            : [{ text: '' }]
+        });
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
       } finally {
@@ -2025,6 +2042,14 @@ const ProductForm = () => {
               text: String(w.text || '').trim()
             }))
             .filter(w => w.text)
+        },
+        package_inclusions: {
+          title: String(inclusionsData.title || '').trim(),
+          description: String(inclusionsData.description || '').trim(),
+          hero_image: String(inclusionsData.heroImage || '').trim(),
+          items: (inclusionsData.items || [])
+            .map(item => ({ text: String(item.text || '').trim() }))
+            .filter(item => item.text)
         },
         variants: variantRows.map(v => ({
           id: v.id || null,
@@ -2422,6 +2447,14 @@ const ProductForm = () => {
     const isCompletedViaSubstepper = Boolean(overviewSubstepperCompleted);
     const overviewStepValid = dataValid || isCompletedViaSubstepper;
 
+    const inclusionsValid = Boolean(
+      inclusionsData?.title?.trim() &&
+      inclusionsData?.description?.trim() &&
+      inclusionsData?.heroImage?.trim() &&
+      Array.isArray(inclusionsData?.items) &&
+      inclusionsData.items.some(i => String(i?.text || '').trim() !== '')
+    );
+
     return {
       magic,
       general,
@@ -2431,8 +2464,9 @@ const ProductForm = () => {
       galleries,
       offers,
       overview: overviewStepValid,
+      inclusions: inclusionsValid,
     };
-  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overviewData, overviewSubstepperCompleted]);
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overviewData, overviewSubstepperCompleted, inclusionsData]);
 
   const goNext = () => {
     if (!canNext) return;
@@ -5975,6 +6009,101 @@ const ProductForm = () => {
                     </>
                   );
                 })()}
+
+                {activeTab === 'inclusions' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Package size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Package Inclusions</h3>
+                    </div>
+                    <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
+                      Define what's included in the box for this product.
+                    </p>
+
+                    <div style={{ display: 'grid', gap: 24 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                        <div>
+                          <label className="pf-label">Section Title</label>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            placeholder="e.g. What's in the Box"
+                            value={inclusionsData.title}
+                            onChange={(e) => setInclusionsData(prev => ({ ...prev, title: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <label className="pf-label">Hero Image URL</label>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            placeholder="Image URL"
+                            value={inclusionsData.heroImage}
+                            onChange={(e) => setInclusionsData(prev => ({ ...prev, heroImage: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="pf-label">Description</label>
+                        <textarea
+                          className="custom-input"
+                          rows={3}
+                          placeholder="Description..."
+                          value={inclusionsData.description}
+                          onChange={(e) => setInclusionsData(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #f4f4f5', paddingTop: 24 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                          <label className="pf-label" style={{ margin: 0 }}>Items</label>
+                          <button
+                            type="button"
+                            onClick={() => setInclusionsData(prev => ({ ...prev, items: [...prev.items, { text: '' }] }))}
+                            className="pf-outline-accent-btn"
+                            style={{ padding: '6px 12px', fontSize: 12, height: 'auto' }}
+                          >
+                            <Plus size={14} /> Add Item
+                          </button>
+                        </div>
+                        
+                        <div style={{ display: 'grid', gap: 12 }}>
+                          {inclusionsData.items.map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                              <input
+                                className="custom-input"
+                                type="text"
+                                placeholder={`Item ${idx + 1}`}
+                                value={item.text}
+                                onChange={(e) => {
+                                  const newItems = [...inclusionsData.items];
+                                  newItems[idx].text = e.target.value;
+                                  setInclusionsData(prev => ({ ...prev, items: newItems }));
+                                }}
+                                style={{ flex: 1 }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (inclusionsData.items.length > 1) {
+                                    setInclusionsData(prev => ({
+                                      ...prev,
+                                      items: prev.items.filter((_, i) => i !== idx)
+                                    }));
+                                  }
+                                }}
+                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
