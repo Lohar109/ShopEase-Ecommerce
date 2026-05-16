@@ -4597,8 +4597,8 @@ const ProductForm = () => {
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
 
-                    <div className="mb-6">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Specification Description</label>
+                    <div className="mb-6" style={{ marginBottom: '24px' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Description</label>
                       <textarea
                         className="custom-textarea"
                         value={specDescription}
@@ -4617,9 +4617,9 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style={{ marginBottom: '32px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '24px' }}>
                       <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Specification Image URL</label>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
                         <input
                           className="custom-input"
                           type="text"
@@ -4637,7 +4637,7 @@ const ProductForm = () => {
                         />
                       </div>
                       <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Color Palette (Optional)</label>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Color Palette (Optional)</label>
                         <input
                           className="custom-input"
                           type="text"
@@ -4656,8 +4656,10 @@ const ProductForm = () => {
                       </div>
                     </div>
 
-                    <div className="mt-10 mb-4">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Product Specifications</label>
+                    <div className="mt-12 mb-4" style={{ marginTop: '48px', marginBottom: '16px' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Product Specifications</label>
+                    </div>
+                    <div>
                       {specs.map((spec, idx) => (
                         <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                           <input
