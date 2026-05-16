@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowLeft, Award, BadgeCheck, Bath, BatteryCharging, Bed, Bluetooth, Box, Brain, Briefcase, Check, ChevronDown, Clipboard, Clock, Code, Coffee, Cpu, Crown, Database, Diamond, Droplets, Edit2, Fingerprint, Flower, Folder, Gift, Globe, Hammer, HardDrive, Headphones, Heart, HelpCircle, Home, Image, Info, Keyboard, Lamp, Layers, Layout, Leaf, MapPin, Medal, Monitor, Moon, Mouse, Package, Palette, PenTool, Plane, Plus, Recycle, Ruler, Scale, Scissors, Shield, ShieldCheck, Ship, ShoppingBag, Smartphone, Smile, Sofa, Sparkles, Star, Sun, ThumbsUp, Trash2, Truck, Utensils, Verified, Video, Wifi, Wind, Wrench, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Award, BadgeCheck, Bath, BatteryCharging, Bed, Bluetooth, Box, Brain, Briefcase, Check, ChevronDown, Clipboard, Clock, Code, Coffee, Cpu, Crown, Database, Diamond, Droplets, Edit2, Fingerprint, Flower, Folder, Gift, Globe, Hammer, HardDrive, Headphones, Heart, HelpCircle, Home, Image, Info, Keyboard, Lamp, Layers, Layout, Leaf, MapPin, Medal, Monitor, Moon, Mouse, Package, Palette, PenTool, Plane, Plus, Recycle, Ruler, Scale, Scissors, Shield, ShieldCheck, Ship, ShoppingBag, Smartphone, Smile, Sofa, Sparkles, Star, Sun, ThumbsUp, Trash2, Truck, Utensils, Verified, Video, Wifi, Wind, Wrench, X, Zap } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -4638,21 +4638,69 @@ const ProductForm = () => {
                       </div>
                       <div>
                         <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Color Palette (Optional)</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={colorOptions}
-                          onChange={(e) => setColorOptions(e.target.value)}
-                          placeholder="#ffffff, #000000"
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #e5e7eb',
-                            backgroundColor: '#fff',
-                            fontSize: '14px'
-                          }}
-                        />
+                        {(() => {
+                          const parsedColors = (colorOptions || '').split(',').map(c => c.trim()).filter(Boolean);
+                          
+                          const handleAddColor = (e) => {
+                            const newColor = e.target.value;
+                            if (!parsedColors.includes(newColor)) {
+                              setColorOptions([...parsedColors, newColor].join(', '));
+                            }
+                          };
+
+                          const handleRemoveColor = (colorToRemove) => {
+                            setColorOptions(parsedColors.filter(c => c !== colorToRemove).join(', '));
+                          };
+
+                          return (
+                            <div 
+                              className="flex flex-wrap gap-3 items-center min-h-[44px] p-2 bg-gray-50 rounded-xl border border-dashed border-gray-200"
+                              style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', minHeight: '44px', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}
+                            >
+                              {parsedColors.map((color, idx) => (
+                                <div 
+                                  key={idx} 
+                                  className="flex items-center gap-2 bg-white pl-1.5 pr-2 py-1 rounded-full border border-gray-200 shadow-sm"
+                                  style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', padding: '4px 8px 4px 6px', borderRadius: '9999px', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}
+                                >
+                                  <div 
+                                    className="w-5 h-5 rounded-full" 
+                                    style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: color, border: '1px solid #e5e7eb' }}
+                                  />
+                                  <span 
+                                    className="text-xs font-mono uppercase text-gray-600"
+                                    style={{ fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', color: '#4b5563' }}
+                                  >
+                                    {color}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveColor(color)}
+                                    className="text-gray-400 hover:text-red-500 cursor-pointer"
+                                    style={{ background: 'none', border: 'none', padding: 0, display: 'flex', alignItems: 'center', cursor: 'pointer', color: '#9ca3af' }}
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </div>
+                              ))}
+
+                              <label 
+                                className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 cursor-pointer text-gray-400 hover:text-gray-600 shadow-sm"
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid #e5e7eb', cursor: 'pointer', color: '#9ca3af', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}
+                                title="Add Color"
+                              >
+                                <input 
+                                  type="color" 
+                                  className="hidden" 
+                                  style={{ display: 'none' }}
+                                  onChange={handleAddColor}
+                                  value="#000000"
+                                />
+                                <Plus size={16} />
+                              </label>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
 
