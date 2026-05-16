@@ -305,7 +305,7 @@ const ProductForm = () => {
     title: '',
     description: '',
     heroImage: '',
-    items: [{ text: '' }]
+    items: [{ text: '', image: '' }]
   });
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
@@ -1728,8 +1728,8 @@ const ProductForm = () => {
           description: loadedInclusions.description || '',
           heroImage: loadedInclusions.hero_image || '',
           items: Array.isArray(loadedInclusions.items) && loadedInclusions.items.length > 0
-            ? loadedInclusions.items.map(i => ({ text: i.text || '' }))
-            : [{ text: '' }]
+            ? loadedInclusions.items.map(i => ({ text: i.text || '', image: i.image || '' }))
+            : [{ text: '', image: '' }]
         });
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
@@ -2048,7 +2048,10 @@ const ProductForm = () => {
           description: String(inclusionsData.description || '').trim(),
           hero_image: String(inclusionsData.heroImage || '').trim(),
           items: (inclusionsData.items || [])
-            .map(item => ({ text: String(item.text || '').trim() }))
+            .map(item => ({ 
+              text: String(item.text || '').trim(),
+              image: String(item.image || '').trim()
+            }))
             .filter(item => item.text)
         },
         variants: variantRows.map(v => ({
@@ -6061,7 +6064,7 @@ const ProductForm = () => {
                           <label className="pf-label" style={{ margin: 0 }}>Items</label>
                           <button
                             type="button"
-                            onClick={() => setInclusionsData(prev => ({ ...prev, items: [...prev.items, { text: '' }] }))}
+                            onClick={() => setInclusionsData(prev => ({ ...prev, items: [...prev.items, { text: '', image: '' }] }))}
                             className="pf-outline-accent-btn"
                             style={{ padding: '6px 12px', fontSize: 12, height: 'auto' }}
                           >
@@ -6072,18 +6075,32 @@ const ProductForm = () => {
                         <div style={{ display: 'grid', gap: 12 }}>
                           {inclusionsData.items.map((item, idx) => (
                             <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                              <input
-                                className="custom-input"
-                                type="text"
-                                placeholder={`Item ${idx + 1}`}
-                                value={item.text}
-                                onChange={(e) => {
-                                  const newItems = [...inclusionsData.items];
-                                  newItems[idx].text = e.target.value;
-                                  setInclusionsData(prev => ({ ...prev, items: newItems }));
-                                }}
-                                style={{ flex: 1 }}
-                              />
+                              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  placeholder="Item Name"
+                                  value={item.text}
+                                  onChange={(e) => {
+                                    const newItems = [...inclusionsData.items];
+                                    newItems[idx].text = e.target.value;
+                                    setInclusionsData(prev => ({ ...prev, items: newItems }));
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  placeholder="Image URL"
+                                  value={item.image || ''}
+                                  onChange={(e) => {
+                                    const newItems = [...inclusionsData.items];
+                                    newItems[idx].image = e.target.value;
+                                    setInclusionsData(prev => ({ ...prev, items: newItems }));
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => {
