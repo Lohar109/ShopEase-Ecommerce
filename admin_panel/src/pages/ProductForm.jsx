@@ -315,6 +315,7 @@ const ProductForm = () => {
   // Dynamic specifications
   const [specDescription, setSpecDescription] = useState('');
   const [specImage, setSpecImage] = useState('');
+  const [colorOptions, setColorOptions] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
@@ -1666,6 +1667,7 @@ const ProductForm = () => {
 
         setSpecDescription(p?.spec_description || '');
         setSpecImage(p?.spec_image || '');
+        setColorOptions(p?.color_options || '');
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -1990,6 +1992,7 @@ const ProductForm = () => {
         images: galleryImages.filter(Boolean),
         spec_description: specDescription,
         spec_image: specImage,
+        color_options: colorOptions,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -4594,28 +4597,29 @@ const ProductForm = () => {
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                      <div className="md:col-span-2">
-                        <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Specification Description</label>
-                        <textarea
-                          className="custom-textarea"
-                          value={specDescription}
-                          onChange={(e) => setSpecDescription(e.target.value)}
-                          placeholder="Enter a brief intro for product specifications..."
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #a0a0a0',
-                            backgroundColor: '#fff',
-                            minHeight: '44px',
-                            resize: 'vertical',
-                            fontSize: '14px'
-                          }}
-                        />
-                      </div>
-                      <div className="md:col-span-1">
-                        <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Specification Image URL</label>
+                    <div className="mb-6">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Specification Description</label>
+                      <textarea
+                        className="custom-textarea"
+                        value={specDescription}
+                        onChange={(e) => setSpecDescription(e.target.value)}
+                        placeholder="Enter a brief intro for product specifications..."
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff',
+                          minHeight: '44px',
+                          resize: 'vertical',
+                          fontSize: '14px'
+                        }}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Specification Image URL</label>
                         <input
                           className="custom-input"
                           type="text"
@@ -4626,7 +4630,25 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '10px 14px',
                             borderRadius: 12,
-                            border: '1px solid #a0a0a0',
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Color Palette (Optional)</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={colorOptions}
+                          onChange={(e) => setColorOptions(e.target.value)}
+                          placeholder="#ffffff, #000000"
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             fontSize: '14px'
                           }}
@@ -4634,8 +4656,8 @@ const ProductForm = () => {
                       </div>
                     </div>
 
-                    <div style={{ marginBottom: 6 }}>
-                      <label style={{ fontWeight: 500 }}>Product Specifications</label>
+                    <div className="mt-10 mb-4">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block">Product Specifications</label>
                       {specs.map((spec, idx) => (
                         <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
                           <input
