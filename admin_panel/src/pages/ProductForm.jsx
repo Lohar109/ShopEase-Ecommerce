@@ -4606,30 +4606,32 @@ const ProductForm = () => {
                       <span className="pf-section-title-icon"><Layers size={16} /></span>
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
-
-                    <div className="flex flex-col gap-2 mb-6">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Description</label>
+                         {/* Field 1: Description Group */}
+                    <div style={{ marginBottom: '40px', display: 'block' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Description</label>
                       <textarea
                         className="custom-textarea"
                         value={specDescription}
                         onChange={(e) => setSpecDescription(e.target.value)}
                         placeholder="Enter a brief intro for product specifications..."
-                        rows={5}
+                        rows={6}
                         style={{
                           width: '100%',
-                          padding: '10px 14px',
-                          borderRadius: 12,
+                          padding: '12px 16px',
+                          borderRadius: 14,
                           border: '1px solid #e5e7eb',
                           backgroundColor: '#fff',
                           resize: 'vertical',
                           fontSize: '14px',
-                          height: 'auto'
+                          height: 'auto',
+                          lineHeight: '1.6'
                         }}
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2 mb-6">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Image URL</label>
+                    {/* Field 2: Image URL Group */}
+                    <div style={{ marginBottom: '40px', display: 'block' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Image URL</label>
                       <input
                         className="custom-input"
                         type="text"
@@ -4638,8 +4640,8 @@ const ProductForm = () => {
                         placeholder="Image URL..."
                         style={{
                           width: '100%',
-                          padding: '10px 14px',
-                          borderRadius: 12,
+                          padding: '12px 16px',
+                          borderRadius: 14,
                           border: '1px solid #e5e7eb',
                           backgroundColor: '#fff',
                           fontSize: '14px'
@@ -4647,8 +4649,9 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2 mb-6">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Video URL</label>
+                    {/* Field 3: Video URL Group */}
+                    <div style={{ marginBottom: '40px', display: 'block' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Video URL</label>
                       <input
                         className="custom-input"
                         type="text"
@@ -4657,8 +4660,8 @@ const ProductForm = () => {
                         placeholder="Video URL..."
                         style={{
                           width: '100%',
-                          padding: '10px 14px',
-                          borderRadius: 12,
+                          padding: '12px 16px',
+                          borderRadius: 14,
                           border: '1px solid #e5e7eb',
                           backgroundColor: '#fff',
                           fontSize: '14px'
@@ -4666,9 +4669,10 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div className="mt-10 mb-8">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Product Specifications</label>
+                    <div style={{ marginTop: '64px', marginBottom: '24px', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em' }}>Product Specifications</label>
                     </div>
+
                     <div>
                       {specs.map((spec, idx) => (
                         <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
