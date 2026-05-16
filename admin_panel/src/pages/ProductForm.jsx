@@ -315,6 +315,7 @@ const ProductForm = () => {
   // Dynamic specifications
   const [specDescription, setSpecDescription] = useState('');
   const [specVideoUrl, setSpecVideoUrl] = useState('');
+  const [specImage, setSpecImage] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
@@ -1666,6 +1667,7 @@ const ProductForm = () => {
 
         setSpecDescription(p?.spec_description || '');
         setSpecVideoUrl(p?.spec_video_url || '');
+        setSpecImage(p?.spec_image || '');
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -1932,6 +1934,9 @@ const ProductForm = () => {
     setAudience(f.a);
     setMainImage(f.m);
     setVideoUrl(f.vi || '');
+    setSpecDescription('');
+    setSpecVideoUrl('');
+    setSpecImage('');
     setSpecs(f.sp);
     setGalleryImages(f.g);
     setVariantRows(f.v);
@@ -1989,6 +1994,7 @@ const ProductForm = () => {
         video_url: videoUrl,
         images: galleryImages.filter(Boolean),
         spec_description: specDescription,
+        spec_image: specImage,
         spec_video_url: specVideoUrl,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
@@ -2074,6 +2080,7 @@ const ProductForm = () => {
             setEditProductData(updated.product);
             // Ensure spec description and video are also refreshed from the response
             setSpecDescription(updated.product.spec_description || '');
+            setSpecImage(updated.product.spec_image || '');
             setSpecVideoUrl(updated.product.spec_video_url || '');
           }
         }
@@ -4620,23 +4627,43 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div className="mb-8" style={{ marginBottom: '32px' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Video URL</label>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={specVideoUrl}
-                        onChange={(e) => setSpecVideoUrl(e.target.value)}
-                        placeholder="Video URL..."
-                        style={{
-                          width: '100%',
-                          padding: '10px 14px',
-                          borderRadius: 12,
-                          border: '1px solid #e5e7eb',
-                          backgroundColor: '#fff',
-                          fontSize: '14px'
-                        }}
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specImage}
+                          onChange={(e) => setSpecImage(e.target.value)}
+                          placeholder="Image URL..."
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Video URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specVideoUrl}
+                          onChange={(e) => setSpecVideoUrl(e.target.value)}
+                          placeholder="Video URL..."
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <div className="mt-6 mb-4" style={{ marginTop: '24px', marginBottom: '16px' }}>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SpecificationsTab = ({ product }) => {
-  const { spec_description, spec_video_url, specifications } = product;
+  const { spec_description, spec_video_url, spec_image, specifications } = product;
 
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
@@ -15,8 +15,8 @@ const SpecificationsTab = ({ product }) => {
           </p>
         </div>
 
-        {/* Right Column (Video Container) - Takes 7 cols */}
-        <div className="md:col-span-7 flex justify-center items-center bg-gray-50 rounded-2xl h-[260px] overflow-hidden">
+        {/* Right Column (Media Container) - Takes 7 cols */}
+        <div className="md:col-span-7 h-[250px] overflow-hidden rounded-2xl">
           {spec_video_url ? (
             <video 
               src={spec_video_url} 
@@ -26,9 +26,13 @@ const SpecificationsTab = ({ product }) => {
               loop 
               playsInline
             />
-          ) : (
-            <div className="text-gray-400 text-sm">No specification video available</div>
-          )}
+          ) : spec_image ? (
+            <img 
+              src={spec_image} 
+              alt="Product Specifications" 
+              className="w-full h-full object-cover rounded-2xl"
+            />
+          ) : null}
         </div>
       </div>
 
