@@ -4636,8 +4636,8 @@ const ProductForm = () => {
                           }}
                         />
                       </div>
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Color Palette (Optional)</label>
+                      <div className="flex flex-col gap-2" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Color Palette (Optional)</label>
                         {(() => {
                           const parsedColors = (colorOptions || '').split(',').map(c => c.trim()).filter(Boolean);
                           
@@ -4654,8 +4654,8 @@ const ProductForm = () => {
 
                           return (
                             <div 
-                              className="flex flex-wrap gap-3 items-center min-h-[44px] p-2 bg-gray-50 rounded-xl border border-dashed border-gray-200"
-                              style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', minHeight: '44px', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}
+                              className="flex flex-wrap items-center gap-2 w-full min-h-[44px] px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 transition-all"
+                              style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', width: '100%', minHeight: '44px', padding: '6px 12px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb', transition: 'all 0.2s' }}
                             >
                               {parsedColors.map((color, idx) => (
                                 <div 
@@ -4685,18 +4685,18 @@ const ProductForm = () => {
                               ))}
 
                               <label 
-                                className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 cursor-pointer text-gray-400 hover:text-gray-600 shadow-sm"
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid #e5e7eb', cursor: 'pointer', color: '#9ca3af', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}
+                                className="flex items-center justify-center text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-lg px-2.5 py-1 hover:bg-gray-100 transition-colors cursor-pointer"
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 500, color: '#6b7280', backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '4px 10px', cursor: 'pointer', transition: 'background-color 0.2s' }}
                                 title="Add Color"
                               >
                                 <input 
                                   type="color" 
-                                  className="hidden" 
-                                  style={{ display: 'none' }}
+                                  className="absolute opacity-0 w-0 h-0 pointer-events-none" 
+                                  style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
                                   onChange={handleAddColor}
                                   value="#000000"
                                 />
-                                <Plus size={16} />
+                                <Plus size={14} style={{ marginRight: '4px' }} /> Add Color
                               </label>
                             </div>
                           );
