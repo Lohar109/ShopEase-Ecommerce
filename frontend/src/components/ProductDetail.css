@@ -3243,3 +3243,135 @@
   line-height: 1.6;
   margin: 0;
 }
+
+/* Premium Specifications Tab Layout */
+.pdp-specs-tab-premium {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.pdp-specs-tab-premium .grid {
+  display: grid;
+}
+
+.pdp-specs-tab-premium .grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .pdp-specs-tab-premium .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pdp-specs-tab-premium .gap-12 {
+  gap: 3rem;
+}
+
+.pdp-specs-tab-premium .items-start {
+  align-items: flex-start;
+}
+
+.pdp-specs-tab-premium .mb-12 {
+  margin-bottom: 3rem;
+}
+
+.pdp-specs-tab-premium .text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.pdp-specs-tab-premium .font-bold {
+  font-weight: 700;
+}
+
+.pdp-specs-tab-premium .text-gray-900 {
+  color: #111827;
+}
+
+.pdp-specs-tab-premium .mb-4 {
+  margin-bottom: 1rem;
+}
+
+.pdp-specs-tab-premium .text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.pdp-specs-tab-premium .text-gray-600 {
+  color: #4b5563;
+}
+
+.pdp-specs-tab-premium .leading-relaxed {
+  line-height: 1.625;
+}
+
+.pdp-specs-tab-premium .max-h-\[280px\] {
+  max-height: 280px;
+}
+
+.pdp-specs-tab-premium .object-contain {
+  object-fit: contain;
+}
+
+.pdp-specs-tab-premium .mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pdp-specs-tab-premium .w-full {
+  width: 100%;
+}
+
+.pdp-specs-tab-premium .border-b {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.pdp-specs-tab-premium .py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.pdp-specs-tab-premium .flex {
+  display: flex;
+}
+
+.pdp-specs-tab-premium .text-gray-500 {
+  color: #6b7280;
+}
+
+.pdp-specs-tab-premium .font-normal {
+  font-weight: 400;
+}
+
+.pdp-specs-tab-premium .w-1\/3 {
+  width: 33.333333%;
+}
+
+.pdp-specs-tab-premium .font-medium {
+  font-weight: 500;
+}
+
+.pdp-specs-tab-premium .w-2\/3 {
+  width: 66.666667%;
+}
+
+.pdp-specs-tab-premium .rounded-2xl {
+  border-radius: 1rem;
+}
+
+.pdp-specs-tab-premium .bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.pdp-specs-tab-premium .p-6 {
+  padding: 1.5rem;
+}
+
+.pdp-specs-tab-premium .justify-center {
+  justify-content: center;
+}
+
+.pdp-specs-tab-premium .items-center {
+  align-items: center;
+}

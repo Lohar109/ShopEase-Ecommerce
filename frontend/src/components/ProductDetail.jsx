@@ -6,6 +6,7 @@ import { WishlistContext } from "../context/WishlistContext";
 import toast from "react-hot-toast";
 import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2, Truck, RotateCcw, ShieldCheck, Award } from "lucide-react";
 import ProductOverview from "./ProductOverview";
+import SpecificationsTab from "./SpecificationsTab";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1253,22 +1254,7 @@ const ProductDetail = () => {
                 )}
 
                 {activeTab === 'Specifications' && (
-                  <div className="pdp-tab-content pdp-specs-tab">
-                    {(!product?.specifications || Object.keys(product.specifications).length === 0) ? (
-                      <p className="no-specs-message" style={{ textAlign: 'center', color: '#6b7280', padding: '2rem' }}>
-                        No specifications available for this product.
-                      </p>
-                    ) : (
-                      <div className="pdp-specs-list">
-                        {Object.entries(product.specifications).map(([key, value]) => (
-                          <div key={key} className="pdp-spec-row">
-                            <span className="spec-label">{key.toUpperCase()}</span>
-                            <span className="spec-value">{formatSpecificationValue(value)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <SpecificationsTab product={product} />
                 )}
 
                 {['What\'s in the Box', 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
