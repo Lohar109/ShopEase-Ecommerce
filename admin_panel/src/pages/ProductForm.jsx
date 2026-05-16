@@ -6079,7 +6079,7 @@ const ProductForm = () => {
                                 <input
                                   className="custom-input"
                                   type="text"
-                                  placeholder="Item Name"
+                                  placeholder="Short Description"
                                   value={item.text}
                                   onChange={(e) => {
                                     const newItems = [...inclusionsData.items];
