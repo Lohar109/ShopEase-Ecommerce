@@ -7,16 +7,16 @@ const SpecificationsTab = ({ product }) => {
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       {/* Top Layout Grid (12-column system) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mb-10">
-        {/* Left Column (Text & Heading) - Takes 5 cols */}
-        <div className="md:col-span-5 flex flex-col">
+        {/* Left Column (Text & Heading) - Takes 7 cols */}
+        <div className="md:col-span-7 flex flex-col">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block">Product Specifications</h2>
           <p className="text-sm text-gray-600 leading-relaxed block">
             {spec_description}
           </p>
         </div>
 
-        {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 h-[250px] overflow-hidden rounded-2xl">
+        {/* Right Column (Media Container) - Takes 5 cols */}
+        <div className="md:col-span-5 h-[280px] overflow-hidden rounded-2xl">
           {spec_video_url ? (
             <video 
               src={spec_video_url} 
