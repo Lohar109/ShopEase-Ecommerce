@@ -4607,66 +4607,66 @@ const ProductForm = () => {
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
 
-                    <div className="mb-6" style={{ marginBottom: '24px' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Description</label>
+                    <div className="flex flex-col gap-2 mb-6">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Description</label>
                       <textarea
                         className="custom-textarea"
                         value={specDescription}
                         onChange={(e) => setSpecDescription(e.target.value)}
                         placeholder="Enter a brief intro for product specifications..."
+                        rows={5}
                         style={{
                           width: '100%',
                           padding: '10px 14px',
                           borderRadius: 12,
                           border: '1px solid #e5e7eb',
                           backgroundColor: '#fff',
-                          minHeight: '44px',
                           resize: 'vertical',
+                          fontSize: '14px',
+                          height: 'auto'
+                        }}
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2 mb-6">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Image URL</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={specImage}
+                        onChange={(e) => setSpecImage(e.target.value)}
+                        placeholder="Image URL..."
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff',
                           fontSize: '14px'
                         }}
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={specImage}
-                          onChange={(e) => setSpecImage(e.target.value)}
-                          placeholder="Image URL..."
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #e5e7eb',
-                            backgroundColor: '#fff',
-                            fontSize: '14px'
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Video URL</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={specVideoUrl}
-                          onChange={(e) => setSpecVideoUrl(e.target.value)}
-                          placeholder="Video URL..."
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #e5e7eb',
-                            backgroundColor: '#fff',
-                            fontSize: '14px'
-                          }}
-                        />
-                      </div>
+                    <div className="flex flex-col gap-2 mb-6">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Specification Video URL</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={specVideoUrl}
+                        onChange={(e) => setSpecVideoUrl(e.target.value)}
+                        placeholder="Video URL..."
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff',
+                          fontSize: '14px'
+                        }}
+                      />
                     </div>
 
-                    <div className="mt-6 mb-4" style={{ marginTop: '24px', marginBottom: '16px' }}>
+                    <div className="mt-10 mb-8">
                       <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Product Specifications</label>
                     </div>
                     <div>
