@@ -16,11 +16,11 @@ const SpecificationsTab = ({ product }) => {
         </div>
 
         {/* Right Column: Specification Image */}
-        <div className="flex justify-center items-center bg-gray-50 rounded-2xl p-6">
+        <div className="flex justify-center items-center bg-gray-50 rounded-2xl h-[280px] overflow-hidden">
           <img 
             src={spec_image} 
             alt="Product Specifications" 
-            className="max-h-[280px] object-contain mx-auto"
+            className="w-full h-full object-cover rounded-2xl"
           />
         </div>
       </div>

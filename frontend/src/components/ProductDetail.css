@@ -3310,8 +3310,20 @@
   max-height: 280px;
 }
 
+.pdp-specs-tab-premium .h-\[280px\] {
+  height: 280px;
+}
+
+.pdp-specs-tab-premium .h-full {
+  height: 100%;
+}
+
 .pdp-specs-tab-premium .object-contain {
   object-fit: contain;
+}
+
+.pdp-specs-tab-premium .object-cover {
+  object-fit: cover;
 }
 
 .pdp-specs-tab-premium .mx-auto {
@@ -3383,4 +3395,8 @@
 
 .pdp-specs-tab-premium .items-center {
   align-items: center;
-}
+}
+
+.pdp-specs-tab-premium .overflow-hidden {
+  overflow: hidden;
+}
