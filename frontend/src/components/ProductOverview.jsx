@@ -10,9 +10,6 @@ const DynamicIcon = ({ name, className }) => {
 };
 
 const ProductOverview = ({ overview, product, specifications, setActiveTab }) => {
-  // console logging tracker per instructions
-  console.log('Overview Content:', overview);
-
   // Safe guard against null prop
   if (!overview || !overview.intro) {
     return null;

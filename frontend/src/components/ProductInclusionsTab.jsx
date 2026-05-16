@@ -1,9 +1,6 @@
 import React from 'react';
 
 const ProductInclusionsTab = ({ product }) => {
-  // Debug log to verify data flow
-  console.log("Inclusions Data Check:", product?.inclusions);
-
   // Extremely safe extraction with fallback for legacy naming
   const inclusions = product?.inclusions || product?.whats_in_the_box || {};
   

@@ -69,7 +69,6 @@ const ProductDetail = () => {
     fetch(`${API_ORIGIN}/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Raw Product Fetch Data:", data.product);
         setProduct(data.product);
         setVariants(data.variants || []);
         setLoading(false);
@@ -691,8 +690,6 @@ const ProductDetail = () => {
     if (value && typeof value === "object") return JSON.stringify(value);
     return String(value);
   };
-
-  console.log("Product Overview Data:", product?.overview);
 
   return (
     <>
