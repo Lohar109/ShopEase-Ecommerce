@@ -314,7 +314,7 @@ const ProductForm = () => {
   const [editingDiscountVariantIndex, setEditingDiscountVariantIndex] = useState(null);
   // Dynamic specifications
   const [specDescription, setSpecDescription] = useState('');
-  const [specImage, setSpecImage] = useState('');
+  const [specVideoUrl, setSpecVideoUrl] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
@@ -1665,7 +1665,7 @@ const ProductForm = () => {
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
         setSpecDescription(p?.spec_description || '');
-        setSpecImage(p?.spec_image || '');
+        setSpecVideoUrl(p?.spec_video_url || '');
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -1989,7 +1989,7 @@ const ProductForm = () => {
         video_url: videoUrl,
         images: galleryImages.filter(Boolean),
         spec_description: specDescription,
-        spec_image: specImage,
+        spec_video_url: specVideoUrl,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -2072,9 +2072,9 @@ const ProductForm = () => {
           
           if (updated.product) {
             setEditProductData(updated.product);
-            // Ensure spec description and image are also refreshed from the response
+            // Ensure spec description and video are also refreshed from the response
             setSpecDescription(updated.product.spec_description || '');
-            setSpecImage(updated.product.spec_image || '');
+            setSpecVideoUrl(updated.product.spec_video_url || '');
           }
         }
       } else {
@@ -4621,13 +4621,13 @@ const ProductForm = () => {
                     </div>
 
                     <div className="mb-8" style={{ marginBottom: '32px' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Video URL</label>
                       <input
                         className="custom-input"
                         type="text"
-                        value={specImage}
-                        onChange={(e) => setSpecImage(e.target.value)}
-                        placeholder="Image URL..."
+                        value={specVideoUrl}
+                        onChange={(e) => setSpecVideoUrl(e.target.value)}
+                        placeholder="Video URL..."
                         style={{
                           width: '100%',
                           padding: '10px 14px',
