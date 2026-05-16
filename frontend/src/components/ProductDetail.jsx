@@ -69,6 +69,7 @@ const ProductDetail = () => {
     fetch(`${API_ORIGIN}/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log("Raw Product Fetch Data:", data.product);
         setProduct(data.product);
         setVariants(data.variants || []);
         setLoading(false);

@@ -246,7 +246,7 @@ exports.getProductById = async (req, res) => {
   const { id } = req.params;
   try {
     const productResult = await pool.query(
-      `SELECT p.*, c.name AS category_name, a.name AS audience_name FROM product p LEFT JOIN category c ON p.category_id = c.id LEFT JOIN audiences a ON p.audience = a.id WHERE p.id = $1`,
+      `SELECT p.*, c.name AS category_name, a.name AS audience_name, p.inclusions FROM product p LEFT JOIN category c ON p.category_id = c.id LEFT JOIN audiences a ON p.audience = a.id WHERE p.id = $1`,
       [id]
     );
     if (productResult.rows.length === 0) {
