@@ -6048,10 +6048,11 @@ const ProductForm = () => {
                         <label className="pf-label">Description</label>
                         <textarea
                           className="custom-input"
-                          rows={10}
+                          rows={4}
                           placeholder="Description..."
                           value={inclusionsData.description}
                           onChange={(e) => setInclusionsData(prev => ({ ...prev, description: e.target.value }))}
+                          style={{ width: '100%' }}
                         />
                       </div>
 
