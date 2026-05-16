@@ -98,6 +98,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .object-cover { object-fit: cover; }
         
         /* Fixed Dimension Controls */
+        .w-\\[280px\\] { width: 280px; }
         .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
         .h-\\[380px\\] { height: 380px; }
         
@@ -182,7 +183,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         }
         
         .animate-seamless {
-          animation: seamlessMarquee 25s linear infinite;
+          animation: seamlessMarquee 30s linear infinite;
         }
         
         /* Responsive grids */
@@ -240,7 +241,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                   return (
                     <div
                       key={idx}
-                      className="min-w-[280px] h-[380px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
+                      className="w-[280px] min-w-[280px] h-[380px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
                     >
                       <img
                         src={imageUrl}
