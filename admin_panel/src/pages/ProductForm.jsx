@@ -301,11 +301,11 @@ const ProductForm = () => {
     perfect_for: [{ icon: 'Smile', label: '' }],
     why_love_it: [{ icon: 'Heart', text: '' }]
   });
-  const [inclusionsData, setInclusionsData] = useState({
+  const [inclusions, setInclusions] = useState({
     title: '',
     description: '',
-    heroImage: '',
-    items: [{ text: '', image: '' }]
+    hero_image_url: '',
+    items: [{ short_description: '', image_url: '' }]
   });
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
@@ -1723,16 +1723,16 @@ const ProductForm = () => {
         setEditProductData(p || null);
 
         const loadedInclusions = p?.inclusions || p?.package_inclusions || {};
-        setInclusionsData({
+        setInclusions({
           title: loadedInclusions.title || '',
           description: loadedInclusions.description || '',
-          heroImage: loadedInclusions.hero_image_url || loadedInclusions.hero_image || '',
+          hero_image_url: loadedInclusions.hero_image_url || loadedInclusions.hero_image || '',
           items: Array.isArray(loadedInclusions.items) && loadedInclusions.items.length > 0
             ? loadedInclusions.items.map(i => ({ 
-                text: i.short_description || i.text || '', 
-                image: i.image_url || i.image || '' 
+                short_description: i.short_description || i.text || '', 
+                image_url: i.image_url || i.image || '' 
               }))
-            : [{ text: '', image: '' }]
+            : [{ short_description: '', image_url: '' }]
         });
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
@@ -2001,6 +2001,17 @@ const ProductForm = () => {
     setSaving(true);
     setDuplicateSkuError(null);
     try {
+      // Safe extraction regardless of whether the state is named 'inclusions' or 'whats_in_the_box'
+      const inclusionsPayload = {
+        title: inclusions?.title || inclusions?.whats_in_the_box?.title || '',
+        hero_image_url: inclusions?.hero_image_url || inclusions?.main_image || inclusions?.hero_image || '',
+        description: inclusions?.description || inclusions?.whats_in_the_box?.description || '',
+        items: (inclusions?.items || inclusions?.whats_in_the_box?.items || []).map(item => ({
+          short_description: item?.short_description || item?.name || item?.text || '',
+          image_url: item?.image_url || item?.image || ''
+        })).filter(item => item.short_description)
+      };
+
       const formData = {
         name,
         slug,
@@ -2046,17 +2057,7 @@ const ProductForm = () => {
             }))
             .filter(w => w.text)
         },
-        inclusions: {
-          title: String(inclusionsData.title || '').trim(),
-          description: String(inclusionsData.description || '').trim(),
-          hero_image_url: String(inclusionsData.heroImage || '').trim(),
-          items: (inclusionsData.items || [])
-            .map(item => ({ 
-              short_description: String(item.text || '').trim(),
-              image_url: String(item.image || '').trim()
-            }))
-            .filter(item => item.short_description)
-        },
+        inclusions: inclusionsPayload,
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
@@ -2078,6 +2079,8 @@ const ProductForm = () => {
           use_separate_gallery: v.use_separate_gallery || false
         }))
       };
+
+      console.log("FINAL SUBMIT PAYLOAD:", formData);
 
       if (isEditMode) {
         const updated = await updateProduct(id, formData);
@@ -2454,11 +2457,11 @@ const ProductForm = () => {
     const overviewStepValid = dataValid || isCompletedViaSubstepper;
 
     const inclusionsValid = Boolean(
-      inclusionsData?.title?.trim() &&
-      inclusionsData?.description?.trim() &&
-      inclusionsData?.heroImage?.trim() &&
-      Array.isArray(inclusionsData?.items) &&
-      inclusionsData.items.some(i => String(i?.text || '').trim() !== '')
+      inclusions?.title?.trim() &&
+      inclusions?.description?.trim() &&
+      inclusions?.hero_image_url?.trim() &&
+      Array.isArray(inclusions?.items) &&
+      inclusions.items.some(i => String(i?.short_description || '').trim() !== '')
     );
 
     return {
@@ -2472,7 +2475,7 @@ const ProductForm = () => {
       overview: overviewStepValid,
       inclusions: inclusionsValid,
     };
-  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overviewData, overviewSubstepperCompleted, inclusionsData]);
+  }, [name, brand, description, categoryId, specs, mainImage, galleryImages, variantRows, isEditMode, designGalleries, magicFillText, magicFillError, overviewData, overviewSubstepperCompleted, inclusions]);
 
   const goNext = () => {
     if (!canNext) return;
@@ -6033,8 +6036,8 @@ const ProductForm = () => {
                           className="custom-input"
                           type="text"
                           placeholder="e.g. What's in the Box"
-                          value={inclusionsData.title}
-                          onChange={(e) => setInclusionsData(prev => ({ ...prev, title: e.target.value }))}
+                          value={inclusions.title}
+                          onChange={(e) => setInclusions(prev => ({ ...prev, title: e.target.value }))}
                           style={{ width: '100%' }}
                         />
                       </div>
@@ -6044,8 +6047,8 @@ const ProductForm = () => {
                           className="custom-input"
                           type="text"
                           placeholder="Image URL"
-                          value={inclusionsData.heroImage}
-                          onChange={(e) => setInclusionsData(prev => ({ ...prev, heroImage: e.target.value }))}
+                          value={inclusions.hero_image_url}
+                          onChange={(e) => setInclusions(prev => ({ ...prev, hero_image_url: e.target.value }))}
                           style={{ width: '100%' }}
                         />
                       </div>
@@ -6056,8 +6059,8 @@ const ProductForm = () => {
                           className="custom-input"
                           rows={4}
                           placeholder="Description..."
-                          value={inclusionsData.description}
-                          onChange={(e) => setInclusionsData(prev => ({ ...prev, description: e.target.value }))}
+                          value={inclusions.description}
+                          onChange={(e) => setInclusions(prev => ({ ...prev, description: e.target.value }))}
                           style={{ width: '100%' }}
                         />
                       </div>
@@ -6067,7 +6070,7 @@ const ProductForm = () => {
                           <label className="pf-label" style={{ margin: 0 }}>Items</label>
                           <button
                             type="button"
-                            onClick={() => setInclusionsData(prev => ({ ...prev, items: [...prev.items, { text: '', image: '' }] }))}
+                            onClick={() => setInclusions(prev => ({ ...prev, items: [...prev.items, { short_description: '', image_url: '' }] }))}
                             className="pf-outline-accent-btn"
                             style={{ padding: '6px 12px', fontSize: 12, height: 'auto' }}
                           >
@@ -6076,18 +6079,18 @@ const ProductForm = () => {
                         </div>
                         
                         <div style={{ display: 'grid', gap: 12 }}>
-                          {inclusionsData.items.map((item, idx) => (
+                          {inclusions.items.map((item, idx) => (
                             <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                               <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <input
                                   className="custom-input"
                                   type="text"
                                   placeholder="Short Description"
-                                  value={item.text}
+                                  value={item.short_description}
                                   onChange={(e) => {
-                                    const newItems = [...inclusionsData.items];
-                                    newItems[idx].text = e.target.value;
-                                    setInclusionsData(prev => ({ ...prev, items: newItems }));
+                                    const newItems = [...inclusions.items];
+                                    newItems[idx].short_description = e.target.value;
+                                    setInclusions(prev => ({ ...prev, items: newItems }));
                                   }}
                                   style={{ width: '100%' }}
                                 />
@@ -6095,11 +6098,11 @@ const ProductForm = () => {
                                   className="custom-input"
                                   type="text"
                                   placeholder="Image URL"
-                                  value={item.image || ''}
+                                  value={item.image_url || ''}
                                   onChange={(e) => {
-                                    const newItems = [...inclusionsData.items];
-                                    newItems[idx].image = e.target.value;
-                                    setInclusionsData(prev => ({ ...prev, items: newItems }));
+                                    const newItems = [...inclusions.items];
+                                    newItems[idx].image_url = e.target.value;
+                                    setInclusions(prev => ({ ...prev, items: newItems }));
                                   }}
                                   style={{ width: '100%' }}
                                 />
@@ -6107,8 +6110,8 @@ const ProductForm = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if (inclusionsData.items.length > 1) {
-                                    setInclusionsData(prev => ({
+                                  if (inclusions.items.length > 1) {
+                                    setInclusions(prev => ({
                                       ...prev,
                                       items: prev.items.filter((_, i) => i !== idx)
                                     }));

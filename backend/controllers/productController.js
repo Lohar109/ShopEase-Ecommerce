@@ -176,6 +176,7 @@ exports.createProduct = async (req, res) => {
       variants = [],
       audience,
       overview = {},
+      inclusions = {},
       spec_description = '',
       spec_video_url = '',
       spec_image = ''
@@ -192,10 +193,10 @@ exports.createProduct = async (req, res) => {
     await client.query('BEGIN');
     // Insert product
     const productResult = await client.query(
-      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, spec_description, spec_video_url, spec_image)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, spec_description, spec_video_url, spec_image)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
        RETURNING id` ,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, spec_description, spec_video_url, spec_image]
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, spec_description, spec_video_url, spec_image]
     );
     const productId = productResult.rows[0].id;
 
@@ -287,6 +288,7 @@ exports.updateProduct = async (req, res) => {
       audience,
       variants = [],
       overview = {},
+      inclusions = {},
       spec_description = '',
       spec_video_url = '',
       spec_image = ''
@@ -305,9 +307,9 @@ exports.updateProduct = async (req, res) => {
     // Update product
     const productResult = await client.query(
       `UPDATE product 
-       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, spec_description = $12, spec_video_url = $13, spec_image = $14
-       WHERE id = $15 RETURNING id`,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, spec_description, spec_video_url, spec_image, id]
+       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, inclusions = $12, spec_description = $13, spec_video_url = $14, spec_image = $15
+       WHERE id = $16 RETURNING id`,
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, spec_description, spec_video_url, spec_image, id]
     );
 
     if (productResult.rows.length === 0) {
