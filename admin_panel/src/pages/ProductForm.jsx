@@ -315,7 +315,6 @@ const ProductForm = () => {
   // Dynamic specifications
   const [specDescription, setSpecDescription] = useState('');
   const [specImage, setSpecImage] = useState('');
-  const [colorOptions, setColorOptions] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
@@ -1667,7 +1666,6 @@ const ProductForm = () => {
 
         setSpecDescription(p?.spec_description || '');
         setSpecImage(p?.spec_image || '');
-        setColorOptions(p?.color_options || '');
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -1992,7 +1990,6 @@ const ProductForm = () => {
         images: galleryImages.filter(Boolean),
         spec_description: specDescription,
         spec_image: specImage,
-        color_options: colorOptions,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -4617,94 +4614,26 @@ const ProductForm = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style={{ marginBottom: '32px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '24px' }}>
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={specImage}
-                          onChange={(e) => setSpecImage(e.target.value)}
-                          placeholder="Image URL..."
-                          style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #e5e7eb',
-                            backgroundColor: '#fff',
-                            fontSize: '14px'
-                          }}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Color Palette (Optional)</label>
-                        {(() => {
-                          const parsedColors = (colorOptions || '').split(',').map(c => c.trim()).filter(Boolean);
-                          
-                          const handleAddColor = (e) => {
-                            const newColor = e.target.value;
-                            if (!parsedColors.includes(newColor)) {
-                              setColorOptions([...parsedColors, newColor].join(', '));
-                            }
-                          };
-
-                          const handleRemoveColor = (colorToRemove) => {
-                            setColorOptions(parsedColors.filter(c => c !== colorToRemove).join(', '));
-                          };
-
-                          return (
-                            <div 
-                              className="flex flex-wrap items-center gap-2 w-full min-h-[44px] px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 transition-all"
-                              style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', width: '100%', minHeight: '44px', padding: '6px 12px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb', transition: 'all 0.2s' }}
-                            >
-                              {parsedColors.map((color, idx) => (
-                                <div 
-                                  key={idx} 
-                                  className="flex items-center gap-2 bg-white pl-1.5 pr-2 py-1 rounded-full border border-gray-200 shadow-sm"
-                                  style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', padding: '4px 8px 4px 6px', borderRadius: '9999px', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}
-                                >
-                                  <div 
-                                    className="w-5 h-5 rounded-full" 
-                                    style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: color, border: '1px solid #e5e7eb' }}
-                                  />
-                                  <span 
-                                    className="text-xs font-mono uppercase text-gray-600"
-                                    style={{ fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', color: '#4b5563' }}
-                                  >
-                                    {color}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveColor(color)}
-                                    className="text-gray-400 hover:text-red-500 cursor-pointer"
-                                    style={{ background: 'none', border: 'none', padding: 0, display: 'flex', alignItems: 'center', cursor: 'pointer', color: '#9ca3af' }}
-                                  >
-                                    <X size={14} />
-                                  </button>
-                                </div>
-                              ))}
-
-                              <label 
-                                className="flex items-center justify-center text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-lg px-2.5 py-1 hover:bg-gray-100 transition-colors cursor-pointer"
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 500, color: '#6b7280', backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '4px 10px', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                title="Add Color"
-                              >
-                                <input 
-                                  type="color" 
-                                  className="absolute opacity-0 w-0 h-0 pointer-events-none" 
-                                  style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
-                                  onChange={handleAddColor}
-                                  value="#000000"
-                                />
-                                <Plus size={14} style={{ marginRight: '4px' }} /> Add Color
-                              </label>
-                            </div>
-                          );
-                        })()}
-                      </div>
+                    <div className="mb-8" style={{ marginBottom: '32px' }}>
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2 block" style={{ marginBottom: '8px', display: 'block' }}>Specification Image URL</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={specImage}
+                        onChange={(e) => setSpecImage(e.target.value)}
+                        placeholder="Image URL..."
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff',
+                          fontSize: '14px'
+                        }}
+                      />
                     </div>
 
-                    <div className="mt-12 mb-4" style={{ marginTop: '48px', marginBottom: '16px' }}>
+                    <div className="mt-6 mb-4" style={{ marginTop: '24px', marginBottom: '16px' }}>
                       <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block">Product Specifications</label>
                     </div>
                     <div>
