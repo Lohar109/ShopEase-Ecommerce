@@ -1976,7 +1976,7 @@ const ProductForm = () => {
     setSaving(true);
     setDuplicateSkuError(null);
     try {
-      const productData = {
+      const formData = {
         name,
         slug,
         brand,
@@ -2043,7 +2043,7 @@ const ProductForm = () => {
       };
 
       if (isEditMode) {
-        const updated = await updateProduct(id, productData);
+        const updated = await updateProduct(id, formData);
         // If backend returned updated product and variants, refresh local state so UI reflects persisted flags
         if (updated && updated.variants) {
           const vs = Array.isArray(updated.variants) ? updated.variants : [];
@@ -2069,10 +2069,16 @@ const ProductForm = () => {
               }))
               : [newVar(mainImage || '')]
           );
-          setEditProductData(updated.product || editProductData);
+          
+          if (updated.product) {
+            setEditProductData(updated.product);
+            // Ensure spec description and image are also refreshed from the response
+            setSpecDescription(updated.product.spec_description || '');
+            setSpecImage(updated.product.spec_image || '');
+          }
         }
       } else {
-        await saveProduct(productData);
+        await saveProduct(formData);
       }
 
       resetMagicFillState();
