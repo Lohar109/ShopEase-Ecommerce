@@ -1722,13 +1722,16 @@ const ProductForm = () => {
 
         setEditProductData(p || null);
 
-        const loadedInclusions = p?.package_inclusions || {};
+        const loadedInclusions = p?.inclusions || p?.package_inclusions || {};
         setInclusionsData({
           title: loadedInclusions.title || '',
           description: loadedInclusions.description || '',
-          heroImage: loadedInclusions.hero_image || '',
+          heroImage: loadedInclusions.hero_image_url || loadedInclusions.hero_image || '',
           items: Array.isArray(loadedInclusions.items) && loadedInclusions.items.length > 0
-            ? loadedInclusions.items.map(i => ({ text: i.text || '', image: i.image || '' }))
+            ? loadedInclusions.items.map(i => ({ 
+                text: i.short_description || i.text || '', 
+                image: i.image_url || i.image || '' 
+              }))
             : [{ text: '', image: '' }]
         });
       } catch (err) {
@@ -2043,16 +2046,16 @@ const ProductForm = () => {
             }))
             .filter(w => w.text)
         },
-        package_inclusions: {
+        inclusions: {
           title: String(inclusionsData.title || '').trim(),
           description: String(inclusionsData.description || '').trim(),
-          hero_image: String(inclusionsData.heroImage || '').trim(),
+          hero_image_url: String(inclusionsData.heroImage || '').trim(),
           items: (inclusionsData.items || [])
             .map(item => ({ 
-              text: String(item.text || '').trim(),
-              image: String(item.image || '').trim()
+              short_description: String(item.text || '').trim(),
+              image_url: String(item.image || '').trim()
             }))
-            .filter(item => item.text)
+            .filter(item => item.short_description)
         },
         variants: variantRows.map(v => ({
           id: v.id || null,
@@ -6145,20 +6148,20 @@ const ProductForm = () => {
 
                 <button
                   type="button"
-                  onClick={goNext}
-                  disabled={!canNext}
+                  onClick={activeTab === 'inclusions' ? handleSubmitProduct : goNext}
+                  disabled={saving || (activeTab !== 'inclusions' && !canNext)}
                   style={{
-                    background: '#111827',
+                    background: activeTab === 'inclusions' ? '#c8507a' : '#111827',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 8,
                     padding: '8px 20px',
                     fontWeight: 600,
-                    cursor: canNext ? 'pointer' : 'not-allowed',
-                    opacity: canNext ? 1 : 0.5,
+                    cursor: (saving || (activeTab !== 'inclusions' && !canNext)) ? 'not-allowed' : 'pointer',
+                    opacity: (saving || (activeTab !== 'inclusions' && !canNext)) ? 0.5 : 1,
                   }}
                 >
-                  Next
+                  {saving ? 'Saving...' : (activeTab === 'inclusions' ? (isEditMode ? 'Update Product' : 'Save Product') : 'Next')}
                 </button>
               </div>
             </div>
