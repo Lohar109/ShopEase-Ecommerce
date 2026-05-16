@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2, Truck, RotateCcw, ShieldCheck, Award } from "lucide-react";
 import ProductOverview from "./ProductOverview";
 import SpecificationsTab from "./SpecificationsTab";
+import ProductInclusionsTab from "./ProductInclusionsTab";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1257,7 +1258,11 @@ const ProductDetail = () => {
                   <SpecificationsTab product={product} />
                 )}
 
-                {['What\'s in the Box', 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
+                {activeTab === "What's in the Box" && (
+                  <ProductInclusionsTab product={product} />
+                )}
+
+                {['How to Use', 'Reviews', 'FAQs'].map((tab) => {
                   if (activeTab !== tab) return null;
                   return (
                     <div key={tab} className="pdp-tab-content pdp-placeholder-content">
