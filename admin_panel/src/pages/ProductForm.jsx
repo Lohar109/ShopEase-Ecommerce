@@ -6021,34 +6021,34 @@ const ProductForm = () => {
                     </p>
 
                     <div style={{ display: 'grid', gap: 24 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                        <div>
-                          <label className="pf-label">Section Title</label>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            placeholder="e.g. What's in the Box"
-                            value={inclusionsData.title}
-                            onChange={(e) => setInclusionsData(prev => ({ ...prev, title: e.target.value }))}
-                          />
-                        </div>
-                        <div>
-                          <label className="pf-label">Hero Image URL</label>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            placeholder="Image URL"
-                            value={inclusionsData.heroImage}
-                            onChange={(e) => setInclusionsData(prev => ({ ...prev, heroImage: e.target.value }))}
-                          />
-                        </div>
+                      <div>
+                        <label className="pf-label">Section Title</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          placeholder="e.g. What's in the Box"
+                          value={inclusionsData.title}
+                          onChange={(e) => setInclusionsData(prev => ({ ...prev, title: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                      <div>
+                        <label className="pf-label">Hero Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          placeholder="Image URL"
+                          value={inclusionsData.heroImage}
+                          onChange={(e) => setInclusionsData(prev => ({ ...prev, heroImage: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
                       </div>
 
                       <div>
                         <label className="pf-label">Description</label>
                         <textarea
                           className="custom-input"
-                          rows={3}
+                          rows={10}
                           placeholder="Description..."
                           value={inclusionsData.description}
                           onChange={(e) => setInclusionsData(prev => ({ ...prev, description: e.target.value }))}
