@@ -99,7 +99,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         
         /* Fixed Dimension Controls */
         .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
-        .h-\\[400px\\] { height: 400px; }
+        .h-\\[380px\\] { height: 380px; }
         
         .w-5 { width: 1.25rem; }
         .h-5 { height: 1.25rem; }
@@ -176,15 +176,13 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .w-max { width: max-content; }
         .mr-4 { margin-right: 1rem; }
         
-        @keyframes marquee {
+        @keyframes seamlessMarquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
         
-        .animate-marquee {
-          display: flex;
-          animation: marquee 25s linear infinite;
-          animation-play-state: running;
+        .animate-seamless {
+          animation: seamlessMarquee 25s linear infinite;
         }
         
         /* Responsive grids */
@@ -234,7 +232,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           {/* Right Column (col-span-7): Image Scale Restricting Use Case Gallery */}
           <div className="lg:col-span-7 relative overflow-hidden w-full">
             {useCases.length > 0 ? (
-              <div className="animate-marquee flex w-max py-2">
+              <div className="flex w-max animate-seamless py-2">
                 {[...useCases, ...useCases].map((item, idx) => {
                   const imageUrl = typeof item === 'string' ? item : (item?.image || '');
                   if (!imageUrl) return null;
@@ -242,7 +240,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                   return (
                     <div
                       key={idx}
-                      className="min-w-[280px] h-[400px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
+                      className="min-w-[280px] h-[380px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
                     >
                       <img
                         src={imageUrl}
