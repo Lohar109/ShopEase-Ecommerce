@@ -9,8 +9,8 @@ const SpecificationsTab = ({ product }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mb-12">
         {/* Left Column: Title and Description */}
         <div className="flex flex-col">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Specifications</h2>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block">Product Specifications</h2>
+          <p className="text-sm text-gray-600 leading-relaxed block">
             {spec_description}
           </p>
         </div>

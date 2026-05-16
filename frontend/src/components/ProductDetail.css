@@ -3321,6 +3321,7 @@
 
 .pdp-specs-tab-premium .w-full {
   width: 100%;
+  display: block;
 }
 
 .pdp-specs-tab-premium .border-b {
@@ -3334,6 +3335,14 @@
 
 .pdp-specs-tab-premium .flex {
   display: flex;
+}
+
+.pdp-specs-tab-premium .flex-col {
+  flex-direction: column;
+}
+
+.pdp-specs-tab-premium .block {
+  display: block;
 }
 
 .pdp-specs-tab-premium .text-gray-500 {
