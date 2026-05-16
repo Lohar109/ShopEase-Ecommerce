@@ -313,6 +313,8 @@ const ProductForm = () => {
   const [addingQuickCat, setAddingQuickCat] = useState(false);
   const [editingDiscountVariantIndex, setEditingDiscountVariantIndex] = useState(null);
   // Dynamic specifications
+  const [specDescription, setSpecDescription] = useState('');
+  const [specImage, setSpecImage] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
@@ -1662,6 +1664,8 @@ const ProductForm = () => {
 
         setGalleryImages(Array.isArray(p?.images) && p.images.length > 0 ? p.images : []);
 
+        setSpecDescription(p?.spec_description || '');
+        setSpecImage(p?.spec_image || '');
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -1984,6 +1988,8 @@ const ProductForm = () => {
         main_image: mainImage,
         video_url: videoUrl,
         images: galleryImages.filter(Boolean),
+        spec_description: specDescription,
+        spec_image: specImage,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -4587,6 +4593,47 @@ const ProductForm = () => {
                       <span className="pf-section-title-icon"><Layers size={16} /></span>
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                      <div className="md:col-span-2">
+                        <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Specification Description</label>
+                        <textarea
+                          className="custom-textarea"
+                          value={specDescription}
+                          onChange={(e) => setSpecDescription(e.target.value)}
+                          placeholder="Enter a brief intro for product specifications..."
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #a0a0a0',
+                            backgroundColor: '#fff',
+                            minHeight: '44px',
+                            resize: 'vertical',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
+                      <div className="md:col-span-1">
+                        <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Specification Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specImage}
+                          onChange={(e) => setSpecImage(e.target.value)}
+                          placeholder="Image URL..."
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 12,
+                            border: '1px solid #a0a0a0',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
+                    </div>
+
                     <div style={{ marginBottom: 6 }}>
                       <label style={{ fontWeight: 500 }}>Product Specifications</label>
                       {specs.map((spec, idx) => (
