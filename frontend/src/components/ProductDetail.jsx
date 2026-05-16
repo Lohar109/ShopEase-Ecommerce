@@ -1229,7 +1229,7 @@ const ProductDetail = () => {
             {/* Tabbed Navigation Section */}
             <div className="pdp-tabs-container">
               <div className="pdp-tabs-nav">
-                {['Overview', 'Specifications', "What's in the Box", 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
+                {['Overview', 'Specifications', 'Inclusions', 'How to Use', 'Reviews', 'FAQs'].map((tab) => {
                   const isActive = activeTab === tab;
                   const label = tab === 'Reviews' ? `Reviews (${product?.reviewCount ?? '328'})` : tab;
                   return (
@@ -1259,7 +1259,7 @@ const ProductDetail = () => {
                   <SpecificationsTab product={product} />
                 )}
 
-                {activeTab === "What's in the Box" && (
+                {activeTab === 'Inclusions' && (
                   <ProductInclusionsTab product={product} />
                 )}
 
