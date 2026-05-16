@@ -3250,6 +3250,10 @@
   padding-bottom: 2rem;
 }
 
+.pdp-specs-tab-premium.pt-6 {
+  padding-top: 1.5rem;
+}
+
 .pdp-specs-tab-premium .grid {
   display: grid;
 }
@@ -3262,10 +3266,23 @@
   .pdp-specs-tab-premium .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .pdp-specs-tab-premium .md\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .pdp-specs-tab-premium .md\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .pdp-specs-tab-premium .md\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
 }
 
 .pdp-specs-tab-premium .gap-12 {
   gap: 3rem;
+}
+
+.pdp-specs-tab-premium .gap-8 {
+  gap: 2rem;
 }
 
 .pdp-specs-tab-premium .items-start {
@@ -3274,6 +3291,14 @@
 
 .pdp-specs-tab-premium .mb-12 {
   margin-bottom: 3rem;
+}
+
+.pdp-specs-tab-premium .mb-10 {
+  margin-bottom: 2.5rem;
+}
+
+.pdp-specs-tab-premium .mb-8 {
+  margin-bottom: 2rem;
 }
 
 .pdp-specs-tab-premium .text-2xl {
@@ -3312,6 +3337,10 @@
 
 .pdp-specs-tab-premium .h-\[280px\] {
   height: 280px;
+}
+
+.pdp-specs-tab-premium .h-\[360px\] {
+  height: 360px;
 }
 
 .pdp-specs-tab-premium .h-full {
