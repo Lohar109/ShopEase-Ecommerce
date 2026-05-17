@@ -6,7 +6,7 @@ const ProductInclusionsTab = ({ product }) => {
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       {/* Top Layout Grid (12-column system) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-0">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
         {/* Left Column (Text & Heading) - Takes 5 cols */}
         <div className="md:col-span-5 flex flex-col pt-0 mt-0">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">{title || "What's Included"}</h2>
@@ -16,7 +16,7 @@ const ProductInclusionsTab = ({ product }) => {
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full h-[350px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-0" style={{ height: '366px', marginTop: '-16px' }}>
+        <div className="md:col-span-7 min-w-0 w-full h-[350px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-0" style={{ height: '366px' }}>
           {hero_image_url ? (
             <img 
               src={hero_image_url} 
@@ -27,11 +27,9 @@ const ProductInclusionsTab = ({ product }) => {
         </div>
       </div>
 
-      <div style={{ height: '1rem' }} aria-hidden="true" />
-
       {/* Sub-items Grid */}
       {product?.inclusions?.items && Array.isArray(product.inclusions.items) && product.inclusions.items.length > 0 && (
-        <div className="pdp-inclusions-grid">
+        <div className="pdp-inclusions-grid" style={{ marginTop: '0.5rem' }}>
           {product.inclusions.items.map((item, idx) => (
             <div key={idx} className="pdp-inclusions-card">
               <div>
