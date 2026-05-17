@@ -16,7 +16,7 @@ const HowToUseTab = ({ product }) => {
           </p>
 
           {tip && (
-            <div className="flex items-start gap-3 mt-4 mb-6">
+            <div className="flex items-start gap-4 mt-5 mb-6">
               <div
                 style={{
                   display: 'flex',
@@ -27,11 +27,12 @@ const HowToUseTab = ({ product }) => {
                   borderRadius: '9999px',
                   backgroundColor: 'rgba(255, 107, 107, 0.08)',
                   flexShrink: 0,
+                  marginTop: '2px',
                 }}
               >
                 <Lightbulb className="w-4 h-4" style={{ color: '#c21f58ff' }} />
               </div>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 leading-relaxed">
                 <strong className="text-gray-900">Tip:</strong> {tip}
               </span>
             </div>
