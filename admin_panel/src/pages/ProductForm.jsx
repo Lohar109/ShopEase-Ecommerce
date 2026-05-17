@@ -332,6 +332,8 @@ const ProductForm = () => {
   const [specVideoUrl, setSpecVideoUrl] = useState('');
   const [specImage, setSpecImage] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
+  const newHighlight = () => ({ icon: '', value: '', title: '', subtitle: '' });
+  const [specHighlights, setSpecHighlights] = useState({ grid_title: '', grid_items: [newHighlight()] });
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -1839,6 +1841,16 @@ const ProductForm = () => {
   };
   const addSpec = () => setSpecs([...specs, newSpec()]);
   const removeSpec = idx => setSpecs(specs => specs.filter((_, i) => i !== idx));
+
+  // Specification highlights handlers
+  const handleHighlightChange = (idx, field, value) => {
+    setSpecHighlights(prev => ({
+      ...prev,
+      grid_items: prev.grid_items.map((it, i) => (i === idx ? { ...it, [field]: value } : it))
+    }));
+  };
+  const addHighlight = () => setSpecHighlights(prev => ({ ...prev, grid_items: [...prev.grid_items, newHighlight()] }));
+  const removeHighlight = (idx) => setSpecHighlights(prev => ({ ...prev, grid_items: prev.grid_items.filter((_, i) => i !== idx) }));
 
   // --- Variant state and handlers ---
   const [variantRows, setVariantRows] = useState([
@@ -4791,6 +4803,66 @@ const ProductForm = () => {
                         </div>
                       ))}
                       <button type="button" className="pf-outline-accent-btn" onClick={addSpec} style={{ marginTop: 8 }}><Plus size={14} />Add Specification</button>
+                    </div>
+
+                    {/* Specification Highlights Grid */}
+                    <div className="mt-8 pt-8 border-t border-gray-100">
+                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>SPECIFICATION HIGHLIGHTS GRID TITLE</label>
+                      <input
+                        className="custom-input"
+                        type="text"
+                        value={specHighlights.grid_title}
+                        onChange={(e) => setSpecHighlights(prev => ({ ...prev, grid_title: e.target.value }))}
+                        placeholder="Highlights title..."
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          borderRadius: 14,
+                          border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff',
+                          fontSize: '14px',
+                          marginBottom: 12
+                        }}
+                      />
+
+                      {specHighlights.grid_items.map((it, i) => (
+                        <div key={`sh-${i}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={it.icon}
+                            onChange={e => handleHighlightChange(i, 'icon', e.target.value)}
+                            placeholder="e.g. Zap"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={it.value}
+                            onChange={e => handleHighlightChange(i, 'value', e.target.value)}
+                            placeholder="e.g. 24% Protein"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={it.title}
+                            onChange={e => handleHighlightChange(i, 'title', e.target.value)}
+                            placeholder="e.g. Protein"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                          <input
+                            className="custom-input"
+                            type="text"
+                            value={it.subtitle}
+                            onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
+                            placeholder="e.g. Supports strong muscles"
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                          />
+                        </div>
+                      ))}
+
+                      <button type="button" className="pf-outline-accent-btn" onClick={addHighlight} style={{ marginTop: 8 }}><Plus size={14} />Add Highlight</button>
                     </div>
                   </>
                 )}
