@@ -263,7 +263,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
 
           {/* Step 3: Specifications Map Tracker */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative pb-14">
             <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               Specifications
             </h3>
@@ -285,7 +285,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             <button
               type="button"
-              className="spec-link border-none bg-transparent mt-auto"
+              className="spec-link border-none bg-transparent absolute bottom-6 left-6"
               onClick={(e) => {
                 e.preventDefault();
                 if (setActiveTab) {
@@ -304,7 +304,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
           </div>
 
           {/* What's in the Box */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative pb-14">
             <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               What's in the Box
             </h3>
@@ -327,7 +327,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
             
             <button
               type="button"
-              className="spec-link border-none bg-transparent mt-auto"
+              className="spec-link border-none bg-transparent absolute bottom-6 left-6"
                 onClick={(e) => {
                   e.preventDefault();
                   if (setActiveTab) {
