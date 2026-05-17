@@ -111,6 +111,21 @@ const normalizeVariantUpdatePayload = (variant = {}) => {
   };
 };
 
+const normalizeSpecHighlights = (value) => {
+  const source = value && typeof value === 'object' ? value : {};
+  const gridItems = Array.isArray(source.grid_items) ? source.grid_items : [];
+
+  return {
+    grid_title: String(source.grid_title || '').trim(),
+    grid_items: gridItems.map((item) => ({
+      icon: String(item?.icon || 'Zap').trim(),
+      value: String(item?.value || '').trim(),
+      title: String(item?.title || '').trim(),
+      subtitle: String(item?.subtitle || '').trim(),
+    })),
+  };
+};
+
 exports.getAllProducts = async (req, res) => {
   try {
     const { audience, category_id } = req.query;
@@ -171,6 +186,7 @@ exports.createProduct = async (req, res) => {
       description,
       category_id,
       main_image,
+      video_url = '',
       images = [],
       specifications = {},
       variants = [],
@@ -180,8 +196,15 @@ exports.createProduct = async (req, res) => {
       how_to_use = {},
       spec_description = '',
       spec_video_url = '',
-      spec_image = ''
+      spec_image = '',
+      spec_bottom_banner = '',
+      specBottomBanner = '',
+      spec_highlights = null,
+      specHighlights = null
     } = req.body;
+
+    const normalizedSpecHighlights = normalizeSpecHighlights(spec_highlights || specHighlights);
+    const normalizedSpecBottomBanner = String(spec_bottom_banner || specBottomBanner || '').trim();
 
     // Validate audience_id exists
     if (audience) {
@@ -194,10 +217,10 @@ exports.createProduct = async (req, res) => {
     await client.query('BEGIN');
     // Insert product
     const productResult = await client.query(
-      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, spec_bottom_banner, spec_highlights)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
        RETURNING id` ,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image]
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights]
     );
     const productId = productResult.rows[0].id;
 
@@ -293,8 +316,15 @@ exports.updateProduct = async (req, res) => {
       how_to_use = {},
       spec_description = '',
       spec_video_url = '',
-      spec_image = ''
+      spec_image = '',
+      spec_bottom_banner = '',
+      specBottomBanner = '',
+      spec_highlights = null,
+      specHighlights = null
     } = req.body;
+
+    const normalizedSpecHighlights = normalizeSpecHighlights(spec_highlights || specHighlights);
+    const normalizedSpecBottomBanner = String(spec_bottom_banner || specBottomBanner || '').trim();
 
     // Validate audience_id exists
     if (audience) {
@@ -309,9 +339,9 @@ exports.updateProduct = async (req, res) => {
     // Update product
     const productResult = await client.query(
       `UPDATE product 
-       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, inclusions = $12, how_to_use = $13, spec_description = $14, spec_video_url = $15, spec_image = $16
-       WHERE id = $17 RETURNING id`,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, id]
+       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, inclusions = $12, how_to_use = $13, spec_description = $14, spec_video_url = $15, spec_image = $16, spec_bottom_banner = $17, spec_highlights = $18
+       WHERE id = $19 RETURNING id`,
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights, id]
     );
 
     if (productResult.rows.length === 0) {
