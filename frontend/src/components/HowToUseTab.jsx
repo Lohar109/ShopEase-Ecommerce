@@ -18,10 +18,18 @@ const HowToUseTab = ({ product }) => {
           {tip && (
             <div className="flex items-start gap-3 mt-4 mb-6">
               <div
-                className="brand-icon-container"
-                style={{ backgroundColor: 'rgba(255, 193, 7, 0.10)' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2rem',
+                  height: '2rem',
+                  borderRadius: '9999px',
+                  backgroundColor: 'rgba(255, 107, 107, 0.08)',
+                  flexShrink: 0,
+                }}
               >
-                <Lightbulb className="w-4 h-4 text-brand" />
+                <Lightbulb className="w-4 h-4" style={{ color: '#c21f58ff' }} />
               </div>
               <span className="text-sm text-gray-600">
                 <strong className="text-gray-900">Tip:</strong> {tip}
