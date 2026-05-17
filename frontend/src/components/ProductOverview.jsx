@@ -171,6 +171,10 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         }
         
         .relative { position: relative; }
+        .absolute { position: absolute; }
+        .bottom-6 { bottom: 1.5rem; }
+        .left-6 { left: 1.5rem; }
+        .pb-14 { padding-bottom: 3.5rem; }
         .w-max { width: max-content; }
         .mr-4 { margin-right: 1rem; }
         
