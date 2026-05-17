@@ -4975,6 +4975,28 @@ const ProductForm = () => {
                                     placeholder="e.g. Supports strong muscles"
                                     style={{ width: 260, minWidth: 260, flex: '0 0 260px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
                                   />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeHighlight(i)}
+                                    title="Remove highlight"
+                                    style={{
+                                      background: '#fef2f2',
+                                      color: '#ef4444',
+                                      border: 'none',
+                                      borderRadius: 8,
+                                      padding: 8,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      cursor: 'pointer',
+                                      transition: 'background 0.15s ease',
+                                      flex: '0 0 auto',
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
                                 </div>
                               ))}
                             </div>
