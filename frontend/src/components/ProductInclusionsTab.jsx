@@ -33,9 +33,6 @@ const ProductInclusionsTab = ({ product }) => {
           {product.inclusions.items.map((item, idx) => (
             <div key={idx} className="pdp-inclusions-card">
               <div>
-                <div className="pdp-inclusions-badge">
-                  {idx + 1}
-                </div>
                 <h3 className="pdp-inclusions-title">
                   {item.name || item.short_description || `Item ${idx + 1}`}
                 </h3>
