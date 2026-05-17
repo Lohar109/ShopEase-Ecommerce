@@ -14,6 +14,93 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
+const DEFAULT_REVIEW_SUMMARY = {
+  rating: 4.6,
+  totalReviews: 328,
+  breakdown: [
+    { stars: 5, percent: 72, count: 237 },
+    { stars: 4, percent: 18, count: 60 },
+    { stars: 3, percent: 6, count: 18 },
+    { stars: 2, percent: 2, count: 7 },
+    { stars: 1, percent: 2, count: 6 },
+  ],
+};
+
+const DEFAULT_REVIEWS = [
+  {
+    id: 1,
+    name: "Ritika Sharma",
+    timeAgo: "5 days ago",
+    rating: 5,
+    verified: true,
+    helpful: 88,
+    text: "Amazing quality and very useful. Keeps my desk so organized! Highly recommended.",
+    thumbnailLabel: "Desk setup",
+    avatarBg: "linear-gradient(135deg, #f2c14e, #e68a2e)",
+    thumbnailBg: "linear-gradient(135deg, #f6eadc 0%, #e9d4bc 100%)",
+  },
+  {
+    id: 2,
+    name: "Aman Verma",
+    timeAgo: "1 week ago",
+    rating: 5,
+    verified: true,
+    helpful: 66,
+    text: "Sturdy material and lots of space. The drawer is super handy for small items.",
+    thumbnailLabel: "Storage kit",
+    avatarBg: "linear-gradient(135deg, #8fb3ff, #5f7cff)",
+    thumbnailBg: "linear-gradient(135deg, #f3e7d7 0%, #dfc8a9 100%)",
+  },
+  {
+    id: 3,
+    name: "Neha Iyer",
+    timeAgo: "2 weeks ago",
+    rating: 4,
+    verified: true,
+    helpful: 31,
+    text: "Nice product, looks premium and has a good finish. Works well on my workstation.",
+    thumbnailLabel: "Premium finish",
+    avatarBg: "linear-gradient(135deg, #9dd7c8, #4ca68b)",
+    thumbnailBg: "linear-gradient(135deg, #f8efdf 0%, #ead8bf 100%)",
+  },
+  {
+    id: 4,
+    name: "Karan Mehta",
+    timeAgo: "3 weeks ago",
+    rating: 5,
+    verified: true,
+    helpful: 54,
+    text: "Exactly what I needed for my home office. Clean design, easy to assemble, and very practical.",
+    thumbnailLabel: "Home office",
+    avatarBg: "linear-gradient(135deg, #ffb37a, #ee7752)",
+    thumbnailBg: "linear-gradient(135deg, #f7ecde 0%, #e7d3b6 100%)",
+  },
+  {
+    id: 5,
+    name: "Priya Nair",
+    timeAgo: "1 month ago",
+    rating: 4,
+    verified: true,
+    helpful: 42,
+    text: "Good value for money and looks neat on the table. The compartments are very thoughtfully sized.",
+    thumbnailLabel: "Organized desk",
+    avatarBg: "linear-gradient(135deg, #d98cff, #9b63ff)",
+    thumbnailBg: "linear-gradient(135deg, #f5ead8 0%, #e3cfb2 100%)",
+  },
+  {
+    id: 6,
+    name: "Arjun Das",
+    timeAgo: "1 month ago",
+    rating: 5,
+    verified: true,
+    helpful: 39,
+    text: "Solid build, elegant finish, and it keeps everything in one place. I would buy it again.",
+    thumbnailLabel: "Desk organizer",
+    avatarBg: "linear-gradient(135deg, #6ec6ff, #2b8cff)",
+    thumbnailBg: "linear-gradient(135deg, #f2e5d0 0%, #dec39f 100%)",
+  },
+];
+
 const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
@@ -1263,6 +1350,132 @@ const ProductDetail = () => {
 
                 {activeTab === 'How to Use' && (
                   <HowToUseTab product={product} />
+                )}
+
+                {activeTab === 'Reviews' && (
+                  <div className="pdp-tab-content pdp-reviews-section">
+                    <h2 className="pdp-reviews-heading">Customer Reviews</h2>
+
+                    <div className="pdp-reviews-summary">
+                      <div className="pdp-reviews-score">
+                        <div className="pdp-reviews-score-number">
+                          {DEFAULT_REVIEW_SUMMARY.rating}
+                        </div>
+                        <div className="pdp-reviews-score-stars" aria-label={`${DEFAULT_REVIEW_SUMMARY.rating} out of 5 stars`}>
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <Star
+                              key={`summary-star-${index}`}
+                              size={20}
+                              className={index < 4 ? 'pdp-review-star pdp-review-star--filled' : 'pdp-review-star pdp-review-star--muted'}
+                              fill="currentColor"
+                            />
+                          ))}
+                        </div>
+                        <p className="pdp-reviews-score-subtext">
+                          Based on {DEFAULT_REVIEW_SUMMARY.totalReviews} reviews
+                        </p>
+                      </div>
+
+                      <div className="pdp-rating-bars" aria-label="Review rating distribution">
+                        {DEFAULT_REVIEW_SUMMARY.breakdown.map((row) => (
+                          <div key={row.stars} className="pdp-rating-bar-row">
+                            <span className="pdp-rating-bar-label">{row.stars} ★</span>
+                            <div className="pdp-rating-bar-track" aria-hidden="true">
+                              <div
+                                className="pdp-rating-bar-fill"
+                                style={{ width: `${row.percent}%` }}
+                              />
+                            </div>
+                            <span className="pdp-rating-bar-percent">{row.percent}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pdp-review-toolbar">
+                      <div className="pdp-review-filter-group" aria-label="Review filters">
+                        <button type="button" className="pdp-review-filter-chip is-active">
+                          All Reviews ({DEFAULT_REVIEW_SUMMARY.totalReviews})
+                        </button>
+                        <button type="button" className="pdp-review-filter-chip">5 ★ (237)</button>
+                        <button type="button" className="pdp-review-filter-chip">4 ★ (60)</button>
+                        <button type="button" className="pdp-review-filter-chip">3 ★ (18)</button>
+                        <button type="button" className="pdp-review-filter-chip">2 ★ (7)</button>
+                        <button type="button" className="pdp-review-filter-chip">1 ★ (6)</button>
+                      </div>
+
+                      <button type="button" className="pdp-review-sort">
+                        <span>Most Recent</span>
+                        <span aria-hidden="true">▾</span>
+                      </button>
+                    </div>
+
+                    <div className="pdp-review-list">
+                      {DEFAULT_REVIEWS.map((review) => {
+                        const initials = review.name
+                          .split(' ')
+                          .slice(0, 2)
+                          .map((part) => part[0])
+                          .join('')
+                          .toUpperCase();
+
+                        return (
+                          <article key={review.id} className="pdp-review-card">
+                            <div className="pdp-review-avatar" style={{ background: review.avatarBg }}>
+                              {initials}
+                            </div>
+
+                            <div className="pdp-review-body">
+                              <div className="pdp-review-header-row">
+                                <div>
+                                  <div className="pdp-review-author-row">
+                                    <span className="pdp-review-name">{review.name}</span>
+                                    {review.verified && <span className="pdp-review-verified">Verified Purchase</span>}
+                                  </div>
+                                  <div className="pdp-review-meta">{review.timeAgo}</div>
+                                </div>
+                              </div>
+
+                              <div className="pdp-review-rating-inline" aria-label={`${review.rating} out of 5 stars`}>
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                  <Star
+                                    key={`review-${review.id}-star-${index}`}
+                                    size={16}
+                                    className={index < review.rating ? 'pdp-review-star pdp-review-star--filled' : 'pdp-review-star pdp-review-star--muted'}
+                                    fill="currentColor"
+                                  />
+                                ))}
+                              </div>
+
+                              <p className="pdp-review-text">{review.text}</p>
+
+                              <div className="pdp-review-actions">
+                                <span className="pdp-review-action">Helpful ({review.helpful})</span>
+                                <span className="pdp-review-action">Reply</span>
+                              </div>
+                            </div>
+
+                            <div className="pdp-review-thumbnail" aria-hidden="true">
+                              <div className="pdp-review-thumbnail-frame" style={{ background: review.thumbnailBg }}>
+                                <div className="pdp-review-thumbnail-illustration">
+                                  <span className="pdp-review-thumbnail-object pdp-review-thumbnail-object--base" />
+                                  <span className="pdp-review-thumbnail-object pdp-review-thumbnail-object--top" />
+                                  <span className="pdp-review-thumbnail-object pdp-review-thumbnail-object--accent" />
+                                </div>
+                                <span className="pdp-review-thumbnail-label">{review.thumbnailLabel}</span>
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pdp-review-load-more-wrap">
+                      <button type="button" className="pdp-review-load-more-btn">
+                        Load More Reviews <span aria-hidden="true">▾</span>
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {['Reviews', 'FAQs'].map((tab) => {
