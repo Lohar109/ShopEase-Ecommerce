@@ -23,28 +23,38 @@ const SpecificationsTab = ({ product }) => {
             {spec_highlights?.grid_items?.length ? (
               <div
                 className="w-full rounded-3xl p-6 mt-6"
-                style={{ backgroundColor: '#f8f1e6' }}
+                style={{ backgroundColor: '#ffffff' }}
               >
                 <h3 className="text-center text-lg md:text-xl font-semibold text-gray-900">
                   {spec_highlights.grid_title}
                 </h3>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full pt-4">
-                  {spec_highlights.grid_items.map((item, index) => (
-                    <div key={`${item.title || 'spec-highlight'}-${index}`} className="flex flex-col items-center text-center gap-3">
-                      <div
-                        className="w-14 h-14 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: '#d9c2a0' }}
-                      >
+                <style>{`
+                  .spec-highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 720px; margin: 1rem auto 0; align-items: start; }
+                  .spec-highlights-grid > div { padding: 0.75rem 0.5rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+                  .spec-highlights-grid > div:not(:nth-child(3n)) { border-right: 1px solid rgba(0,0,0,0.06); }
+                  .spec-highlights { padding-left: 1rem; padding-right: 1rem; }
+                  .spec-highlight-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:9999px; background:#d9c2a0; }
+                  .spec-highlight-value{ font-weight:700; font-size:1rem; margin-top:0.25rem }
+                  .spec-highlight-title{ font-weight:600; font-size:0.9rem; margin-top:0.125rem }
+                  .spec-highlight-sub{ color:rgba(0,0,0,0.6); font-size:0.85rem; margin-top:0.25rem }
+                  @media (max-width:1024px){ .spec-highlights-grid{ max-width:640px; } }
+                  @media (max-width:768px){ .spec-highlights-grid{ grid-template-columns: repeat(2,1fr); max-width:100%; } .spec-highlights-grid > div:not(:nth-child(2n)){ border-right:none; border-bottom:1px solid rgba(0,0,0,0.06); } }
+                `}</style>
+
+                <div className="spec-highlights-grid">
+                  {spec_highlights.grid_items.slice(0,3).map((item, index) => (
+                    <div key={`${item.title || 'spec-highlight'}-${index}`} className="flex flex-col items-center text-center space-y-2">
+                      <div className="spec-highlight-icon">
                         <DynamicIcon name={item.icon} className="w-6 h-6 text-[#7a5a3a]" />
                       </div>
-                      <div className="text-base md:text-lg font-bold text-gray-900 leading-tight">
+                      <div className="spec-highlight-value text-gray-900">
                         {item.value}
                       </div>
-                      <div className="text-sm font-semibold text-gray-800 leading-tight">
+                      <div className="spec-highlight-title text-gray-800">
                         {item.title}
                       </div>
-                      <div className="text-sm text-gray-600 leading-relaxed max-w-[16rem]">
+                      <div className="spec-highlight-sub">
                         {item.subtitle}
                       </div>
                     </div>
