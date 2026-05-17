@@ -16,36 +16,73 @@ const HowToUseTab = ({ product }) => {
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-6" style={{ height: '366px', marginTop: '-16px' }}>
+        <div className="md:col-span-7 min-w-0 w-full bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-0" style={{ height: '366px', marginTop: '-16px' }}>
           {hero_image_url ? (
             <img 
               src={hero_image_url} 
-              alt="How to Use" 
-              className="w-full h-full max-w-full max-h-full object-contain block mx-auto"
-              style={{ borderRadius: '0.5rem' }}
+              alt={title || "How to Use"} 
+              className="w-full h-full object-cover block mx-auto"
             />
           ) : null}
         </div>
       </div>
 
-      {/* Sub-items Grid */}
+      {/* Sub-items Timeline Layout */}
       {product?.how_to_use?.items && Array.isArray(product.how_to_use.items) && product.how_to_use.items.length > 0 && (
-        <div className="pdp-inclusions-grid">
-          {product.how_to_use.items.map((item, idx) => (
-            <div key={idx} className="pdp-inclusions-card">
-              <div>
-                <div className="pdp-inclusions-badge">
-                  {idx + 1}
+        <div className="flex flex-col gap-6 mt-12 relative">
+          {/* Vertical Line */}
+          {product.how_to_use.items.length > 1 && (
+            <div 
+              className="absolute top-8 bottom-8 w-px bg-gray-200 hidden md:block"
+              style={{ left: '3.25rem' }}
+            ></div>
+          )}
+
+          {product.how_to_use.items.map((item, idx) => {
+            const text = item.name || item.short_description || '';
+            const parts = text.split(':');
+            const stepTitle = parts[0]?.trim() || `Step ${idx + 1}`;
+            const stepDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
+
+            return (
+              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative">
+                
+                {/* Left Column: Timeline Step */}
+                <div className="md:col-span-5 flex items-start gap-6 pl-4 md:pl-8">
+                  {/* Badge */}
+                  <div 
+                    className="relative z-10 flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full border-2 text-sm font-semibold"
+                    style={{ 
+                      backgroundColor: '#fff0f5', 
+                      borderColor: '#f8d7e3',
+                      color: '#c8507a'
+                    }}
+                  >
+                    {idx + 1}
+                  </div>
+                  
+                  {/* Text */}
+                  <div className="pt-2">
+                    <h4 className="font-bold text-gray-900 text-base leading-none mb-2">{stepTitle}</h4>
+                    {stepDesc && (
+                      <p className="text-gray-600 text-sm leading-relaxed pr-4">{stepDesc}</p>
+                    )}
+                  </div>
                 </div>
-                <h3 className="pdp-inclusions-title">
-                  {item.name || item.short_description || `Step ${idx + 1}`}
-                </h3>
+
+                {/* Right Column: Image */}
+                <div className="md:col-span-7 w-full bg-gray-50 rounded-2xl overflow-hidden" style={{ aspectRatio: '21/9' }}>
+                  {item.image_url ? (
+                    <img 
+                      src={item.image_url} 
+                      alt={stepTitle} 
+                      className="w-full h-full object-cover block"
+                    />
+                  ) : null}
+                </div>
               </div>
-              <div className="pdp-inclusions-img-box">
-                <img src={item.image_url} alt={item.name || item.short_description || 'Step image'} className="pdp-inclusions-img" />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

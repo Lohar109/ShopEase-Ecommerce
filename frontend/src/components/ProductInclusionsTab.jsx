@@ -16,13 +16,12 @@ const ProductInclusionsTab = ({ product }) => {
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full h-[350px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-6">
+        <div className="md:col-span-7 min-w-0 w-full h-[350px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-0" style={{ height: '366px', marginTop: '-16px' }}>
           {hero_image_url ? (
             <img 
               src={hero_image_url} 
-              alt="Product Inclusions" 
-              className="w-full h-full max-w-full max-h-full object-contain block mx-auto"
-              style={{ borderRadius: '0.5rem' }}
+              alt={title || "What's Included"} 
+              className="w-full h-full object-cover block mx-auto"
             />
           ) : null}
         </div>
