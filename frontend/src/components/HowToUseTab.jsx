@@ -18,9 +18,9 @@ const HowToUseTab = ({ product }) => {
         {/* Right Column (Media Container) - Takes 7 cols */}
         <div className="md:col-span-7 min-w-0 w-full bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-0" style={{ height: '366px', marginTop: '-16px' }}>
           {hero_image_url ? (
-            <img 
-              src={hero_image_url} 
-              alt={title || "How to Use"} 
+            <img
+              src={hero_image_url}
+              alt={title || "How to Use"}
               className="w-full h-full object-cover block mx-auto"
             />
           ) : null}
@@ -32,7 +32,7 @@ const HowToUseTab = ({ product }) => {
         <div className="flex flex-col gap-6 mt-12 relative">
           {/* Vertical Line */}
           {product.how_to_use.items.length > 1 && (
-            <div 
+            <div
               className="absolute top-8 bottom-8 w-px bg-gray-200 hidden md:block"
               style={{ left: '3.25rem' }}
             ></div>
@@ -46,21 +46,21 @@ const HowToUseTab = ({ product }) => {
 
             return (
               <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative">
-                
+
                 {/* Left Column: Timeline Step */}
                 <div className="md:col-span-5 flex items-start gap-6 pl-4 md:pl-8">
                   {/* Badge */}
-                  <div 
+                  <div
                     className="relative z-10 flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full border-2 text-sm font-semibold"
-                    style={{ 
-                      backgroundColor: '#fff0f5', 
+                    style={{
+                      backgroundColor: '#fff0f5',
                       borderColor: '#f8d7e3',
                       color: '#c8507a'
                     }}
                   >
                     {idx + 1}
                   </div>
-                  
+
                   {/* Text */}
                   <div className="pt-2">
                     <h4 className="font-bold text-gray-900 text-base leading-none mb-2">{stepTitle}</h4>
@@ -72,11 +72,11 @@ const HowToUseTab = ({ product }) => {
 
                 {/* Right Column: Image */}
                 <div className="md:col-span-7 flex justify-start">
-                  <div className="bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ width: '250px', height: '200px', flexShrink: 0 }}>
+                  <div className="bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ width: '400px', height: '275px', flexShrink: 0 }}>
                     {item.image_url ? (
-                      <img 
-                        src={item.image_url} 
-                        alt={stepTitle} 
+                      <img
+                        src={item.image_url}
+                        alt={stepTitle}
                         className="w-full h-full object-cover block"
                       />
                     ) : null}
