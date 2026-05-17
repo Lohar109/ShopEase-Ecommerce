@@ -71,7 +71,7 @@ const HowToUseTab = ({ product }) => {
                 </div>
 
                 {/* Right Column: Image */}
-                <div className="md:col-span-7 w-full bg-gray-50 rounded-2xl overflow-hidden" style={{ aspectRatio: '21/9' }}>
+                <div className="md:col-span-6 md:col-start-7 w-full bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ aspectRatio: '16/9' }}>
                   {item.image_url ? (
                     <img 
                       src={item.image_url} 
