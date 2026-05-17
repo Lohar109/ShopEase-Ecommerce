@@ -1,7 +1,8 @@
 import React from 'react';
+import { Lightbulb } from 'lucide-react';
 
 const HowToUseTab = ({ product }) => {
-  const { hero_image_url, title, description } = product?.how_to_use || {};
+  const { hero_image_url, title, description, tip } = product?.how_to_use || {};
 
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
@@ -13,6 +14,20 @@ const HowToUseTab = ({ product }) => {
           <p className="text-sm text-gray-600 leading-relaxed block">
             {description || ""}
           </p>
+
+          {tip && (
+            <div className="flex items-start gap-3 mt-4 mb-6">
+              <div
+                className="brand-icon-container"
+                style={{ backgroundColor: 'rgba(255, 193, 7, 0.10)' }}
+              >
+                <Lightbulb className="w-4 h-4 text-brand" />
+              </div>
+              <span className="text-sm text-gray-600">
+                <strong className="text-gray-900">Tip:</strong> {tip}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
