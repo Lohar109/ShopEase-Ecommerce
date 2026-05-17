@@ -39,9 +39,7 @@ const ProductInclusionsTab = ({ product }) => {
                 <h3 className="pdp-inclusions-title">
                   {item.name || item.short_description || `Item ${idx + 1}`}
                 </h3>
-                <p className="pdp-inclusions-subtitle">
-                  {item.quantity || item.description || "1 Unit"}
-                </p>
+
               </div>
               <div className="pdp-inclusions-img-box">
                 <img src={item.image_url} alt={item.name || item.short_description || 'Item image'} className="pdp-inclusions-img" />
