@@ -285,7 +285,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
 
             <button
               type="button"
-              className="spec-link border-none bg-transparent mt-4"
+              className="spec-link border-none bg-transparent mt-auto"
               onClick={(e) => {
                 e.preventDefault();
                 if (setActiveTab) {
@@ -325,10 +325,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
               )}
             </div>
             
-            <div className="w-full text-right mt-auto">
-              <button
-                type="button"
-                className="spec-link border-none bg-transparent"
+            <button
+              type="button"
+              className="spec-link border-none bg-transparent mt-auto"
                 onClick={(e) => {
                   e.preventDefault();
                   if (setActiveTab) {
@@ -343,8 +342,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                 }}
               >
                 View full details →
-              </button>
-            </div>
+            </button>
           </div>
 
           {/* Perfect For */}
