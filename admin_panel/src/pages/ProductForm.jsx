@@ -3083,6 +3083,8 @@ const ProductForm = () => {
         }
         .pf-spec-action {
           margin-top: 8px;
+          width: fit-content;
+          align-self: flex-start;
         }
         .pf-image-link-btn {
           transition: all 0.2s ease;
@@ -4855,7 +4857,7 @@ const ProductForm = () => {
                             </button>
                           </div>
                         ))}
-                        <button type="button" className="pf-outline-accent-btn pf-spec-action" onClick={addSpec}><Plus size={14} />Add Specification</button>
+                        <button type="button" className="pf-outline-accent-btn pf-spec-action w-fit inline-flex items-center justify-center px-5 py-2.5" onClick={addSpec}><Plus size={14} />Add Specification</button>
                       </div>
 
                       {/* Specification Highlights Grid */}
@@ -4924,7 +4926,7 @@ const ProductForm = () => {
                           ))}
                         </div>
 
-                        <button type="button" className="pf-outline-accent-btn pf-spec-action" onClick={addHighlight}><Plus size={14} />Add Highlight</button>
+                        <button type="button" className="pf-outline-accent-btn pf-spec-action w-fit inline-flex items-center justify-center px-5 py-2.5" onClick={addHighlight}><Plus size={14} />Add Highlight</button>
                       </div>
 
                       {/* SPECIFICATION BOTTOM BANNER IMAGE URL */}
