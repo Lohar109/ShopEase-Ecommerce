@@ -43,6 +43,7 @@ const STEPS = [
   { key: 'offers', label: 'Offers' },
   { key: 'overview', label: 'Overview' },
   { key: 'inclusions', label: 'Inclusions' },
+  { key: 'how_to_use', label: 'How to Use' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -302,6 +303,12 @@ const ProductForm = () => {
     why_love_it: [{ icon: 'Heart', text: '' }]
   });
   const [inclusions, setInclusions] = useState({
+    title: '',
+    description: '',
+    hero_image_url: '',
+    items: [{ short_description: '', image_url: '' }]
+  });
+  const [howToUse, setHowToUse] = useState({
     title: '',
     description: '',
     hero_image_url: '',
@@ -1734,6 +1741,19 @@ const ProductForm = () => {
               }))
             : [{ short_description: '', image_url: '' }]
         });
+
+        const loadedHowToUse = p?.how_to_use || {};
+        setHowToUse({
+          title: loadedHowToUse.title || '',
+          description: loadedHowToUse.description || '',
+          hero_image_url: loadedHowToUse.hero_image_url || loadedHowToUse.hero_image || '',
+          items: Array.isArray(loadedHowToUse.items) && loadedHowToUse.items.length > 0
+            ? loadedHowToUse.items.map(i => ({ 
+                short_description: i.short_description || i.text || '', 
+                image_url: i.image_url || i.image || '' 
+              }))
+            : [{ short_description: '', image_url: '' }]
+        });
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
       } finally {
@@ -2058,6 +2078,15 @@ const ProductForm = () => {
             .filter(w => w.text)
         },
         inclusions: inclusionsPayload,
+        how_to_use: {
+          title: howToUse?.title || '',
+          hero_image_url: howToUse?.hero_image_url || howToUse?.hero_image || '',
+          description: howToUse?.description || '',
+          items: (howToUse?.items || []).map(item => ({
+            short_description: item?.short_description || item?.name || item?.text || '',
+            image_url: item?.image_url || item?.image || ''
+          })).filter(item => item.short_description)
+        },
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
@@ -6128,6 +6157,116 @@ const ProductForm = () => {
                     </div>
                   </>
                 )}
+
+                {activeTab === 'how_to_use' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><Info size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>How to Use</h3>
+                    </div>
+                    <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
+                      Provide instructions or steps on how to use this product.
+                    </p>
+
+                    <div style={{ display: 'grid', gap: 24 }}>
+                      <div>
+                        <label className="pf-label">Section Title</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          placeholder="e.g. How to Use"
+                          value={howToUse.title}
+                          onChange={(e) => setHowToUse(prev => ({ ...prev, title: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                      <div>
+                        <label className="pf-label">Hero Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          placeholder="Image URL"
+                          value={howToUse.hero_image_url}
+                          onChange={(e) => setHowToUse(prev => ({ ...prev, hero_image_url: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="pf-label">Description</label>
+                        <textarea
+                          className="custom-input"
+                          rows={4}
+                          placeholder="Description..."
+                          value={howToUse.description}
+                          onChange={(e) => setHowToUse(prev => ({ ...prev, description: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #f4f4f5', paddingTop: 24 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                          <label className="pf-label" style={{ margin: 0 }}>Steps / Items</label>
+                          <button
+                            type="button"
+                            onClick={() => setHowToUse(prev => ({ ...prev, items: [...prev.items, { short_description: '', image_url: '' }] }))}
+                            className="pf-outline-accent-btn"
+                            style={{ padding: '6px 12px', fontSize: 12, height: 'auto' }}
+                          >
+                            <Plus size={14} /> Add Step
+                          </button>
+                        </div>
+                        
+                        <div style={{ display: 'grid', gap: 12 }}>
+                          {howToUse.items.map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  placeholder="Short Description / Step Info"
+                                  value={item.short_description}
+                                  onChange={(e) => {
+                                    const newItems = [...howToUse.items];
+                                    newItems[idx].short_description = e.target.value;
+                                    setHowToUse(prev => ({ ...prev, items: newItems }));
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  placeholder="Image URL"
+                                  value={item.image_url || ''}
+                                  onChange={(e) => {
+                                    const newItems = [...howToUse.items];
+                                    newItems[idx].image_url = e.target.value;
+                                    setHowToUse(prev => ({ ...prev, items: newItems }));
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (howToUse.items.length > 1) {
+                                    setHowToUse(prev => ({
+                                      ...prev,
+                                      items: prev.items.filter((_, i) => i !== idx)
+                                    }));
+                                  }
+                                }}
+                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -6151,20 +6290,20 @@ const ProductForm = () => {
 
                 <button
                   type="button"
-                  onClick={activeTab === 'inclusions' ? handleSubmitProduct : goNext}
-                  disabled={saving || (activeTab !== 'inclusions' && !canNext)}
+                  onClick={activeTab === 'how_to_use' ? handleSubmitProduct : goNext}
+                  disabled={saving || (activeTab !== 'how_to_use' && !canNext)}
                   style={{
-                    background: activeTab === 'inclusions' ? '#c8507a' : '#111827',
+                    background: activeTab === 'how_to_use' ? '#c8507a' : '#111827',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 8,
                     padding: '8px 20px',
                     fontWeight: 600,
-                    cursor: (saving || (activeTab !== 'inclusions' && !canNext)) ? 'not-allowed' : 'pointer',
-                    opacity: (saving || (activeTab !== 'inclusions' && !canNext)) ? 0.5 : 1,
+                    cursor: (saving || (activeTab !== 'how_to_use' && !canNext)) ? 'not-allowed' : 'pointer',
+                    opacity: (saving || (activeTab !== 'how_to_use' && !canNext)) ? 0.5 : 1,
                   }}
                 >
-                  {saving ? 'Saving...' : (activeTab === 'inclusions' ? (isEditMode ? 'Update Product' : 'Save Product') : 'Next')}
+                  {saving ? 'Saving...' : (activeTab === 'how_to_use' ? (isEditMode ? 'Update Product' : 'Save Product') : 'Next')}
                 </button>
               </div>
             </div>
