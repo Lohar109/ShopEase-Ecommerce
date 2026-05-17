@@ -3047,6 +3047,43 @@ const ProductForm = () => {
         .pf-outline-accent-btn:hover {
           background: #fff1f6;
         }
+        .pf-spec-section-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .pf-spec-field-group {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .pf-spec-label {
+          color: #9ca3af;
+          letter-spacing: 0.05em;
+          margin: 0;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          line-height: 1.2;
+        }
+        .pf-spec-divider-block {
+          margin-top: 4px;
+          padding-top: 20px;
+          border-top: 1px solid #f1f5f9;
+        }
+        .pf-spec-repeat-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .pf-spec-row {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+        .pf-spec-action {
+          margin-top: 8px;
+        }
         .pf-image-link-btn {
           transition: all 0.2s ease;
           background: #ffffff;
@@ -4708,189 +4745,191 @@ const ProductForm = () => {
                       <span className="pf-section-title-icon"><Layers size={16} /></span>
                       <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Specifications</h3>
                     </div>
-                         {/* Field 1: Description Group */}
-                    <div style={{ marginBottom: '40px', display: 'block' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Description</label>
-                      <textarea
-                        className="custom-textarea"
-                        value={specDescription}
-                        onChange={(e) => setSpecDescription(e.target.value)}
-                        placeholder="Enter a brief intro for product specifications..."
-                        rows={6}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: 14,
-                          border: '1px solid #e5e7eb',
-                          backgroundColor: '#fff',
-                          resize: 'vertical',
-                          fontSize: '14px',
-                          height: 'auto',
-                          lineHeight: '1.6'
-                        }}
-                      />
-                    </div>
+                    <div className="pf-spec-section-stack">
+                      {/* Field 1: Description Group */}
+                      <div className="pf-spec-field-group">
+                        <label className="pf-spec-label">Specification Description</label>
+                        <textarea
+                          className="custom-textarea"
+                          value={specDescription}
+                          onChange={(e) => setSpecDescription(e.target.value)}
+                          placeholder="Enter a brief intro for product specifications..."
+                          rows={6}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: 14,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            resize: 'vertical',
+                            fontSize: '14px',
+                            height: 'auto',
+                            lineHeight: '1.6'
+                          }}
+                        />
+                      </div>
 
-                    {/* Field 2: Image URL Group */}
-                    <div style={{ marginBottom: '40px', display: 'block' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Image URL</label>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={specImage}
-                        onChange={(e) => setSpecImage(e.target.value)}
-                        placeholder="Image URL..."
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: 14,
-                          border: '1px solid #e5e7eb',
-                          backgroundColor: '#fff',
-                          fontSize: '14px'
-                        }}
-                      />
-                    </div>
+                      {/* Field 2: Image URL Group */}
+                      <div className="pf-spec-field-group">
+                        <label className="pf-spec-label">Specification Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specImage}
+                          onChange={(e) => setSpecImage(e.target.value)}
+                          placeholder="Image URL..."
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: 14,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
 
-                    {/* Field 3: Video URL Group */}
-                    <div style={{ marginBottom: '40px', display: 'block' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>Specification Video URL</label>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={specVideoUrl}
-                        onChange={(e) => setSpecVideoUrl(e.target.value)}
-                        placeholder="Video URL..."
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: 14,
-                          border: '1px solid #e5e7eb',
-                          backgroundColor: '#fff',
-                          fontSize: '14px'
-                        }}
-                      />
-                    </div>
+                      {/* Field 3: Video URL Group */}
+                      <div className="pf-spec-field-group">
+                        <label className="pf-spec-label">Specification Video URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specVideoUrl}
+                          onChange={(e) => setSpecVideoUrl(e.target.value)}
+                          placeholder="Video URL..."
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: 14,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
 
-                    <div style={{ marginTop: '64px', marginBottom: '24px', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em' }}>Product Specifications</label>
-                    </div>
+                      <div className="pf-spec-divider-block">
+                        <label className="pf-spec-label">Product Specifications</label>
+                      </div>
 
-                    <div>
-                      {specs.map((spec, idx) => (
-                        <div key={spec.sk || `spec-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={spec.key}
-                            onChange={e => handleSpecChange(idx, 'key', e.target.value)}
-                            placeholder="Key (e.g. Material)"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={spec.value}
-                            onChange={e => handleSpecChange(idx, 'value', e.target.value)}
-                            placeholder="Value (e.g. Cotton)"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeSpec(idx)}
-                            title="Remove specification"
-                            style={{
-                              background: '#fef2f2',
-                              color: '#ef4444',
-                              border: 'none',
-                              borderRadius: 8,
-                              padding: 8,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s ease',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
-                      <button type="button" className="pf-outline-accent-btn" onClick={addSpec} style={{ marginTop: 8 }}><Plus size={14} />Add Specification</button>
-                    </div>
-
-                    {/* Specification Highlights Grid */}
-                    <div className="mt-8 pt-8 border-t border-gray-100">
-                      <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>SPECIFICATION HIGHLIGHTS GRID TITLE</label>
-                      <input
-                        className="custom-input"
-                        type="text"
-                        value={specHighlights.grid_title}
-                        onChange={(e) => setSpecHighlights(prev => ({ ...prev, grid_title: e.target.value }))}
-                        placeholder="Highlights title..."
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: 14,
-                          border: '1px solid #e5e7eb',
-                          backgroundColor: '#fff',
-                          fontSize: '14px',
-                          marginBottom: 12
-                        }}
-                      />
-
-                      {specHighlights.grid_items.map((it, i) => (
-                        <div key={`sh-${i}`} style={{ display: 'flex', gap: 8, marginBottom: 5, alignItems: 'center' }}>
-                          <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
-                            {renderHighlightIcon(it.icon || 'Zap')}
+                      <div className="pf-spec-repeat-list">
+                        {specs.map((spec, idx) => (
+                          <div key={spec.sk || `spec-${idx}`} className="pf-spec-row">
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={spec.key}
+                              onChange={e => handleSpecChange(idx, 'key', e.target.value)}
+                              placeholder="Key (e.g. Material)"
+                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                            />
+                            <input
+                              className="custom-input"
+                              type="text"
+                              value={spec.value}
+                              onChange={e => handleSpecChange(idx, 'value', e.target.value)}
+                              placeholder="Value (e.g. Cotton)"
+                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeSpec(idx)}
+                              title="Remove specification"
+                              style={{
+                                background: '#fef2f2',
+                                color: '#ef4444',
+                                border: 'none',
+                                borderRadius: 8,
+                                padding: 8,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
-                          <select
-                            className="custom-input"
-                            value={it.icon || 'Zap'}
-                            onChange={e => handleHighlightChange(i, 'icon', e.target.value)}
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#fff' }}
-                          >
-                            <option value="Zap">Zap</option>
-                            <option value="Shield">Shield</option>
-                            <option value="Heart">Heart</option>
-                            <option value="Bone">Bone</option>
-                            <option value="Activity">Activity</option>
-                            <option value="Check">Check</option>
-                          </select>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={it.value}
-                            onChange={e => handleHighlightChange(i, 'value', e.target.value)}
-                            placeholder="e.g. 24% Protein"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={it.title}
-                            onChange={e => handleHighlightChange(i, 'title', e.target.value)}
-                            placeholder="e.g. Protein"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={it.subtitle}
-                            onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
-                            placeholder="e.g. Supports strong muscles"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
-                        </div>
-                      ))}
+                        ))}
+                        <button type="button" className="pf-outline-accent-btn pf-spec-action" onClick={addSpec}><Plus size={14} />Add Specification</button>
+                      </div>
 
-                      <button type="button" className="pf-outline-accent-btn" onClick={addHighlight} style={{ marginTop: 8 }}><Plus size={14} />Add Highlight</button>
-                    </div>
+                      {/* Specification Highlights Grid */}
+                      <div className="pf-spec-divider-block pf-spec-section-stack" style={{ gap: 12 }}>
+                        <label className="pf-spec-label">Specification Highlights Grid Title</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={specHighlights.grid_title}
+                          onChange={(e) => setSpecHighlights(prev => ({ ...prev, grid_title: e.target.value }))}
+                          placeholder="Highlights title..."
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: 14,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+
+                        <div className="pf-spec-repeat-list">
+                          {specHighlights.grid_items.map((it, i) => (
+                            <div key={`sh-${i}`} className="pf-spec-row">
+                              <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
+                                {renderHighlightIcon(it.icon || 'Zap')}
+                              </div>
+                              <select
+                                className="custom-input"
+                                value={it.icon || 'Zap'}
+                                onChange={e => handleHighlightChange(i, 'icon', e.target.value)}
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#fff' }}
+                              >
+                                <option value="Zap">Zap</option>
+                                <option value="Shield">Shield</option>
+                                <option value="Heart">Heart</option>
+                                <option value="Bone">Bone</option>
+                                <option value="Activity">Activity</option>
+                                <option value="Check">Check</option>
+                              </select>
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={it.value}
+                                onChange={e => handleHighlightChange(i, 'value', e.target.value)}
+                                placeholder="e.g. 24% Protein"
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                              />
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={it.title}
+                                onChange={e => handleHighlightChange(i, 'title', e.target.value)}
+                                placeholder="e.g. Protein"
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                              />
+                              <input
+                                className="custom-input"
+                                type="text"
+                                value={it.subtitle}
+                                onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
+                                placeholder="e.g. Supports strong muscles"
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+
+                        <button type="button" className="pf-outline-accent-btn pf-spec-action" onClick={addHighlight}><Plus size={14} />Add Highlight</button>
+                      </div>
 
                       {/* SPECIFICATION BOTTOM BANNER IMAGE URL */}
-                      <div style={{ marginBottom: '40px', display: 'block', marginTop: 24 }}>
-                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>SPECIFICATION BOTTOM BANNER IMAGE URL</label>
+                      <div className="pf-spec-field-group">
+                        <label className="pf-spec-label">Specification Bottom Banner Image URL</label>
                         <input
                           className="custom-input"
                           type="text"
@@ -4907,6 +4946,7 @@ const ProductForm = () => {
                           }}
                         />
                       </div>
+                    </div>
                   </>
                 )}
 
