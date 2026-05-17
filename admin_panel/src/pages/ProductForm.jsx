@@ -1686,6 +1686,19 @@ const ProductForm = () => {
         setSpecDescription(p?.spec_description || '');
         setSpecVideoUrl(p?.spec_video_url || '');
         setSpecImage(p?.spec_image || '');
+        setSpec_bottom_banner(p?.spec_bottom_banner || p?.specBottomBanner || '');
+        const loadedSpecHighlights = p?.spec_highlights || p?.specHighlights || {};
+        setSpecHighlights({
+          grid_title: String(loadedSpecHighlights.grid_title || ''),
+          grid_items: Array.isArray(loadedSpecHighlights.grid_items) && loadedSpecHighlights.grid_items.length > 0
+            ? loadedSpecHighlights.grid_items.map(item => ({
+                icon: String(item?.icon || 'Zap'),
+                value: String(item?.value || ''),
+                title: String(item?.title || ''),
+                subtitle: String(item?.subtitle || '')
+              }))
+            : [newHighlight(), newHighlight(), newHighlight()]
+        });
         const rawSpecs = p.specifications;
         const specEntries = rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)
           ? Object.entries(rawSpecs)
@@ -2123,6 +2136,7 @@ const ProductForm = () => {
         spec_image: specImage,
         spec_video_url: specVideoUrl,
         spec_bottom_banner: spec_bottom_banner,
+        spec_highlights: specHighlights,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -2218,10 +2232,23 @@ const ProductForm = () => {
           
           if (updated.product) {
             setEditProductData(updated.product);
-            // Ensure spec description and video are also refreshed from the response
+            // Ensure spec description, video and highlights are refreshed from the response
             setSpecDescription(updated.product.spec_description || '');
             setSpecImage(updated.product.spec_image || '');
             setSpecVideoUrl(updated.product.spec_video_url || '');
+            setSpec_bottom_banner(updated.product.spec_bottom_banner || updated.product.specBottomBanner || '');
+            const respHighlights = updated.product.spec_highlights || updated.product.specHighlights || {};
+            setSpecHighlights({
+              grid_title: String(respHighlights.grid_title || ''),
+              grid_items: Array.isArray(respHighlights.grid_items) && respHighlights.grid_items.length > 0
+                ? respHighlights.grid_items.map(item => ({
+                    icon: String(item?.icon || 'Zap'),
+                    value: String(item?.value || ''),
+                    title: String(item?.title || ''),
+                    subtitle: String(item?.subtitle || '')
+                  }))
+                : [newHighlight(), newHighlight(), newHighlight()]
+            });
           }
         }
       } else {
