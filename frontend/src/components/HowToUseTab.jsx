@@ -71,14 +71,16 @@ const HowToUseTab = ({ product }) => {
                 </div>
 
                 {/* Right Column: Image */}
-                <div className="md:col-span-6 md:col-start-7 w-full bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ aspectRatio: '16/9' }}>
-                  {item.image_url ? (
-                    <img 
-                      src={item.image_url} 
-                      alt={stepTitle} 
-                      className="w-full h-full object-cover block"
-                    />
-                  ) : null}
+                <div className="md:col-span-7 flex justify-start">
+                  <div className="bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ width: '250px', height: '200px', flexShrink: 0 }}>
+                    {item.image_url ? (
+                      <img 
+                        src={item.image_url} 
+                        alt={stepTitle} 
+                        className="w-full h-full object-cover block"
+                      />
+                    ) : null}
+                  </div>
                 </div>
               </div>
             );
