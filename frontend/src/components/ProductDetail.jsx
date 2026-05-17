@@ -1478,15 +1478,12 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {['Reviews', 'FAQs'].map((tab) => {
-                  if (activeTab !== tab) return null;
-                  return (
-                    <div key={tab} className="pdp-tab-content pdp-placeholder-content">
-                      <h3>{tab}</h3>
-                      <p>Detailed data for {tab.toLowerCase()} will be loaded shortly. Enjoy premium product walkthroughs soon!</p>
-                    </div>
-                  );
-                })}
+                {activeTab === 'FAQs' && (
+                  <div className="pdp-tab-content pdp-placeholder-content">
+                    <h3>FAQs</h3>
+                    <p>Detailed data for faqs will be loaded shortly. Enjoy premium product walkthroughs soon!</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
