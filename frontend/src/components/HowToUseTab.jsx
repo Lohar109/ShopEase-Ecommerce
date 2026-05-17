@@ -64,7 +64,7 @@ const HowToUseTab = ({ product }) => {
               <div key={idx} className="pdp-inclusions-card">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#292524', lineHeight: 1 }}>
+                    <span style={{ fontSize: '17px', fontWeight: 500, color: '#dc1f5e', lineHeight: 1 }}>
                       Step
                     </span>
                     <div className="pdp-inclusions-badge" style={{ marginBottom: 0 }}>
