@@ -333,8 +333,8 @@ const ProductForm = () => {
   const [specImage, setSpecImage] = useState('');
   const [spec_bottom_banner, setSpec_bottom_banner] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
-  const newHighlight = () => ({ icon: '', value: '', title: '', subtitle: '' });
-  const [specHighlights, setSpecHighlights] = useState({ grid_title: '', grid_items: [newHighlight()] });
+  const newHighlight = () => ({ icon: 'Zap', value: '', title: '', subtitle: '' });
+  const [specHighlights, setSpecHighlights] = useState({ grid_title: '', grid_items: [newHighlight(), newHighlight(), newHighlight()] });
   const [isProcessingSuccess, setIsProcessingSuccess] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -1862,6 +1862,53 @@ const ProductForm = () => {
       case 'bone': return <Bone size={16} />;
       case 'activity': return <Activity size={16} />;
       case 'check': return <Check size={16} />;
+      case 'badgecheck': return <BadgeCheck size={16} />;
+      case 'shieldcheck': return <ShieldCheck size={16} />;
+      case 'award': return <Award size={16} />;
+      case 'medal': return <Medal size={16} />;
+      case 'verified': return <Verified size={16} />;
+      case 'fingerprint': return <Fingerprint size={16} />;
+      case 'crown': return <Crown size={16} />;
+      case 'box': return <Box size={16} />;
+      case 'package': return <Package size={16} />;
+      case 'globe': return <Globe size={16} />;
+      case 'plane': return <Plane size={16} />;
+      case 'ship': return <Ship size={16} />;
+      case 'shoppingbag': return <ShoppingBag size={16} />;
+      case 'headphones': return <Headphones size={16} />;
+      case 'mappin': return <MapPin size={16} />;
+      case 'bed': return <Bed size={16} />;
+      case 'sofa': return <Sofa size={16} />;
+      case 'lamp': return <Lamp size={16} />;
+      case 'bath': return <Bath size={16} />;
+      case 'utensils': return <Utensils size={16} />;
+      case 'coffee': return <Coffee size={16} />;
+      case 'leaf': return <Leaf size={16} />;
+      case 'recycle': return <Recycle size={16} />;
+      case 'droplets': return <Droplets size={16} />;
+      case 'wind': return <Wind size={16} />;
+      case 'sun': return <Sun size={16} />;
+      case 'moon': return <Moon size={16} />;
+      case 'flower': return <Flower size={16} />;
+      case 'smartphone': return <Smartphone size={16} />;
+      case 'monitor': return <Monitor size={16} />;
+      case 'code': return <Code size={16} />;
+      case 'database': return <Database size={16} />;
+      case 'batterycharging': return <BatteryCharging size={16} />;
+      case 'wifi': return <Wifi size={16} />;
+      case 'bluetooth': return <Bluetooth size={16} />;
+      case 'harddrive': return <HardDrive size={16} />;
+      case 'mouse': return <Mouse size={16} />;
+      case 'keyboard': return <Keyboard size={16} />;
+      case 'layers': return <Layers size={16} />;
+      case 'scissors': return <Scissors size={16} />;
+      case 'pentool': return <PenTool size={16} />;
+      case 'ruler': return <Ruler size={16} />;
+      case 'palette': return <Palette size={16} />;
+      case 'hammer': return <Hammer size={16} />;
+      case 'wrench': return <Wrench size={16} />;
+      case 'diamond': return <Diamond size={16} />;
+      case 'scale': return <Scale size={16} />;
       default: return <Zap size={16} />;
     }
   };
@@ -4879,51 +4926,48 @@ const ProductForm = () => {
                           }}
                         />
 
-                        <div className="pf-spec-repeat-list">
-                          {specHighlights.grid_items.map((it, i) => (
-                            <div key={`sh-${i}`} className="pf-spec-row">
-                              <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
-                                {renderHighlightIcon(it.icon || 'Zap')}
-                              </div>
-                              <select
-                                className="custom-input"
-                                value={it.icon || 'Zap'}
-                                onChange={e => handleHighlightChange(i, 'icon', e.target.value)}
-                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#fff' }}
-                              >
-                                <option value="Zap">Zap</option>
-                                <option value="Shield">Shield</option>
-                                <option value="Heart">Heart</option>
-                                <option value="Bone">Bone</option>
-                                <option value="Activity">Activity</option>
-                                <option value="Check">Check</option>
-                              </select>
-                              <input
-                                className="custom-input"
-                                type="text"
-                                value={it.value}
-                                onChange={e => handleHighlightChange(i, 'value', e.target.value)}
-                                placeholder="e.g. 24% Protein"
-                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                              />
-                              <input
-                                className="custom-input"
-                                type="text"
-                                value={it.title}
-                                onChange={e => handleHighlightChange(i, 'title', e.target.value)}
-                                placeholder="e.g. Protein"
-                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                              />
-                              <input
-                                className="custom-input"
-                                type="text"
-                                value={it.subtitle}
-                                onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
-                                placeholder="e.g. Supports strong muscles"
-                                style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                              />
+                        <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto' }}>
+                          <div style={{ minWidth: 'max-content', padding: '0 4px' }}>
+                            <div className="pf-spec-repeat-list">
+                              {specHighlights.grid_items.map((it, i) => (
+                                <div key={`sh-${i}`} className="pf-spec-row" style={{ width: 'max-content' }}>
+                                  <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
+                                    {renderHighlightIcon(it.icon || 'Zap')}
+                                  </div>
+                                  <IconSearchableSelect
+                                    value={it.icon || 'Zap'}
+                                    onChange={value => handleHighlightChange(i, 'icon', value)}
+                                    iconCategories={typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES : []}
+                                    renderIcon={renderHighlightIcon}
+                                  />
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={it.value}
+                                    onChange={e => handleHighlightChange(i, 'value', e.target.value)}
+                                    placeholder="e.g. 24% Protein"
+                                    style={{ width: 200, minWidth: 200, flex: '0 0 200px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  />
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={it.title}
+                                    onChange={e => handleHighlightChange(i, 'title', e.target.value)}
+                                    placeholder="e.g. Protein"
+                                    style={{ width: 180, minWidth: 180, flex: '0 0 180px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  />
+                                  <input
+                                    className="custom-input"
+                                    type="text"
+                                    value={it.subtitle}
+                                    onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
+                                    placeholder="e.g. Supports strong muscles"
+                                    style={{ width: 260, minWidth: 260, flex: '0 0 260px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  />
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
 
                         <button type="button" className="pf-outline-accent-btn pf-spec-action w-fit inline-flex items-center justify-center px-5 py-2.5" onClick={addHighlight}><Plus size={14} />Add Highlight</button>
