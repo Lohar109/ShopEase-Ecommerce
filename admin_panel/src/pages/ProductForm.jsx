@@ -311,6 +311,7 @@ const ProductForm = () => {
   const [howToUse, setHowToUse] = useState({
     title: '',
     description: '',
+    tip: '',
     hero_image_url: '',
     items: [{ short_description: '', image_url: '' }]
   });
@@ -1746,6 +1747,7 @@ const ProductForm = () => {
         setHowToUse({
           title: loadedHowToUse.title || '',
           description: loadedHowToUse.description || '',
+          tip: loadedHowToUse.tip || '',
           hero_image_url: loadedHowToUse.hero_image_url || loadedHowToUse.hero_image || '',
           items: Array.isArray(loadedHowToUse.items) && loadedHowToUse.items.length > 0
             ? loadedHowToUse.items.map(i => ({ 
@@ -2082,6 +2084,7 @@ const ProductForm = () => {
           title: howToUse?.title || '',
           hero_image_url: howToUse?.hero_image_url || howToUse?.hero_image || '',
           description: howToUse?.description || '',
+          tip: howToUse?.tip || '',
           items: (howToUse?.items || []).map(item => ({
             short_description: item?.short_description || item?.name || item?.text || '',
             image_url: item?.image_url || item?.image || ''
@@ -6200,6 +6203,18 @@ const ProductForm = () => {
                           placeholder="Description..."
                           value={howToUse.description}
                           onChange={(e) => setHowToUse(prev => ({ ...prev, description: e.target.value }))}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="pf-label">TIP</label>
+                        <textarea
+                          className="custom-input"
+                          rows={4}
+                          placeholder="e.g. Tip: Clean with a soft, damp cloth for long-lasting use."
+                          value={howToUse.tip}
+                          onChange={(e) => setHowToUse(prev => ({ ...prev, tip: e.target.value }))}
                           style={{ width: '100%' }}
                         />
                       </div>
