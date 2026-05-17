@@ -331,6 +331,7 @@ const ProductForm = () => {
   const [specDescription, setSpecDescription] = useState('');
   const [specVideoUrl, setSpecVideoUrl] = useState('');
   const [specImage, setSpecImage] = useState('');
+  const [spec_bottom_banner, setSpec_bottom_banner] = useState('');
   const [specs, setSpecs] = useState([newSpec()]);
   const newHighlight = () => ({ icon: '', value: '', title: '', subtitle: '' });
   const [specHighlights, setSpecHighlights] = useState({ grid_title: '', grid_items: [newHighlight()] });
@@ -2074,6 +2075,7 @@ const ProductForm = () => {
         spec_description: specDescription,
         spec_image: specImage,
         spec_video_url: specVideoUrl,
+        spec_bottom_banner: spec_bottom_banner,
         specifications: Object.fromEntries(specs.filter(s => s.key && s.value).map(s => [s.key, s.value])),
         overview: {
           intro: {
@@ -4885,6 +4887,26 @@ const ProductForm = () => {
 
                       <button type="button" className="pf-outline-accent-btn" onClick={addHighlight} style={{ marginTop: 8 }}><Plus size={14} />Add Highlight</button>
                     </div>
+
+                      {/* SPECIFICATION BOTTOM BANNER IMAGE URL */}
+                      <div style={{ marginBottom: '40px', display: 'block', marginTop: 24 }}>
+                        <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase block" style={{ color: '#9ca3af', letterSpacing: '0.05em', marginBottom: '12px' }}>SPECIFICATION BOTTOM BANNER IMAGE URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          value={spec_bottom_banner}
+                          onChange={(e) => setSpec_bottom_banner(e.target.value)}
+                          placeholder="Banner Image URL..."
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: 14,
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#fff',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </div>
                   </>
                 )}
 
