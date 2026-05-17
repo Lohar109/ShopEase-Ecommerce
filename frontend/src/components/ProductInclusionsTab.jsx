@@ -27,21 +27,7 @@ const ProductInclusionsTab = ({ product }) => {
         </div>
       </div>
 
-      {/* Bottom Layout: Inclusions Items */}
-      <div className="w-full">
-        {product?.inclusions?.items && Array.isArray(product.inclusions.items) && product.inclusions.items.length > 0 ? (
-          product.inclusions.items.map((item, index) => (
-            <div key={index} className="border-b border-gray-100 py-4 flex text-sm">
-              <div className="text-gray-500 font-normal w-1/3">
-                {item.name || `Item ${index + 1}`}
-              </div>
-              <div className="text-gray-900 font-medium w-2/3">
-                {item.quantity || item.description || '-'}
-              </div>
-            </div>
-          ))
-        ) : null}
-      </div>
+
     </div>
   );
 };
