@@ -53,8 +53,121 @@ const HowToUseTab = ({ product }) => {
 
       {/* Sub-items Horizontal Card Layout with Images */}
       {product?.how_to_use?.items && Array.isArray(product.how_to_use.items) && product.how_to_use.items.length > 0 && (
-        <div className="mt-12 w-full overflow-x-auto">
-          <div className="flex items-start justify-center gap-6 min-w-full px-4 py-4">
+        <div className="mt-12 w-full">
+          <style>{`
+            .how-to-use-container {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 1.5rem;
+              flex-wrap: nowrap;
+              padding: 1rem 2rem;
+              overflow-x: auto;
+            }
+
+            .how-to-use-card {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 1.5rem;
+              flex-shrink: 0;
+              min-width: fit-content;
+            }
+
+            .how-to-use-circle {
+              width: 150px;
+              height: 150px;
+              border-radius: 50%;
+              border: 5px solid #D4A574;
+              background-color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+              flex-shrink: 0;
+            }
+
+            .how-to-use-circle img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              display: block;
+            }
+
+            .how-to-use-circle-empty {
+              width: 100%;
+              height: 100%;
+              background-color: #f3f4f6;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #9ca3af;
+              font-size: 0.875rem;
+            }
+
+            .how-to-use-text {
+              text-align: center;
+              max-width: 140px;
+            }
+
+            .how-to-use-title {
+              font-weight: 700;
+              font-size: 1rem;
+              color: #111827;
+              line-height: 1.25;
+              margin-bottom: 0.5rem;
+            }
+
+            .how-to-use-desc {
+              font-size: 0.875rem;
+              color: #4b5563;
+              line-height: 1.5;
+            }
+
+            .how-to-use-arrow {
+              display: none;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              color: #9ca3af;
+              font-size: 1.75rem;
+              margin: 0 0.5rem;
+            }
+
+            @media (min-width: 768px) {
+              .how-to-use-arrow {
+                display: flex;
+              }
+            }
+
+            @media (max-width: 767px) {
+              .how-to-use-container {
+                padding: 1rem 1rem;
+                gap: 1rem;
+              }
+
+              .how-to-use-circle {
+                width: 120px;
+                height: 120px;
+                border: 4px solid #D4A574;
+              }
+
+              .how-to-use-text {
+                max-width: 120px;
+              }
+
+              .how-to-use-title {
+                font-size: 0.9rem;
+              }
+
+              .how-to-use-desc {
+                font-size: 0.8rem;
+              }
+            }
+          `}</style>
+
+          <div className="how-to-use-container">
             {product.how_to_use.items.map((item, idx) => {
               const text = item.name || item.short_description || '';
               const parts = text.split(':');
@@ -62,46 +175,33 @@ const HowToUseTab = ({ product }) => {
               const stepDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
 
               return (
-                <div key={idx} className="flex items-start gap-6">
+                <React.Fragment key={idx}>
                   {/* Card */}
-                  <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                  <div className="how-to-use-card">
                     {/* Circular Image Container */}
-                    <div
-                      className="flex items-center justify-center flex-shrink-0 rounded-full border-4 bg-white shadow-sm"
-                      style={{
-                        width: '140px',
-                        height: '140px',
-                        borderColor: '#D4A574',
-                        overflow: 'hidden',
-                      }}
-                    >
+                    <div className="how-to-use-circle">
                       {item.image_url ? (
                         <img
                           src={item.image_url}
                           alt={stepTitle}
-                          className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">No image</span>
-                        </div>
+                        <div className="how-to-use-circle-empty">No image</div>
                       )}
                     </div>
 
                     {/* Title and Description */}
-                    <div className="text-center">
-                      <h4 className="font-bold text-gray-900 text-base leading-snug">{stepTitle}</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed mt-2">{stepDesc}</p>
+                    <div className="how-to-use-text">
+                      <div className="how-to-use-title">{stepTitle}</div>
+                      <div className="how-to-use-desc">{stepDesc}</div>
                     </div>
                   </div>
 
                   {/* Arrow Connector */}
                   {idx < product.how_to_use.items.length - 1 && (
-                    <div className="hidden md:flex items-center justify-center flex-shrink-0 h-full pt-12">
-                      <span className="text-gray-400 text-3xl font-light">→</span>
-                    </div>
+                    <div className="how-to-use-arrow">→</div>
                   )}
-                </div>
+                </React.Fragment>
               );
             })}
           </div>
