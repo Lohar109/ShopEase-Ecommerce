@@ -6,7 +6,7 @@ const ProductInclusionsTab = ({ product }) => {
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       {/* Top Layout Grid (12-column system) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-2">
         {/* Left Column (Text & Heading) - Takes 5 cols */}
         <div className="md:col-span-5 flex flex-col pt-0 mt-0">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">{title || "What's Included"}</h2>
