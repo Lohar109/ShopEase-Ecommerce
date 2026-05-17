@@ -50,14 +50,7 @@ const HowToUseTab = ({ product }) => {
                 {/* Left Column: Timeline Step */}
                 <div className="md:col-span-5 flex items-start gap-6 pl-4 md:pl-8">
                   {/* Badge */}
-                  <div
-                    className="relative z-10 flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full border-2 text-sm font-semibold"
-                    style={{
-                      backgroundColor: '#fff0f5',
-                      borderColor: '#f8d7e3',
-                      color: '#c8507a'
-                    }}
-                  >
+                  <div className="pdp-inclusions-badge relative z-10">
                     {idx + 1}
                   </div>
 
