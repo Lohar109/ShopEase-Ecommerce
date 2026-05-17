@@ -110,7 +110,7 @@ const IconSearchableSelect = ({ value, onChange, iconCategories, renderIcon }) =
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', flex: '0 0 160px' }}>
+    <div ref={dropdownRef} style={{ position: 'relative', flex: '0 0 160px', alignSelf: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div style={{ position: 'relative' }}>
         <input
           className="custom-input"
@@ -3128,6 +3128,13 @@ const ProductForm = () => {
           gap: 8px;
           align-items: center;
         }
+        .pf-spec-icon-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 0 0 auto;
+          align-self: center;
+        }
         .pf-spec-action {
           margin-top: 8px;
           width: fit-content;
@@ -4931,8 +4938,11 @@ const ProductForm = () => {
                             <div className="pf-spec-repeat-list">
                               {specHighlights.grid_items.map((it, i) => (
                                 <div key={`sh-${i}`} className="pf-spec-row" style={{ width: 'max-content' }}>
-                                  <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
-                                    {renderHighlightIcon(it.icon || 'Zap')}
+                                <div className="pf-spec-icon-group">
+                                  <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb', alignSelf: 'center', position: 'relative' }}>
+                                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 0 }}>
+                                      {renderHighlightIcon(it.icon || 'Zap')}
+                                    </span>
                                   </div>
                                   <IconSearchableSelect
                                     value={it.icon || 'Zap'}
@@ -4940,6 +4950,7 @@ const ProductForm = () => {
                                     iconCategories={typeof ICON_CATEGORIES !== 'undefined' ? ICON_CATEGORIES : []}
                                     renderIcon={renderHighlightIcon}
                                   />
+                                </div>
                                   <input
                                     className="custom-input"
                                     type="text"
