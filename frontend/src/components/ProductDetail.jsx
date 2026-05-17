@@ -696,7 +696,7 @@ const ProductDetail = () => {
       {/* Master single-column layout */}
       <div className="pdp-master-grid">
         {/* Expanded: Product Card (full width) */}
-        <div className="pdp-left-col" style={{ gridColumn: '1 / -1' }}>
+        <div className="pdp-left-col" style={{ gridColumn: '1 / -1', minWidth: 0 }}>
           <div className="product-detail-breadcrumb-wrap">
             <nav className="product-detail-breadcrumb" aria-label="Breadcrumb">
               <Link to="/" className="product-detail-breadcrumb-link">
