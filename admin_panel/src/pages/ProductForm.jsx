@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowLeft, Award, BadgeCheck, Bath, BatteryCharging, Bed, Bluetooth, Box, Brain, Briefcase, Check, ChevronDown, Clipboard, Clock, Code, Coffee, Cpu, Crown, Database, Diamond, Droplets, Edit2, Fingerprint, Flower, Folder, Gift, Globe, Hammer, HardDrive, Headphones, Heart, HelpCircle, Home, Image, Info, Keyboard, Lamp, Layers, Layout, Leaf, MapPin, Medal, Monitor, Moon, Mouse, Package, Palette, PenTool, Plane, Plus, Recycle, Ruler, Scale, Scissors, Shield, ShieldCheck, Ship, ShoppingBag, Smartphone, Smile, Sofa, Sparkles, Star, Sun, ThumbsUp, Trash2, Truck, Utensils, Verified, Video, Wifi, Wind, Wrench, X, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Award, BadgeCheck, Bath, BatteryCharging, Bed, Bluetooth, Box, Brain, Briefcase, Check, ChevronDown, Clipboard, Clock, Code, Coffee, Cpu, Crown, Database, Diamond, Droplets, Edit2, Fingerprint, Flower, Folder, Gift, Globe, Hammer, HardDrive, Headphones, Heart, HelpCircle, Home, Image, Info, Keyboard, Lamp, Layers, Layout, Leaf, MapPin, Medal, Monitor, Moon, Mouse, Package, Palette, PenTool, Plane, Plus, Recycle, Ruler, Scale, Scissors, Shield, ShieldCheck, Ship, ShoppingBag, Smartphone, Smile, Sofa, Sparkles, Star, Sun, ThumbsUp, Trash2, Truck, Utensils, Verified, Video, Wifi, Wind, Wrench, X, Zap, Bone, Activity } from 'lucide-react';
 
                                       <option value="" disabled hidden>
                                         Select Value
@@ -1851,6 +1851,19 @@ const ProductForm = () => {
   };
   const addHighlight = () => setSpecHighlights(prev => ({ ...prev, grid_items: [...prev.grid_items, newHighlight()] }));
   const removeHighlight = (idx) => setSpecHighlights(prev => ({ ...prev, grid_items: prev.grid_items.filter((_, i) => i !== idx) }));
+
+  const renderHighlightIcon = (name) => {
+    const n = String(name || '').trim().toLowerCase();
+    switch (n) {
+      case 'zap': return <Zap size={16} />;
+      case 'shield': return <Shield size={16} />;
+      case 'heart': return <Heart size={16} />;
+      case 'bone': return <Bone size={16} />;
+      case 'activity': return <Activity size={16} />;
+      case 'check': return <Check size={16} />;
+      default: return <Zap size={16} />;
+    }
+  };
 
   // --- Variant state and handlers ---
   const [variantRows, setVariantRows] = useState([
@@ -4826,15 +4839,23 @@ const ProductForm = () => {
                       />
 
                       {specHighlights.grid_items.map((it, i) => (
-                        <div key={`sh-${i}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
-                          <input
+                        <div key={`sh-${i}`} style={{ display: 'flex', gap: 8, marginBottom: 5, alignItems: 'center' }}>
+                          <div className="w-12 h-12 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 shrink-0" style={{ width: 48, height: 48, minWidth: 48, borderRadius: 12, border: '1px solid #f3f4f6', background: '#f9fafb' }}>
+                            {renderHighlightIcon(it.icon || 'Zap')}
+                          </div>
+                          <select
                             className="custom-input"
-                            type="text"
-                            value={it.icon}
+                            value={it.icon || 'Zap'}
                             onChange={e => handleHighlightChange(i, 'icon', e.target.value)}
-                            placeholder="e.g. Zap"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
-                          />
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0', background: '#fff' }}
+                          >
+                            <option value="Zap">Zap</option>
+                            <option value="Shield">Shield</option>
+                            <option value="Heart">Heart</option>
+                            <option value="Bone">Bone</option>
+                            <option value="Activity">Activity</option>
+                            <option value="Check">Check</option>
+                          </select>
                           <input
                             className="custom-input"
                             type="text"
