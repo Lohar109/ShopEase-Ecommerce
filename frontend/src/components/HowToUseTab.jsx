@@ -9,14 +9,14 @@ const HowToUseTab = ({ product }) => {
       {/* Top Layout Grid (12-column system) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-2">
         {/* Left Column (Text & Heading) - Takes 5 cols */}
-        <div className="md:col-span-5 flex flex-col pt-0 mt-0">
+        <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">{title || "How to Use"}</h2>
           <p className="text-sm text-gray-600 leading-relaxed block">
             {description || ""}
           </p>
 
           {tip && (
-            <div className="flex items-start gap-4 mt-5 mb-6">
+            <div className="flex items-start gap-4">
               <div
                 style={{
                   display: 'flex',
