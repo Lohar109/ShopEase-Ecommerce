@@ -87,6 +87,16 @@ const SpecificationsTab = ({ product }) => {
         </div>
       </div>
 
+      {product?.spec_bottom_banner ? (
+        <div className="w-full mt-10">
+          <img
+            src={product.spec_bottom_banner}
+            alt="Product banner"
+            className="w-full h-auto mt-10 rounded-2xl shadow-sm object-cover"
+          />
+        </div>
+      ) : null}
+
       {/* Bottom Layout: Specifications Table */}
       <div className="w-full">
         {Object.entries(specifications || {}).map(([key, value]) => (
