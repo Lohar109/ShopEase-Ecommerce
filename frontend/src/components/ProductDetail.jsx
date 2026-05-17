@@ -8,6 +8,7 @@ import { ChevronRight, Star, Cpu, Monitor, Radio, Zap, Package, Share2, Truck, R
 import ProductOverview from "./ProductOverview";
 import SpecificationsTab from "./SpecificationsTab";
 import ProductInclusionsTab from "./ProductInclusionsTab";
+import HowToUseTab from "./HowToUseTab";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1260,7 +1261,11 @@ const ProductDetail = () => {
                   <ProductInclusionsTab product={product} />
                 )}
 
-                {['How to Use', 'Reviews', 'FAQs'].map((tab) => {
+                {activeTab === 'How to Use' && (
+                  <HowToUseTab product={product} />
+                )}
+
+                {['Reviews', 'FAQs'].map((tab) => {
                   if (activeTab !== tab) return null;
                   return (
                     <div key={tab} className="pdp-tab-content pdp-placeholder-content">
