@@ -308,7 +308,43 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
             <h3 className="text-lg font-semibold mb-3 text-gray-900 flex-shrink-0">
               What's in the Box
             </h3>
-            <div className="text-sm text-gray-500 leading-relaxed flex-1">Component inventory mapping pending.</div>
+            <div className="flex-1 mb-4 overflow-hidden">
+              {product?.inclusions?.items && product.inclusions.items.length > 0 ? (
+                <div className="flex flex-col">
+                  {product.inclusions.items.slice(0, 4).map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 mb-3">
+                      <Icons.Check className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
+                      <span className="text-[13px] text-gray-500 leading-snug flex-1 font-medium">
+                        {item.quantity ? `${item.quantity} x ` : ''}{item.name || item.short_description}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500 leading-relaxed flex-1">Component inventory mapping pending.</div>
+              )}
+            </div>
+            
+            <div className="w-full text-right mt-auto">
+              <button
+                type="button"
+                className="spec-link border-none bg-transparent"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (setActiveTab) {
+                    setActiveTab('Inclusions');
+                    setTimeout(() => {
+                      const tabSection = document.querySelector('.pdp-tab-content-wrapper');
+                      if (tabSection) {
+                        tabSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }, 80);
+                  }
+                }}
+              >
+                View full details →
+              </button>
+            </div>
           </div>
 
           {/* Perfect For */}
