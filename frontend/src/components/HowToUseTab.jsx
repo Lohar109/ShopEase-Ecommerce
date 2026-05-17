@@ -51,33 +51,60 @@ const HowToUseTab = ({ product }) => {
         </div>
       </div>
 
-      {/* Sub-items Horizontal Card Layout */}
+      {/* Sub-items Horizontal Card Layout with Images */}
       {product?.how_to_use?.items && Array.isArray(product.how_to_use.items) && product.how_to_use.items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 w-full">
-          {product.how_to_use.items.map((item, idx) => {
-            const text = item.name || item.short_description || '';
-            const parts = text.split(':');
-            const stepTitle = parts[0]?.trim() || `Step ${idx + 1}`;
-            const stepDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
+        <div className="mt-12 w-full overflow-x-auto">
+          <div className="flex items-start justify-center gap-6 min-w-full px-4 py-4">
+            {product.how_to_use.items.map((item, idx) => {
+              const text = item.name || item.short_description || '';
+              const parts = text.split(':');
+              const stepTitle = parts[0]?.trim() || `Step ${idx + 1}`;
+              const stepDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
 
-            return (
-              <div key={idx} className="flex flex-col items-center text-center">
-                <div
-                  className="pdp-inclusions-badge flex items-center justify-center mb-4"
-                  style={{
-                    width: '80px',
-                    height: '80px',
-                    fontSize: '2rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {idx + 1}
+              return (
+                <div key={idx} className="flex items-start gap-6">
+                  {/* Card */}
+                  <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                    {/* Circular Image Container */}
+                    <div
+                      className="flex items-center justify-center flex-shrink-0 rounded-full border-4 bg-white shadow-sm"
+                      style={{
+                        width: '140px',
+                        height: '140px',
+                        borderColor: '#D4A574',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={stepTitle}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400 text-sm">No image</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Title and Description */}
+                    <div className="text-center">
+                      <h4 className="font-bold text-gray-900 text-base leading-snug">{stepTitle}</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed mt-2">{stepDesc}</p>
+                    </div>
+                  </div>
+
+                  {/* Arrow Connector */}
+                  {idx < product.how_to_use.items.length - 1 && (
+                    <div className="hidden md:flex items-center justify-center flex-shrink-0 h-full pt-12">
+                      <span className="text-gray-400 text-3xl font-light">→</span>
+                    </div>
+                  )}
                 </div>
-                <h4 className="font-bold text-gray-900 text-base leading-snug mb-3">{stepTitle}</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">{stepDesc}</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
 
