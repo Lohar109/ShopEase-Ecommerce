@@ -27,6 +27,29 @@ const ProductInclusionsTab = ({ product }) => {
         </div>
       </div>
 
+      {/* Sub-items Grid */}
+      {product?.inclusions?.items && Array.isArray(product.inclusions.items) && product.inclusions.items.length > 0 && (
+        <div className="pdp-inclusions-grid">
+          {product.inclusions.items.map((item, idx) => (
+            <div key={idx} className="pdp-inclusions-card">
+              <div>
+                <div className="pdp-inclusions-badge">
+                  {idx + 1}
+                </div>
+                <h3 className="pdp-inclusions-title">
+                  {item.name || item.short_description || `Item ${idx + 1}`}
+                </h3>
+                <p className="pdp-inclusions-subtitle">
+                  {item.quantity || item.description || "1 Unit"}
+                </p>
+              </div>
+              <div className="pdp-inclusions-img-box">
+                <img src={item.image_url} alt={item.name || item.short_description || 'Item image'} className="pdp-inclusions-img" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
     </div>
   );
