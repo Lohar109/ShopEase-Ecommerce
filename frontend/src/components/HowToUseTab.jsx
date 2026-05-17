@@ -51,17 +51,9 @@ const HowToUseTab = ({ product }) => {
         </div>
       </div>
 
-      {/* Sub-items Timeline Layout */}
+      {/* Sub-items Horizontal Card Layout */}
       {product?.how_to_use?.items && Array.isArray(product.how_to_use.items) && product.how_to_use.items.length > 0 && (
-        <div className="flex flex-col gap-6 mt-12 relative">
-          {/* Vertical Line */}
-          {product.how_to_use.items.length > 1 && (
-            <div
-              className="absolute top-8 bottom-8 w-px bg-gray-200 hidden md:block"
-              style={{ left: '3.25rem' }}
-            ></div>
-          )}
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 w-full">
           {product.how_to_use.items.map((item, idx) => {
             const text = item.name || item.short_description || '';
             const parts = text.split(':');
@@ -69,36 +61,20 @@ const HowToUseTab = ({ product }) => {
             const stepDesc = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
 
             return (
-              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative">
-
-                {/* Left Column: Timeline Step */}
-                <div className="md:col-span-5 flex items-start gap-6 pl-4 md:pl-8">
-                  {/* Badge */}
-                  <div className="pdp-inclusions-badge relative z-10">
-                    {idx + 1}
-                  </div>
-
-                  {/* Text */}
-                  <div className="pt-2">
-                    <h4 className="font-bold text-gray-900 text-base leading-none mb-2">{stepTitle}</h4>
-                    {stepDesc && (
-                      <p className="text-gray-600 text-sm leading-relaxed pr-4">{stepDesc}</p>
-                    )}
-                  </div>
+              <div key={idx} className="flex flex-col items-center text-center">
+                <div
+                  className="pdp-inclusions-badge flex items-center justify-center mb-4"
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    fontSize: '2rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  {idx + 1}
                 </div>
-
-                {/* Right Column: Image */}
-                <div className="md:col-span-7 flex justify-start">
-                  <div className="bg-gray-50 rounded-2xl overflow-hidden shadow-sm" style={{ width: '400px', height: '275px', flexShrink: 0 }}>
-                    {item.image_url ? (
-                      <img
-                        src={item.image_url}
-                        alt={stepTitle}
-                        className="w-full h-full object-cover block"
-                      />
-                    ) : null}
-                  </div>
-                </div>
+                <h4 className="font-bold text-gray-900 text-base leading-snug mb-3">{stepTitle}</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">{stepDesc}</p>
               </div>
             );
           })}
