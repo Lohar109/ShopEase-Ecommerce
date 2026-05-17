@@ -63,6 +63,9 @@ const HowToUseTab = ({ product }) => {
             return (
               <div key={idx} className="pdp-inclusions-card">
                 <div>
+                  <div className="pdp-inclusions-badge">
+                    {idx + 1}
+                  </div>
                   <h3 className="pdp-inclusions-title">
                     {stepTitle}
                   </h3>
