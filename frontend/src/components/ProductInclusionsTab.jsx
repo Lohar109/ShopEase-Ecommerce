@@ -22,6 +22,7 @@ const ProductInclusionsTab = ({ product }) => {
               src={hero_image_url} 
               alt="Product Inclusions" 
               className="w-full h-full max-w-full max-h-full object-contain block mx-auto"
+              style={{ borderRadius: '0.5rem' }}
             />
           ) : null}
         </div>
