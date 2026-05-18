@@ -15,7 +15,7 @@ const FaqsTab = ({ product }) => {
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
 
-        <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-8">
+        <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-2">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">
             Frequently Asked Questions
           </h2>
