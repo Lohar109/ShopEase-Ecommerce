@@ -9,6 +9,7 @@ import ProductOverview from "./ProductOverview";
 import SpecificationsTab from "./SpecificationsTab";
 import ProductInclusionsTab from "./ProductInclusionsTab";
 import HowToUseTab from "./HowToUseTab";
+import FaqsTab from "./FaqsTab";
 
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000")
   .replace(/\/+$/, "")
@@ -1479,10 +1480,7 @@ const ProductDetail = () => {
                 )}
 
                 {activeTab === 'FAQs' && (
-                  <div className="pdp-tab-content pdp-placeholder-content">
-                    <h3>FAQs</h3>
-                    <p>Detailed data for faqs will be loaded shortly. Enjoy premium product walkthroughs soon!</p>
-                  </div>
+                  <FaqsTab product={product} />
                 )}
               </div>
             </div>
