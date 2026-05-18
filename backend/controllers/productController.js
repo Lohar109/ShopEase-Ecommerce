@@ -195,6 +195,7 @@ exports.createProduct = async (req, res) => {
       inclusions = {},
       how_to_use = {},
       faqs = [],
+      faqs_header_image = '',
       spec_description = '',
       spec_video_url = '',
       spec_image = '',
@@ -218,10 +219,10 @@ exports.createProduct = async (req, res) => {
     await client.query('BEGIN');
     // Insert product
     const productResult = await client.query(
-      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, spec_bottom_banner, spec_highlights, faqs)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+      `INSERT INTO product (name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, spec_bottom_banner, spec_highlights, faqs, faqs_header_image)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
        RETURNING id` ,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights, JSON.stringify(faqs)]
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights, JSON.stringify(faqs), faqs_header_image]
     );
     const productId = productResult.rows[0].id;
 
@@ -316,6 +317,7 @@ exports.updateProduct = async (req, res) => {
       inclusions = {},
       how_to_use = {},
       faqs = [],
+      faqs_header_image = '',
       spec_description = '',
       spec_video_url = '',
       spec_image = '',
@@ -341,9 +343,9 @@ exports.updateProduct = async (req, res) => {
     // Update product
     const productResult = await client.query(
       `UPDATE product 
-       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, inclusions = $12, how_to_use = $13, spec_description = $14, spec_video_url = $15, spec_image = $16, spec_bottom_banner = $17, spec_highlights = $18, faqs = $19
-       WHERE id = $20 RETURNING id`,
-      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights, JSON.stringify(faqs), id]
+       SET name = $1, slug = $2, brand = $3, description = $4, category_id = $5, main_image = $6, video_url = $7, images = $8, specifications = $9, audience = $10, overview = $11, inclusions = $12, how_to_use = $13, spec_description = $14, spec_video_url = $15, spec_image = $16, spec_bottom_banner = $17, spec_highlights = $18, faqs = $19, faqs_header_image = $20
+       WHERE id = $21 RETURNING id`,
+      [name, slug, brand, description, category_id, main_image, video_url, images, specifications, audience, overview, inclusions, how_to_use, spec_description, spec_video_url, spec_image, normalizedSpecBottomBanner, normalizedSpecHighlights, JSON.stringify(faqs), faqs_header_image, id]
     );
 
     if (productResult.rows.length === 0) {

@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const FaqsTab = ({ product }) => {
   const faqs = Array.isArray(product?.faqs) ? product.faqs : [];
+  const faqsHeaderImage = product?.faqs_header_image || '';
   const [openIndex, setOpenIndex] = useState(null);
 
   if (faqs.length === 0) return null;
@@ -15,13 +16,22 @@ const FaqsTab = ({ product }) => {
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
 
-        <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-2">
+        <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed block">
             Find quick answers to the most common questions.
           </p>
+          {faqsHeaderImage && (
+            <div className="w-full rounded-2xl overflow-hidden" style={{ maxHeight: '280px' }}>
+              <img
+                src={faqsHeaderImage}
+                alt="FAQs"
+                className="w-full h-full object-cover block"
+              />
+            </div>
+          )}
         </div>
 
         <div className="md:col-span-7 min-w-0 w-full">
