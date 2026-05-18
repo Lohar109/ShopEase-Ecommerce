@@ -24,11 +24,12 @@ const FaqsTab = ({ product }) => {
             Find quick answers to the most common questions.
           </p>
           {faqsHeaderImage && (
-            <div className="w-full rounded-2xl overflow-hidden" style={{ maxHeight: '280px' }}>
+            <div className="w-full rounded-2xl overflow-hidden bg-gray-50" style={{ maxHeight: '280px' }}>
               <img
                 src={faqsHeaderImage}
                 alt="FAQs"
-                className="w-full h-full object-cover block"
+                className="w-full h-full block"
+                style={{ objectFit: 'contain', maxHeight: '280px' }}
               />
             </div>
           )}
