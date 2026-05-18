@@ -96,32 +96,34 @@ const SpecificationsTab = ({ product }) => {
       ) : null}
 
       {/* Bottom Layout: Specifications Table */}
-        {specifications && Object.keys(specifications).length > 0 && (
-          <div className="w-full mt-8 rounded-2xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
-            <div className="flex text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: '#111827', color: '#ffffff', padding: '12px 24px' }}>
-              <div style={{ width: '38%' }}>Specification</div>
-              <div style={{ width: '62%' }}>Details</div>
-            </div>
-            {Object.entries(specifications).map(([key, value], idx) => (
-              <div
-                key={key}
-                className="flex text-sm items-center"
-                style={{
-                  backgroundColor: idx % 2 === 0 ? '#f9fafb' : '#ffffff',
-                  padding: '14px 24px',
-                  borderBottom: '1px solid #e5e7eb',
-                }}
-              >
-                <div style={{ width: '38%', color: '#6b7280', fontWeight: 500, paddingRight: '1rem' }}>
-                  {key}
-                </div>
-                <div style={{ width: '62%', color: '#111827', fontWeight: 600 }}>
-                  {Array.isArray(value) ? value.join(", ") : String(value)}
-                </div>
-              </div>
-            ))}
+      {specifications && Object.keys(specifications).length > 0 && (
+        <div className="w-full mt-10 rounded-2xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
+          {/* Header */}
+          <div className="flex text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '12px 24px', borderBottom: '2px solid #e5e7eb' }}>
+            <div style={{ width: '38%' }}>Specification</div>
+            <div style={{ width: '62%' }}>Details</div>
           </div>
-        )}
+          {/* Rows */}
+          {Object.entries(specifications).map(([key, value], idx) => (
+            <div
+              key={key}
+              className="flex text-sm items-center"
+              style={{
+                backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb',
+                padding: '14px 24px',
+                borderBottom: '1px solid #f3f4f6',
+              }}
+            >
+              <div style={{ width: '38%', color: '#6b7280', fontWeight: 500, paddingRight: '1rem' }}>
+                {key}
+              </div>
+              <div style={{ width: '62%', color: '#111827', fontWeight: 600 }}>
+                {Array.isArray(value) ? value.join(", ") : String(value)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
