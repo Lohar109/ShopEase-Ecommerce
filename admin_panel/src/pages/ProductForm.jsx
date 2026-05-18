@@ -44,6 +44,7 @@ const STEPS = [
   { key: 'overview', label: 'Overview' },
   { key: 'inclusions', label: 'Inclusions' },
   { key: 'how_to_use', label: 'How to Use' },
+  { key: 'faqs', label: 'FAQs' },
 ];
 
 const normalizeId = (value) => String(value ?? '').trim();
@@ -315,6 +316,7 @@ const ProductForm = () => {
     hero_image_url: '',
     items: [{ short_description: '', image_url: '' }]
   });
+  const [faqs, setFaqs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
   const [audiencesLoading, setAudiencesLoading] = useState(false);
@@ -1772,6 +1774,8 @@ const ProductForm = () => {
               }))
             : [{ short_description: '', image_url: '' }]
         });
+        
+        setFaqs(p?.faqs || []);
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
       } finally {
@@ -2178,6 +2182,7 @@ const ProductForm = () => {
             image_url: item?.image_url || item?.image || ''
           })).filter(item => item.short_description)
         },
+        faqs: faqs,
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
@@ -6543,6 +6548,79 @@ const ProductForm = () => {
                     </div>
                   </>
                 )}
+
+                {activeTab === 'faqs' && (
+                  <>
+                    <div className="pf-section-title">
+                      <span className="pf-section-title-icon"><HelpCircle size={16} /></span>
+                      <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>FAQs</h3>
+                    </div>
+                    <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
+                      Provide frequently asked questions for this product.
+                    </p>
+
+                    <div style={{ display: 'grid', gap: 24 }}>
+                      <div style={{ borderTop: '1px solid #f4f4f5', paddingTop: 24 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                          <label className="pf-label" style={{ margin: 0 }}>Questions & Answers</label>
+                          <button
+                            type="button"
+                            onClick={() => setFaqs([...faqs, { question: '', answer: '' }])}
+                            className="pf-outline-accent-btn"
+                            style={{ padding: '6px 12px', fontSize: 12, height: 'auto' }}
+                          >
+                            <Plus size={14} /> Add FAQ
+                          </button>
+                        </div>
+                        
+                        <div style={{ display: 'grid', gap: 12 }}>
+                          {faqs.map((faq, idx) => (
+                            <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                              <div style={{ flex: 1, display: 'grid', gap: 12 }}>
+                                <input
+                                  className="custom-input"
+                                  type="text"
+                                  placeholder="Question"
+                                  value={faq.question}
+                                  onChange={(e) => {
+                                    const newFaqs = [...faqs];
+                                    newFaqs[idx].question = e.target.value;
+                                    setFaqs(newFaqs);
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                                <textarea
+                                  className="custom-input"
+                                  rows={2}
+                                  placeholder="Answer"
+                                  value={faq.answer}
+                                  onChange={(e) => {
+                                    const newFaqs = [...faqs];
+                                    newFaqs[idx].answer = e.target.value;
+                                    setFaqs(newFaqs);
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setFaqs(faqs.filter((_, i) => i !== idx))}
+                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', marginTop: 10 }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                          {faqs.length === 0 && (
+                            <div style={{ padding: '24px', textAlign: 'center', background: '#f8fafc', borderRadius: 8, color: '#64748b', fontSize: 14 }}>
+                              No FAQs added yet. Click "Add FAQ" to start.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div style={{ marginTop: 28, paddingTop: 14, borderTop: '1px solid #eef0f3', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -6566,20 +6644,20 @@ const ProductForm = () => {
 
                 <button
                   type="button"
-                  onClick={activeTab === 'how_to_use' ? handleSubmitProduct : goNext}
-                  disabled={saving || (activeTab !== 'how_to_use' && !canNext)}
+                  onClick={activeTab === 'faqs' ? handleSubmitProduct : goNext}
+                  disabled={saving || (activeTab !== 'faqs' && !canNext)}
                   style={{
-                    background: activeTab === 'how_to_use' ? '#c8507a' : '#111827',
+                    background: activeTab === 'faqs' ? '#c8507a' : '#111827',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 8,
                     padding: '8px 20px',
                     fontWeight: 600,
-                    cursor: (saving || (activeTab !== 'how_to_use' && !canNext)) ? 'not-allowed' : 'pointer',
-                    opacity: (saving || (activeTab !== 'how_to_use' && !canNext)) ? 0.5 : 1,
+                    cursor: (saving || (activeTab !== 'faqs' && !canNext)) ? 'not-allowed' : 'pointer',
+                    opacity: (saving || (activeTab !== 'faqs' && !canNext)) ? 0.5 : 1,
                   }}
                 >
-                  {saving ? 'Saving...' : (activeTab === 'how_to_use' ? (isEditMode ? 'Update Product' : 'Save Product') : 'Next')}
+                  {saving ? 'Saving...' : (activeTab === 'faqs' ? (isEditMode ? 'Update Product' : 'Save Product') : 'Next')}
                 </button>
               </div>
             </div>
