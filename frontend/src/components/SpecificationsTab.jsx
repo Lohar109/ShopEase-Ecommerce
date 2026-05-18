@@ -12,7 +12,7 @@ const SpecificationsTab = ({ product }) => {
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
       {/* Top Layout Grid (12-column system) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch mb-10">
         {/* Left Column (Text & Heading) - Takes 5 cols */}
         <div className="md:col-span-5 flex flex-col pt-0 mt-0">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">Product Specifications</h2>
@@ -65,12 +65,11 @@ const SpecificationsTab = ({ product }) => {
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full h-[350px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden p-6">
+        <div className="md:col-span-7 min-w-0 w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden">
           {spec_video_url ? (
             <video 
               src={spec_video_url} 
-              className="w-full h-full max-w-full max-h-full object-contain block mx-auto"
-              style={{ borderRadius: '0.5rem' }}
+              className="w-full h-full object-cover block mx-auto"
               autoPlay 
               muted 
               loop 
@@ -80,8 +79,7 @@ const SpecificationsTab = ({ product }) => {
             <img 
               src={spec_image} 
               alt="Product Specifications" 
-              className="w-full h-full max-w-full max-h-full object-contain block mx-auto"
-              style={{ borderRadius: '0.5rem' }}
+              className="w-full h-full object-cover block mx-auto"
             />
           ) : null}
         </div>
