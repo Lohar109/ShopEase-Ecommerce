@@ -87,7 +87,7 @@ const SpecificationsTab = ({ product }) => {
 
       {product?.spec_bottom_banner ? (
         <div className="w-full mt-10">
-          <img
+            <img
             src={product.spec_bottom_banner}
             alt="Product banner"
             className="w-full h-auto mt-10 rounded-2xl shadow-sm object-cover"
@@ -97,7 +97,7 @@ const SpecificationsTab = ({ product }) => {
 
       {/* Bottom Layout: Specifications Table */}
       {specifications && Object.keys(specifications).length > 0 && (
-        <div className="w-full mt-10 rounded-2xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
+        <div className="w-full rounded-2xl overflow-hidden" style={{ border: '1px solid #e5e7eb', marginTop: '3rem' }}>
           {/* Header */}
           <div className="flex text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '12px 24px', borderBottom: '2px solid #e5e7eb' }}>
             <div style={{ width: '38%' }}>Specification</div>
