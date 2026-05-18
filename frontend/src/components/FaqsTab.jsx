@@ -17,14 +17,16 @@ const FaqsTab = ({ product }) => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
 
         <div className="md:col-span-5 flex flex-col pt-0 mt-0 gap-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-sm text-gray-600 leading-relaxed block">
-            Find quick answers to the most common questions.
-          </p>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 w-full block leading-none">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-gray-600 leading-relaxed block">
+              Find quick answers to the most common questions.
+            </p>
+          </div>
           {faqsHeaderImage && (
-            <div className="w-full rounded-2xl overflow-hidden bg-gray-50" style={{ maxHeight: '280px' }}>
+            <div className="w-full rounded-2xl overflow-hidden bg-gray-50 mt-6" style={{ maxHeight: '280px', marginTop: '24px' }}>
               <img
                 src={faqsHeaderImage}
                 alt="FAQs"
