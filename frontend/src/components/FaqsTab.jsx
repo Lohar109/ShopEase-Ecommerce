@@ -29,17 +29,21 @@ const FaqsTab = ({ product }) => {
             <div key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
               <button
                 onClick={() => toggle(idx)}
+                onMouseOver={(e) => e.currentTarget.style.background = 'none'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'none'}
                 style={{
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '16px 0',
+                  padding: '16px 8px 16px 0',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
                   textAlign: 'left',
                   gap: '12px',
+                  outline: 'none',
+                  boxShadow: 'none',
                 }}
               >
                 <span className="text-sm text-gray-900" style={{ fontWeight: 600, lineHeight: 1.5 }}>
