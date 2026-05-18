@@ -317,6 +317,7 @@ const ProductForm = () => {
     items: [{ short_description: '', image_url: '' }]
   });
   const [faqs, setFaqs] = useState([]);
+  const [faqsHeaderImage, setFaqsHeaderImage] = useState('');
   const [categories, setCategories] = useState([]);
   const [audiences, setAudiences] = useState([]);
   const [audiencesLoading, setAudiencesLoading] = useState(false);
@@ -1776,6 +1777,7 @@ const ProductForm = () => {
         });
         
         setFaqs(p?.faqs || []);
+        setFaqsHeaderImage(p?.faqs_header_image || '');
       } catch (err) {
         setLoadErr(err.message || 'Failed to load product details');
       } finally {
@@ -2183,6 +2185,7 @@ const ProductForm = () => {
           })).filter(item => item.short_description)
         },
         faqs: faqs,
+        faqs_header_image: faqsHeaderImage,
         variants: variantRows.map(v => ({
           id: v.id || null,
           size: composeVariantSize(v),
@@ -6560,6 +6563,17 @@ const ProductForm = () => {
                     </p>
 
                     <div style={{ display: 'grid', gap: 24 }}>
+                      <div>
+                        <label className="pf-label">Header Image URL</label>
+                        <input
+                          className="custom-input"
+                          type="text"
+                          placeholder="https://..."
+                          value={faqsHeaderImage}
+                          onChange={(e) => setFaqsHeaderImage(e.target.value)}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
                       <div style={{ borderTop: '1px solid #f4f4f5', paddingTop: 24 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                           <label className="pf-label" style={{ margin: 0 }}>Questions & Answers</label>
