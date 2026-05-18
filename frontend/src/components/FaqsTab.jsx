@@ -31,6 +31,9 @@ const FaqsTab = ({ product }) => {
                 onClick={() => toggle(idx)}
                 onMouseOver={(e) => e.currentTarget.style.background = 'none'}
                 onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'none'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                onFocus={(e) => e.currentTarget.style.transform = 'none'}
                 style={{
                   width: '100%',
                   display: 'flex',
@@ -44,6 +47,7 @@ const FaqsTab = ({ product }) => {
                   gap: '12px',
                   outline: 'none',
                   boxShadow: 'none',
+                  transform: 'none',
                 }}
               >
                 <span className="text-sm text-gray-900" style={{ fontWeight: 600, lineHeight: 1.5 }}>
