@@ -365,7 +365,7 @@ const ProductForm = () => {
   } = useAdmin();
   const [isMagicCancelHovered, setIsMagicCancelHovered] = useState(false);
   const [magicAuditRows, setMagicAuditRows] = useState([]);
-  const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+  const [magicSyncStates, setMagicSyncStates] = useState({ general: 'idle', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [mappedData, setMappedData] = useState(null);
   const [activeBlueprintGroup, setActiveBlueprintGroup] = useState('general');
@@ -450,7 +450,7 @@ const ProductForm = () => {
     setMagicFillError('');
     setMappedData(null);
     setMagicAuditRows([]);
-    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
     setMagicRingCount(0);
     setMagicLabPulse(false);
     setIsBlueprintEditorOpen(false);
@@ -492,33 +492,122 @@ const ProductForm = () => {
           value: String(item?.value || ''),
         }));
       }
-
       if (rows && typeof rows === 'object') {
         return Object.entries(rows).map(([key, value]) => ({
           key: String(key || ''),
           value: String(value ?? ''),
         }));
       }
-
       return [];
     };
 
+    // Inventory: Variety, Sub Size, Sub Unit are OPTIONAL — only include when present in source data
     const normalizeInventoryRows = (rows) => {
       const sourceRows = Array.isArray(rows) ? rows : [];
-      return sourceRows.map((item) => ({
-        size_value: String(item?.size_value || parseVariantSize(item?.size || '').size_value || ''),
-        sub_size: String(item?.sub_size || ''),
-        variety_label: String(item?.variety_label || ''),
-        size_unit: String(item?.size_unit || parseVariantSize(item?.size || '').size_unit || ''),
-        sub_size_unit: String(item?.sub_size_unit || ''),
-        size_info: String(item?.size_info || parseVariantSize(item?.size || '').size_info || ''),
-        color: String(item?.color || ''),
-        price: String(item?.price ?? ''),
-        stock: String(item?.stock ?? ''),
-        sku: String(item?.sku || ''),
-        image: String(item?.image || ''),
-      }));
+      return sourceRows.map((item) => {
+        const parsedSize = parseVariantSize(item?.size || '');
+        const row = {
+          size_value: String(item?.size_value || parsedSize.size_value || ''),
+          size_unit: String(item?.size_unit || parsedSize.size_unit || ''),
+          size_info: String(item?.size_info || item?.extra_info || parsedSize.size_info || ''),
+          color: String(item?.color || ''),
+          price: String(item?.price ?? ''),
+          stock: String(item?.stock ?? ''),
+          sku: String(item?.sku || ''),
+          image: String(item?.image || ''),
+        };
+        // Only attach optional fields when the source data explicitly provides them
+        const variety = String(item?.variety_label || item?.variety || '');
+        if (variety) row.variety_label = variety;
+        const subSize = String(item?.sub_size || '');
+        if (subSize) row.sub_size = subSize;
+        const subUnit = String(item?.sub_size_unit || item?.sub_unit || '');
+        if (subUnit) row.sub_size_unit = subUnit;
+        return row;
+      });
     };
+
+    // Overview helpers
+    const normalizeOverviewBullets = (src) => {
+      const arr = Array.isArray(src?.overview_key_features)
+        ? src.overview_key_features
+        : Array.isArray(src?.overview?.intro?.bullets)
+          ? src.overview.intro.bullets
+          : Array.isArray(src?.intro?.bullets)
+            ? src.intro.bullets
+            : [];
+      return arr.map((b) => ({
+        icon: String(b?.icon || 'Check'),
+        text: String(b?.text || b?.label || ''),
+      })).filter((b) => b.text);
+    };
+
+    const normalizePerfectFor = (src) => {
+      const arr = Array.isArray(src?.perfect_for_scenarios)
+        ? src.perfect_for_scenarios
+        : Array.isArray(src?.perfect_for)
+          ? src.perfect_for
+          : Array.isArray(src?.overview?.perfect_for)
+            ? src.overview.perfect_for
+            : [];
+      return arr.map((p) => ({
+        icon: String(p?.icon || 'Smile'),
+        label: String(p?.label || p?.text || ''),
+      })).filter((p) => p.label);
+    };
+
+    const normalizeWhyLoveIt = (src) => {
+      const arr = Array.isArray(src?.value_proposition)
+        ? src.value_proposition
+        : Array.isArray(src?.why_love_it)
+          ? src.why_love_it
+          : Array.isArray(src?.overview?.why_love_it)
+            ? src.overview.why_love_it
+            : [];
+      return arr.map((w) => ({
+        icon: String(w?.icon || 'Heart'),
+        text: String(w?.text || w?.label || ''),
+      })).filter((w) => w.text);
+    };
+
+    const normalizeInclusionsItems = (src) => {
+      const arr = Array.isArray(src?.inclusions_items)
+        ? src.inclusions_items
+        : Array.isArray(src?.inclusions?.items)
+          ? src.inclusions.items
+          : [];
+      return arr.map((i) => ({
+        short_description: String(i?.short_description || i?.text || i?.name || ''),
+        image_url: String(i?.image_url || i?.image || ''),
+      })).filter((i) => i.short_description);
+    };
+
+    const normalizeHowToUseSteps = (src) => {
+      const arr = Array.isArray(src?.how_to_use_steps)
+        ? src.how_to_use_steps
+        : Array.isArray(src?.how_to_use?.items)
+          ? src.how_to_use.items
+          : [];
+      return arr.map((s) => ({
+        short_description: String(s?.short_description || s?.text || s?.step || s?.name || ''),
+        image_url: String(s?.image_url || s?.image || ''),
+      })).filter((s) => s.short_description);
+    };
+
+    const normalizeFaqs = (src) => {
+      const arr = Array.isArray(src?.faqs) ? src.faqs : [];
+      return arr.map((f) => ({
+        question: String(f?.question || f?.q || ''),
+        answer: String(f?.answer || f?.a || ''),
+      })).filter((f) => f.question);
+    };
+
+    const overviewBullets = normalizeOverviewBullets(parsed);
+    const perfectFor = normalizePerfectFor(parsed);
+    const whyLoveIt = normalizeWhyLoveIt(parsed);
+    const inclusionsItems = normalizeInclusionsItems(parsed);
+    const howToUseSteps = normalizeHowToUseSteps(parsed);
+    const faqsList = normalizeFaqs(parsed);
 
     return {
       name: String(parsed.name || ''),
@@ -529,7 +618,62 @@ const ProductForm = () => {
       subcategory_label: String(parsed.subcategory_label || parsed.sub_category || ''),
       sub_subcategory_label: String(parsed.sub_subcategory_label || parsed.sub_sub_category || ''),
       specifications: normalizeSpecRows(parsed.specifications || parsed.specs),
+      specification_description: String(
+        parsed.specification_description ||
+        parsed.spec_description ||
+        parsed.overview?.specification_description ||
+        ''
+      ),
+      specification_highlights_grid_title: String(
+        parsed.specification_highlights_grid_title ||
+        parsed.spec_highlights_grid_title ||
+        parsed.spec_highlights?.grid_title ||
+        ''
+      ),
       inventory: normalizeInventoryRows(parsed.inventory || parsed.variants),
+      overview_intro_heading: String(
+        parsed.overview_intro_heading ||
+        parsed.overview?.intro?.heading ||
+        parsed.intro?.heading ||
+        ''
+      ),
+      overview_intro_description: String(
+        parsed.overview_intro_description ||
+        parsed.overview?.intro?.text ||
+        parsed.intro?.text ||
+        ''
+      ),
+      overview_key_features: overviewBullets,
+      perfect_for_scenarios: perfectFor,
+      value_proposition: whyLoveIt,
+      inclusions_title: String(
+        parsed.inclusions_title ||
+        parsed.inclusions?.title ||
+        ''
+      ),
+      inclusions_description: String(
+        parsed.inclusions_description ||
+        parsed.inclusions?.description ||
+        ''
+      ),
+      inclusions_items: inclusionsItems,
+      how_to_use_title: String(
+        parsed.how_to_use_title ||
+        parsed.how_to_use?.title ||
+        ''
+      ),
+      how_to_use_description: String(
+        parsed.how_to_use_description ||
+        parsed.how_to_use?.description ||
+        ''
+      ),
+      how_to_use_tip: String(
+        parsed.how_to_use_tip ||
+        parsed.how_to_use?.tip ||
+        ''
+      ),
+      how_to_use_steps: howToUseSteps,
+      faqs: faqsList,
     };
   };
 
@@ -567,6 +711,9 @@ const ProductForm = () => {
       return nextVariant;
     }
 
+    // Track which optional fields were explicitly mentioned in the editor value
+    const mentionedOptionals = { variety: false, sub_size: false, sub_unit: false };
+
     raw.split('|').forEach((segment) => {
       const [rawKey, ...rest] = segment.split(':');
       const key = String(rawKey || '').trim().toLowerCase();
@@ -581,9 +728,18 @@ const ProductForm = () => {
       }
       else if (key === 'size value') nextVariant.size_value = segmentValue;
       else if (key === 'unit' || key === 'size unit') nextVariant.size_unit = segmentValue;
-      else if (key === 'sub size' || key === 'sub_size' || key === 'subsize') nextVariant.sub_size = segmentValue;
-      else if (key === 'sub unit' || key === 'sub_unit' || key === 'subunit') nextVariant.sub_size_unit = segmentValue;
-      else if (key === 'variety' || key === 'variety label' || key === 'variety_label') nextVariant.variety_label = segmentValue;
+      else if (key === 'sub size' || key === 'sub_size' || key === 'subsize') {
+        nextVariant.sub_size = segmentValue;
+        mentionedOptionals.sub_size = true;
+      }
+      else if (key === 'sub unit' || key === 'sub_unit' || key === 'subunit') {
+        nextVariant.sub_size_unit = segmentValue;
+        mentionedOptionals.sub_unit = true;
+      }
+      else if (key === 'variety' || key === 'variety label' || key === 'variety_label') {
+        nextVariant.variety_label = segmentValue;
+        mentionedOptionals.variety = true;
+      }
       else if (key === 'extra info' || key === 'size info') nextVariant.size_info = segmentValue;
       else if (key === 'color') nextVariant.color = segmentValue;
       else if (key === 'price') nextVariant.price = segmentValue;
@@ -591,6 +747,11 @@ const ProductForm = () => {
       else if (key === 'sku') nextVariant.sku = segmentValue;
       else if (key === 'image') nextVariant.image = segmentValue;
     });
+
+    // If an optional field was NOT mentioned in the editor, clear it so it doesn't persist from fallback
+    if (!mentionedOptionals.variety) nextVariant.variety_label = '';
+    if (!mentionedOptionals.sub_size) nextVariant.sub_size = '';
+    if (!mentionedOptionals.sub_unit) nextVariant.sub_size_unit = '';
 
     return nextVariant;
   };
@@ -616,8 +777,15 @@ const ProductForm = () => {
     }
 
     if (group === 'specifications') {
+      const rows = [];
+      // Meta fields first
+      if (data.specification_description !== undefined)
+        rows.push({ id: 'spec_desc', fieldName: 'Spec Description', value: data.specification_description || '', kind: 'general', key: 'specification_description', editable: true });
+      if (data.specification_highlights_grid_title !== undefined)
+        rows.push({ id: 'spec_grid_title', fieldName: 'Highlights Grid Title', value: data.specification_highlights_grid_title || '', kind: 'general', key: 'specification_highlights_grid_title', editable: true });
+      // Spec rows
       const sourceRows = Array.isArray(data.specifications) ? data.specifications : (Array.isArray(data.specs) ? data.specs : []);
-      return sourceRows.map((item, index) => ({
+      sourceRows.forEach((item, index) => rows.push({
         id: `spec-${index}`,
         fieldName: item?.key || `Specification ${index + 1}`,
         value: item?.value || '',
@@ -625,6 +793,7 @@ const ProductForm = () => {
         index,
         editable: true,
       }));
+      return rows;
     }
 
     if (group === 'inventory') {
@@ -639,6 +808,52 @@ const ProductForm = () => {
       }));
     }
 
+    if (group === 'overview') {
+      const rows = [];
+      rows.push({ id: 'ov_heading', fieldName: 'Intro Heading', value: data.overview_intro_heading || '', kind: 'general', key: 'overview_intro_heading', editable: true });
+      rows.push({ id: 'ov_desc', fieldName: 'Intro Description', value: data.overview_intro_description || '', kind: 'general', key: 'overview_intro_description', editable: true });
+      (data.overview_key_features || []).forEach((b, i) =>
+        rows.push({ id: `ov_feat_${i}`, fieldName: `Key Feature ${i + 1}`, value: b.text || '', kind: 'overview_bullet', index: i, editable: true })
+      );
+      (data.perfect_for_scenarios || []).forEach((p, i) =>
+        rows.push({ id: `pf_${i}`, fieldName: `Perfect For ${i + 1}`, value: p.label || '', kind: 'perfect_for', index: i, editable: true })
+      );
+      (data.value_proposition || []).forEach((w, i) =>
+        rows.push({ id: `vp_${i}`, fieldName: `Why Love It ${i + 1}`, value: w.text || '', kind: 'why_love_it', index: i, editable: true })
+      );
+      return rows;
+    }
+
+    if (group === 'inclusions') {
+      const rows = [];
+      rows.push({ id: 'inc_title', fieldName: 'Section Title', value: data.inclusions_title || '', kind: 'general', key: 'inclusions_title', editable: true });
+      rows.push({ id: 'inc_desc', fieldName: 'Description', value: data.inclusions_description || '', kind: 'general', key: 'inclusions_description', editable: true });
+      (data.inclusions_items || []).forEach((item, i) =>
+        rows.push({ id: `inc_item_${i}`, fieldName: `Item ${i + 1}`, value: item.short_description || '', kind: 'inclusion_item', index: i, editable: true })
+      );
+      return rows;
+    }
+
+    if (group === 'how_to_use') {
+      const rows = [];
+      rows.push({ id: 'htu_title', fieldName: 'Section Title', value: data.how_to_use_title || '', kind: 'general', key: 'how_to_use_title', editable: true });
+      rows.push({ id: 'htu_desc', fieldName: 'Description', value: data.how_to_use_description || '', kind: 'general', key: 'how_to_use_description', editable: true });
+      rows.push({ id: 'htu_tip', fieldName: 'TIP', value: data.how_to_use_tip || '', kind: 'general', key: 'how_to_use_tip', editable: true });
+      (data.how_to_use_steps || []).forEach((step, i) =>
+        rows.push({ id: `htu_step_${i}`, fieldName: `Step ${i + 1}`, value: step.short_description || '', kind: 'how_to_use_step', index: i, editable: true })
+      );
+      return rows;
+    }
+
+    if (group === 'faqs') {
+      const rows = [];
+      (data.faqs || []).forEach((faq, i) => {
+        rows.push({ id: `faq_q_${i}`, fieldName: `Q${i + 1}: Question`, value: faq.question || '', kind: 'faq_question', index: i, editable: true });
+        rows.push({ id: `faq_a_${i}`, fieldName: `Q${i + 1}: Answer`, value: faq.answer || '', kind: 'faq_answer', index: i, editable: true });
+      });
+      return rows;
+    }
+
     return [];
   };
 
@@ -651,7 +866,6 @@ const ProductForm = () => {
   const updateMagicBlueprintSpecification = (index, key, value) => {
     const baseData = getMagicBlueprintData();
     if (!baseData || !Array.isArray(baseData.specifications)) return;
-
     const nextSpecifications = baseData.specifications.map((row, rowIndex) => (
       rowIndex === index ? { ...row, [key]: value } : row
     ));
@@ -661,17 +875,64 @@ const ProductForm = () => {
   const updateMagicBlueprintInventory = (index, value) => {
     const baseData = getMagicBlueprintData();
     if (!baseData || !Array.isArray(baseData.inventory)) return;
-
     const nextInventory = baseData.inventory.map((row, rowIndex) => (
       rowIndex === index ? parseMagicBlueprintInventoryValue(value, row) : row
     ));
     commitMagicBlueprintData({ ...baseData, inventory: nextInventory });
   };
 
+  const updateMagicBlueprintOverviewBullet = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.overview_key_features || []).map((b, i) => i === index ? { ...b, text: value } : b);
+    commitMagicBlueprintData({ ...baseData, overview_key_features: next });
+  };
+
+  const updateMagicBlueprintPerfectFor = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.perfect_for_scenarios || []).map((p, i) => i === index ? { ...p, label: value } : p);
+    commitMagicBlueprintData({ ...baseData, perfect_for_scenarios: next });
+  };
+
+  const updateMagicBlueprintWhyLoveIt = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.value_proposition || []).map((w, i) => i === index ? { ...w, text: value } : w);
+    commitMagicBlueprintData({ ...baseData, value_proposition: next });
+  };
+
+  const updateMagicBlueprintInclusionItem = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.inclusions_items || []).map((item, i) => i === index ? { ...item, short_description: value } : item);
+    commitMagicBlueprintData({ ...baseData, inclusions_items: next });
+  };
+
+  const updateMagicBlueprintHowToUseStep = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.how_to_use_steps || []).map((s, i) => i === index ? { ...s, short_description: value } : s);
+    commitMagicBlueprintData({ ...baseData, how_to_use_steps: next });
+  };
+
+  const updateMagicBlueprintFaqQuestion = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.faqs || []).map((f, i) => i === index ? { ...f, question: value } : f);
+    commitMagicBlueprintData({ ...baseData, faqs: next });
+  };
+
+  const updateMagicBlueprintFaqAnswer = (index, value) => {
+    const baseData = getMagicBlueprintData();
+    if (!baseData) return;
+    const next = (baseData.faqs || []).map((f, i) => i === index ? { ...f, answer: value } : f);
+    commitMagicBlueprintData({ ...baseData, faqs: next });
+  };
+
   const removeMagicBlueprintSpecification = (index) => {
     const baseData = getMagicBlueprintData();
     if (!baseData || !Array.isArray(baseData.specifications)) return;
-
     commitMagicBlueprintData({
       ...baseData,
       specifications: baseData.specifications.filter((_, rowIndex) => rowIndex !== index),
@@ -681,7 +942,6 @@ const ProductForm = () => {
   const removeMagicBlueprintInventory = (index) => {
     const baseData = getMagicBlueprintData();
     if (!baseData || !Array.isArray(baseData.inventory)) return;
-
     commitMagicBlueprintData({
       ...baseData,
       inventory: baseData.inventory.filter((_, rowIndex) => rowIndex !== index),
@@ -692,18 +952,45 @@ const ProductForm = () => {
     const baseData = getMagicBlueprintData();
     if (!baseData) return;
 
-      if (activeBlueprintGroup === 'inventory') {
+    if (activeBlueprintGroup === 'inventory') {
       commitMagicBlueprintData({
         ...baseData,
-        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size_value: '', sub_size: '', size_unit: '', sub_size_unit: '', variety_label: '', size_info: '', color: '', price: '', stock: '', sku: '', image: '' }],
+        inventory: [...(Array.isArray(baseData.inventory) ? baseData.inventory : []), { size_value: '', size_unit: '', size_info: '', color: '', price: '', stock: '', sku: '', image: '' }],
       });
       return;
     }
-
     if (activeBlueprintGroup === 'specifications') {
       commitMagicBlueprintData({
         ...baseData,
         specifications: [...(Array.isArray(baseData.specifications) ? baseData.specifications : []), { key: '', value: '' }],
+      });
+      return;
+    }
+    if (activeBlueprintGroup === 'overview') {
+      commitMagicBlueprintData({
+        ...baseData,
+        overview_key_features: [...(baseData.overview_key_features || []), { icon: 'Check', text: '' }],
+      });
+      return;
+    }
+    if (activeBlueprintGroup === 'inclusions') {
+      commitMagicBlueprintData({
+        ...baseData,
+        inclusions_items: [...(baseData.inclusions_items || []), { short_description: '', image_url: '' }],
+      });
+      return;
+    }
+    if (activeBlueprintGroup === 'how_to_use') {
+      commitMagicBlueprintData({
+        ...baseData,
+        how_to_use_steps: [...(baseData.how_to_use_steps || []), { short_description: '', image_url: '' }],
+      });
+      return;
+    }
+    if (activeBlueprintGroup === 'faqs') {
+      commitMagicBlueprintData({
+        ...baseData,
+        faqs: [...(baseData.faqs || []), { question: '', answer: '' }],
       });
     }
   };
@@ -945,14 +1232,41 @@ const ProductForm = () => {
     else if (Array.isArray(data.specs)) mappedSpecsCount = data.specs.length;
     else if (data.specifications && typeof data.specifications === 'object') mappedSpecsCount = Object.keys(data.specifications).length;
     else if (data.specs && typeof data.specs === 'object') mappedSpecsCount = Object.keys(data.specs).length;
-    if (mappedSpecsCount > 0) {
-      addAuditRow('Step 2', 'Specs', `${mappedSpecsCount} specifications auto-mapped`);
-    }
+    if (mappedSpecsCount > 0) addAuditRow('Step 2', 'Specs', `${mappedSpecsCount} specifications auto-mapped`);
+    if (data.specification_description) addAuditRow('Step 2', 'Specs', 'Spec Description Auto-Mapped');
+    if (data.specification_highlights_grid_title) addAuditRow('Step 2', 'Specs', 'Highlights Grid Title Auto-Mapped');
 
     const varArr = data.inventory || data.variants;
     if (Array.isArray(varArr) && varArr.length > 0) {
-      addAuditRow('Step 4', 'Inventory', `${varArr.length} variants auto-mapped`);
+      addAuditRow('Step 3', 'Inventory', `${varArr.length} variants auto-mapped`);
+      const hasVariety = varArr.some(v => v.variety_label || v.variety);
+      const hasSubSize = varArr.some(v => v.sub_size);
+      if (hasVariety) addAuditRow('Step 3', 'Inventory', 'Variety labels included (product-specific)');
+      if (hasSubSize) addAuditRow('Step 3', 'Inventory', 'Sub Size/Unit included (product-specific)');
     }
+
+    if (data.overview_intro_heading) addAuditRow('Step 4', 'Overview', 'Intro Heading Auto-Mapped');
+    if (data.overview_intro_description) addAuditRow('Step 4', 'Overview', 'Intro Description Auto-Mapped');
+    const featCount = (data.overview_key_features || []).length;
+    if (featCount > 0) addAuditRow('Step 4', 'Overview', `${featCount} Key Features Auto-Mapped`);
+    const pfCount = (data.perfect_for_scenarios || []).length;
+    if (pfCount > 0) addAuditRow('Step 4', 'Overview', `${pfCount} Perfect For Scenarios Auto-Mapped`);
+    const vpCount = (data.value_proposition || []).length;
+    if (vpCount > 0) addAuditRow('Step 4', 'Overview', `${vpCount} Value Propositions Auto-Mapped`);
+
+    if (data.inclusions_title) addAuditRow('Step 5', 'Inclusions', 'Section Title Auto-Mapped');
+    if (data.inclusions_description) addAuditRow('Step 5', 'Inclusions', 'Description Auto-Mapped');
+    const incCount = (data.inclusions_items || []).length;
+    if (incCount > 0) addAuditRow('Step 5', 'Inclusions', `${incCount} items Auto-Mapped`);
+
+    if (data.how_to_use_title) addAuditRow('Step 6', 'How to Use', 'Section Title Auto-Mapped');
+    if (data.how_to_use_description) addAuditRow('Step 6', 'How to Use', 'Description Auto-Mapped');
+    if (data.how_to_use_tip) addAuditRow('Step 6', 'How to Use', 'TIP Auto-Mapped');
+    const stepsCount = (data.how_to_use_steps || []).length;
+    if (stepsCount > 0) addAuditRow('Step 6', 'How to Use', `${stepsCount} steps Auto-Mapped`);
+
+    const faqCount = (data.faqs || []).length;
+    if (faqCount > 0) addAuditRow('Step 7', 'FAQs', `${faqCount} Q&As Auto-Mapped`);
 
     if (auditRows.length === 0) {
       addAuditRow('Scan', 'Blueprint', 'No mappable fields found in current JSON', 'Error');
@@ -1016,7 +1330,7 @@ const ProductForm = () => {
         const auditRows = buildMagicFillAuditRows(data, isValidation ? 'Preview' : 'Success');
 
         if (isValidation) {
-          setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+          setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
           setMagicFillError('');
           await appendAuditRowsSequentially(auditRows);
           setIsAnalyzing(false);
@@ -1026,25 +1340,24 @@ const ProductForm = () => {
           return;
         }
 
-        setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle' });
+        setMagicSyncStates({ general: 'pulse', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
 
-        const generalTimer = setTimeout(() => {
-          setMagicSyncStates((prev) => ({ ...prev, general: 'green' }));
-        }, 420);
-        const specsPulseTimer = setTimeout(() => {
-          setMagicSyncStates((prev) => ({ ...prev, specifications: 'pulse' }));
-        }, 650);
-        const specsGreenTimer = setTimeout(() => {
-          setMagicSyncStates((prev) => ({ ...prev, specifications: 'green' }));
-        }, 1080);
-        const inventoryPulseTimer = setTimeout(() => {
-          setMagicSyncStates((prev) => ({ ...prev, inventory: 'pulse' }));
-        }, 1320);
-        const inventoryGreenTimer = setTimeout(() => {
-          setMagicSyncStates((prev) => ({ ...prev, inventory: 'green' }));
-        }, 1760);
+        // Sequential sync animation across all 7 sections
+        const t1  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, general: 'green' })), 420);
+        const t2  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, specifications: 'pulse' })), 650);
+        const t3  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, specifications: 'green' })), 1080);
+        const t4  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, inventory: 'pulse' })), 1320);
+        const t5  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, inventory: 'green' })), 1760);
+        const t6  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, overview: 'pulse' })), 2000);
+        const t7  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, overview: 'green' })), 2440);
+        const t8  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, inclusions: 'pulse' })), 2680);
+        const t9  = setTimeout(() => setMagicSyncStates((p) => ({ ...p, inclusions: 'green' })), 3100);
+        const t10 = setTimeout(() => setMagicSyncStates((p) => ({ ...p, how_to_use: 'pulse' })), 3340);
+        const t11 = setTimeout(() => setMagicSyncStates((p) => ({ ...p, how_to_use: 'green' })), 3760);
+        const t12 = setTimeout(() => setMagicSyncStates((p) => ({ ...p, faqs: 'pulse' })), 4000);
+        const t13 = setTimeout(() => setMagicSyncStates((p) => ({ ...p, faqs: 'green' })), 4420);
 
-        magicSyncTimersRef.current = [generalTimer, specsPulseTimer, specsGreenTimer, inventoryPulseTimer, inventoryGreenTimer];
+        magicSyncTimersRef.current = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13];
 
         if (data.name) {
           setName(data.name);
@@ -1175,15 +1488,19 @@ const ProductForm = () => {
           const varArr = data.inventory || data.variants;
           const newVariants = varArr.map((v) => {
             const parsedSize = parseVariantSize(v.size || '');
-            const size = composeVariantSize({
-              size_value: v.size_value || parsedSize.size_value,
-              size_unit: v.size_unit || parsedSize.size_unit,
-              size_info: v.size_info || parsedSize.size_info,
-            });
+            const sizeValue = String(v.size_value || parsedSize.size_value || '');
+            const sizeUnit  = String(v.size_unit  || parsedSize.size_unit  || '');
+            const sizeInfo  = String(v.size_info  || v.extra_info || parsedSize.size_info || '');
             const color = String(v.color || '');
             const priceVal = Number(v.price || 0);
             const stockVal = Number(v.stock || 0);
 
+            // Optional fields: only include when explicitly provided in source data
+            const variety      = String(v.variety_label || v.variety || '');
+            const subSize      = String(v.sub_size || '');
+            const subSizeUnit  = String(v.sub_size_unit || v.sub_unit || '');
+
+            const size = composeVariantSize({ size_value: sizeValue, size_unit: sizeUnit, size_info: sizeInfo });
             const normalizedSlug = slug || (data.name || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
             const cleanColor = color.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const cleanSize = size.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1191,13 +1508,13 @@ const ProductForm = () => {
 
             return {
               vk: mk(),
-              size_value: String(v.size_value || parsedSize.size_value || ''),
-              size_unit: String(v.size_unit || parsedSize.size_unit || ''),
-              size_info: String(v.size_info || parsedSize.size_info || ''),
-              variety: String(v.variety || v.variety_label || ''),
-              variety_label: String(v.variety_label || v.variety || ''),
-              sub_size: String(v.sub_size || ''),
-              sub_size_unit: String(v.sub_size_unit || ''),
+              size_value: sizeValue,
+              size_unit: sizeUnit,
+              size_info: sizeInfo,
+              variety: variety,
+              variety_label: variety,
+              sub_size: subSize,
+              sub_size_unit: subSizeUnit,
               color,
               price: priceVal,
               override_discount: false,
@@ -1215,6 +1532,93 @@ const ProductForm = () => {
           }
         }
 
+        // ── Specifications meta ────────────────────────────────────────────
+        const specDesc = String(
+          data.specification_description ||
+          data.spec_description ||
+          ''
+        );
+        if (specDesc) setSpecDescription(specDesc);
+
+        const gridTitle = String(
+          data.specification_highlights_grid_title ||
+          data.spec_highlights_grid_title ||
+          data.spec_highlights?.grid_title ||
+          ''
+        );
+        if (gridTitle) {
+          setSpecHighlights((prev) => ({ ...prev, grid_title: gridTitle }));
+        }
+
+        // ── Overview ──────────────────────────────────────────────────────
+        const ovHeading = String(data.overview_intro_heading || data.overview?.intro?.heading || '');
+        const ovText    = String(data.overview_intro_description || data.overview?.intro?.text || '');
+        const ovBullets = Array.isArray(data.overview_key_features) && data.overview_key_features.length > 0
+          ? data.overview_key_features.map((b) => ({ icon: String(b.icon || 'Check'), text: String(b.text || '') }))
+          : null;
+        const pfScenarios = Array.isArray(data.perfect_for_scenarios) && data.perfect_for_scenarios.length > 0
+          ? data.perfect_for_scenarios.map((p) => ({ icon: String(p.icon || 'Smile'), label: String(p.label || '') }))
+          : null;
+        const vpItems = Array.isArray(data.value_proposition) && data.value_proposition.length > 0
+          ? data.value_proposition.map((w) => ({ icon: String(w.icon || 'Heart'), text: String(w.text || '') }))
+          : null;
+
+        if (ovHeading || ovText || ovBullets || pfScenarios || vpItems) {
+          setOverviewData((prev) => ({
+            ...prev,
+            intro: {
+              heading: ovHeading || prev.intro?.heading || '',
+              text: ovText || prev.intro?.text || '',
+              bullets: ovBullets || prev.intro?.bullets || [{ icon: 'Check', text: '' }],
+            },
+            perfect_for: pfScenarios || prev.perfect_for || [{ icon: 'Smile', label: '' }],
+            why_love_it: vpItems || prev.why_love_it || [{ icon: 'Heart', text: '' }],
+          }));
+          if (ovHeading) setOverviewSubstepperCompleted(true);
+        }
+
+        // ── Inclusions ────────────────────────────────────────────────────
+        const incTitle = String(data.inclusions_title || data.inclusions?.title || '');
+        const incDesc  = String(data.inclusions_description || data.inclusions?.description || '');
+        const incItems = Array.isArray(data.inclusions_items) && data.inclusions_items.length > 0
+          ? data.inclusions_items
+          : null;
+
+        if (incTitle || incDesc || incItems) {
+          setInclusions((prev) => ({
+            ...prev,
+            title: incTitle || prev.title || '',
+            description: incDesc || prev.description || '',
+            items: incItems || prev.items || [{ short_description: '', image_url: '' }],
+          }));
+        }
+
+        // ── How to Use ────────────────────────────────────────────────────
+        const htuTitle = String(data.how_to_use_title || data.how_to_use?.title || '');
+        const htuDesc  = String(data.how_to_use_description || data.how_to_use?.description || '');
+        const htuTip   = String(data.how_to_use_tip || data.how_to_use?.tip || '');
+        const htuSteps = Array.isArray(data.how_to_use_steps) && data.how_to_use_steps.length > 0
+          ? data.how_to_use_steps
+          : null;
+
+        if (htuTitle || htuDesc || htuTip || htuSteps) {
+          setHowToUse((prev) => ({
+            ...prev,
+            title: htuTitle || prev.title || '',
+            description: htuDesc || prev.description || '',
+            tip: htuTip || prev.tip || '',
+            items: htuSteps || prev.items || [{ short_description: '', image_url: '' }],
+          }));
+        }
+
+        // ── FAQs ──────────────────────────────────────────────────────────
+        if (Array.isArray(data.faqs) && data.faqs.length > 0) {
+          setFaqs(data.faqs.map((f) => ({
+            question: String(f.question || f.q || ''),
+            answer: String(f.answer || f.a || ''),
+          })));
+        }
+
         setMappedData(createMagicBlueprintData(data));
 
         setMagicFillError('');
@@ -1223,7 +1627,7 @@ const ProductForm = () => {
         setToastType('success');
         setTimeout(() => setToastMsg(''), 4000);
       } catch (e) {
-        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+        setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
         setMagicFillError('Invalid JSON format: ' + e.message);
         setMagicAuditRows([
           {
@@ -1265,7 +1669,7 @@ const ProductForm = () => {
     setMagicAuditRows([]);
 
     // Reset UI states: sync badges, ring, editor
-    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle' });
+    setMagicSyncStates({ general: 'idle', specifications: 'idle', inventory: 'idle', overview: 'idle', inclusions: 'idle', how_to_use: 'idle', faqs: 'idle' });
     setMagicRingCount(0);
     setIsBlueprintEditorOpen(false);
     setMagicLabPulse(false);
@@ -4111,21 +4515,50 @@ const ProductForm = () => {
                           return matchedCat ? `${matchedCat.name} (ID: ${matchedCat.id})` : `"${summarySource.category_label || summarySource.category}" (No Match)`;
                         })();
                         const categoryMatched = Boolean(summarySource && categoryLabel.includes('(ID:'));
-                        const totalMapped = generalCount + (categoryMatched ? 1 : 0) + specsCount + variantsCount;
+
+                        // New section counts
+                        const overviewCount = summarySource ? [
+                          summarySource.overview_intro_heading,
+                          summarySource.overview_intro_description,
+                          ...(summarySource.overview_key_features || []),
+                          ...(summarySource.perfect_for_scenarios || []),
+                          ...(summarySource.value_proposition || []),
+                        ].filter(Boolean).length : 0;
+                        const inclusionsCount = summarySource ? [
+                          summarySource.inclusions_title,
+                          summarySource.inclusions_description,
+                          ...(summarySource.inclusions_items || []),
+                        ].filter(Boolean).length : 0;
+                        const howToUseCount = summarySource ? [
+                          summarySource.how_to_use_title,
+                          summarySource.how_to_use_description,
+                          summarySource.how_to_use_tip,
+                          ...(summarySource.how_to_use_steps || []),
+                        ].filter(Boolean).length : 0;
+                        const faqsCount = Array.isArray(summarySource?.faqs) ? summarySource.faqs.length : 0;
+
+                        const totalMapped = generalCount + (categoryMatched ? 1 : 0) + specsCount + variantsCount + overviewCount + inclusionsCount + howToUseCount + faqsCount;
                         const ringStates = [
-                          { key: 'general', label: 'General', ok: generalCount > 0 },
-                          { key: 'categories', label: 'Categories', ok: categoryMatched },
-                          { key: 'specs', label: 'Specs', ok: specsCount > 0 },
-                          { key: 'inventory', label: 'Inventory', ok: variantsCount > 0 },
+                          { key: 'general',     label: 'General',     ok: generalCount > 0 },
+                          { key: 'categories',  label: 'Categories',  ok: categoryMatched },
+                          { key: 'specs',       label: 'Specs',       ok: specsCount > 0 },
+                          { key: 'inventory',   label: 'Inventory',   ok: variantsCount > 0 },
+                          { key: 'overview',    label: 'Overview',    ok: overviewCount > 0 },
+                          { key: 'inclusions',  label: 'Inclusions',  ok: inclusionsCount > 0 },
+                          { key: 'how_to_use',  label: 'How to Use',  ok: howToUseCount > 0 },
+                          { key: 'faqs',        label: 'FAQs',        ok: faqsCount > 0 },
                         ];
                         const completedGroups = ringStates.filter((s) => s.ok).length;
                         const ringPercent = Math.round((completedGroups / ringStates.length) * 100);
-                        const ringDots = [
-                          { top: '8%', left: '50%' },
-                          { top: '50%', left: '92%' },
-                          { top: '92%', left: '50%' },
-                          { top: '50%', left: '8%' },
-                        ];
+                        // 8 evenly spaced dots around a circle
+                        const ringDots = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+                          const angle = (i / 8) * 2 * Math.PI - Math.PI / 2;
+                          const r = 42; // percentage radius from center (50%)
+                          return {
+                            top: `${50 + r * Math.sin(angle)}%`,
+                            left: `${50 + r * Math.cos(angle)}%`,
+                          };
+                        });
                         const activeBlueprintRows = buildMagicBlueprintEditorRows(activeBlueprintGroup, summarySource);
 
                         return (
@@ -4280,6 +4713,78 @@ const ProductForm = () => {
                                           </button>
                                         </div>
                                         <span className="v">{variantsCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${overviewCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'overview' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">Overview</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'overview' ? 'active' : ''}`}
+                                            aria-label="Edit Overview blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'overview';
+                                              setActiveBlueprintGroup('overview');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{overviewCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${inclusionsCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'inclusions' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">Inclusions</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'inclusions' ? 'active' : ''}`}
+                                            aria-label="Edit Inclusions blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'inclusions';
+                                              setActiveBlueprintGroup('inclusions');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{inclusionsCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${howToUseCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'how_to_use' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">How to Use</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'how_to_use' ? 'active' : ''}`}
+                                            aria-label="Edit How to Use blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'how_to_use';
+                                              setActiveBlueprintGroup('how_to_use');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{howToUseCount}</span>
+                                      </div>
+                                      <div className={`smart-stat-pill ${faqsCount > 0 ? 'active' : ''} ${isBlueprintEditorOpen && activeBlueprintGroup === 'faqs' ? 'selected' : ''}`}>
+                                        <div className="smart-stat-pill-head">
+                                          <span className="k">FAQs</span>
+                                          <button
+                                            type="button"
+                                            className={`smart-stat-edit ${isBlueprintEditorOpen && activeBlueprintGroup === 'faqs' ? 'active' : ''}`}
+                                            aria-label="Edit FAQs blueprint"
+                                            onClick={() => {
+                                              const isSameGroup = isBlueprintEditorOpen && activeBlueprintGroup === 'faqs';
+                                              setActiveBlueprintGroup('faqs');
+                                              setIsBlueprintEditorOpen(!isSameGroup);
+                                            }}
+                                          >
+                                            <Edit2 size={11} />
+                                          </button>
+                                        </div>
+                                        <span className="v">{faqsCount}</span>
                                       </div>
                                     </div>
 
@@ -4468,7 +4973,7 @@ const ProductForm = () => {
                                                 <span className="smart-blueprint-field">{row.fieldName}</span>
                                               </td>
                                               <td>
-                                                {(row.kind === 'specification' || row.kind === 'inventory' || row.kind === 'general' || row.kind === 'category') && (
+                                                {row.editable && (
                                                   <input
                                                     className="smart-blueprint-input"
                                                     value={row.value}
@@ -4477,6 +4982,20 @@ const ProductForm = () => {
                                                         updateMagicBlueprintSpecification(row.index, 'value', e.target.value);
                                                       } else if (row.kind === 'inventory') {
                                                         updateMagicBlueprintInventory(row.index, e.target.value);
+                                                      } else if (row.kind === 'overview_bullet') {
+                                                        updateMagicBlueprintOverviewBullet(row.index, e.target.value);
+                                                      } else if (row.kind === 'perfect_for') {
+                                                        updateMagicBlueprintPerfectFor(row.index, e.target.value);
+                                                      } else if (row.kind === 'why_love_it') {
+                                                        updateMagicBlueprintWhyLoveIt(row.index, e.target.value);
+                                                      } else if (row.kind === 'inclusion_item') {
+                                                        updateMagicBlueprintInclusionItem(row.index, e.target.value);
+                                                      } else if (row.kind === 'how_to_use_step') {
+                                                        updateMagicBlueprintHowToUseStep(row.index, e.target.value);
+                                                      } else if (row.kind === 'faq_question') {
+                                                        updateMagicBlueprintFaqQuestion(row.index, e.target.value);
+                                                      } else if (row.kind === 'faq_answer') {
+                                                        updateMagicBlueprintFaqAnswer(row.index, e.target.value);
                                                       } else {
                                                         updateMagicBlueprintField(row.key, e.target.value);
                                                       }
@@ -4486,21 +5005,13 @@ const ProductForm = () => {
                                               </td>
                                               <td>
                                                 {row.kind === 'specification' ? (
-                                                  <button
-                                                    type="button"
-                                                    className="smart-blueprint-action"
-                                                    onClick={() => removeMagicBlueprintSpecification(row.index)}
-                                                  >
-                                                    Remove
-                                                  </button>
+                                                  <button type="button" className="smart-blueprint-action" onClick={() => removeMagicBlueprintSpecification(row.index)}>Remove</button>
                                                 ) : row.kind === 'inventory' ? (
-                                                  <button
-                                                    type="button"
-                                                    className="smart-blueprint-action"
-                                                    onClick={() => removeMagicBlueprintInventory(row.index)}
-                                                  >
-                                                    Remove
-                                                  </button>
+                                                  <button type="button" className="smart-blueprint-action" onClick={() => removeMagicBlueprintInventory(row.index)}>Remove</button>
+                                                ) : (row.kind === 'overview_bullet' || row.kind === 'perfect_for' || row.kind === 'why_love_it' || row.kind === 'inclusion_item' || row.kind === 'how_to_use_step') ? (
+                                                  <span className="smart-blueprint-fixed">Editable</span>
+                                                ) : (row.kind === 'faq_question' || row.kind === 'faq_answer') ? (
+                                                  <span className="smart-blueprint-fixed">Editable</span>
                                                 ) : (
                                                   <span className="smart-blueprint-fixed">Locked</span>
                                                 )}
@@ -4515,7 +5026,7 @@ const ProductForm = () => {
                                       </table>
                                     </div>
 
-                                    {(activeBlueprintGroup === 'specifications' || activeBlueprintGroup === 'inventory') && (
+                                    {['specifications', 'inventory', 'overview', 'inclusions', 'how_to_use', 'faqs'].includes(activeBlueprintGroup) && (
                                       <button
                                         type="button"
                                         className="smart-blueprint-add"
