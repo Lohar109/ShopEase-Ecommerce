@@ -630,6 +630,20 @@ const ProductForm = () => {
         parsed.spec_highlights?.grid_title ||
         ''
       ),
+      specification_highlights_items: (() => {
+        const src =
+          parsed.specification_highlights_items ||
+          parsed.spec_highlights?.items ||
+          parsed.spec_highlights_items ||
+          [];
+        const arr = Array.isArray(src) ? src : [];
+        return arr.map((h) => ({
+          icon: String(h?.icon || 'Zap'),
+          value: String(h?.value || h?.stat || ''),
+          title: String(h?.title || h?.label || ''),
+          subtitle: String(h?.subtitle || h?.description || h?.desc || ''),
+        })).filter((h) => h.value || h.title);
+      })(),
       inventory: normalizeInventoryRows(parsed.inventory || parsed.variants),
       overview_intro_heading: String(
         parsed.overview_intro_heading ||
@@ -783,6 +797,10 @@ const ProductForm = () => {
         rows.push({ id: 'spec_desc', fieldName: 'Spec Description', value: data.specification_description || '', kind: 'general', key: 'specification_description', editable: true });
       if (data.specification_highlights_grid_title !== undefined)
         rows.push({ id: 'spec_grid_title', fieldName: 'Highlights Grid Title', value: data.specification_highlights_grid_title || '', kind: 'general', key: 'specification_highlights_grid_title', editable: true });
+      // Highlight items
+      (data.specification_highlights_items || []).forEach((h, i) =>
+        rows.push({ id: `spec_hl_${i}`, fieldName: `Highlight ${i + 1}`, value: [h.icon && `Icon:${h.icon}`, h.value && `Value:${h.value}`, h.title && `Title:${h.title}`, h.subtitle && `Subtitle:${h.subtitle}`].filter(Boolean).join(' | '), kind: 'general', key: `__hl_${i}`, editable: false })
+      );
       // Spec rows
       const sourceRows = Array.isArray(data.specifications) ? data.specifications : (Array.isArray(data.specs) ? data.specs : []);
       sourceRows.forEach((item, index) => rows.push({
@@ -1547,7 +1565,40 @@ const ProductForm = () => {
           ''
         );
         if (gridTitle) {
-          setSpecHighlights((prev) => ({ ...prev, grid_title: gridTitle }));
+          const gridItemsSrc =
+            data.specification_highlights_items ||
+            data.spec_highlights?.items ||
+            data.spec_highlights_items ||
+            [];
+          const parsedGridItems = Array.isArray(gridItemsSrc) && gridItemsSrc.length > 0
+            ? gridItemsSrc.map((h) => ({
+                icon: String(h?.icon || 'Zap'),
+                value: String(h?.value || h?.stat || ''),
+                title: String(h?.title || h?.label || ''),
+                subtitle: String(h?.subtitle || h?.description || h?.desc || ''),
+              }))
+            : null;
+          setSpecHighlights((prev) => ({
+            ...prev,
+            grid_title: gridTitle,
+            ...(parsedGridItems ? { grid_items: parsedGridItems } : {}),
+          }));
+        } else {
+          // Even if no title, still apply grid_items if provided
+          const gridItemsSrc =
+            data.specification_highlights_items ||
+            data.spec_highlights?.items ||
+            data.spec_highlights_items ||
+            [];
+          if (Array.isArray(gridItemsSrc) && gridItemsSrc.length > 0) {
+            const parsedGridItems = gridItemsSrc.map((h) => ({
+              icon: String(h?.icon || 'Zap'),
+              value: String(h?.value || h?.stat || ''),
+              title: String(h?.title || h?.label || ''),
+              subtitle: String(h?.subtitle || h?.description || h?.desc || ''),
+            }));
+            setSpecHighlights((prev) => ({ ...prev, grid_items: parsedGridItems }));
+          }
         }
 
         // ── Overview ──────────────────────────────────────────────────────
