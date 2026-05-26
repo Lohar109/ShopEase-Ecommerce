@@ -2044,6 +2044,7 @@ const ProductForm = () => {
   // Gallery handlers
   const handleGalleryImageChange = (idx, value) => {
     setGalleryImages(imgs => imgs.map((img, i) => (i === idx ? value : img)));
+    clearSaveValidationError('galleryImages');
   };
   const addGalleryImage = () => setGalleryImages(imgs => [...imgs, '']);
   const removeGalleryImage = idx => setGalleryImages(imgs => imgs.filter((_, i) => i !== idx));
@@ -2359,6 +2360,7 @@ const ProductForm = () => {
   // Dynamic specifications handlers
   const handleSpecChange = (idx, field, value) => {
     setSpecs(specs => specs.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
+    clearSaveValidationError('specifications.specRows', idx, field);
   };
   const addSpec = () => setSpecs([...specs, newSpec()]);
   const removeSpec = idx => setSpecs(specs => specs.filter((_, i) => i !== idx));
@@ -2369,6 +2371,7 @@ const ProductForm = () => {
       ...prev,
       grid_items: prev.grid_items.map((it, i) => (i === idx ? { ...it, [field]: value } : it))
     }));
+    clearSaveValidationError('specifications.highlightRows', idx, field);
   };
   const addHighlight = () => setSpecHighlights(prev => ({ ...prev, grid_items: [...prev.grid_items, newHighlight()] }));
   const removeHighlight = (idx) => setSpecHighlights(prev => ({ ...prev, grid_items: prev.grid_items.filter((_, i) => i !== idx) }));
@@ -2617,6 +2620,30 @@ const ProductForm = () => {
           return nextRow;
         }) : [];
         return { ...prev, inventory: nextInventory };
+      }
+
+      if (typeof field === 'string' && field.includes('.')) {
+        const copy = JSON.parse(JSON.stringify(prev));
+        const parts = field.split('.');
+        let current = copy;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) return prev;
+          current = current[parts[i]];
+        }
+        const lastPart = parts[parts.length - 1];
+
+        if (index !== null) {
+          if (Array.isArray(current[lastPart])) {
+            if (variantField !== null && typeof current[lastPart][index] === 'object' && current[lastPart][index] !== null) {
+              current[lastPart][index][variantField] = false;
+            } else {
+              current[lastPart][index] = false;
+            }
+          }
+        } else {
+          current[lastPart] = false;
+        }
+        return copy;
       }
 
       return { ...prev, [field]: false };
@@ -2869,6 +2896,15 @@ const ProductForm = () => {
         setActiveTab('inventory');
       } else if (missingSections.includes('overview')) {
         setActiveTab('overview');
+        if (nextErrors.overview.introHeading || nextErrors.overview.introDescription || (Array.isArray(nextErrors.overview.introBullets) && nextErrors.overview.introBullets.some(Boolean))) {
+          setActiveSubStep(1);
+        } else if (Array.isArray(nextErrors.overview.useCases) && nextErrors.overview.useCases.some(Boolean)) {
+          setActiveSubStep(2);
+        } else if (Array.isArray(nextErrors.overview.perfectFor) && nextErrors.overview.perfectFor.some(Boolean)) {
+          setActiveSubStep(3);
+        } else if (Array.isArray(nextErrors.overview.whyLoveIt) && nextErrors.overview.whyLoveIt.some(Boolean)) {
+          setActiveSubStep(4);
+        }
       } else if (missingSections.includes('inclusions')) {
         setActiveTab('inclusions');
       } else if (missingSections.includes('how_to_use')) {
@@ -5664,6 +5700,7 @@ const ProductForm = () => {
                               setSubcategoryId(e.target.value);
                               setSubSubcategoryId('');
                               setHighlightSubcategory(false);
+                              clearSaveValidationError('subcategory');
                             }}
                             style={{
                               width: '100%',
@@ -5747,9 +5784,12 @@ const ProductForm = () => {
                       <div className="pf-spec-field-group">
                         <label className="pf-spec-label">Specification Description</label>
                         <textarea
-                          className="custom-textarea"
+                          className={`custom-textarea ${saveValidationErrors.specifications?.specDescription ? 'pf-error' : ''}`}
                           value={specDescription}
-                          onChange={(e) => setSpecDescription(e.target.value)}
+                          onChange={(e) => {
+                            setSpecDescription(e.target.value);
+                            clearSaveValidationError('specifications.specDescription');
+                          }}
                           placeholder="Enter a brief intro for product specifications..."
                           rows={6}
                           style={{
@@ -5770,10 +5810,13 @@ const ProductForm = () => {
                       <div className="pf-spec-field-group">
                         <label className="pf-spec-label">Specification Image URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.specifications?.specImage ? 'pf-error' : ''}`}
                           type="text"
                           value={specImage}
-                          onChange={(e) => setSpecImage(e.target.value)}
+                          onChange={(e) => {
+                            setSpecImage(e.target.value);
+                            clearSaveValidationError('specifications.specImage');
+                          }}
                           placeholder="Image URL..."
                           style={{
                             width: '100%',
@@ -5790,10 +5833,13 @@ const ProductForm = () => {
                       <div className="pf-spec-field-group">
                         <label className="pf-spec-label">Specification Video URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.specifications?.specVideoUrl ? 'pf-error' : ''}`}
                           type="text"
                           value={specVideoUrl}
-                          onChange={(e) => setSpecVideoUrl(e.target.value)}
+                          onChange={(e) => {
+                            setSpecVideoUrl(e.target.value);
+                            clearSaveValidationError('specifications.specVideoUrl');
+                          }}
                           placeholder="Video URL..."
                           style={{
                             width: '100%',
@@ -5859,10 +5905,13 @@ const ProductForm = () => {
                       <div className="pf-spec-divider-block pf-spec-section-stack" style={{ gap: 12 }}>
                         <label className="pf-spec-label">Specification Highlights Grid Title</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.specifications?.highlightsTitle ? 'pf-error' : ''}`}
                           type="text"
                           value={specHighlights.grid_title}
-                          onChange={(e) => setSpecHighlights(prev => ({ ...prev, grid_title: e.target.value }))}
+                          onChange={(e) => {
+                            setSpecHighlights(prev => ({ ...prev, grid_title: e.target.value }));
+                            clearSaveValidationError('specifications.highlightsTitle');
+                          }}
                           placeholder="Highlights title..."
                           style={{
                             width: '100%',
@@ -5893,7 +5942,7 @@ const ProductForm = () => {
                                   />
                                 </div>
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${saveValidationErrors.specifications?.highlightRows?.[i]?.value ? 'pf-error' : ''}`}
                                     type="text"
                                     value={it.value}
                                     onChange={e => handleHighlightChange(i, 'value', e.target.value)}
@@ -5901,7 +5950,7 @@ const ProductForm = () => {
                                     style={{ width: 200, minWidth: 200, flex: '0 0 200px', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.specifications?.highlightRows?.[i]?.value ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${saveValidationErrors.specifications?.highlightRows?.[i]?.title ? 'pf-error' : ''}`}
                                     type="text"
                                     value={it.title}
                                     onChange={e => handleHighlightChange(i, 'title', e.target.value)}
@@ -5909,7 +5958,7 @@ const ProductForm = () => {
                                     style={{ width: 180, minWidth: 180, flex: '0 0 180px', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.specifications?.highlightRows?.[i]?.title ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${saveValidationErrors.specifications?.highlightRows?.[i]?.subtitle ? 'pf-error' : ''}`}
                                     type="text"
                                     value={it.subtitle}
                                     onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
@@ -5954,7 +6003,10 @@ const ProductForm = () => {
                           className={`custom-input ${saveValidationErrors.specifications?.specBottomBanner ? 'pf-error' : ''}`}
                           type="text"
                           value={spec_bottom_banner}
-                          onChange={(e) => setSpec_bottom_banner(e.target.value)}
+                          onChange={(e) => {
+                            setSpec_bottom_banner(e.target.value);
+                            clearSaveValidationError('specifications.specBottomBanner');
+                          }}
                           placeholder="Banner Image URL..."
                           style={{
                             width: '100%',
@@ -6936,15 +6988,16 @@ const ProductForm = () => {
                             <div>
                               <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 6 }}>Intro Heading</label>
                               <input
-                                className="custom-input"
+                                className={`custom-input ${saveValidationErrors.overview?.introHeading ? 'pf-error' : ''}`}
                                 type="text"
                                 value={overviewData.intro?.heading || ''}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                   setOverviewData((prev) => ({
                                     ...prev,
                                     intro: { ...prev.intro, heading: e.target.value },
-                                  }))
-                                }
+                                  }));
+                                  clearSaveValidationError('overview.introHeading');
+                                }}
                                 style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introHeading ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                 placeholder="e.g. Organize Everything. Simplify Your Space."
                               />
@@ -6953,15 +7006,16 @@ const ProductForm = () => {
                             <div>
                               <label style={{ fontWeight: 500, color: '#1f2937', display: 'block', marginBottom: 6 }}>Intro Description</label>
                               <textarea
-                                className="custom-input"
+                                className={`custom-input ${saveValidationErrors.overview?.introDescription ? 'pf-error' : ''}`}
                                 rows={3}
                                 value={overviewData.intro?.text || ''}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                   setOverviewData((prev) => ({
                                     ...prev,
                                     intro: { ...prev.intro, text: e.target.value },
-                                  }))
-                                }
+                                  }));
+                                  clearSaveValidationError('overview.introDescription');
+                                }}
                                 style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introDescription ? '2px solid #ef4444' : '1px solid #a0a0a0', resize: 'vertical' }}
                                 placeholder="e.g. Maximize your living and workspaces with this durable, multi-purpose storage solution..."
                               />
@@ -7001,13 +7055,14 @@ const ProductForm = () => {
 
                                   {/* Col 3: Highlight Description */}
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${saveValidationErrors.overview?.introBullets?.[idx] ? 'pf-error' : ''}`}
                                     type="text"
                                     value={b.text || ''}
                                     onChange={(e) => {
                                       const updated = [...(overviewData.intro?.bullets || [])];
                                       updated[idx] = { ...updated[idx], text: e.target.value };
                                       setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
+                                      clearSaveValidationError('overview.introBullets', idx);
                                     }}
                                     placeholder="e.g. High grade acrylic material..."
                                     style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introBullets?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
@@ -7047,13 +7102,14 @@ const ProductForm = () => {
                                 <div key={`usecase-${idx}`} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                                   <div style={{ flex: 1 }}>
                                     <input
-                                      className="custom-input"
+                                      className={`custom-input ${saveValidationErrors.overview?.useCases?.[idx] ? 'pf-error' : ''}`}
                                       type="text"
                                       value={uc.image || ''}
                                       onChange={(e) => {
                                         const updated = [...(overviewData.use_cases || [])];
                                         updated[idx] = { ...updated[idx], image: e.target.value };
                                         setOverviewData(prev => ({ ...prev, use_cases: updated }));
+                                        clearSaveValidationError('overview.useCases', idx);
                                       }}
                                       placeholder="e.g. https://cloudinary.com/use-case-image.jpg"
                                       style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.useCases?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
@@ -7121,13 +7177,14 @@ const ProductForm = () => {
 
                                 {/* Col 3: Scenario Context */}
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.overview?.perfectFor?.[idx] ? 'pf-error' : ''}`}
                                   type="text"
                                   value={pf.label || ''}
                                   onChange={(e) => {
                                     const updated = [...(overviewData.perfect_for || [])];
                                     updated[idx] = { ...updated[idx], label: e.target.value };
                                     setOverviewData(prev => ({ ...prev, perfect_for: updated }));
+                                    clearSaveValidationError('overview.perfectFor', idx);
                                   }}
                                   placeholder="e.g. Workspaces, Makeup Counters, Bedrooms..."
                                   style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.perfectFor?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
@@ -7193,13 +7250,14 @@ const ProductForm = () => {
 
                                 {/* Col 3: Value Proposition Description */}
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.overview?.whyLoveIt?.[idx] ? 'pf-error' : ''}`}
                                   type="text"
                                   value={w.text || ''}
                                   onChange={(e) => {
                                     const updated = [...(overviewData.why_love_it || [])];
                                     updated[idx] = { ...updated[idx], text: e.target.value };
                                     setOverviewData(prev => ({ ...prev, why_love_it: updated }));
+                                    clearSaveValidationError('overview.whyLoveIt', idx);
                                   }}
                                   placeholder="e.g. Durable design that stands the test of time..."
                                   style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.whyLoveIt?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
@@ -7250,22 +7308,28 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">Section Title</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.inclusions?.title ? 'pf-error' : ''}`}
                           type="text"
                           placeholder="e.g. What's in the Box"
                           value={inclusions.title}
-                          onChange={(e) => setInclusions(prev => ({ ...prev, title: e.target.value }))}
+                          onChange={(e) => {
+                            setInclusions(prev => ({ ...prev, title: e.target.value }));
+                            clearSaveValidationError('inclusions.title');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.inclusions?.title ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
                       <div>
                         <label className="pf-label">Hero Image URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.inclusions?.heroImageUrl ? 'pf-error' : ''}`}
                           type="text"
                           placeholder="Image URL"
                           value={inclusions.hero_image_url}
-                          onChange={(e) => setInclusions(prev => ({ ...prev, hero_image_url: e.target.value }))}
+                          onChange={(e) => {
+                            setInclusions(prev => ({ ...prev, hero_image_url: e.target.value }));
+                            clearSaveValidationError('inclusions.heroImageUrl');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.inclusions?.heroImageUrl ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7273,11 +7337,14 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">Description</label>
                         <textarea
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.inclusions?.description ? 'pf-error' : ''}`}
                           rows={4}
                           placeholder="Description..."
                           value={inclusions.description}
-                          onChange={(e) => setInclusions(prev => ({ ...prev, description: e.target.value }))}
+                          onChange={(e) => {
+                            setInclusions(prev => ({ ...prev, description: e.target.value }));
+                            clearSaveValidationError('inclusions.description');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.inclusions?.description ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7300,7 +7367,7 @@ const ProductForm = () => {
                             <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                               <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.inclusions?.items?.[idx]?.short_description ? 'pf-error' : ''}`}
                                   type="text"
                                   placeholder="Short Description"
                                   value={item.short_description}
@@ -7308,11 +7375,12 @@ const ProductForm = () => {
                                     const newItems = [...inclusions.items];
                                     newItems[idx].short_description = e.target.value;
                                     setInclusions(prev => ({ ...prev, items: newItems }));
+                                    clearSaveValidationError('inclusions.items', idx, 'short_description');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.inclusions?.items?.[idx]?.short_description ? '2px solid #ef4444' : undefined }}
                                 />
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.inclusions?.items?.[idx]?.image_url ? 'pf-error' : ''}`}
                                   type="text"
                                   placeholder="Image URL"
                                   value={item.image_url || ''}
@@ -7320,6 +7388,7 @@ const ProductForm = () => {
                                     const newItems = [...inclusions.items];
                                     newItems[idx].image_url = e.target.value;
                                     setInclusions(prev => ({ ...prev, items: newItems }));
+                                    clearSaveValidationError('inclusions.items', idx, 'image_url');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.inclusions?.items?.[idx]?.image_url ? '2px solid #ef4444' : undefined }}
                                 />
@@ -7360,22 +7429,28 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">Section Title</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.howToUse?.title ? 'pf-error' : ''}`}
                           type="text"
                           placeholder="e.g. How to Use"
                           value={howToUse.title}
-                          onChange={(e) => setHowToUse(prev => ({ ...prev, title: e.target.value }))}
+                          onChange={(e) => {
+                            setHowToUse(prev => ({ ...prev, title: e.target.value }));
+                            clearSaveValidationError('howToUse.title');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.howToUse?.title ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
                       <div>
                         <label className="pf-label">Hero Image URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.howToUse?.heroImageUrl ? 'pf-error' : ''}`}
                           type="text"
                           placeholder="Image URL"
                           value={howToUse.hero_image_url}
-                          onChange={(e) => setHowToUse(prev => ({ ...prev, hero_image_url: e.target.value }))}
+                          onChange={(e) => {
+                            setHowToUse(prev => ({ ...prev, hero_image_url: e.target.value }));
+                            clearSaveValidationError('howToUse.heroImageUrl');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.howToUse?.heroImageUrl ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7383,11 +7458,14 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">Description</label>
                         <textarea
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.howToUse?.description ? 'pf-error' : ''}`}
                           rows={4}
                           placeholder="Description..."
                           value={howToUse.description}
-                          onChange={(e) => setHowToUse(prev => ({ ...prev, description: e.target.value }))}
+                          onChange={(e) => {
+                            setHowToUse(prev => ({ ...prev, description: e.target.value }));
+                            clearSaveValidationError('howToUse.description');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.howToUse?.description ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7395,11 +7473,14 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">TIP</label>
                         <textarea
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.howToUse?.tip ? 'pf-error' : ''}`}
                           rows={4}
                           placeholder="e.g. Tip: Clean with a soft, damp cloth for long-lasting use."
                           value={howToUse.tip}
-                          onChange={(e) => setHowToUse(prev => ({ ...prev, tip: e.target.value }))}
+                          onChange={(e) => {
+                            setHowToUse(prev => ({ ...prev, tip: e.target.value }));
+                            clearSaveValidationError('howToUse.tip');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.howToUse?.tip ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7422,7 +7503,7 @@ const ProductForm = () => {
                             <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                               <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.howToUse?.items?.[idx]?.short_description ? 'pf-error' : ''}`}
                                   type="text"
                                   placeholder="Short Description / Step Info"
                                   value={item.short_description}
@@ -7430,11 +7511,12 @@ const ProductForm = () => {
                                     const newItems = [...howToUse.items];
                                     newItems[idx].short_description = e.target.value;
                                     setHowToUse(prev => ({ ...prev, items: newItems }));
+                                    clearSaveValidationError('howToUse.items', idx, 'short_description');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.howToUse?.items?.[idx]?.short_description ? '2px solid #ef4444' : undefined }}
                                 />
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.howToUse?.items?.[idx]?.image_url ? 'pf-error' : ''}`}
                                   type="text"
                                   placeholder="Image URL"
                                   value={item.image_url || ''}
@@ -7442,6 +7524,7 @@ const ProductForm = () => {
                                     const newItems = [...howToUse.items];
                                     newItems[idx].image_url = e.target.value;
                                     setHowToUse(prev => ({ ...prev, items: newItems }));
+                                    clearSaveValidationError('howToUse.items', idx, 'image_url');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.howToUse?.items?.[idx]?.image_url ? '2px solid #ef4444' : undefined }}
                                 />
@@ -7482,11 +7565,14 @@ const ProductForm = () => {
                       <div>
                         <label className="pf-label">Header Image URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.faqs?.headerImage ? 'pf-error' : ''}`}
                           type="text"
                           placeholder="https://..."
                           value={faqsHeaderImage}
-                          onChange={(e) => setFaqsHeaderImage(e.target.value)}
+                          onChange={(e) => {
+                            setFaqsHeaderImage(e.target.value);
+                            clearSaveValidationError('faqs.headerImage');
+                          }}
                           style={{ width: '100%', border: saveValidationErrors.faqs?.headerImage ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
@@ -7508,7 +7594,7 @@ const ProductForm = () => {
                             <div key={idx} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                               <div style={{ flex: 1, display: 'grid', gap: 12 }}>
                                 <input
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.faqs?.rows?.[idx]?.question ? 'pf-error' : ''}`}
                                   type="text"
                                   placeholder="Question"
                                   value={faq.question}
@@ -7516,11 +7602,12 @@ const ProductForm = () => {
                                     const newFaqs = [...faqs];
                                     newFaqs[idx].question = e.target.value;
                                     setFaqs(newFaqs);
+                                    clearSaveValidationError('faqs.rows', idx, 'question');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.faqs?.rows?.[idx]?.question ? '2px solid #ef4444' : undefined }}
                                 />
                                 <textarea
-                                  className="custom-input"
+                                  className={`custom-input ${saveValidationErrors.faqs?.rows?.[idx]?.answer ? 'pf-error' : ''}`}
                                   rows={2}
                                   placeholder="Answer"
                                   value={faq.answer}
@@ -7528,6 +7615,7 @@ const ProductForm = () => {
                                     const newFaqs = [...faqs];
                                     newFaqs[idx].answer = e.target.value;
                                     setFaqs(newFaqs);
+                                    clearSaveValidationError('faqs.rows', idx, 'answer');
                                   }}
                                   style={{ width: '100%', border: saveValidationErrors.faqs?.rows?.[idx]?.answer ? '2px solid #ef4444' : undefined }}
                                 />
