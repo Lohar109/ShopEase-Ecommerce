@@ -352,6 +352,15 @@ const ProductForm = () => {
   const [highlightSubcategory, setHighlightSubcategory] = useState(false);
   const [highlightSubSubcategory, setHighlightSubSubcategory] = useState(false);
   const [highlightAudience, setHighlightAudience] = useState(false);
+  const [saveValidationErrors, setSaveValidationErrors] = useState({
+    name: false,
+    brand: false,
+    description: false,
+    category: false,
+    audience: false,
+    mainImage: false,
+    inventory: [],
+  });
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const {
     categories: cachedCategories,
@@ -2445,6 +2454,7 @@ const ProductForm = () => {
   // Update variant row and always auto-generate SKU
   const handleVariantChange = (idx, field, value) => {
     setDuplicateSkuError(null);
+    clearSaveValidationError('inventory', idx, field);
     setVariantRows(rows => rows.map((row, i) => {
       if (i !== idx) return row;
       let updated = { ...row, [field]: value };
@@ -2555,15 +2565,118 @@ const ProductForm = () => {
     setVariantRows(rows => rows.map((row, i) => i === idx ? { ...row, sku: value, skuManuallyEdited: true } : row));
   };
 
-  const handleSubmitProduct = async () => {
-    if (!categoryId) {
-      alert('Please select a category.');
-      return;
+  const clearSaveValidationError = (field, index = null, variantField = null) => {
+    setSaveValidationErrors((prev) => {
+      if (field === 'inventory' && index !== null) {
+        const nextInventory = Array.isArray(prev.inventory) ? prev.inventory.map((row, rowIndex) => {
+          if (rowIndex !== index) return row;
+          const nextRow = { ...(row || {}) };
+          if (variantField === 'size_value' || variantField === 'size_unit') {
+            nextRow.size_value = false;
+            nextRow.size_unit = false;
+          } else if (variantField) {
+            nextRow[variantField] = false;
+          }
+          return nextRow;
+        }) : [];
+        return { ...prev, inventory: nextInventory };
+      }
+
+      return { ...prev, [field]: false };
+    });
+  };
+
+  const buildSaveValidationErrors = () => {
+    const nextErrors = {
+      name: false,
+      brand: false,
+      description: false,
+      category: false,
+      audience: false,
+      mainImage: false,
+      inventory: [],
+    };
+
+    const missingSections = [];
+
+    if (!String(name || '').trim()) {
+      nextErrors.name = true;
+      missingSections.push('general');
     }
 
-    if (!audience) {
-      alert('Please select an audience.');
-      setHighlightAudience(true);
+    if (!String(brand || '').trim()) {
+      nextErrors.brand = true;
+      if (!missingSections.includes('general')) missingSections.push('general');
+    }
+
+    if (!String(description || '').trim()) {
+      nextErrors.description = true;
+      if (!missingSections.includes('general')) missingSections.push('general');
+    }
+
+    if (!String(categoryId || '').trim()) {
+      nextErrors.category = true;
+      if (!missingSections.includes('general')) missingSections.push('general');
+    }
+
+    if (!String(audience || '').trim()) {
+      nextErrors.audience = true;
+      if (!missingSections.includes('general')) missingSections.push('general');
+    }
+
+    if (!String(mainImage || '').trim()) {
+      nextErrors.mainImage = true;
+      missingSections.push('media');
+    }
+
+    const inventoryRows = Array.isArray(variantRows) ? variantRows : [];
+    if (inventoryRows.length === 0) {
+      missingSections.push('inventory');
+    } else {
+      nextErrors.inventory = inventoryRows.map((variant) => {
+        const size = composeVariantSize(variant);
+        const color = String(variant?.color || '').trim();
+        const price = String(variant?.price ?? '').trim();
+        const stock = String(variant?.stock ?? '').trim();
+        const image = String(variant?.image || '').trim();
+
+        return {
+          size_value: !size,
+          size_unit: !size,
+          color: !color,
+          price: price === '',
+          stock: stock === '',
+          image: !image || image === 'Auto-synced',
+        };
+      });
+
+      if (nextErrors.inventory.some((row) => Object.values(row || {}).some(Boolean))) {
+        missingSections.push('inventory');
+      }
+    }
+
+    return { nextErrors, missingSections };
+  };
+
+  const handleSubmitProduct = async () => {
+    const { nextErrors, missingSections } = buildSaveValidationErrors();
+    setSaveValidationErrors(nextErrors);
+
+    const hasInventoryErrors = (Array.isArray(variantRows) && variantRows.length === 0) || nextErrors.inventory.some((row) => Object.values(row || {}).some(Boolean));
+    const hasErrors = nextErrors.name || nextErrors.brand || nextErrors.description || nextErrors.category || nextErrors.audience || nextErrors.mainImage || hasInventoryErrors;
+    if (hasErrors) {
+      setHighlightCategory(Boolean(nextErrors.category));
+      setHighlightAudience(Boolean(nextErrors.audience));
+
+      if (missingSections.includes('general')) {
+        setActiveTab('general');
+      } else if (missingSections.includes('media')) {
+        setActiveTab('media');
+      } else if (missingSections.includes('inventory')) {
+        setActiveTab('inventory');
+      } else {
+        setActiveTab('general');
+      }
       return;
     }
 
@@ -5154,8 +5267,11 @@ const ProductForm = () => {
                         className="custom-input"
                         type="text"
                         value={name}
-                        onChange={e => setName(e.target.value)}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                        onChange={e => {
+                          setName(e.target.value);
+                          clearSaveValidationError('name');
+                        }}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.name ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
                         placeholder="Enter product name"
                         required
                       />
@@ -5202,13 +5318,14 @@ const ProductForm = () => {
                                   const id = aud.target.value ? parseInt(aud.target.value) : '';
                                   setAudience(id);
                                   setHighlightAudience(false);
+                                  clearSaveValidationError('audience');
                                 }}
                                 style={{
                                   width: '100%',
                                   padding: '10px 14px',
                                   borderRadius: 12,
-                                  border: highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0',
-                                  background: highlightAudience ? '#fef9c3' : '#fff',
+                                  border: saveValidationErrors.audience ? '2px solid #ef4444' : (highlightAudience ? '2px solid #eab308' : '1px solid #a0a0a0'),
+                                  background: saveValidationErrors.audience ? '#fef2f2' : (highlightAudience ? '#fef9c3' : '#fff'),
                                   marginTop: 4,
                                   transition: 'all 0.2s ease',
                                 }}
@@ -5242,8 +5359,11 @@ const ProductForm = () => {
                         className="custom-input"
                         type="text"
                         value={brand}
-                        onChange={e => setBrand(e.target.value)}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                        onChange={e => {
+                          setBrand(e.target.value);
+                          clearSaveValidationError('brand');
+                        }}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.brand ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
                         placeholder="Enter brand name"
                         required
                       />
@@ -5254,8 +5374,11 @@ const ProductForm = () => {
                       <textarea
                         className="custom-input"
                         value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
+                        onChange={e => {
+                          setDescription(e.target.value);
+                          clearSaveValidationError('description');
+                        }}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.description ? '2px solid #ef4444' : '1px solid #a0a0a0', minHeight: 80, marginTop: 4 }}
                         placeholder="Enter product description"
                         required
                       />
@@ -5279,13 +5402,14 @@ const ProductForm = () => {
                               setSubcategoryId('');
                               setSubSubcategoryId('');
                               setHighlightCategory(false);
+                              clearSaveValidationError('category');
                             }}
                             style={{
                               width: '100%',
                               padding: '10px 14px',
                               borderRadius: 12,
-                              border: highlightCategory ? '2px solid #eab308' : '1px solid #a0a0a0',
-                              background: highlightCategory ? '#fef9c3' : '#fff',
+                              border: saveValidationErrors.category ? '2px solid #ef4444' : (highlightCategory ? '2px solid #eab308' : '1px solid #a0a0a0'),
+                              background: saveValidationErrors.category ? '#fef2f2' : (highlightCategory ? '#fef9c3' : '#fff'),
                               transition: 'all 0.2s ease',
                             }}
                             required
@@ -5639,8 +5763,12 @@ const ProductForm = () => {
                           className="custom-input"
                           type="text"
                           value={mainImage}
-                          onChange={e => setMainImage(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          onChange={e => {
+                            setMainImage(e.target.value);
+                            clearSaveValidationError('mainImage');
+                            clearSaveValidationError('inventory', 0, 'image');
+                          }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.mainImage ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
                           placeholder="Paste Cloudinary main image URL"
                           required
                         />
@@ -5845,10 +5973,10 @@ const ProductForm = () => {
                                 }}
                               >
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_value ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_unit ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
@@ -5863,13 +5991,13 @@ const ProductForm = () => {
                                   <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.color ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.price ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.stock ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div
                                   className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
@@ -5925,7 +6053,7 @@ const ProductForm = () => {
                                         height: 40,
                                         padding: '0 8px',
                                         borderRadius: 12,
-                                        border: '1px solid #d1d5db',
+                                        border: saveValidationErrors.inventory?.[index]?.image ? '2px solid #ef4444' : '1px solid #d1d5db',
                                         background: '#f3f4f6',
                                         color: '#6b7280',
                                         cursor: 'text',
@@ -5949,7 +6077,7 @@ const ProductForm = () => {
                                       height: 40,
                                       padding: '0 8px',
                                       borderRadius: 12,
-                                      border: '1px solid #a0a0a0',
+                                      border: saveValidationErrors.inventory?.[index]?.image ? '2px solid #ef4444' : '1px solid #a0a0a0',
                                       background: '#fff',
                                       color: '#111',
                                       cursor: 'text',
