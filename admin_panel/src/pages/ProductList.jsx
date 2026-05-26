@@ -669,20 +669,12 @@ const ProductList = () => {
                 </thead>
 
                 {loading ? (
-                  <tbody>
-                    <tr>
-                      <td colSpan={8} style={{ padding: 0 }}>
-                        <div style={{ minHeight: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <TableSkeleton
-                            rows={5}
-                            cols={8}
-                            productCol={0}
-                            columns={['product', 'text', 'text', 'text', 'text', 'toggle', 'toggle', 'actions']}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
+                  <TableSkeleton
+                    rows={5}
+                    cols={8}
+                    productCol={0}
+                    columns={['product', 'text', 'text', 'text', 'text', 'toggle', 'toggle', 'actions']}
+                  />
                 ) : (
                 <tbody>
                   {rows.map((product) => {
