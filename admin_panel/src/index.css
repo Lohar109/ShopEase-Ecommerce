@@ -124,3 +124,14 @@ textarea.quick-paste-textarea {
   line-height: 1.6 !important;
 }
 
+/* Validation error marker: persistent red border and visible focus state */
+.pf-error {
+  border-color: #ef4444 !important;
+  background-color: #fff6f6 !important;
+}
+.pf-error:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(239,68,68,0.12) !important;
+  border-color: #ef4444 !important;
+}
+
