@@ -2878,6 +2878,19 @@ const ProductForm = () => {
       } else {
         setActiveTab('general');
       }
+      // After switching tab, scroll to the first invalid field marker
+      setTimeout(() => {
+        const first = document.querySelector('.pf-error');
+        if (first) {
+          try {
+            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof first.focus === 'function') first.focus();
+          } catch (e) {
+            // ignore
+          }
+        }
+      }, 120);
+
       return;
     }
 
@@ -5465,7 +5478,8 @@ const ProductForm = () => {
                     <div style={{ marginBottom: 18 }}>
                       <label style={{ fontWeight: 500 }}>Product Name</label>
                       <input
-                        className="custom-input"
+                        id="pf-name"
+                        className={`custom-input ${saveValidationErrors.name ? 'pf-error' : ''}`}
                         type="text"
                         value={name}
                         onChange={e => {
@@ -5513,7 +5527,8 @@ const ProductForm = () => {
                           <div style={{ flex: 1 }}>
                             <div className="pf-select-wrap">
                               <select
-                                className="custom-input pf-select"
+                                id="pf-audience"
+                                className={`custom-input pf-select ${saveValidationErrors.audience ? 'pf-error' : ''}`}
                                 value={audience}
                                 onChange={aud => {
                                   const id = aud.target.value ? parseInt(aud.target.value) : '';
@@ -5557,7 +5572,8 @@ const ProductForm = () => {
                     <div style={{ marginBottom: 18 }}>
                       <label style={{ fontWeight: 500 }}>Brand</label>
                       <input
-                        className="custom-input"
+                        id="pf-brand"
+                        className={`custom-input ${saveValidationErrors.brand ? 'pf-error' : ''}`}
                         type="text"
                         value={brand}
                         onChange={e => {
@@ -5573,7 +5589,8 @@ const ProductForm = () => {
                     <div style={{ marginBottom: 18 }}>
                       <label style={{ fontWeight: 500 }}>Description</label>
                       <textarea
-                        className="custom-input"
+                        id="pf-description"
+                        className={`custom-input ${saveValidationErrors.description ? 'pf-error' : ''}`}
                         value={description}
                         onChange={e => {
                           setDescription(e.target.value);
@@ -5596,7 +5613,8 @@ const ProductForm = () => {
                         </label>
                         <div className="pf-select-wrap">
                           <select
-                            className="custom-input pf-select"
+                            id="pf-category"
+                            className={`custom-input pf-select ${saveValidationErrors.category ? 'pf-error' : ''}`}
                             value={categoryId}
                             onChange={e => {
                               setCategoryId(e.target.value);
@@ -5639,7 +5657,8 @@ const ProductForm = () => {
                         </label>
                         <div className="pf-select-wrap">
                           <select
-                            className="custom-input pf-select"
+                            id="pf-subcategory"
+                            className={`custom-input pf-select ${saveValidationErrors.subcategory ? 'pf-error' : ''}`}
                             value={subcategoryId}
                             onChange={e => {
                               setSubcategoryId(e.target.value);
@@ -5795,7 +5814,7 @@ const ProductForm = () => {
                         {specs.map((spec, idx) => (
                           <div key={spec.sk || `spec-${idx}`} className="pf-spec-row">
                             <input
-                              className="custom-input"
+                              className={`custom-input ${saveValidationErrors.specifications?.specRows?.[idx]?.key ? 'pf-error' : ''}`}
                               type="text"
                               value={spec.key}
                               onChange={e => handleSpecChange(idx, 'key', e.target.value)}
@@ -5803,7 +5822,7 @@ const ProductForm = () => {
                               style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: saveValidationErrors.specifications?.specRows?.[idx]?.key ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                             />
                             <input
-                              className="custom-input"
+                              className={`custom-input ${saveValidationErrors.specifications?.specRows?.[idx]?.value ? 'pf-error' : ''}`}
                               type="text"
                               value={spec.value}
                               onChange={e => handleSpecChange(idx, 'value', e.target.value)}
@@ -5932,7 +5951,7 @@ const ProductForm = () => {
                       <div className="pf-spec-field-group">
                         <label className="pf-spec-label">Specification Bottom Banner Image URL</label>
                         <input
-                          className="custom-input"
+                          className={`custom-input ${saveValidationErrors.specifications?.specBottomBanner ? 'pf-error' : ''}`}
                           type="text"
                           value={spec_bottom_banner}
                           onChange={(e) => setSpec_bottom_banner(e.target.value)}
@@ -5961,7 +5980,8 @@ const ProductForm = () => {
                       <label style={{ fontWeight: 500 }}>Main Image URL</label>
                       <div style={{ position: 'relative' }}>
                         <input
-                          className="custom-input"
+                          id="pf-mainImage"
+                          className={`custom-input ${saveValidationErrors.mainImage ? 'pf-error' : ''}`}
                           type="text"
                           value={mainImage}
                           onChange={e => {
@@ -5981,7 +6001,7 @@ const ProductForm = () => {
                             style={{
                               position: 'absolute',
                               right: 8,
-                              top: 'calc(50% + 2px)',
+                              top: '50%',
                               transform: 'translateY(-50%)',
                               background: '#fef2f2',
                               color: '#ef4444',
@@ -6001,119 +6021,124 @@ const ProductForm = () => {
                           </button>
                         )}
                       </div>
+
                       {mainImage && (
-                        <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                        <div style={{ marginTop: 10 }}>
+                          <img src={mainImage} alt="Main" style={{ marginTop: 10, maxWidth: 180, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />
+                        </div>
                       )}
-                    </div>
 
-                    <div style={{ marginBottom: 24 }}>
-                      <label style={{ fontWeight: 500 }}>Product Video URL</label>
-                      <div style={{ position: 'relative' }}>
-                        <input
-                          className="custom-input"
-                          type="text"
-                          value={videoUrl}
-                          onChange={e => setVideoUrl(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.videoUrl ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
-                          placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
-                        />
+                      <div style={{ marginBottom: 24, marginTop: 12 }}>
+                        <label style={{ fontWeight: 500 }}>Product Video URL</label>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            id="pf-videoUrl"
+                            className={`custom-input ${saveValidationErrors.videoUrl ? 'pf-error' : ''}`}
+                            type="text"
+                            value={videoUrl}
+                            onChange={e => { setVideoUrl(e.target.value); clearSaveValidationError('videoUrl'); }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.videoUrl ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
+                            placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
+                          />
+                          {videoUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setVideoUrl('')}
+                              title="Clear video URL"
+                              style={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 'calc(50% + 2px)',
+                                transform: 'translateY(-50%)',
+                                background: '#fef2f2',
+                                color: '#ef4444',
+                                border: 'none',
+                                borderRadius: 6,
+                                padding: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
                         {videoUrl && (
-                          <button
-                            type="button"
-                            onClick={() => setVideoUrl('')}
-                            title="Clear video URL"
-                            style={{
-                              position: 'absolute',
-                              right: 8,
-                              top: 'calc(50% + 2px)',
-                              transform: 'translateY(-50%)',
-                              background: '#fef2f2',
-                              color: '#ef4444',
-                              border: 'none',
-                              borderRadius: 6,
-                              padding: 6,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s ease',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <video
+                            src={videoUrl}
+                            controls
+                            muted
+                            playsInline
+                            className="w-full max-h-[300px] rounded-lg border border-gray-200 shadow-sm"
+                            style={{ marginTop: 10, width: '100%', maxHeight: 300, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                          />
+                        )}
+                        {videoUrl && !/\.(mp4|webm|mov)$/i.test(videoUrl) && (
+                          <div style={{ marginTop: 6, color: '#d97706', fontSize: 12 }}>
+                            Warning: URL does not end with a common video extension (.mp4, .webm, .mov)
+                          </div>
                         )}
                       </div>
-                      {videoUrl && (
-                        <video
-                          src={videoUrl}
-                          controls
-                          muted
-                          playsInline
-                          className="w-full max-h-[300px] rounded-lg border border-gray-200 shadow-sm"
-                          style={{ marginTop: 10, width: '100%', maxHeight: 300, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
-                        />
-                      )}
-                      {videoUrl && !/\.(mp4|webm|mov)$/i.test(videoUrl) && (
-                        <div style={{ marginTop: 6, color: '#d97706', fontSize: 12 }}>
-                          Warning: URL does not end with a common video extension (.mp4, .webm, .mov)
-                        </div>
-                      )}
-                    </div>
 
-                    <div style={{ marginBottom: 8 }}>
-                      <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
-                      {galleryImages.map((img, idx) => (
-                        <div key={`g-${idx}-${String(img || '').slice(0, 24)}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
-                          <input
-                            className="custom-input"
-                            type="text"
-                            value={img}
-                            onChange={e => handleGalleryImageChange(idx, e.target.value)}
-                            placeholder="Paste Cloudinary image URL"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: (saveValidationErrors.galleryImages && !String(img || '').trim()) ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeGalleryImage(idx)}
-                            title="Remove image URL"
-                            style={{
-                              background: '#fef2f2',
-                              color: '#ef4444',
-                              border: 'none',
-                              borderRadius: 8,
-                              padding: 8,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s ease',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
-                      <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
-                    </div>
+                      <div style={{ marginBottom: 8 }}>
+                        <label style={{ fontWeight: 500 }}>Gallery Image URLs</label>
+                        {galleryImages.map((img, idx) => (
+                          <div key={`g-${idx}-${String(img || '').slice(0, 24)}`} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+                            <input
+                              id={`pf-gallery-${idx}`}
+                              className={`custom-input ${saveValidationErrors.galleryImages && !String(img || '').trim() ? 'pf-error' : ''}`}
+                              type="text"
+                              value={img}
+                              onChange={e => handleGalleryImageChange(idx, e.target.value)}
+                              placeholder="Paste Cloudinary image URL"
+                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: (saveValidationErrors.galleryImages && !String(img || '').trim()) ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeGalleryImage(idx)}
+                              title="Remove image URL"
+                              style={{
+                                background: '#fef2f2',
+                                color: '#ef4444',
+                                border: 'none',
+                                borderRadius: 8,
+                                padding: 8,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                        <button type="button" className="pf-image-link-btn" onClick={addGalleryImage} style={{ marginTop: 4 }}><Plus size={14} />Add Image Link</button>
+                      </div>
 
-                    {(() => {
-                      const imgs = galleryImages.filter(Boolean);
-                      if (imgs.length === 0) return null;
+                      {(() => {
+                        const imgs = galleryImages.filter(Boolean);
+                        if (imgs.length === 0) return null;
 
-                      return (
-                        <div className="pf-preview-grid">
-                          {imgs.map((url, i) => (
-                            <img key={`gp-${i}-${String(url || '').slice(0, 24)}`} src={url} alt="Gallery" className="pf-preview-img" />
-                          ))}
-                        </div>
-                      );
-                    })()}
-                    <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
-                      (Paste Cloudinary image links. You can add as many as you want.)
+                        return (
+                          <div className="pf-preview-grid">
+                            {imgs.map((url, i) => (
+                              <img key={`gp-${i}-${String(url || '').slice(0, 24)}`} src={url} alt="Gallery" className="pf-preview-img" />
+                            ))}
+                          </div>
+                        );
+                      })()}
+                      <div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>
+                        (Paste Cloudinary image links. You can add as many as you want.)
+                      </div>
                     </div>
                   </>
                 )}
@@ -6174,10 +6199,10 @@ const ProductForm = () => {
                                 }}
                               >
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_value ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.size_value ? 'pf-error' : ''}`} type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_value ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_unit ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.size_unit ? 'pf-error' : ''}`} type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_unit ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
@@ -6192,13 +6217,13 @@ const ProductForm = () => {
                                   <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.color ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.color ? 'pf-error' : ''}`} type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.color ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.price ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.price ? 'pf-error' : ''}`} type="number" min="0" step="0.01" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.price ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.stock ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.stock ? 'pf-error' : ''}`} type="number" min="0" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.stock ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
                                 <div
                                   className={`relative w-full rounded-md ${hasDuplicateSkuError ? 'border border-red-500' : 'border border-transparent'}`}
@@ -6245,7 +6270,7 @@ const ProductForm = () => {
                                 {index === 0 ? (
                                   <span className="auto-sync-tooltip-wrap" style={{ width: '100%' }}>
                                     <input
-                                      className="custom-input"
+                                      className={`custom-input ${saveValidationErrors.inventory?.[index]?.image ? 'pf-error' : ''}`}
                                       type="text"
                                       value={variant.image}
                                       readOnly
@@ -6269,7 +6294,7 @@ const ProductForm = () => {
                                   </span>
                                 ) : (
                                   <input
-                                    className="custom-input"
+                                    className={`custom-input ${saveValidationErrors.inventory?.[index]?.image ? 'pf-error' : ''}`}
                                     type="text"
                                     value={variant.image}
                                     onChange={e => handleVariantChange(index, 'image', e.target.value)}
