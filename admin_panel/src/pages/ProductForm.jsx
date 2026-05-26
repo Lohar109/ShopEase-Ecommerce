@@ -357,9 +357,46 @@ const ProductForm = () => {
     brand: false,
     description: false,
     category: false,
+    subcategory: false,
     audience: false,
     mainImage: false,
+    videoUrl: false,
+    galleryImages: false,
+    specifications: {
+      specDescription: false,
+      specImage: false,
+      specVideoUrl: false,
+      specBottomBanner: false,
+      specRows: [],
+      highlightsTitle: false,
+      highlightRows: [],
+    },
     inventory: [],
+    overview: {
+      introHeading: false,
+      introDescription: false,
+      introBullets: [],
+      useCases: [],
+      perfectFor: [],
+      whyLoveIt: [],
+    },
+    inclusions: {
+      title: false,
+      heroImageUrl: false,
+      description: false,
+      items: [],
+    },
+    howToUse: {
+      title: false,
+      heroImageUrl: false,
+      description: false,
+      tip: false,
+      items: [],
+    },
+    faqs: {
+      headerImage: false,
+      rows: [],
+    },
   });
   const [isMagicProcessHovered, setIsMagicProcessHovered] = useState(false);
   const {
@@ -2592,9 +2629,46 @@ const ProductForm = () => {
       brand: false,
       description: false,
       category: false,
+      subcategory: false,
       audience: false,
       mainImage: false,
+      videoUrl: false,
+      galleryImages: false,
+      specifications: {
+        specDescription: false,
+        specImage: false,
+        specVideoUrl: false,
+        specBottomBanner: false,
+        specRows: [],
+        highlightsTitle: false,
+        highlightRows: [],
+      },
       inventory: [],
+      overview: {
+        introHeading: false,
+        introDescription: false,
+        introBullets: [],
+        useCases: [],
+        perfectFor: [],
+        whyLoveIt: [],
+      },
+      inclusions: {
+        title: false,
+        heroImageUrl: false,
+        description: false,
+        items: [],
+      },
+      howToUse: {
+        title: false,
+        heroImageUrl: false,
+        description: false,
+        tip: false,
+        items: [],
+      },
+      faqs: {
+        headerImage: false,
+        rows: [],
+      },
     };
 
     const missingSections = [];
@@ -2619,6 +2693,11 @@ const ProductForm = () => {
       if (!missingSections.includes('general')) missingSections.push('general');
     }
 
+    if (!String(subcategoryId || '').trim()) {
+      nextErrors.subcategory = true;
+      if (!missingSections.includes('general')) missingSections.push('general');
+    }
+
     if (!String(audience || '').trim()) {
       nextErrors.audience = true;
       if (!missingSections.includes('general')) missingSections.push('general');
@@ -2626,7 +2705,47 @@ const ProductForm = () => {
 
     if (!String(mainImage || '').trim()) {
       nextErrors.mainImage = true;
-      missingSections.push('media');
+      if (!missingSections.includes('media')) missingSections.push('media');
+    }
+
+    if (!String(videoUrl || '').trim()) {
+      nextErrors.videoUrl = true;
+      if (!missingSections.includes('media')) missingSections.push('media');
+    }
+
+    const galleryList = Array.isArray(galleryImages) ? galleryImages : [];
+    const hasGalleryFilled = galleryList.some((img) => String(img || '').trim());
+    if (!hasGalleryFilled || galleryList.some((img) => String(img || '').trim() === '')) {
+      nextErrors.galleryImages = true;
+      if (!missingSections.includes('media')) missingSections.push('media');
+    }
+
+    const specRows = Array.isArray(specs) ? specs : [];
+    if (!String(specDescription || '').trim()) nextErrors.specifications.specDescription = true;
+    if (!String(specImage || '').trim()) nextErrors.specifications.specImage = true;
+    if (!String(specVideoUrl || '').trim()) nextErrors.specifications.specVideoUrl = true;
+    if (!String(spec_bottom_banner || '').trim()) nextErrors.specifications.specBottomBanner = true;
+    if (!String(specHighlights?.grid_title || '').trim()) nextErrors.specifications.highlightsTitle = true;
+    nextErrors.specifications.specRows = specRows.map((spec) => ({
+      key: !String(spec?.key || '').trim(),
+      value: !String(spec?.value || '').trim(),
+    }));
+    nextErrors.specifications.highlightRows = (Array.isArray(specHighlights?.grid_items) ? specHighlights.grid_items : []).map((item) => ({
+      value: !String(item?.value || '').trim(),
+      title: !String(item?.title || '').trim(),
+      subtitle: !String(item?.subtitle || '').trim(),
+    }));
+    const specsInvalid = nextErrors.specifications.specDescription ||
+      nextErrors.specifications.specImage ||
+      nextErrors.specifications.specVideoUrl ||
+      nextErrors.specifications.specBottomBanner ||
+      nextErrors.specifications.highlightsTitle ||
+      nextErrors.specifications.specRows.length === 0 ||
+      nextErrors.specifications.specRows.some((row) => row.key || row.value) ||
+      nextErrors.specifications.highlightRows.length === 0 ||
+      nextErrors.specifications.highlightRows.some((row) => row.value || row.title || row.subtitle);
+    if (specsInvalid && !missingSections.includes('specifications')) {
+      missingSections.push('specifications');
     }
 
     const inventoryRows = Array.isArray(variantRows) ? variantRows : [];
@@ -2634,15 +2753,16 @@ const ProductForm = () => {
       missingSections.push('inventory');
     } else {
       nextErrors.inventory = inventoryRows.map((variant) => {
-        const size = composeVariantSize(variant);
+        const sizeValue = String(variant?.size_value || '').trim();
+        const sizeUnit = String(variant?.size_unit || '').trim();
         const color = String(variant?.color || '').trim();
         const price = String(variant?.price ?? '').trim();
         const stock = String(variant?.stock ?? '').trim();
         const image = String(variant?.image || '').trim();
 
         return {
-          size_value: !size,
-          size_unit: !size,
+          size_value: !sizeValue,
+          size_unit: !sizeUnit,
           color: !color,
           price: price === '',
           stock: stock === '',
@@ -2651,8 +2771,80 @@ const ProductForm = () => {
       });
 
       if (nextErrors.inventory.some((row) => Object.values(row || {}).some(Boolean))) {
-        missingSections.push('inventory');
+        if (!missingSections.includes('inventory')) missingSections.push('inventory');
       }
+    }
+
+    const overviewBullets = Array.isArray(overviewData?.intro?.bullets) ? overviewData.intro.bullets : [];
+    const overviewUseCases = Array.isArray(overviewData?.use_cases) ? overviewData.use_cases : [];
+    const overviewPerfectFor = Array.isArray(overviewData?.perfect_for) ? overviewData.perfect_for : [];
+    const overviewWhyLoveIt = Array.isArray(overviewData?.why_love_it) ? overviewData.why_love_it : [];
+    nextErrors.overview.introHeading = !String(overviewData?.intro?.heading || '').trim();
+    nextErrors.overview.introDescription = !String(overviewData?.intro?.text || '').trim();
+    nextErrors.overview.introBullets = overviewBullets.map((bullet) => !String(bullet?.text || '').trim());
+    nextErrors.overview.useCases = overviewUseCases.map((uc) => !String(uc?.image || '').trim());
+    nextErrors.overview.perfectFor = overviewPerfectFor.map((pf) => !String(pf?.label || '').trim());
+    nextErrors.overview.whyLoveIt = overviewWhyLoveIt.map((row) => !String(row?.text || '').trim());
+    const overviewInvalid = nextErrors.overview.introHeading ||
+      nextErrors.overview.introDescription ||
+      nextErrors.overview.introBullets.length === 0 ||
+      nextErrors.overview.introBullets.some(Boolean) ||
+      nextErrors.overview.useCases.length === 0 ||
+      nextErrors.overview.useCases.some(Boolean) ||
+      nextErrors.overview.perfectFor.length === 0 ||
+      nextErrors.overview.perfectFor.some(Boolean) ||
+      nextErrors.overview.whyLoveIt.length === 0 ||
+      nextErrors.overview.whyLoveIt.some(Boolean);
+    if (overviewInvalid && !missingSections.includes('overview')) {
+      missingSections.push('overview');
+    }
+
+    const inclusionsItems = Array.isArray(inclusions?.items) ? inclusions.items : [];
+    nextErrors.inclusions.title = !String(inclusions?.title || '').trim();
+    nextErrors.inclusions.heroImageUrl = !String(inclusions?.hero_image_url || '').trim();
+    nextErrors.inclusions.description = !String(inclusions?.description || '').trim();
+    nextErrors.inclusions.items = inclusionsItems.map((item) => ({
+      short_description: !String(item?.short_description || '').trim(),
+      image_url: !String(item?.image_url || '').trim(),
+    }));
+    const inclusionsInvalid = nextErrors.inclusions.title ||
+      nextErrors.inclusions.heroImageUrl ||
+      nextErrors.inclusions.description ||
+      nextErrors.inclusions.items.length === 0 ||
+      nextErrors.inclusions.items.some((item) => item.short_description || item.image_url);
+    if (inclusionsInvalid && !missingSections.includes('inclusions')) {
+      missingSections.push('inclusions');
+    }
+
+    const howToUseItems = Array.isArray(howToUse?.items) ? howToUse.items : [];
+    nextErrors.howToUse.title = !String(howToUse?.title || '').trim();
+    nextErrors.howToUse.heroImageUrl = !String(howToUse?.hero_image_url || '').trim();
+    nextErrors.howToUse.description = !String(howToUse?.description || '').trim();
+    nextErrors.howToUse.tip = !String(howToUse?.tip || '').trim();
+    nextErrors.howToUse.items = howToUseItems.map((item) => ({
+      short_description: !String(item?.short_description || '').trim(),
+      image_url: !String(item?.image_url || '').trim(),
+    }));
+    const howToUseInvalid = nextErrors.howToUse.title ||
+      nextErrors.howToUse.heroImageUrl ||
+      nextErrors.howToUse.description ||
+      nextErrors.howToUse.tip ||
+      nextErrors.howToUse.items.length === 0 ||
+      nextErrors.howToUse.items.some((item) => item.short_description || item.image_url);
+    if (howToUseInvalid && !missingSections.includes('how_to_use')) {
+      missingSections.push('how_to_use');
+    }
+
+    nextErrors.faqs.headerImage = !String(faqsHeaderImage || '').trim();
+    nextErrors.faqs.rows = (Array.isArray(faqs) ? faqs : []).map((faq) => ({
+      question: !String(faq?.question || '').trim(),
+      answer: !String(faq?.answer || '').trim(),
+    }));
+    const faqsInvalid = nextErrors.faqs.headerImage ||
+      nextErrors.faqs.rows.length === 0 ||
+      nextErrors.faqs.rows.some((row) => row.question || row.answer);
+    if (faqsInvalid && !missingSections.includes('faqs')) {
+      missingSections.push('faqs');
     }
 
     return { nextErrors, missingSections };
@@ -2662,18 +2854,27 @@ const ProductForm = () => {
     const { nextErrors, missingSections } = buildSaveValidationErrors();
     setSaveValidationErrors(nextErrors);
 
-    const hasInventoryErrors = (Array.isArray(variantRows) && variantRows.length === 0) || nextErrors.inventory.some((row) => Object.values(row || {}).some(Boolean));
-    const hasErrors = nextErrors.name || nextErrors.brand || nextErrors.description || nextErrors.category || nextErrors.audience || nextErrors.mainImage || hasInventoryErrors;
+    const hasErrors = missingSections.length > 0;
     if (hasErrors) {
       setHighlightCategory(Boolean(nextErrors.category));
       setHighlightAudience(Boolean(nextErrors.audience));
 
       if (missingSections.includes('general')) {
         setActiveTab('general');
+      } else if (missingSections.includes('specifications')) {
+        setActiveTab('specifications');
       } else if (missingSections.includes('media')) {
         setActiveTab('media');
       } else if (missingSections.includes('inventory')) {
         setActiveTab('inventory');
+      } else if (missingSections.includes('overview')) {
+        setActiveTab('overview');
+      } else if (missingSections.includes('inclusions')) {
+        setActiveTab('inclusions');
+      } else if (missingSections.includes('how_to_use')) {
+        setActiveTab('how_to_use');
+      } else if (missingSections.includes('faqs')) {
+        setActiveTab('faqs');
       } else {
         setActiveTab('general');
       }
@@ -5449,9 +5650,9 @@ const ProductForm = () => {
                               width: '100%',
                               padding: '10px 14px',
                               borderRadius: 12,
-                              border: highlightSubcategory ? '2px solid #eab308' : '1px solid #a0a0a0',
+                              border: saveValidationErrors.subcategory ? '2px solid #ef4444' : (highlightSubcategory ? '2px solid #eab308' : '1px solid #a0a0a0'),
                               opacity: !categoryId ? 0.6 : 1,
-                              background: highlightSubcategory ? '#fef9c3' : (!categoryId ? '#f5f6fa' : '#fff'),
+                              background: saveValidationErrors.subcategory ? '#fef2f2' : (highlightSubcategory ? '#fef9c3' : (!categoryId ? '#f5f6fa' : '#fff')),
                               transition: 'all 0.2s ease',
                             }}
                             disabled={!categoryId}
@@ -5536,7 +5737,7 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '12px 16px',
                             borderRadius: 14,
-                            border: '1px solid #e5e7eb',
+                            border: saveValidationErrors.specifications?.specDescription ? '2px solid #ef4444' : '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             resize: 'vertical',
                             fontSize: '14px',
@@ -5559,7 +5760,7 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '12px 16px',
                             borderRadius: 14,
-                            border: '1px solid #e5e7eb',
+                            border: saveValidationErrors.specifications?.specImage ? '2px solid #ef4444' : '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             fontSize: '14px'
                           }}
@@ -5579,7 +5780,7 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '12px 16px',
                             borderRadius: 14,
-                            border: '1px solid #e5e7eb',
+                            border: saveValidationErrors.specifications?.specVideoUrl ? '2px solid #ef4444' : '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             fontSize: '14px'
                           }}
@@ -5599,7 +5800,7 @@ const ProductForm = () => {
                               value={spec.key}
                               onChange={e => handleSpecChange(idx, 'key', e.target.value)}
                               placeholder="Key (e.g. Material)"
-                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: saveValidationErrors.specifications?.specRows?.[idx]?.key ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                             />
                             <input
                               className="custom-input"
@@ -5607,7 +5808,7 @@ const ProductForm = () => {
                               value={spec.value}
                               onChange={e => handleSpecChange(idx, 'value', e.target.value)}
                               placeholder="Value (e.g. Cotton)"
-                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                              style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: saveValidationErrors.specifications?.specRows?.[idx]?.value ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                             />
                             <button
                               type="button"
@@ -5648,7 +5849,7 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '12px 16px',
                             borderRadius: 14,
-                            border: '1px solid #e5e7eb',
+                            border: saveValidationErrors.specifications?.highlightsTitle ? '2px solid #ef4444' : '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             fontSize: '14px'
                           }}
@@ -5678,7 +5879,7 @@ const ProductForm = () => {
                                     value={it.value}
                                     onChange={e => handleHighlightChange(i, 'value', e.target.value)}
                                     placeholder="e.g. 24% Protein"
-                                    style={{ width: 200, minWidth: 200, flex: '0 0 200px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                    style={{ width: 200, minWidth: 200, flex: '0 0 200px', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.specifications?.highlightRows?.[i]?.value ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <input
                                     className="custom-input"
@@ -5686,7 +5887,7 @@ const ProductForm = () => {
                                     value={it.title}
                                     onChange={e => handleHighlightChange(i, 'title', e.target.value)}
                                     placeholder="e.g. Protein"
-                                    style={{ width: 180, minWidth: 180, flex: '0 0 180px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                    style={{ width: 180, minWidth: 180, flex: '0 0 180px', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.specifications?.highlightRows?.[i]?.title ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <input
                                     className="custom-input"
@@ -5694,7 +5895,7 @@ const ProductForm = () => {
                                     value={it.subtitle}
                                     onChange={e => handleHighlightChange(i, 'subtitle', e.target.value)}
                                     placeholder="e.g. Supports strong muscles"
-                                    style={{ width: 260, minWidth: 260, flex: '0 0 260px', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                    style={{ width: 260, minWidth: 260, flex: '0 0 260px', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.specifications?.highlightRows?.[i]?.subtitle ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <button
                                     type="button"
@@ -5740,7 +5941,7 @@ const ProductForm = () => {
                             width: '100%',
                             padding: '12px 16px',
                             borderRadius: 14,
-                            border: '1px solid #e5e7eb',
+                            border: saveValidationErrors.specifications?.specBottomBanner ? '2px solid #ef4444' : '1px solid #e5e7eb',
                             backgroundColor: '#fff',
                             fontSize: '14px'
                           }}
@@ -5813,7 +6014,7 @@ const ProductForm = () => {
                           type="text"
                           value={videoUrl}
                           onChange={e => setVideoUrl(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', marginTop: 4 }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.videoUrl ? '2px solid #ef4444' : '1px solid #a0a0a0', marginTop: 4 }}
                           placeholder="Paste Cloudinary video link (e.g., https://res.cloudinary.com/.../video.mp4)"
                         />
                         {videoUrl && (
@@ -5871,7 +6072,7 @@ const ProductForm = () => {
                             value={img}
                             onChange={e => handleGalleryImageChange(idx, e.target.value)}
                             placeholder="Paste Cloudinary image URL"
-                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                            style={{ flex: 1, padding: '8px 10px', borderRadius: 12, border: (saveValidationErrors.galleryImages && !String(img || '').trim()) ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                           />
                           <button
                             type="button"
@@ -6719,7 +6920,7 @@ const ProductForm = () => {
                                     intro: { ...prev.intro, heading: e.target.value },
                                   }))
                                 }
-                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introHeading ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                 placeholder="e.g. Organize Everything. Simplify Your Space."
                               />
                             </div>
@@ -6736,7 +6937,7 @@ const ProductForm = () => {
                                     intro: { ...prev.intro, text: e.target.value },
                                   }))
                                 }
-                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0', resize: 'vertical' }}
+                                style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introDescription ? '2px solid #ef4444' : '1px solid #a0a0a0', resize: 'vertical' }}
                                 placeholder="e.g. Maximize your living and workspaces with this durable, multi-purpose storage solution..."
                               />
                             </div>
@@ -6784,7 +6985,7 @@ const ProductForm = () => {
                                       setOverviewData((prev) => ({ ...prev, intro: { ...prev.intro, bullets: updated } }));
                                     }}
                                     placeholder="e.g. High grade acrylic material..."
-                                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                    style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.introBullets?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                   />
                                   <button
                                     type="button"
@@ -6830,7 +7031,7 @@ const ProductForm = () => {
                                         setOverviewData(prev => ({ ...prev, use_cases: updated }));
                                       }}
                                       placeholder="e.g. https://cloudinary.com/use-case-image.jpg"
-                                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                      style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.useCases?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                     />
                                   </div>
                                   <button
@@ -6904,7 +7105,7 @@ const ProductForm = () => {
                                     setOverviewData(prev => ({ ...prev, perfect_for: updated }));
                                   }}
                                   placeholder="e.g. Workspaces, Makeup Counters, Bedrooms..."
-                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.perfectFor?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                 />
                                 <button
                                   type="button"
@@ -6976,7 +7177,7 @@ const ProductForm = () => {
                                     setOverviewData(prev => ({ ...prev, why_love_it: updated }));
                                   }}
                                   placeholder="e.g. Durable design that stands the test of time..."
-                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: '1px solid #a0a0a0' }}
+                                  style={{ flex: 1, padding: '10px 14px', borderRadius: 12, border: saveValidationErrors.overview?.whyLoveIt?.[idx] ? '2px solid #ef4444' : '1px solid #a0a0a0' }}
                                 />
                                 <button
                                   type="button"
@@ -7029,7 +7230,7 @@ const ProductForm = () => {
                           placeholder="e.g. What's in the Box"
                           value={inclusions.title}
                           onChange={(e) => setInclusions(prev => ({ ...prev, title: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.inclusions?.title ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
                       <div>
@@ -7040,7 +7241,7 @@ const ProductForm = () => {
                           placeholder="Image URL"
                           value={inclusions.hero_image_url}
                           onChange={(e) => setInclusions(prev => ({ ...prev, hero_image_url: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.inclusions?.heroImageUrl ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
 
@@ -7052,7 +7253,7 @@ const ProductForm = () => {
                           placeholder="Description..."
                           value={inclusions.description}
                           onChange={(e) => setInclusions(prev => ({ ...prev, description: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.inclusions?.description ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
 
@@ -7083,7 +7284,7 @@ const ProductForm = () => {
                                     newItems[idx].short_description = e.target.value;
                                     setInclusions(prev => ({ ...prev, items: newItems }));
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.inclusions?.items?.[idx]?.short_description ? '2px solid #ef4444' : undefined }}
                                 />
                                 <input
                                   className="custom-input"
@@ -7095,7 +7296,7 @@ const ProductForm = () => {
                                     newItems[idx].image_url = e.target.value;
                                     setInclusions(prev => ({ ...prev, items: newItems }));
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.inclusions?.items?.[idx]?.image_url ? '2px solid #ef4444' : undefined }}
                                 />
                               </div>
                               <button
@@ -7139,7 +7340,7 @@ const ProductForm = () => {
                           placeholder="e.g. How to Use"
                           value={howToUse.title}
                           onChange={(e) => setHowToUse(prev => ({ ...prev, title: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.howToUse?.title ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
                       <div>
@@ -7150,7 +7351,7 @@ const ProductForm = () => {
                           placeholder="Image URL"
                           value={howToUse.hero_image_url}
                           onChange={(e) => setHowToUse(prev => ({ ...prev, hero_image_url: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.howToUse?.heroImageUrl ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
 
@@ -7162,7 +7363,7 @@ const ProductForm = () => {
                           placeholder="Description..."
                           value={howToUse.description}
                           onChange={(e) => setHowToUse(prev => ({ ...prev, description: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.howToUse?.description ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
 
@@ -7174,7 +7375,7 @@ const ProductForm = () => {
                           placeholder="e.g. Tip: Clean with a soft, damp cloth for long-lasting use."
                           value={howToUse.tip}
                           onChange={(e) => setHowToUse(prev => ({ ...prev, tip: e.target.value }))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.howToUse?.tip ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
 
@@ -7205,7 +7406,7 @@ const ProductForm = () => {
                                     newItems[idx].short_description = e.target.value;
                                     setHowToUse(prev => ({ ...prev, items: newItems }));
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.howToUse?.items?.[idx]?.short_description ? '2px solid #ef4444' : undefined }}
                                 />
                                 <input
                                   className="custom-input"
@@ -7217,7 +7418,7 @@ const ProductForm = () => {
                                     newItems[idx].image_url = e.target.value;
                                     setHowToUse(prev => ({ ...prev, items: newItems }));
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.howToUse?.items?.[idx]?.image_url ? '2px solid #ef4444' : undefined }}
                                 />
                               </div>
                               <button
@@ -7261,7 +7462,7 @@ const ProductForm = () => {
                           placeholder="https://..."
                           value={faqsHeaderImage}
                           onChange={(e) => setFaqsHeaderImage(e.target.value)}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', border: saveValidationErrors.faqs?.headerImage ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
                       <div style={{ borderTop: '1px solid #f4f4f5', paddingTop: 24 }}>
@@ -7291,7 +7492,7 @@ const ProductForm = () => {
                                     newFaqs[idx].question = e.target.value;
                                     setFaqs(newFaqs);
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.faqs?.rows?.[idx]?.question ? '2px solid #ef4444' : undefined }}
                                 />
                                 <textarea
                                   className="custom-input"
@@ -7303,7 +7504,7 @@ const ProductForm = () => {
                                     newFaqs[idx].answer = e.target.value;
                                     setFaqs(newFaqs);
                                   }}
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', border: saveValidationErrors.faqs?.rows?.[idx]?.answer ? '2px solid #ef4444' : undefined }}
                                 />
                               </div>
                               <button
