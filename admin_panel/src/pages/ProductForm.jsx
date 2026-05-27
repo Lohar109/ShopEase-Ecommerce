@@ -2735,10 +2735,7 @@ const ProductForm = () => {
       if (!missingSections.includes('media')) missingSections.push('media');
     }
 
-    if (!String(videoUrl || '').trim()) {
-      nextErrors.videoUrl = true;
-      if (!missingSections.includes('media')) missingSections.push('media');
-    }
+    // Product Video URL is optional
 
     const galleryList = Array.isArray(galleryImages) ? galleryImages : [];
     const hasGalleryFilled = galleryList.some((img) => String(img || '').trim());
@@ -2750,7 +2747,7 @@ const ProductForm = () => {
     const specRows = Array.isArray(specs) ? specs : [];
     if (!String(specDescription || '').trim()) nextErrors.specifications.specDescription = true;
     if (!String(specImage || '').trim()) nextErrors.specifications.specImage = true;
-    if (!String(specVideoUrl || '').trim()) nextErrors.specifications.specVideoUrl = true;
+    // specVideoUrl is optional
     if (!String(spec_bottom_banner || '').trim()) nextErrors.specifications.specBottomBanner = true;
     if (!String(specHighlights?.grid_title || '').trim()) nextErrors.specifications.highlightsTitle = true;
     nextErrors.specifications.specRows = specRows.map((spec) => ({
@@ -5831,7 +5828,7 @@ const ProductForm = () => {
 
                       {/* Field 3: Video URL Group */}
                       <div className="pf-spec-field-group">
-                        <label className="pf-spec-label">Specification Video URL</label>
+                        <label className="pf-spec-label">Specification Video URL (optional)</label>
                         <input
                           className={`custom-input ${saveValidationErrors.specifications?.specVideoUrl ? 'pf-error' : ''}`}
                           type="text"
@@ -6081,7 +6078,7 @@ const ProductForm = () => {
                       )}
 
                       <div style={{ marginBottom: 24, marginTop: 12 }}>
-                        <label style={{ fontWeight: 500 }}>Product Video URL</label>
+                        <label style={{ fontWeight: 500 }}>Product Video URL (optional)</label>
                         <div style={{ position: 'relative' }}>
                           <input
                             id="pf-videoUrl"
