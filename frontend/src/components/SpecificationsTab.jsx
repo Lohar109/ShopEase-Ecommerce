@@ -31,13 +31,13 @@ const SpecificationsTab = ({ product }) => {
 
                 <style>{`
                   .spec-highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 720px; margin: 1rem auto 0; align-items: start; }
-                  .spec-highlights-grid > div { padding: 0.75rem 0.5rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+                  .spec-highlights-grid > div { padding: 0.75rem 0.5rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align: center; }
                   .spec-highlights-grid > div:not(:nth-child(3n)) { border-right: 1px solid rgba(0,0,0,0.06); }
                   .spec-highlights { padding-left: 1rem; padding-right: 1rem; }
                   .spec-highlight-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:9999px; background:#d9c2a0; }
-                  .spec-highlight-value{ font-weight:700; font-size:1rem; margin-top:0.25rem }
-                  .spec-highlight-title{ font-weight:600; font-size:0.9rem; margin-top:0.125rem }
-                  .spec-highlight-sub{ color:rgba(0,0,0,0.6); font-size:0.85rem; margin-top:0.25rem }
+                  .spec-highlight-value{ font-weight:700; font-size:1rem; margin-top:0.25rem; text-align: center; }
+                  .spec-highlight-title{ font-weight:600; font-size:0.9rem; margin-top:0.125rem; text-align: center; }
+                  .spec-highlight-sub{ color:rgba(0,0,0,0.6); font-size:0.85rem; margin-top:0.25rem; text-align: center; }
                   @media (max-width:1024px){ .spec-highlights-grid{ max-width:640px; } }
                   @media (max-width:768px){ .spec-highlights-grid{ grid-template-columns: repeat(2,1fr); max-width:100%; } .spec-highlights-grid > div:not(:nth-child(2n)){ border-right:none; border-bottom:1px solid rgba(0,0,0,0.06); } }
                 `}</style>
