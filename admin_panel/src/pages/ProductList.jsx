@@ -714,9 +714,8 @@ const ProductList = () => {
                           <td style={{ padding: '14px', verticalAlign: 'middle' }} />
                           <td
                             style={{ padding: '14px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}
-                            title={productSku || '-'}
                           >
-                            {truncateSku(productSku)}
+                            -
                           </td>
                           <td style={{ padding: '14px', fontSize: 14, color: '#111827', fontWeight: 600 }}>
                             {renderStockStatus(product.stock)}
