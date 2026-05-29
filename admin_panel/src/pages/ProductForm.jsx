@@ -2825,14 +2825,13 @@ const ProductForm = () => {
 
     const inclusionsItems = Array.isArray(inclusions?.items) ? inclusions.items : [];
     nextErrors.inclusions.title = !String(inclusions?.title || '').trim();
-    nextErrors.inclusions.heroImageUrl = !String(inclusions?.hero_image_url || '').trim();
+    nextErrors.inclusions.heroImageUrl = false;
     nextErrors.inclusions.description = !String(inclusions?.description || '').trim();
     nextErrors.inclusions.items = inclusionsItems.map((item) => ({
       short_description: !String(item?.short_description || '').trim(),
       image_url: !String(item?.image_url || '').trim(),
     }));
     const inclusionsInvalid = nextErrors.inclusions.title ||
-      nextErrors.inclusions.heroImageUrl ||
       nextErrors.inclusions.description ||
       nextErrors.inclusions.items.length === 0 ||
       nextErrors.inclusions.items.some((item) => item.short_description || item.image_url);
@@ -2933,7 +2932,7 @@ const ProductForm = () => {
       // Safe extraction regardless of whether the state is named 'inclusions' or 'whats_in_the_box'
       const inclusionsPayload = {
         title: inclusions?.title || inclusions?.whats_in_the_box?.title || '',
-        hero_image_url: inclusions?.hero_image_url || inclusions?.main_image || inclusions?.hero_image || '',
+        hero_image_url: '',
         description: inclusions?.description || inclusions?.whats_in_the_box?.description || '',
         items: (inclusions?.items || inclusions?.whats_in_the_box?.items || []).map(item => ({
           short_description: item?.short_description || item?.name || item?.text || '',
@@ -3415,7 +3414,6 @@ const ProductForm = () => {
     const inclusionsValid = Boolean(
       inclusions?.title?.trim() &&
       inclusions?.description?.trim() &&
-      inclusions?.hero_image_url?.trim() &&
       Array.isArray(inclusions?.items) &&
       inclusions.items.some(i => String(i?.short_description || '').trim() !== '')
     );
@@ -7316,20 +7314,7 @@ const ProductForm = () => {
                           style={{ width: '100%', border: saveValidationErrors.inclusions?.title ? '2px solid #ef4444' : undefined }}
                         />
                       </div>
-                      <div>
-                        <label className="pf-label">Hero Image URL</label>
-                        <input
-                          className={`custom-input ${saveValidationErrors.inclusions?.heroImageUrl ? 'pf-error' : ''}`}
-                          type="text"
-                          placeholder="Image URL"
-                          value={inclusions.hero_image_url}
-                          onChange={(e) => {
-                            setInclusions(prev => ({ ...prev, hero_image_url: e.target.value }));
-                            clearSaveValidationError('inclusions.heroImageUrl');
-                          }}
-                          style={{ width: '100%', border: saveValidationErrors.inclusions?.heroImageUrl ? '2px solid #ef4444' : undefined }}
-                        />
-                      </div>
+
 
                       <div>
                         <label className="pf-label">Description</label>
