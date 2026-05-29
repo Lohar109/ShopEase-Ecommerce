@@ -15,16 +15,7 @@ const ProductInclusionsTab = ({ product }) => {
         </p>
       </div>
 
-      {/* Centered Inclusions Hero Graphic */}
-      {hero_image_url && (
-        <div className="w-full max-w-2xl mx-auto pdp-inclusions-hero-box mb-12">
-          <img
-            src={hero_image_url}
-            alt={title || "What's Included"}
-            className="pdp-inclusions-hero-img"
-          />
-        </div>
-      )}
+
 
       {/* Sub-items Grid */}
       {product?.inclusions?.items && Array.isArray(product.inclusions.items) && product.inclusions.items.length > 0 && (
