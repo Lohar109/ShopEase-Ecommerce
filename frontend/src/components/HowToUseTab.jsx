@@ -76,16 +76,20 @@ const HowToUseTab = ({ product }) => {
 
                 <div className="pdp-inclusions-img-box">
                   {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={stepTitle}
-                      className="pdp-inclusions-img"
-                    />
+                    <>
+                      <img 
+                        src={item.image_url} 
+                        alt="" 
+                        className="pdp-inclusions-img-blur" 
+                      />
+                      <img
+                        src={item.image_url}
+                        alt={stepTitle}
+                        className="pdp-inclusions-img"
+                      />
+                    </>
                   ) : (
-                    <div
-                      className="pdp-inclusions-img"
-                      style={{ backgroundColor: '#f3f4f6', minHeight: '160px' }}
-                    />
+                    <div className="pdp-inclusions-img-placeholder" />
                   )}
                 </div>
               </div>

@@ -30,6 +30,11 @@ const ProductInclusionsTab = ({ product }) => {
               <div className="pdp-inclusions-img-box">
                 <img 
                   src={item.image_url} 
+                  alt="" 
+                  className="pdp-inclusions-img-blur" 
+                />
+                <img 
+                  src={item.image_url} 
                   alt={item.name || item.short_description || 'Item image'} 
                   className="pdp-inclusions-img" 
                 />
