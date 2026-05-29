@@ -38,8 +38,13 @@ const SpecificationsTab = ({ product }) => {
                   .spec-highlight-value{ font-weight:700; font-size:1rem; margin-top:0.25rem; text-align: center; }
                   .spec-highlight-title{ font-weight:600; font-size:0.9rem; margin-top:0.125rem; text-align: center; }
                   .spec-highlight-sub{ color:rgba(0,0,0,0.6); font-size:0.85rem; margin-top:0.25rem; text-align: center; }
+                  .spec-media-container { width: 100%; height: 450px; align-self: center; }
                   @media (max-width:1024px){ .spec-highlights-grid{ max-width:640px; } }
-                  @media (max-width:768px){ .spec-highlights-grid{ grid-template-columns: repeat(2,1fr); max-width:100%; } .spec-highlights-grid > div:not(:nth-child(2n)){ border-right:none; border-bottom:1px solid rgba(0,0,0,0.06); } }
+                  @media (max-width:768px){ 
+                    .spec-highlights-grid{ grid-template-columns: repeat(2,1fr); max-width:100%; } 
+                    .spec-highlights-grid > div:not(:nth-child(2n)){ border-right:none; border-bottom:1px solid rgba(0,0,0,0.06); } 
+                    .spec-media-container { height: 320px; }
+                  }
                 `}</style>
 
                 <div className="spec-highlights-grid">
@@ -65,7 +70,7 @@ const SpecificationsTab = ({ product }) => {
         </div>
 
         {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden">
+        <div className="md:col-span-7 min-w-0 spec-media-container bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden">
           {spec_video_url ? (
             <video 
               src={spec_video_url} 
