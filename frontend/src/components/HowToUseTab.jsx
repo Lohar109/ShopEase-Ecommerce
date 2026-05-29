@@ -45,7 +45,7 @@ const HowToUseTab = ({ product }) => {
             <img
               src={hero_image_url}
               alt={title || 'How to Use'}
-              className="w-full h-full object-cover block mx-auto"
+              className="w-full h-full object-contain block mx-auto"
             />
           ) : null}
         </div>

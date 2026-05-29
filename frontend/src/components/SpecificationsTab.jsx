@@ -79,7 +79,7 @@ const SpecificationsTab = ({ product }) => {
             <img 
               src={spec_image} 
               alt="Product Specifications" 
-              className="w-full h-full object-cover block mx-auto"
+              className="w-full h-full object-contain block mx-auto"
             />
           ) : null}
         </div>
