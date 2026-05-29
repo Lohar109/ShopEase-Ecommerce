@@ -95,9 +95,9 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         .object-cover { object-fit: cover; }
         
         /* Fixed Dimension Controls */
-        .w-\\[280px\\] { width: 280px; }
-        .min-w-\\[280px\\] { min-width: 280px; flex-shrink: 0; }
-        .h-\\[380px\\] { height: 380px; }
+        .w-\\[400px\\] { width: 400px; }
+        .min-w-\\[400px\\] { min-width: 400px; flex-shrink: 0; }
+        .h-\\[225px\\] { height: 225px; }
         
         .w-5 { width: 1.25rem; }
         .h-5 { height: 1.25rem; }
@@ -242,7 +242,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                   return (
                     <div
                       key={idx}
-                      className="w-[280px] min-w-[280px] h-[380px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
+                      className="w-[400px] min-w-[400px] h-[225px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
                     >
                       <img
                         src={imageUrl}
