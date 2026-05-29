@@ -90,9 +90,24 @@ const ProductList = () => {
     );
   };
 
-  const toggleExpanded = (productId) => {
+  const toggleExpanded = async (productId) => {
     const normalized = String(productId);
+    const isExpanding = !exp.includes(normalized);
     setExp((prev) => (prev.includes(normalized) ? prev.filter((id) => id !== normalized) : [...prev, normalized]));
+
+    if (isExpanding) {
+      const product = products.find((p) => String(p.id) === normalized);
+      if (product && !Array.isArray(product.variants)) {
+        try {
+          const detail = await fetchProductById(productId);
+          const updatedProduct = { ...product, variants: Array.isArray(detail?.variants) ? detail.variants : [] };
+          setProducts((prev) => prev.map((p) => (String(p.id) === normalized ? updatedProduct : p)));
+          syncProduct(updatedProduct);
+        } catch (err) {
+          console.error('Failed to load variants for product', productId, err);
+        }
+      }
+    }
   };
 
   const isExpanded = (productId) => exp.includes(String(productId));
@@ -303,20 +318,7 @@ const ProductList = () => {
         setCategories(Array.isArray(catsData) ? catsData : []);
         const list = Array.isArray(data) ? data : [];
 
-        const hydrated = await Promise.all(
-          list.map(async (product) => {
-            try {
-              const detail = await fetchProductById(product.id);
-              return { ...product, variants: Array.isArray(detail?.variants) ? detail.variants : [] };
-            } catch {
-              return { ...product, variants: [] };
-            }
-          })
-        );
-
-        if (!active) return;
-        setProducts(hydrated);
-        hydrated.forEach((product) => syncProduct(product));
+        setProducts(list);
       } catch (err) {
         setError(err.message || 'Failed to load products');
       } finally {
@@ -653,7 +655,7 @@ const ProductList = () => {
             </div>
           ) : (
             <div className="product-management-scroll" style={{ flex: 1, minHeight: 0 }}>
-              <div style={{ overflowX: 'auto', minHeight: loading ? '420px' : 'auto', display: loading ? 'flex' : 'block', alignItems: loading ? 'center' : 'stretch', justifyContent: loading ? 'center' : 'flex-start', width: '100%' }}>
+              <div style={{ overflowX: 'auto', minHeight: loading ? '420px' : 'auto', display: 'block', width: '100%' }}>
               <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
                 <thead>
                   <tr style={{ background: '#f9fafb' }}>
@@ -760,7 +762,21 @@ const ProductList = () => {
                           </td>
                         </tr>
 
-                        {expanded && (variants.length > 0 ? variants : [{ __empty: true }]).map((variant, index) => {
+                        {expanded && (product.variants === undefined ? (
+                          <tr key={`loading-${product.id}`} style={{ background: '#f8fafc' }}>
+                            <td
+                              style={{
+                                padding: '12px 14px 12px 48px',
+                                color: '#64748b',
+                                fontSize: 13,
+                                borderTop: '1px solid #e5e7eb'
+                              }}
+                              colSpan={8}
+                            >
+                              Loading variants...
+                            </td>
+                          </tr>
+                        ) : (variants.length > 0 ? variants : [{ __empty: true }]).map((variant, index) => {
                           if (variant.__empty) {
                             return (
                               <tr key={`empty-${product.id}`} style={{ background: '#f8fafc' }}>
@@ -839,7 +855,7 @@ const ProductList = () => {
                               <td style={{ padding: '10px 14px' }} />
                             </tr>
                           );
-                        })}
+                        }))}
                       </React.Fragment>
                     );
                   })}
