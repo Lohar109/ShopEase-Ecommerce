@@ -97,7 +97,7 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
         /* Fixed Dimension Controls */
         .w-\\[400px\\] { width: 400px; }
         .min-w-\\[400px\\] { min-width: 400px; flex-shrink: 0; }
-        .h-\\[225px\\] { height: 225px; }
+        .h-\\[320px\\] { height: 320px; }
         
         .w-5 { width: 1.25rem; }
         .h-5 { height: 1.25rem; }
@@ -242,12 +242,30 @@ const ProductOverview = ({ overview, product, specifications, setActiveTab }) =>
                   return (
                     <div
                       key={idx}
-                      className="w-[400px] min-w-[400px] h-[225px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4"
+                      className="w-[400px] min-w-[400px] h-[320px] rounded-3xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-50 mr-4 relative"
                     >
+                      {/* Blurred Silhouette Background */}
+                      <img
+                        src={imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        style={{
+                          filter: 'blur(20px) brightness(0.85)',
+                          transform: 'scale(1.2)',
+                          position: 'absolute',
+                          inset: 0,
+                          zIndex: 1,
+                        }}
+                      />
+                      {/* Crisp Foreground Image */}
                       <img
                         src={imageUrl}
                         alt={`Use Case ${(idx % useCases.length) + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
+                        style={{
+                          position: 'relative',
+                          zIndex: 2,
+                        }}
                       />
                     </div>
                   );
