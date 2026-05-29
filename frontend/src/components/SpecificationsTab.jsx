@@ -38,7 +38,7 @@ const SpecificationsTab = ({ product }) => {
                   .spec-highlight-value{ font-weight:700; font-size:1rem; margin-top:0.25rem; text-align: center; }
                   .spec-highlight-title{ font-weight:600; font-size:0.9rem; margin-top:0.125rem; text-align: center; }
                   .spec-highlight-sub{ color:rgba(0,0,0,0.6); font-size:0.85rem; margin-top:0.25rem; text-align: center; }
-                  .spec-media-container { width: 100%; height: 450px; align-self: center; }
+                  .spec-media-container { width: 100%; height: 500px; align-self: start; }
                   @media (max-width:1024px){ .spec-highlights-grid{ max-width:640px; } }
                   @media (max-width:768px){ 
                     .spec-highlights-grid{ grid-template-columns: repeat(2,1fr); max-width:100%; } 
