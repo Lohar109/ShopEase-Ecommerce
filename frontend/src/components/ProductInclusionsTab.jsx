@@ -5,27 +5,26 @@ const ProductInclusionsTab = ({ product }) => {
 
   return (
     <div className="pdp-tab-content pdp-specs-tab-premium py-8 pt-6">
-      {/* Top Layout Grid (12-column system) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-10">
-        {/* Left Column (Text & Heading) - Takes 5 cols */}
-        <div className="md:col-span-5 flex flex-col pt-0 mt-0">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 w-full block leading-none">{title || "What's Included"}</h2>
-          <p className="text-sm text-gray-600 leading-relaxed block">
-            {description || ""}
-          </p>
-        </div>
-
-        {/* Right Column (Media Container) - Takes 7 cols */}
-        <div className="md:col-span-7 min-w-0 w-full pdp-inclusions-hero-box">
-          {hero_image_url ? (
-            <img
-              src={hero_image_url}
-              alt={title || "What's Included"}
-              className="pdp-inclusions-hero-img"
-            />
-          ) : null}
-        </div>
+      {/* Full-width Header: Title & Description */}
+      <div className="max-w-3xl mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 leading-none">
+          {title || "What's Included"}
+        </h2>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {description || ""}
+        </p>
       </div>
+
+      {/* Centered Inclusions Hero Graphic */}
+      {hero_image_url && (
+        <div className="w-full max-w-2xl mx-auto pdp-inclusions-hero-box mb-12">
+          <img
+            src={hero_image_url}
+            alt={title || "What's Included"}
+            className="pdp-inclusions-hero-img"
+          />
+        </div>
+      )}
 
       {/* Sub-items Grid */}
       {product?.inclusions?.items && Array.isArray(product.inclusions.items) && product.inclusions.items.length > 0 && (
@@ -36,16 +35,18 @@ const ProductInclusionsTab = ({ product }) => {
                 <h3 className="pdp-inclusions-title">
                   {item.name || item.short_description || `Item ${idx + 1}`}
                 </h3>
-
               </div>
               <div className="pdp-inclusions-img-box">
-                <img src={item.image_url} alt={item.name || item.short_description || 'Item image'} className="pdp-inclusions-img" />
+                <img 
+                  src={item.image_url} 
+                  alt={item.name || item.short_description || 'Item image'} 
+                  className="pdp-inclusions-img" 
+                />
               </div>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };
