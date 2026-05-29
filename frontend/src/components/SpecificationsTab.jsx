@@ -69,7 +69,7 @@ const SpecificationsTab = ({ product }) => {
           {spec_video_url ? (
             <video 
               src={spec_video_url} 
-              className="w-full h-full object-cover block mx-auto"
+              className="w-full h-full object-contain block mx-auto"
               autoPlay 
               muted 
               loop 
