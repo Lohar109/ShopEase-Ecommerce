@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const HERO_SLIDES = [
   {
@@ -84,9 +85,9 @@ const HeroCarousel = () => {
               <div className="hero-slider-overlay" aria-hidden="true" />
               <div className="hero-slider-content">
                 <h1>{slide.title}</h1>
-                <a href="/shop" className="hero-slider-cta">
+                <Link to="/shop" className="hero-slider-cta">
                   {slide.ctaText}
-                </a>
+                </Link>
               </div>
             </article>
           ))}

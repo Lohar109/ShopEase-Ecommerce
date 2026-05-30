@@ -108,19 +108,7 @@ const Shop = () => {
           (product) => product?.is_active === true || product?.active === true
         );
 
-        const productsWithVariants = await Promise.all(
-          activeProducts.map(async (product) => {
-            try {
-              const detailsRes = await fetch(`${API_ORIGIN}/api/products/${product.id}`);
-              const details = await detailsRes.json();
-              return { ...product, variants: details.variants || [] };
-            } catch {
-              return { ...product, variants: [] };
-            }
-          })
-        );
-
-        setProducts(productsWithVariants);
+        setProducts(activeProducts);
       } catch {
         setProducts([]);
       } finally {

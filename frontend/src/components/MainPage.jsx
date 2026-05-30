@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles.css";
 import CategoryNav from "./CategoryNav";
 import DiscountBanner from "./DiscountBanner";
@@ -30,19 +31,7 @@ const MainPage = () => {
           (product) => product?.is_active === true || product?.active === true
         );
 
-        const productsWithVariants = await Promise.all(
-          activeProducts.map(async (product) => {
-            try {
-              const res = await fetch(`${API_ORIGIN}/api/products/${product.id}`);
-              const details = await res.json();
-              return { ...product, variants: details.variants || [] };
-            } catch {
-              return { ...product, variants: [] };
-            }
-          })
-        );
-
-        setProducts(productsWithVariants);
+        setProducts(activeProducts);
       } catch {
         setProducts([]);
       } finally {
@@ -90,10 +79,10 @@ const MainPage = () => {
         <div className="home-footer-top">
           <div className="home-footer-column">
             <h3>Shop</h3>
-            <a href="/shop">All Products</a>
-            <a href="/shop">Featured</a>
-            <a href="/shop">New Arrivals</a>
-            <a href="/shop">Discounts</a>
+            <Link to="/shop">All Products</Link>
+            <Link to="/shop">Featured</Link>
+            <Link to="/shop">New Arrivals</Link>
+            <Link to="/shop">Discounts</Link>
           </div>
 
           <div className="home-footer-column">

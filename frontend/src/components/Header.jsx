@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from "react";
 import { Heart, Search, ShoppingCart, Sparkles, User } from "lucide-react";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, Link } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 
@@ -49,9 +49,9 @@ const Header = () => {
     <header>
       <nav aria-label="Main Navigation">
         <div className="logo">
-          <a href="/" aria-label="ShopEase Home">
+          <Link to="/" aria-label="ShopEase Home">
             <img src="/favicon.svg" alt="ShopEase logo" className="logo-mark h-10 w-auto object-contain" />
-          </a>
+          </Link>
         </div>
         <form className="search-form" action="#" method="GET" onSubmit={(event) => event.preventDefault()}>
           <div className="search-input-wrap">
@@ -101,24 +101,24 @@ const Header = () => {
               )}
             </NavLink>
           </li>
-          <li><a href="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</a></li>
+          <li><Link to="/shop" className={isShopRoute ? "nav-link-active" : ""}>Shop</Link></li>
           <li>
-            <a href="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
+            <Link to="/wishlist" className={`nav-text-badge-link ${wishlist.length > 0 ? "pulse-icon" : ""}`} aria-label="Wishlist">
               <Heart size={16} />
               <span className="nav-label-with-badge">
                 Wishlist
                 {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
               </span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/cart" className="nav-text-badge-link" aria-label="Cart">
+            <Link to="/cart" className="nav-text-badge-link" aria-label="Cart">
               <ShoppingCart size={16} />
               <span className="nav-label-with-badge">
                 Cart
                 {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
               </span>
-            </a>
+            </Link>
           </li>
           <li>
             <a href="/login" className="nav-icon-link" aria-label="Login">

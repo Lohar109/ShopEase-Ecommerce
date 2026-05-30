@@ -169,6 +169,27 @@ exports.getAllProducts = async (req, res) => {
       ...row,
       created_at: row.created_at ? new Date(row.created_at).toISOString() : null
     }));
+
+    if (products.length > 0) {
+      const productIds = products.map(p => p.id);
+      const variantsResult = await pool.query(
+        `SELECT * FROM product_variant WHERE product_id = ANY($1) ORDER BY created_at ASC`,
+        [productIds]
+      );
+      
+      const variantsMap = {};
+      variantsResult.rows.forEach(variant => {
+        if (!variantsMap[variant.product_id]) {
+          variantsMap[variant.product_id] = [];
+        }
+        variantsMap[variant.product_id].push(variant);
+      });
+
+      products.forEach(p => {
+        p.variants = variantsMap[p.id] || [];
+      });
+    }
+
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
