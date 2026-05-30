@@ -45,7 +45,7 @@ const Checkout = () => {
   }, [cartItems]);
 
   const platformFee = 250;
-  const deliveryFee = deliveryMethod === 'express' ? 149 : 0;
+  const deliveryFee = deliveryMethod === 'sameday' ? 249 : (deliveryMethod === 'express' ? 149 : 0);
 
   const grandTotal = totalMRP + platformFee + deliveryFee - totalDiscount;
   const savingsAmount = totalDiscount;
@@ -90,7 +90,7 @@ const Checkout = () => {
                   {formattedAddress || 'Please go back to shipping and save your address.'}
                 </p>
                 <p className="shipping-address-line" style={{ color: '#6b7280' }}>
-                  Delivery method: {deliveryMethod === 'express' ? 'Express' : 'Standard'}
+                  Delivery method: {deliveryMethod === 'sameday' ? 'Same Day' : (deliveryMethod === 'express' ? 'Express' : 'Standard')}
                 </p>
               </div>
             </div>
