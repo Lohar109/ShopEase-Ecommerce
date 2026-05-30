@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X, 
-  Heart, Truck, Info, RotateCcw, Award, Link as LinkIcon, Gift, 
+  Heart, Truck, Info, Link as LinkIcon, Gift, 
   ChevronLeft, ChevronRight, Check
 } from 'lucide-react';
 import Lottie from 'lottie-react';
@@ -623,40 +623,6 @@ const Cart = () => {
                   </div>
                 </aside>
 
-                {/* Why Shop With Us? */}
-                <div className="cart-trust-sidebar-card">
-                  <h3>Why Shop With Us?</h3>
-                  <div className="trust-list">
-                    <div className="trust-row">
-                      <Truck size={14} className="trust-icon" />
-                      <div className="trust-text">
-                        <p className="trust-title">Free Shipping</p>
-                        <p className="trust-desc">On all orders above ₹499</p>
-                      </div>
-                    </div>
-                    <div className="trust-row">
-                      <RotateCcw size={14} className="trust-icon" />
-                      <div className="trust-text">
-                        <p className="trust-title">Easy Returns</p>
-                        <p className="trust-desc">7 days return policy</p>
-                      </div>
-                    </div>
-                    <div className="trust-row">
-                      <ShieldCheck size={14} className="trust-icon" />
-                      <div className="trust-text">
-                        <p className="trust-title">Secure Payments</p>
-                        <p className="trust-desc">100% secure & trusted</p>
-                      </div>
-                    </div>
-                    <div className="trust-row">
-                      <Award size={14} className="trust-icon" />
-                      <div className="trust-text">
-                        <p className="trust-title">Top Quality</p>
-                        <p className="trust-desc">Premium quality products</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
