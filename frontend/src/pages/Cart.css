@@ -646,9 +646,12 @@
 }
 
 .cart-coupon-trigger:hover {
-  border-color: #cbd5e1;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
   transform: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 4px 12px -8px rgba(0,0,0,0.02) !important;
+  cursor: pointer !important;
+  transition: none !important;
 }
 
 .cart-coupon-trigger-icon {
