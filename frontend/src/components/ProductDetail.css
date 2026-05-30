@@ -3914,3 +3914,54 @@
   background-color: #f3f4f6;
   border-radius: 0.5rem;
 }
+
+/* Wishlist Continue Shopping Banner Responsive & Animation Styles */
+.wishlist-end-banner {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wishlist-end-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08) !important;
+}
+
+/* Sway animation for right branch illustration */
+@keyframes branchSway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+/* Float animation for left shopping bag/hearts illustration */
+@keyframes heartFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.wishlist-end-banner:hover .wishlist-banner-ill-left svg {
+  animation: heartFloat 3s ease-in-out infinite;
+}
+
+.wishlist-end-banner:hover .wishlist-banner-ill-right svg {
+  transform-origin: bottom right;
+  animation: branchSway 4s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .wishlist-end-banner {
+    flex-direction: column !important;
+    padding: 2rem 1.5rem !important;
+    text-align: center !important;
+  }
+  .wishlist-banner-ill-left,
+  .wishlist-banner-ill-right {
+    display: none !important;
+  }
+}

@@ -43,7 +43,7 @@ const Wishlist = () => {
         const detailedProducts = await Promise.all(
           wishlist.map(async (productId) => {
             try {
-              const response = await fetch(`${API_ORIGIN}/api/products/${productId}`);
+              const response = await fetch(`${API_ORIGIN}/api/products/${productId}?t=${Date.now()}`);
               if (!response.ok) return null;
 
               const data = await response.json();
@@ -225,6 +225,110 @@ const Wishlist = () => {
                 deliveryText="Delivered by Tuesday, April 14"
               />
             ))}
+          </div>
+
+          {/* Continue Shopping Banner at the end of the list */}
+          <div className="wishlist-end-banner" style={{
+            marginTop: '3rem',
+            padding: '2.5rem 2rem',
+            border: '1px solid #e2e8f0',
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+            fontFamily: 'Poppins, sans-serif',
+            boxShadow: '0 4px 20px -10px rgba(0,0,0,0.05)',
+            width: '100%',
+            minHeight: '200px'
+          }}>
+            {/* Left illustration: Shopping Bag with Hearts */}
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }} className="wishlist-banner-ill-left">
+              <svg width="220" height="150" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Floating hearts */}
+                <path d="M25 45 C20 40, 15 45, 25 55 C35 45, 30 40, 25 45 Z" fill="#fecdd3" opacity="0.6" transform="scale(0.8) translate(10, 10)" />
+                <path d="M40 90 C36 86, 32 90, 40 98 C48 90, 44 86, 40 90 Z" fill="#fecdd3" opacity="0.8" />
+                <path d="M190 40 C186 36, 182 40, 190 48 C198 40, 194 36, 190 40 Z" fill="#fecdd3" opacity="0.7" />
+                <path d="M185 85 C181 81, 177 85, 185 93 C193 85, 189 81, 185 85 Z" fill="#fecdd3" opacity="0.5" />
+                
+                {/* Bag handle */}
+                <path d="M90 60 C90 35, 130 35, 130 60" stroke="#fecdd3" strokeWidth="4" strokeLinecap="round" fill="none" />
+                {/* Bag body */}
+                <path d="M75 60 L145 60 C149 60, 151 63, 150 67 L140 135 C139 139, 136 142, 132 142 L88 142 C84 142, 81 139, 80 135 L70 67 C69 63, 71 60, 75 60 Z" fill="#ffe4e6" />
+                {/* Heart on bag */}
+                <path d="M110 90 C100 80, 85 92, 110 115 C135 92, 120 80, 110 90 Z" fill="#ffffff" />
+              </svg>
+            </div>
+
+            {/* Center Content */}
+            <div style={{
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 2,
+              flexGrow: 1,
+              padding: '0 1rem'
+            }}>
+              <Heart className="w-6 h-6" style={{ color: '#ff6b6b' }} strokeWidth={2} />
+              <h2 style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#111827',
+                marginTop: '12px',
+                marginBottom: '6px',
+                lineHeight: '1.2'
+              }}>
+                Your wishlist is looking good!
+              </h2>
+              <p style={{
+                fontSize: '0.875rem',
+                color: '#4b5563',
+                marginBottom: '18px',
+                lineHeight: '1.4'
+              }}>
+                Add more items you love and shop them anytime.
+              </p>
+              <button
+                type="button"
+                style={{
+                  backgroundColor: '#111827',
+                  color: '#ffffff',
+                  fontWeight: '600',
+                  fontSize: '0.875rem',
+                  padding: '10px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                }}
+                onClick={() => navigate("/shop")}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#111827'}
+              >
+                Continue Shopping
+              </button>
+            </div>
+
+            {/* Right illustration: Branch with Leaves */}
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }} className="wishlist-banner-ill-right">
+              <svg width="200" height="150" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Branch stem */}
+                <path d="M170 140 C160 110, 145 70, 155 20" stroke="#fecdd3" strokeWidth="3" strokeLinecap="round" fill="none" />
+                {/* Leaf 1 */}
+                <path d="M155 20 C140 25, 120 15, 130 5 C145 0, 160 10, 155 20 Z" fill="#ffe4e6" />
+                {/* Leaf 2 */}
+                <path d="M152 45 C132 45, 115 35, 125 22 C140 20, 155 32, 152 45 Z" fill="#fecdd3" />
+                {/* Leaf 3 */}
+                <path d="M149 75 C124 75, 110 60, 120 45 C135 42, 150 58, 149 75 Z" fill="#ffe4e6" />
+                {/* Leaf 4 */}
+                <path d="M147 105 C122 105, 112 90, 122 75 C137 72, 148 88, 147 105 Z" fill="#fecdd3" />
+              </svg>
+            </div>
           </div>
         </section>
       )}

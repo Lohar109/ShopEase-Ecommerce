@@ -138,7 +138,7 @@ const Shop = () => {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_ORIGIN}/api/products`);
+        const response = await fetch(`${API_ORIGIN}/api/products?t=${Date.now()}`);
         const data = await response.json();
 
         if (!Array.isArray(data)) {
