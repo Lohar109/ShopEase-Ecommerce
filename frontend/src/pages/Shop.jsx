@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigationType } from "react-router-dom";
 import {
   BedDouble,
   BookOpen,
@@ -83,6 +83,48 @@ const Shop = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const navType = useNavigationType();
+
+  // 1. Scroll event listener to track and save current scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isLoading) return;
+      sessionStorage.setItem(
+        `scroll_${window.location.pathname}${window.location.search}`,
+        String(window.scrollY)
+      );
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isLoading]);
+
+  // 2. Restore scroll position when products finish loading (Only on POP navigation)
+  useEffect(() => {
+    if (!isLoading && products.length > 0 && navType === "POP") {
+      const savedScroll = sessionStorage.getItem(
+        `scroll_${window.location.pathname}${window.location.search}`
+      );
+      if (savedScroll) {
+        const parsedScroll = parseInt(savedScroll, 10);
+        if (!isNaN(parsedScroll) && parsedScroll > 0) {
+          const timer = setTimeout(() => {
+            window.scrollTo({
+              top: parsedScroll,
+              behavior: "instant"
+            });
+          }, 60);
+          return () => clearTimeout(timer);
+        }
+      }
+    } else if (navType === "PUSH") {
+      sessionStorage.removeItem(
+        `scroll_${window.location.pathname}${window.location.search}`
+      );
+    }
+  }, [isLoading, products, navType]);
 
   useEffect(() => {
     fetch(`${API_ORIGIN}/api/categories`)
