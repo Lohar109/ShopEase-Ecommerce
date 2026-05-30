@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X, 
   Heart, Truck, Info, Link as LinkIcon, Gift, 
-  ChevronLeft, ChevronRight, Check
+  Check
 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
@@ -477,14 +477,7 @@ const Cart = () => {
                       <Gift size={16} className="rec-header-icon" />
                       <h3>You May Also Like</h3>
                     </div>
-                    <div className="ymal-nav-buttons">
-                      <button type="button" onClick={handleScrollLeft} className="ymal-nav-btn">
-                        <ChevronLeft size={16} />
-                      </button>
-                      <button type="button" onClick={handleScrollRight} className="ymal-nav-btn">
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
+
                   </div>
                   
                   <div className="ymal-slider-container" ref={youMayAlsoLikeRef}>
