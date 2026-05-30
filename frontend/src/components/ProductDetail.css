@@ -3916,14 +3916,6 @@
 }
 
 /* Wishlist Continue Shopping Banner Responsive & Animation Styles */
-.wishlist-end-banner {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.wishlist-end-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08) !important;
-}
 
 /* Sway animation for right branch illustration */
 @keyframes branchSway {
