@@ -150,7 +150,7 @@ const ProductCard = ({ product, showMoveToCart = false }) => {
         flexDirection: 'column',
         gap: '12px',
         boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        transition: 'box-shadow 0.2s ease',
         cursor: 'pointer'
       }}
       onClick={() => navigate(`/product/${product.id}`)}
