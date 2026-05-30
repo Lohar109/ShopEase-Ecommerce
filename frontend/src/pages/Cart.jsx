@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X, 
   Heart, Truck, Info, RotateCcw, Award, Link as LinkIcon, Gift, 
-  ChevronLeft, ChevronRight, Check 
+  ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
@@ -31,21 +31,8 @@ const Cart = () => {
   const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
   const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
 
-  const [selectedItems, setSelectedItems] = React.useState([]);
   const [dbProducts, setDbProducts] = React.useState([]);
   const youMayAlsoLikeRef = React.useRef(null);
-
-  // Sync selectedItems when cartItems loads or updates (checked by default)
-  React.useEffect(() => {
-    const currentIds = cartItems.map(item => item.cartItemId);
-    setSelectedItems(prev => {
-      const uniqueNewIds = currentIds.filter(id => !prev.includes(id));
-      if (uniqueNewIds.length > 0) {
-        return [...prev.filter(id => currentIds.includes(id)), ...uniqueNewIds];
-      }
-      return prev.filter(id => currentIds.includes(id));
-    });
-  }, [cartItems]);
 
   // Fetch products from database for recommendations
   React.useEffect(() => {
@@ -59,32 +46,10 @@ const Cart = () => {
       .catch(console.error);
   }, []);
 
-  const handleToggleSelectItem = (cartItemId) => {
-    setSelectedItems(prev =>
-      prev.includes(cartItemId)
-        ? prev.filter(id => id !== cartItemId)
-        : [...prev, cartItemId]
-    );
-  };
-
-  const allSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
-  const handleToggleSelectAll = () => {
-    if (allSelected) {
-      setSelectedItems([]);
-      toast('All items deselected');
-    } else {
-      setSelectedItems(cartItems.map(item => item.cartItemId));
-      toast('All items selected');
-    }
-  };
-
   let totalMRP = 0;
   let totalDiscount = 0;
 
   cartItems.forEach((item) => {
-    // Only sum up selected items
-    if (!selectedItems.includes(item.cartItemId)) return;
-
     const qty = Number(item.quantity || 1);
     const originalPrice = Number(item.mrp ?? item.price ?? 0);
     totalMRP += originalPrice * qty;
@@ -147,12 +112,8 @@ const Cart = () => {
   const savingsAmount = totalDiscount + appliedCouponSavings;
 
   const handleCheckout = () => {
-    const itemsToCheckout = cartItems.filter(item => selectedItems.includes(item.cartItemId));
-    if (itemsToCheckout.length === 0) {
-      toast.error('Please select at least one item to checkout');
-      return;
-    }
-    navigate('/checkout/shipping', { state: { cartItems: itemsToCheckout, total: newGrandTotal } });
+    if (cartItems.length === 0) return;
+    navigate('/checkout/shipping', { state: { cartItems, total: newGrandTotal } });
   };
 
   const handleDecrease = (item) => {
@@ -297,7 +258,6 @@ const Cart = () => {
         return;
       }
     }
-    // Mock item fallback add
     const mockProduct = {
       id: item.id,
       name: item.name,
@@ -406,89 +366,72 @@ const Cart = () => {
                       </span>
                       <h2>My Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</h2>
                     </div>
-                    <button
-                      type="button"
-                      className="cart-deselect-all-btn"
-                      onClick={handleToggleSelectAll}
-                    >
-                      {allSelected ? 'Deselect All' : 'Select All'}
-                    </button>
                   </div>
 
                   {/* Cart Items List */}
                   <div className="cart-items-list">
-                    {cartItems.map((item) => {
-                      const isSelected = selectedItems.includes(item.cartItemId);
-                      return (
-                        <div className={`cart-item-row ${!isSelected ? 'is-deselected' : ''}`} key={item.cartItemId}>
-                          {/* Selection Checkbox */}
-                          <div className="cart-item-selection" onClick={() => handleToggleSelectItem(item.cartItemId)}>
-                            <div className={`cart-custom-checkbox ${isSelected ? 'checked' : ''}`}>
-                              {isSelected && <Check size={12} strokeWidth={3} />}
-                            </div>
+                    {cartItems.map((item) => (
+                      <div className="cart-item-row" key={item.cartItemId}>
+                        {/* Product Image */}
+                        <Link to={`/product/${item.productId}`} className="cart-item-image-wrap">
+                          <img
+                            src={resolveImageSrc(item.image)}
+                            alt={item.productName}
+                            className="cart-item-image"
+                          />
+                        </Link>
+
+                        {/* Middle Info Details */}
+                        <div className="cart-item-middle-info">
+                          {/* Best Seller mock badge */}
+                          {item.price > 500 && (
+                            <span className="cart-item-bestseller-badge">Best Seller</span>
+                          )}
+                          <h3 className="cart-item-name">
+                            <Link to={`/product/${item.productId}`}>
+                              {item.productName}
+                            </Link>
+                          </h3>
+                          <div className="cart-item-attributes">
+                            <span>Size: {item.size || 'Natural'}</span>
+                            <span className="attr-divider">|</span>
+                            <span>Color: {item.color || 'Standard'}</span>
                           </div>
-
-                          {/* Product Image */}
-                          <Link to={`/product/${item.productId}`} className="cart-item-image-wrap">
-                            <img
-                              src={resolveImageSrc(item.image)}
-                              alt={item.productName}
-                              className="cart-item-image"
-                            />
-                          </Link>
-
-                          {/* Middle Info Details */}
-                          <div className="cart-item-middle-info">
-                            {/* Best Seller mock badge */}
-                            {item.price > 500 && (
-                              <span className="cart-item-bestseller-badge">Best Seller</span>
-                            )}
-                            <h3 className="cart-item-name">
-                              <Link to={`/product/${item.productId}`}>
-                                {item.productName}
-                              </Link>
-                            </h3>
-                            <div className="cart-item-attributes">
-                              <span>Size: {item.size || 'Natural'}</span>
-                              <span className="attr-divider">|</span>
-                              <span>Color: {item.color || 'Standard'}</span>
-                            </div>
-                            
-                            {/* Item Actions */}
-                            <div className="cart-item-actions-row">
-                              <button
-                                type="button"
-                                className="cart-item-action-btn remove"
-                                onClick={() => handleRemove(item)}
-                              >
-                                <Trash2 size={14} />
-                                <span>Remove</span>
-                              </button>
-                              <button
-                                type="button"
-                                className="cart-item-action-btn save"
-                                onClick={() => handleSaveForLater(item)}
-                              >
-                                <Heart size={14} />
-                                <span>Save for later</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Right Controls & Pricing */}
-                          <div className="cart-item-right-controls">
-                            <div className="cart-qty-spinner">
-                              <button type="button" onClick={() => handleDecrease(item)}>−</button>
-                              <span>{item.quantity}</span>
-                              <button type="button" onClick={() => handleIncrease(item)}>+</button>
-                            </div>
-                            <div className="cart-item-price-display">
-                              ₹{(Number(item.price || 0) * item.quantity).toFixed(2)}
-                            </div>
+                          
+                          {/* Item Actions */}
+                          <div className="cart-item-actions-row">
+                            <button
+                              type="button"
+                              className="cart-item-action-btn remove"
+                              onClick={() => handleRemove(item)}
+                            >
+                              <Trash2 size={14} />
+                              <span>Remove</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="cart-item-action-btn save"
+                              onClick={() => handleSaveForLater(item)}
+                            >
+                              <Heart size={14} />
+                              <span>Save for later</span>
+                            </button>
                           </div>
                         </div>
-                      );
-                    })}
+
+                        {/* Right Controls & Pricing */}
+                        <div className="cart-item-right-controls">
+                          <div className="cart-qty-spinner">
+                            <button type="button" onClick={() => handleDecrease(item)}>−</button>
+                            <span>{item.quantity}</span>
+                            <button type="button" onClick={() => handleIncrease(item)}>+</button>
+                          </div>
+                          <div className="cart-item-price-display">
+                            ₹{(Number(item.price || 0) * item.quantity).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -610,7 +553,7 @@ const Cart = () => {
                   <h3>Order Summary</h3>
                   
                   <div className="cart-summary-row">
-                    <span>Subtotal ({selectedItems.length} {selectedItems.length === 1 ? 'item' : 'items'})</span>
+                    <span>Subtotal ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</span>
                     <strong>₹{totalMRP.toFixed(2)}</strong>
                   </div>
                   
@@ -662,7 +605,7 @@ const Cart = () => {
                     type="button"
                     className="cart-checkout-btn"
                     onClick={handleCheckout}
-                    disabled={selectedItems.length === 0}
+                    disabled={cartItems.length === 0}
                   >
                     Proceed to Checkout
                   </button>
