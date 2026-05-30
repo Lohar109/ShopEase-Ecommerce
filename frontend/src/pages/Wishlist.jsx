@@ -223,6 +223,7 @@ const Wishlist = () => {
                 key={product.id}
                 product={product}
                 deliveryText="Delivered by Tuesday, April 14"
+                showMoveToCart={true}
               />
             ))}
           </div>

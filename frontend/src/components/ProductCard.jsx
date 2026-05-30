@@ -1,11 +1,33 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 import { Star } from "lucide-react";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, showMoveToCart = false }) => {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
+  const { addToCart } = useCart();
+
+  const handleMoveToCart = (e) => {
+    e.stopPropagation();
+    const variants = Array.isArray(product?.variants) ? product.variants : [];
+    const fallbackVariant = variants.find((variant) => Boolean(variant?.id));
+    if (!fallbackVariant) {
+      toast.error("Product variant not found");
+      return;
+    }
+
+    const result = addToCart(product, fallbackVariant);
+    toggleWishlist(product.id);
+
+    if (result?.added) {
+      toast.success("Product moved to cart");
+    } else {
+      toast("Product was already in cart, removed from wishlist", { icon: "ℹ" });
+    }
+  };
   const isWishlisted = Array.isArray(wishlist)
     ? wishlist.some((id) => String(id) === String(product.id))
     : false;
@@ -247,6 +269,32 @@ const ProductCard = ({ product }) => {
           </span>
         </div>
       </div>
+
+      {showMoveToCart && (
+        <button
+          type="button"
+          className="wishlist-move-to-cart-btn"
+          style={{
+            width: '100%',
+            backgroundColor: '#111827',
+            color: '#ffffff',
+            fontWeight: '600',
+            fontSize: '0.81rem',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+            marginTop: '4px',
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={handleMoveToCart}
+        >
+          Move to Cart
+        </button>
+      )}
 
     </div>
   );

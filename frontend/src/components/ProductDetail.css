@@ -3965,3 +3965,11 @@
   background-color: #111827 !important;
   cursor: pointer !important;
 }
+
+/* Override general button hover effects specifically for wishlist move to cart button */
+.wishlist-move-to-cart-btn:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  background-color: #111827 !important;
+  cursor: pointer !important;
+}
