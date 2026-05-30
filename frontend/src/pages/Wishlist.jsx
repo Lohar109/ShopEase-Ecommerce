@@ -294,6 +294,7 @@ const Wishlist = () => {
               </p>
               <button
                 type="button"
+                className="wishlist-continue-btn"
                 style={{
                   backgroundColor: '#111827',
                   color: '#ffffff',
@@ -303,12 +304,9 @@ const Wishlist = () => {
                   borderRadius: '8px',
                   border: 'none',
                   cursor: 'pointer',
-                  transition: 'background-color 0.2s',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                 }}
                 onClick={() => navigate("/shop")}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#111827'}
               >
                 Continue Shopping
               </button>
