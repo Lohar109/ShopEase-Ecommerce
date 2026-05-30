@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X } from 'lucide-react';
+import { 
+  ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X, 
+  Heart, Truck, Info, RotateCcw, Award, Link as LinkIcon, Gift, 
+  ChevronLeft, ChevronRight, Check 
+} from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
+import { WishlistContext } from '../context/WishlistContext';
 import './Cart.css';
 import { Stepper } from '../components/Stepper';
 
@@ -16,18 +21,70 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
   .replace(/\/api$/, '');
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
+  const { toggleWishlist } = React.useContext(WishlistContext);
   const navigate = useNavigate();
+
   const [showOffersModal, setShowOffersModal] = React.useState(false);
   const [showCouponsModal, setShowCouponsModal] = React.useState(false);
   const [couponInput, setCouponInput] = React.useState('');
   const [selectedCouponCode, setSelectedCouponCode] = React.useState('');
   const [appliedCouponCode, setAppliedCouponCode] = React.useState('');
 
+  const [selectedItems, setSelectedItems] = React.useState([]);
+  const [dbProducts, setDbProducts] = React.useState([]);
+  const youMayAlsoLikeRef = React.useRef(null);
+
+  // Sync selectedItems when cartItems loads or updates (checked by default)
+  React.useEffect(() => {
+    const currentIds = cartItems.map(item => item.cartItemId);
+    setSelectedItems(prev => {
+      const uniqueNewIds = currentIds.filter(id => !prev.includes(id));
+      if (uniqueNewIds.length > 0) {
+        return [...prev.filter(id => currentIds.includes(id)), ...uniqueNewIds];
+      }
+      return prev.filter(id => currentIds.includes(id));
+    });
+  }, [cartItems]);
+
+  // Fetch products from database for recommendations
+  React.useEffect(() => {
+    fetch(`${API_ORIGIN}/api/products?t=${Date.now()}`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setDbProducts(data.filter(p => p.active || p.is_active === true));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleToggleSelectItem = (cartItemId) => {
+    setSelectedItems(prev =>
+      prev.includes(cartItemId)
+        ? prev.filter(id => id !== cartItemId)
+        : [...prev, cartItemId]
+    );
+  };
+
+  const allSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
+  const handleToggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedItems([]);
+      toast('All items deselected');
+    } else {
+      setSelectedItems(cartItems.map(item => item.cartItemId));
+      toast('All items selected');
+    }
+  };
+
   let totalMRP = 0;
   let totalDiscount = 0;
 
   cartItems.forEach((item) => {
+    // Only sum up selected items
+    if (!selectedItems.includes(item.cartItemId)) return;
+
     const qty = Number(item.quantity || 1);
     const originalPrice = Number(item.mrp ?? item.price ?? 0);
     totalMRP += originalPrice * qty;
@@ -52,7 +109,7 @@ const Cart = () => {
 
   const totalSellingPrice = Math.max(0, totalMRP - totalDiscount);
   const cartTotal = totalSellingPrice;
-  const platformFee = 250;
+  const platformFee = totalMRP > 0 ? 250 : 0;
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
 
@@ -86,12 +143,16 @@ const Cart = () => {
   const selectedCoupon = availableCoupons.find((coupon) => coupon.code === selectedCouponCode) || null;
   const appliedCouponSavings = getCouponSavings(appliedCoupon);
   const selectedCouponSavings = getCouponSavings(selectedCoupon);
-  const newGrandTotal = totalMRP + platformFee - totalDiscount - appliedCouponSavings;
-  const savingsAmount = totalDiscount;
+  const newGrandTotal = Math.max(0, totalMRP + platformFee - totalDiscount - appliedCouponSavings);
+  const savingsAmount = totalDiscount + appliedCouponSavings;
 
   const handleCheckout = () => {
-    if (cartItems.length === 0) return;
-    navigate('/checkout/shipping', { state: { cartItems, total: newGrandTotal } });
+    const itemsToCheckout = cartItems.filter(item => selectedItems.includes(item.cartItemId));
+    if (itemsToCheckout.length === 0) {
+      toast.error('Please select at least one item to checkout');
+      return;
+    }
+    navigate('/checkout/shipping', { state: { cartItems: itemsToCheckout, total: newGrandTotal } });
   };
 
   const handleDecrease = (item) => {
@@ -107,6 +168,12 @@ const Cart = () => {
   const handleRemove = (item) => {
     removeFromCart(item.cartItemId);
     toast('Item removed', { icon: '🗑️' });
+  };
+
+  const handleSaveForLater = (item) => {
+    toggleWishlist(item.productId);
+    removeFromCart(item.cartItemId);
+    toast.success('Saved to wishlist');
   };
 
   const handleOpenCouponsModal = () => {
@@ -143,227 +210,131 @@ const Cart = () => {
   const resolveImageSrc = (src) => {
     if (!src) return '';
     if (/^https?:\/\//i.test(src) || src.startsWith('data:')) return src;
-    // Don't prepend API_ORIGIN for frontend assets like logos
     if (src.startsWith('/assets/')) return src;
     if (src.startsWith('/')) return `${API_ORIGIN}${src}`;
     return `${API_ORIGIN}/${src}`;
   };
 
-  // Removed duplicate cartTotal calculation as it is now dynamically calculated in the top engine block
+  // Recommendation Lists (Dynamic + High-Fidelity Mock Fallbacks)
+  const frequentlyBought = React.useMemo(() => {
+    const filtered = dbProducts.filter(p => !cartItems.some(item => item.productId === p.id));
+    if (filtered.length >= 3) {
+      return filtered.slice(0, 3).map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.variants?.[0]?.price || p.price || 499,
+        image: p.main_image || p.images?.[0] || 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=200&auto=format&fit=crop',
+        rawProduct: p
+      }));
+    }
+    return [
+      {
+        id: 'fbt-1',
+        name: 'Premium Glass Storage Jar (1000ml)',
+        price: 499,
+        image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=200&auto=format&fit=crop'
+      },
+      {
+        id: 'fbt-2',
+        name: 'Wooden Honey Dipper',
+        price: 149,
+        image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=200&auto=format&fit=crop'
+      },
+      {
+        id: 'fbt-3',
+        name: 'Silicone Spatula (Set of 2)',
+        price: 199,
+        image: 'https://images.unsplash.com/photo-1590794056226-79ef3a814c2c?q=80&w=200&auto=format&fit=crop'
+      }
+    ];
+  }, [dbProducts, cartItems]);
+
+  const youMayAlsoLike = React.useMemo(() => {
+    const filtered = dbProducts.filter(p => !cartItems.some(item => item.productId === p.id) && !frequentlyBought.some(f => f.id === p.id));
+    if (filtered.length >= 4) {
+      return filtered.slice(0, 4).map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.variants?.[0]?.price || p.price || 599,
+        image: p.main_image || p.images?.[0] || 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?q=80&w=200&auto=format&fit=crop',
+        rawProduct: p
+      }));
+    }
+    return [
+      {
+        id: 'ymal-1',
+        name: 'Almonds Premium California',
+        price: 599,
+        image: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?q=80&w=200&auto=format&fit=crop'
+      },
+      {
+        id: 'ymal-2',
+        name: 'Pistachios Roasted & Salted',
+        price: 649,
+        image: 'https://images.unsplash.com/photo-1553177595-4de2bb0842b9?q=80&w=200&auto=format&fit=crop'
+      },
+      {
+        id: 'ymal-3',
+        name: 'Organic Honey (500g)',
+        price: 349,
+        image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=200&auto=format&fit=crop'
+      },
+      {
+        id: 'ymal-4',
+        name: 'Mixed Nuts (500g)',
+        price: 599,
+        image: 'https://images.unsplash.com/photo-1596560548464-f040c5f87484?q=80&w=200&auto=format&fit=crop'
+      }
+    ];
+  }, [dbProducts, cartItems, frequentlyBought]);
+
+  const handleAddRecommendation = (item) => {
+    if (item.rawProduct) {
+      const variants = Array.isArray(item.rawProduct.variants) ? item.rawProduct.variants : [];
+      const fallbackVariant = variants.find(v => Boolean(v?.id));
+      if (fallbackVariant) {
+        addToCart(item.rawProduct, fallbackVariant);
+        return;
+      }
+    }
+    // Mock item fallback add
+    const mockProduct = {
+      id: item.id,
+      name: item.name,
+      main_image: item.image,
+      variants: [{ id: item.id + '-v1', price: item.price, mrp: item.price }]
+    };
+    addToCart(mockProduct, mockProduct.variants[0]);
+  };
+
+  const handleScrollLeft = () => {
+    if (youMayAlsoLikeRef.current) {
+      youMayAlsoLikeRef.current.scrollBy({ left: -260, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (youMayAlsoLikeRef.current) {
+      youMayAlsoLikeRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+    }
+  };
 
   const availableOffers = [
     {
       id: 1,
       title: '7.5% Cashback on select prepaid orders',
-      description: 'Via partner wallets',
+      description: 'via partner wallets',
       bank: 'Wallets',
-      bankLogo: 'wallet',
-      logoUrl: '/assets/logos/wallet.svg',
-      minSpend: 0,
-      discountValue: { type: 'percentage', value: 7.5 },
-      hasTC: true
+      logoUrl: '/assets/logos/wallet.svg'
     },
     {
       id: 2,
       title: 'Up to 10% off with Axis Bank',
       description: 'Credit Cards on minimum spend',
       bank: 'Axis Bank',
-      bankLogo: 'axis',
-      logoUrl: '/assets/logos/axis.png',
-      minSpend: 5000,
-      discountValue: { type: 'percentage', value: 10 },
-      hasTC: true
-    },
-    {
-      id: 3,
-      title: 'Flat 15% instant discount',
-      description: 'HSBC Bank Cards, up to capped value',
-      bank: 'HSBC Bank',
-      bankLogo: 'hsbc',
-      logoUrl: '/assets/logos/hsbc.svg',
-      minSpend: 8000,
-      discountValue: { type: 'percentage', value: 15 },
-      hasTC: true
-    },
-    {
-      id: 4,
-      title: '5% off on Mobikwik wallet',
-      description: 'Eligible orders',
-      bank: 'Mobikwik',
-      bankLogo: 'mobikwik',
-      logoUrl: '/assets/logos/mobikwik.svg',
-      minSpend: 2000,
-      discountValue: { type: 'percentage', value: 5 },
-      hasTC: true
-    },
-    {
-      id: 5,
-      title: 'Save on UPI checkout',
-      description: 'Bank and wallet offers',
-      bank: 'UPI',
-      bankLogo: 'upi',
-      logoUrl: '/assets/logos/upi.svg',
-      minSpend: 1500,
-      discountValue: { type: 'percentage', value: 8 },
-      hasTC: true
-    },
-    {
-      id: 6,
-      title: 'Flat Rs. 300 off',
-      description: 'On orders above minimum cart value',
-      bank: 'Cards',
-      bankLogo: 'card',
-      logoUrl: '/assets/logos/card.svg',
-      minSpend: 6000,
-      discountValue: { type: 'fixed', value: 300 },
-      hasTC: true
-    },
-    {
-      id: 7,
-      title: 'Additional 10% off',
-      description: 'First payment with digital wallets',
-      bank: 'Wallets',
-      bankLogo: 'wallet',
-      logoUrl: '/assets/logos/wallet.png',
-      minSpend: 3000,
-      discountValue: { type: 'percentage', value: 10 },
-      hasTC: true
-    },
-    {
-      id: 8,
-      title: 'Free shipping on prepaid',
-      description: 'During current offer window',
-      bank: 'All',
-      bankLogo: 'shipping',
-      logoUrl: '/assets/logos/shipping.svg',
-      minSpend: 2500,
-      discountValue: { type: 'fixed', value: 150 },
-      hasTC: true
-    },
-    {
-      id: 9,
-      title: 'Extra Rs. 200 cashback',
-      description: 'Partner bank payment methods',
-      bank: 'Banks',
-      bankLogo: 'bank',
-      logoUrl: '/assets/logos/bank.svg',
-      minSpend: 4000,
-      discountValue: { type: 'fixed', value: 200 },
-      hasTC: true
-    },
-    {
-      id: 10,
-      title: 'Up to 12% off',
-      description: 'Selected categories with bank offers',
-      bank: 'Banks',
-      bankLogo: 'bank',
-      logoUrl: '/assets/logos/bank.svg',
-      minSpend: 7000,
-      discountValue: { type: 'percentage', value: 12 },
-      hasTC: true
-    },
-    {
-      id: 11,
-      title: 'Weekend special 7% off',
-      description: 'Instant discount on cart totals',
-      bank: 'All',
-      bankLogo: 'gift',
-      logoUrl: '/assets/logos/gift.svg',
-      minSpend: 3500,
-      discountValue: { type: 'percentage', value: 7 },
-      hasTC: true
-    },
-    {
-      id: 12,
-      title: 'Flat Rs. 150 off',
-      description: 'Supported wallet checkout',
-      bank: 'Wallets',
-      bankLogo: 'wallet',
-      logoUrl: '/assets/logos/wallet.svg',
-      minSpend: 1200,
-      discountValue: { type: 'fixed', value: 150 },
-      hasTC: true
-    },
-    {
-      id: 13,
-      title: 'Get bonus cashback',
-      description: 'Recurring prepaid purchases',
-      bank: 'All',
-      bankLogo: 'repeat',
-      logoUrl: '/assets/logos/repeat.svg',
-      minSpend: 5000,
-      discountValue: { type: 'percentage', value: 3 },
-      hasTC: true
-    },
-    {
-      id: 14,
-      title: 'Extra 5% off',
-      description: 'App-exclusive payment offers',
-      bank: 'App',
-      bankLogo: 'mobile',
-      logoUrl: '/assets/logos/mobile.svg',
-      minSpend: 0,
-      discountValue: { type: 'percentage', value: 5 },
-      hasTC: true
-    },
-    {
-      id: 15,
-      title: 'Limited-time festive offer',
-      description: 'Additional savings on eligible payments',
-      bank: 'All',
-      bankLogo: 'gift',
-      logoUrl: '/assets/logos/gift.svg',
-      minSpend: 4000,
-      discountValue: { type: 'percentage', value: 8 },
-      hasTC: true
+      logoUrl: '/assets/logos/axis.png'
     }
   ];
-
-  // Calculate eligibility and savings for each offer
-  const getOfferEligibility = (offer) => {
-    return cartTotal >= offer.minSpend;
-  };
-
-  const getOfferSavings = (offer) => {
-    if (offer.discountValue.type === 'fixed') {
-      return offer.discountValue.value;
-    }
-    return (cartTotal * offer.discountValue.value) / 100;
-  };
-
-  const spendToUnlock = (offer) => {
-    return Math.max(0, offer.minSpend - cartTotal);
-  };
-
-  // Find the best value offer (highest savings among unlocked offers)
-  const getBestValueOffer = () => {
-    const unlockedOffers = availableOffers.filter(getOfferEligibility);
-    if (unlockedOffers.length === 0) return null;
-    return unlockedOffers.reduce((best, offer) => {
-      const bestSavings = getOfferSavings(best);
-      const offerSavings = getOfferSavings(offer);
-      return offerSavings > bestSavings ? offer : best;
-    });
-  };
-
-  const bestValueOffer = getBestValueOffer();
-  const previewOffers = availableOffers.slice(0, 2);
-
-  // Find the "Next Best Offer" - locked offer closest to unlocking
-  const getNextBestOffer = () => {
-    const lockedOffers = availableOffers.filter(offer => !getOfferEligibility(offer));
-    if (lockedOffers.length === 0) return null;
-    
-    // Find the one with smallest amount needed to unlock
-    return lockedOffers.reduce((closest, offer) => {
-      const currentSpendMore = spendToUnlock(offer);
-      const closestSpendMore = spendToUnlock(closest);
-      return currentSpendMore < closestSpendMore ? offer : closest;
-    });
-  };
-
-  const nextBestOffer = getNextBestOffer();
-  const amountToUnlock = nextBestOffer ? spendToUnlock(nextBestOffer) : null;
 
   return (
     <div className="cart-page-shell block w-full min-h-screen">
@@ -379,7 +350,7 @@ const Cart = () => {
               width: '100%',
               minHeight: 'calc(100vh - 150px)',
               gap: '40px',
-              fontFamily: "Poppins, sans-serif"
+              fontFamily: 'Poppins, sans-serif'
             }}
           >
             <div className="cart-empty-lottie" aria-hidden="true">
@@ -424,183 +395,322 @@ const Cart = () => {
             <CartStepper currentStep={1} />
 
             <div className="cart-content">
+              {/* Left Column: Cart list & suggestions */}
               <div className="cart-main-column">
-                <section className="cart-offers-section-main" aria-label="Available offers">
-                  {nextBestOffer && amountToUnlock > 0 && (
-                    <div className="cart-upsell-banner">
-                      <p>
-                        Add items worth <span className="upsell-amount">₹{amountToUnlock.toFixed(0)}</span> more to unlock a <strong>{nextBestOffer.title}</strong>!
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="cart-offers-container">
-                    <div className="cart-offers-header">
-                      <span className="cart-offers-icon" aria-hidden="true">
-                        <Percent size={16} strokeWidth={2.25} />
+                <div className="cart-items-container">
+                  {/* Cart Header bar */}
+                  <div className="cart-header-bar">
+                    <div className="cart-header-left">
+                      <span className="cart-header-icon-wrap">
+                        <ShoppingBag size={18} fill="#e33170" stroke="#e33170" />
                       </span>
-                      <h3>Available Offers</h3>
+                      <h2>My Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</h2>
                     </div>
+                    <button
+                      type="button"
+                      className="cart-deselect-all-btn"
+                      onClick={handleToggleSelectAll}
+                    >
+                      {allSelected ? 'Deselect All' : 'Select All'}
+                    </button>
+                  </div>
 
-                    <div className="cart-offers-preview" aria-label="Offer preview">
-                      {previewOffers.map((offer) => {
-                        const isEligible = getOfferEligibility(offer);
-                        const savings = getOfferSavings(offer);
-                        const spendMore = spendToUnlock(offer);
-                        const progress = isEligible ? 100 : (offer.minSpend > 0 ? (cartTotal / offer.minSpend) * 100 : 100);
-                        const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
-
-                        return (
-                          <div className="cart-offer-row" key={offer.id}>
-                            <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
-                              <img
-                                src={resolveImageSrc(offer.logoUrl)}
-                                alt={offer.bank}
-                                className={`offer-logo offer-logo--sidebar ${!isEligible ? 'is-locked' : ''}`}
-                                width={40}
-                                height={40}
-                              />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                <p style={{ margin: 0, color: '#374151', fontSize: '13px', fontWeight: 500 }}>
-                                  {offer.title}
-                                </p>
-                              </div>
-                              <p style={{ margin: '2px 0 6px 0', color: '#9ca3af', fontSize: '12px' }}>
-                                {offer.description}
-                              </p>
-                              {!isEligible && (
-                                <>
-                                  <div className="cart-offer-progress-bar">
-                                    <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
-                                  </div>
-                                  <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
-                                    Spend ₹{spendMore.toFixed(0)} more to unlock
-                                  </p>
-                                </>
-                              )}
+                  {/* Cart Items List */}
+                  <div className="cart-items-list">
+                    {cartItems.map((item) => {
+                      const isSelected = selectedItems.includes(item.cartItemId);
+                      return (
+                        <div className={`cart-item-row ${!isSelected ? 'is-deselected' : ''}`} key={item.cartItemId}>
+                          {/* Selection Checkbox */}
+                          <div className="cart-item-selection" onClick={() => handleToggleSelectItem(item.cartItemId)}>
+                            <div className={`cart-custom-checkbox ${isSelected ? 'checked' : ''}`}>
+                              {isSelected && <Check size={12} strokeWidth={3} />}
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
 
-                    <button
-                      type="button"
-                      className="cart-offers-toggle"
-                      onClick={() => setShowOffersModal(true)}
-                    >
-                      Show More
-                    </button>
-                  </div>
-                </section>
+                          {/* Product Image */}
+                          <Link to={`/product/${item.productId}`} className="cart-item-image-wrap">
+                            <img
+                              src={resolveImageSrc(item.image)}
+                              alt={item.productName}
+                              className="cart-item-image"
+                            />
+                          </Link>
 
-                <div className="cart-list">
-              {cartItems.map(item => (
-                <div className="cart-item" key={item.cartItemId}>
-                  <Link to={`/product/${item.productId}`} className="cart-item-image-link">
-                    <div className="cart-item-image-wrap">
-                      <img
-                        src={resolveImageSrc(item.image)}
-                        alt={item.productName}
-                        className="cart-item-image"
-                      />
-                    </div>
-                  </Link>
+                          {/* Middle Info Details */}
+                          <div className="cart-item-middle-info">
+                            {/* Best Seller mock badge */}
+                            {item.price > 500 && (
+                              <span className="cart-item-bestseller-badge">Best Seller</span>
+                            )}
+                            <h3 className="cart-item-name">
+                              <Link to={`/product/${item.productId}`}>
+                                {item.productName}
+                              </Link>
+                            </h3>
+                            <div className="cart-item-attributes">
+                              <span>Size: {item.size || 'Natural'}</span>
+                              <span className="attr-divider">|</span>
+                              <span>Color: {item.color || 'Standard'}</span>
+                            </div>
+                            
+                            {/* Item Actions */}
+                            <div className="cart-item-actions-row">
+                              <button
+                                type="button"
+                                className="cart-item-action-btn remove"
+                                onClick={() => handleRemove(item)}
+                              >
+                                <Trash2 size={14} />
+                                <span>Remove</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="cart-item-action-btn save"
+                                onClick={() => handleSaveForLater(item)}
+                              >
+                                <Heart size={14} />
+                                <span>Save for later</span>
+                              </button>
+                            </div>
+                          </div>
 
-                  <div className="cart-item-details">
-                    <h3>
-                      <Link to={`/product/${item.productId}`} className="cart-item-title-link">
-                        {item.productName}
-                      </Link>
-                    </h3>
-                    <p>Size: {item.size || 'N/A'}</p>
-                    <p>Color: {item.color || 'N/A'}</p>
-                    <p>Price: ₹ {item.price ?? 'N/A'}</p>
-                  </div>
-
-                  <div className="cart-item-actions">
-                    <div className="cart-qty-control">
-                      <button type="button" onClick={() => handleDecrease(item)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button type="button" onClick={() => handleIncrease(item)}>+</button>
-                    </div>
-                    <button
-                      type="button"
-                      className="cart-remove-btn"
-                      onClick={() => handleRemove(item)}
-                      aria-label={`Remove ${item.productName} from cart`}
-                      title="Remove item"
-                    >
-                      <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-                      <span>Remove</span>
-                    </button>
+                          {/* Right Controls & Pricing */}
+                          <div className="cart-item-right-controls">
+                            <div className="cart-qty-spinner">
+                              <button type="button" onClick={() => handleDecrease(item)}>−</button>
+                              <span>{item.quantity}</span>
+                              <button type="button" onClick={() => handleIncrease(item)}>+</button>
+                            </div>
+                            <div className="cart-item-price-display">
+                              ₹{(Number(item.price || 0) * item.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
+
+                {/* Frequently Bought Together */}
+                <div className="cart-recommendations-box fbt">
+                  <div className="rec-box-header">
+                    <LinkIcon size={16} className="rec-header-icon" />
+                    <h3>Frequently Bought Together</h3>
+                  </div>
+                  <div className="rec-fbt-grid">
+                    {frequentlyBought.map((item) => (
+                      <div className="fbt-card" key={item.id}>
+                        <div className="fbt-card-image-wrap">
+                          <img src={item.image} alt={item.name} />
+                        </div>
+                        <div className="fbt-card-details">
+                          <h4>{item.name}</h4>
+                          <span className="fbt-card-price">₹{item.price.toFixed(2)}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="fbt-card-add-btn"
+                          onClick={() => handleAddRecommendation(item)}
+                        >
+                          + Add
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* You May Also Like */}
+                <div className="cart-recommendations-box ymal">
+                  <div className="rec-box-header ymal-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Gift size={16} className="rec-header-icon" />
+                      <h3>You May Also Like</h3>
+                    </div>
+                    <div className="ymal-nav-buttons">
+                      <button type="button" onClick={handleScrollLeft} className="ymal-nav-btn">
+                        <ChevronLeft size={16} />
+                      </button>
+                      <button type="button" onClick={handleScrollRight} className="ymal-nav-btn">
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="ymal-slider-container" ref={youMayAlsoLikeRef}>
+                    {youMayAlsoLike.map((item) => (
+                      <div className="ymal-card" key={item.id}>
+                        <div className="ymal-card-image-wrap">
+                          <img src={item.image} alt={item.name} />
+                        </div>
+                        <div className="ymal-card-details">
+                          <h4>{item.name}</h4>
+                          <div className="ymal-card-footer">
+                            <span className="ymal-card-price">₹{item.price.toFixed(2)}</span>
+                            <button
+                              type="button"
+                              className="ymal-card-add-btn"
+                              onClick={() => handleAddRecommendation(item)}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <aside className="cart-summary-column">
+              {/* Right Column: Summaries, Offers & Trust */}
+              <div className="cart-summary-column">
+                {/* Available Offers Sidebar box */}
+                <div className="cart-offers-sidebar-card">
+                  <div className="offers-sidebar-header">
+                    <Percent size={14} className="offers-icon-tag" />
+                    <h3>Available Offers</h3>
+                  </div>
+                  <div className="offers-sidebar-list">
+                    {availableOffers.map((offer) => (
+                      <div className="offers-sidebar-row" key={offer.id}>
+                        <div className="offers-logo-dot">
+                          <Check size={10} color="#e33170" strokeWidth={3} />
+                        </div>
+                        <div className="offers-text-details">
+                          <p className="offer-main-title">{offer.title}</p>
+                          <p className="offer-sub-title">{offer.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="offers-view-more-link"
+                    onClick={() => setShowOffersModal(true)}
+                  >
+                    View More Offers
+                  </button>
+                </div>
+
+                {/* Apply Coupons Trigger */}
                 <button
                   type="button"
                   className="cart-coupon-trigger"
                   onClick={handleOpenCouponsModal}
                 >
                   <span className="cart-coupon-trigger-icon" aria-hidden="true">
-                    <Tag size={14} strokeWidth={2.2} />
+                    <Tag size={13} strokeWidth={2.5} />
                   </span>
                   <span className="cart-coupon-trigger-label">Apply Coupons</span>
                   <span className="cart-coupon-trigger-action">APPLY</span>
                 </button>
 
-                {/* NEW: Price Details moved to top */}
+                {/* Price/Order Summary Details */}
                 <aside className="cart-summary-card">
-                  <h3>Price Details</h3>
+                  <h3>Order Summary</h3>
+                  
                   <div className="cart-summary-row">
-                    <span>Subtotal</span>
-                    <strong>₹ {totalMRP.toFixed(2)}</strong>
+                    <span>Subtotal ({selectedItems.length} {selectedItems.length === 1 ? 'item' : 'items'})</span>
+                    <strong>₹{totalMRP.toFixed(2)}</strong>
                   </div>
+                  
                   <div className="cart-summary-row">
-                    <span className="cart-summary-title">
-                      Platform Fee <ChevronDown size={14} aria-hidden="true" />
+                    <span className="fee-label-with-icon">
+                      Platform Fee
+                      <Info size={12} className="fee-info-icon" title="Standard checkout handling charge" />
                     </span>
-                    <span>₹ {platformFee.toFixed(2)}</span>
+                    <span>₹{platformFee.toFixed(2)}</span>
                   </div>
+                  
                   <div className="cart-summary-row">
-                    <span className="cart-summary-title">
-                      Discount <ChevronDown size={14} aria-hidden="true" />
-                    </span>
-                    <strong className="cart-summary-discount">-₹ {totalDiscount.toFixed(2)}</strong>
+                    <span>Discount</span>
+                    <strong className="cart-summary-discount">-₹{totalDiscount.toFixed(2)}</strong>
                   </div>
+                  
                   {appliedCoupon && (
-                    <div className="cart-summary-row cart-summary-coupon-row">
-                      <span className="cart-summary-title">Coupon ({appliedCoupon.code})</span>
-                      <strong className="cart-summary-coupon">-₹ {appliedCouponSavings.toFixed(2)}</strong>
+                    <div className="cart-summary-row coupon-savings-row">
+                      <span>Coupon ({appliedCoupon.code})</span>
+                      <strong className="coupon-discount">-₹{appliedCouponSavings.toFixed(2)}</strong>
                     </div>
                   )}
-                  <div className="cart-summary-row grand-total">
-                    <span>Grand Total</span>
-                    <strong>₹ {newGrandTotal.toFixed(2)}</strong>
+
+                  <div className="cart-summary-row shipping-row">
+                    <span className="shipping-label-with-icon">
+                      Shipping
+                      <Truck size={12} className="shipping-truck-icon" />
+                    </span>
+                    <strong className="shipping-free-label">FREE</strong>
                   </div>
 
-                  <div className="cart-savings-box" role="status" aria-live="polite">
-                    <ShieldCheck size={22} aria-hidden="true" />
-                    <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
+                  <div className="cart-summary-row-divider" />
+                  
+                  <div className="cart-summary-row grand-total-row">
+                    <span>Grand Total</span>
+                    <strong>₹{newGrandTotal.toFixed(2)}</strong>
                   </div>
+
+                  {savingsAmount > 0 && (
+                    <div className="cart-savings-toast-box" role="status">
+                      <span className="savings-check-badge">
+                        <Check size={10} color="#ffffff" strokeWidth={3} />
+                      </span>
+                      <span>You've saved ₹{savingsAmount.toFixed(2)} on this order!</span>
+                    </div>
+                  )}
 
                   <button
                     type="button"
                     className="cart-checkout-btn"
                     onClick={handleCheckout}
+                    disabled={selectedItems.length === 0}
                   >
                     Proceed to Checkout
                   </button>
+                  
+                  <div className="cart-secure-label-row">
+                    <ShieldCheck size={14} className="secure-badge-icon" />
+                    <span>100% Secure Payments</span>
+                  </div>
                 </aside>
-              </aside>
+
+                {/* Why Shop With Us? */}
+                <div className="cart-trust-sidebar-card">
+                  <h3>Why Shop With Us?</h3>
+                  <div className="trust-list">
+                    <div className="trust-row">
+                      <Truck size={14} className="trust-icon" />
+                      <div className="trust-text">
+                        <p className="trust-title">Free Shipping</p>
+                        <p className="trust-desc">On all orders above ₹499</p>
+                      </div>
+                    </div>
+                    <div className="trust-row">
+                      <RotateCcw size={14} className="trust-icon" />
+                      <div className="trust-text">
+                        <p className="trust-title">Easy Returns</p>
+                        <p className="trust-desc">7 days return policy</p>
+                      </div>
+                    </div>
+                    <div className="trust-row">
+                      <ShieldCheck size={14} className="trust-icon" />
+                      <div className="trust-text">
+                        <p className="trust-title">Secure Payments</p>
+                        <p className="trust-desc">100% secure & trusted</p>
+                      </div>
+                    </div>
+                    <div className="trust-row">
+                      <Award size={14} className="trust-icon" />
+                      <div className="trust-text">
+                        <p className="trust-title">Top Quality</p>
+                        <p className="trust-desc">Premium quality products</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
+            {/* Full Available Offers Modal */}
             {showOffersModal && (
               <div className="cart-offers-modal-overlay" onClick={() => setShowOffersModal(false)}>
                 <div className="cart-offers-modal" onClick={(event) => event.stopPropagation()}>
@@ -608,81 +718,45 @@ const Cart = () => {
                     <h2>Available Offers</h2>
                     <button
                       type="button"
-                      className="cart-offers-modal-close"
+                      className="cart-offers-modal-close-btn"
                       onClick={() => setShowOffersModal(false)}
-                      aria-label="Close available offers"
                     >
-                      Close
+                      <X size={16} />
                     </button>
                   </div>
 
                   <div className="cart-offers-modal-body">
-                    <div className="cart-offers-modal-grid">
-                      {availableOffers.map((offer) => {
-                        const isEligible = getOfferEligibility(offer);
-                        const savings = getOfferSavings(offer);
-                        const spendMore = spendToUnlock(offer);
-                        const progress = isEligible ? 100 : (cartTotal / offer.minSpend) * 100;
-                        const isBestValue = bestValueOffer && bestValueOffer.id === offer.id;
-
-                        return (
-                          <div className={`cart-offers-modal-item ${isBestValue ? 'is-best-value' : ''}`} key={offer.id}>
-                            {isBestValue && (
-                              <div className="cart-offer-best-badge">
-                                <Crown size={14} />
-                                <span>Best Deal</span>
-                              </div>
-                            )}
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', width: '100%' }}>
-                              <div className={`offer-logo-frame ${isBestValue ? 'is-best' : ''}`}>
-                                <img
-                                  src={resolveImageSrc(offer.logoUrl)}
-                                  alt={offer.bank}
-                                  className={`offer-logo ${!isEligible ? 'is-locked' : ''}`}
-                                  width={48}
-                                  height={48}
-                                />
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                  <p style={{ margin: 0, color: '#1f2937', fontSize: '13px', fontWeight: 600 }}>
-                                    {offer.title}
-                                  </p>
-                                </div>
-                                <p style={{ margin: '2px 0 6px 0', color: '#6b7280', fontSize: '12px' }}>
-                                  {offer.description}
-                                </p>
-                                {isEligible && (
-                                  <p style={{ margin: '4px 0 0 0', color: '#10b981', fontSize: '12px', fontWeight: 500 }}>
-                                    You save ₹{savings.toFixed(0)}
-                                  </p>
-                                )}
-                                {!isEligible && (
-                                  <>
-                                    <div className="cart-offer-progress-bar">
-                                      <div className="cart-offer-progress-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
-                                    </div>
-                                    <p style={{ margin: '4px 0 0 0', color: '#ff3f6c', fontSize: '11px', fontWeight: 500 }}>
-                                      Spend ₹{spendMore.toFixed(0)} more to unlock
-                                    </p>
-                                  </>
-                                )}
-                              </div>
-                            </div>
+                    <div className="cart-offers-modal-list">
+                      {availableOffers.map((offer) => (
+                        <div className="cart-offers-modal-row" key={offer.id}>
+                          <div className="modal-offer-icon-badge">
+                            <Percent size={14} />
                           </div>
-                        );
-                      })}
+                          <div className="modal-offer-text">
+                            <h4>{offer.title}</h4>
+                            <p>{offer.description}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
+            {/* Apply Coupon Modal */}
             {showCouponsModal && (
               <div className="cart-coupons-modal-overlay" onClick={() => setShowCouponsModal(false)}>
                 <div className="cart-coupons-modal" onClick={(event) => event.stopPropagation()}>
                   <div className="cart-coupons-modal-header">
                     <h2>APPLY COUPON</h2>
+                    <button
+                      type="button"
+                      className="cart-coupons-modal-close-btn"
+                      onClick={() => setShowCouponsModal(false)}
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
 
                   <div className="cart-coupons-modal-body">
@@ -704,205 +778,125 @@ const Cart = () => {
                       </button>
                     </div>
 
-                    <div className="cart-coupons-list" aria-label="Available coupons" style={{ minHeight: '500px', position: 'relative' }}>
+                    <div className="cart-coupons-list" aria-label="Available coupons" style={{ minHeight: '300px', position: 'relative' }}>
                       {isLoadingCoupons ? (
                         <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTop: '3px solid #ff3f6c', borderRadius: '50%' }}></div>
+                          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTop: '3px solid #e33170', borderRadius: '50%' }}></div>
                         </div>
                       ) : (
                         (() => {
-                        const getCouponEligibility = (coupon) => {
-                          const minOrderValue = Number(coupon.min_order_value) || 0;
-                          
-                          if (cartTotal < minOrderValue) {
-                            return { eligible: false, diff: minOrderValue - cartTotal, lockedReason: 'minSpend' };
-                          }
-                          
-                          const applicableCategories = coupon.applicableCategories || [];
-                          const applicableProducts = coupon.applicableProducts || [];
-                          
-                          if (applicableCategories.length > 0 || applicableProducts.length > 0) {
-                            let matched = false;
-                            if (applicableProducts.length > 0) {
-                              matched = matched || cartItems.some(item => applicableProducts.includes(item.productId));
+                          const getCouponEligibility = (coupon) => {
+                            const minOrderValue = Number(coupon.min_order_value) || 0;
+                            if (cartTotal < minOrderValue) {
+                              return { eligible: false, diff: minOrderValue - cartTotal, lockedReason: 'minSpend' };
                             }
-                            if (applicableCategories.length > 0) {
-                              matched = matched || cartItems.some(item => applicableCategories.includes(item.categoryId) || applicableCategories.includes(item.category));
-                            }
-                            if (!matched) return { eligible: false, diff: 0, lockedReason: 'targetMismatch' };
-                          }
+                            return { eligible: true, diff: 0 };
+                          };
 
-                          return { eligible: true, diff: 0 };
-                        };
-
-                        const processed = availableCoupons.map(coupon => {
-                          const eligibility = getCouponEligibility(coupon);
-                          return { ...coupon, savings: getCouponSavings(coupon), eligibility };
-                        });
-                        
-                        const eligible = processed.filter(c => c.eligibility.eligible).sort((a, b) => b.savings - a.savings);
-                        const locked = processed.filter(c => !c.eligibility.eligible).sort((a, b) => a.eligibility.diff - b.eligibility.diff);
-                        
-                        return (
-                          <>
-                            {eligible.map((coupon, index) => {
-                              const isSelected = selectedCouponCode === coupon.code;
-                              const isBestValue = index === 0;
-                              const rawExpiry = coupon.expiry_date || coupon.expiry || '';
-                              const expiryDate = rawExpiry ? new Date(rawExpiry).toLocaleDateString() : 'N/A';
-                              const tc = coupon.tc || 'T&C Apply';
-                              
-                              return (
-                                <label 
-                                  className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} 
-                                  key={coupon.code} 
-                                  style={{ 
-                                    position: 'relative', 
-                                    padding: '20px', 
-                                    border: isBestValue ? '1.5px solid #d4af37' : '1px solid #eef0f3',
-                                    boxShadow: isBestValue ? '0 4px 16px rgba(212, 175, 55, 0.12)' : 'none',
-                                    marginTop: isBestValue ? '8px' : '0'
-                                  }}
-                                >
-                                  {isBestValue && (
-                                    <span style={{ 
-                                      position: 'absolute', 
-                                      top: '-12px', 
-                                      right: '16px', 
-                                      background: 'linear-gradient(135deg, #dfbc50 0%, #fdf2c2 30%, #cd9f33 70%, #f3e5ab 100%)', 
-                                      color: '#082567', 
-                                      fontSize: '10px', 
-                                      fontWeight: '800', 
-                                      fontFamily: '"Playfair Display", Georgia, serif',
-                                      textTransform: 'uppercase', 
-                                      padding: '4px 10px', 
+                          const processed = availableCoupons.map(coupon => {
+                            const eligibility = getCouponEligibility(coupon);
+                            return { ...coupon, savings: getCouponSavings(coupon), eligibility };
+                          });
+                          
+                          const eligible = processed.filter(c => c.eligibility.eligible).sort((a, b) => b.savings - a.savings);
+                          const locked = processed.filter(c => !c.eligibility.eligible).sort((a, b) => a.eligibility.diff - b.eligibility.diff);
+                          
+                          return (
+                            <>
+                              {eligible.length === 0 && locked.length === 0 && (
+                                <p style={{ fontSize: '13px', color: '#6b7280', textAlign: 'center', marginTop: '40px' }}>
+                                  No coupons available at the moment.
+                                </p>
+                              )}
+                              {eligible.map((coupon, index) => {
+                                const isSelected = selectedCouponCode === coupon.code;
+                                const isBestValue = index === 0;
+                                
+                                return (
+                                  <label 
+                                    className={`cart-coupon-item ${isSelected ? 'is-selected' : ''}`} 
+                                    key={coupon.code} 
+                                    style={{ 
+                                      position: 'relative', 
+                                      padding: '16px', 
+                                      border: isBestValue ? '1.5px solid #e33170' : '1px solid #eef0f3',
                                       borderRadius: '12px',
                                       display: 'flex',
+                                      gap: '12px',
                                       alignItems: 'center',
-                                      gap: '4px',
-                                      boxShadow: '0 4px 10px rgba(212, 175, 55, 0.4), inset 0 1px 1px rgba(255,255,255,0.8)',
-                                      border: '1px solid #c5a017',
-                                      textShadow: 'none'
-                                    }}>
-                                      <Crown size={12} color="#082567" strokeWidth={2.5} />
-                                      BEST VALUE
-                                    </span>
-                                  )}
-                                  <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                    <div style={{ flexShrink: 0, marginRight: '16px', display: 'flex', alignItems: 'center' }}>
-                                      <input
-                                        type="checkbox"
-                                        checked={isSelected}
-                                        onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
-                                      />
-                                    </div>
-                                    <div 
-                                      className="cart-coupon-code-box" 
-                                      style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center',
-                                        height: '36px', 
-                                        width: '120px',
-                                        flexShrink: 0,
-                                        marginRight: '24px',
-                                        background: 'repeating-linear-gradient(45deg, #fdfbf7, #fdfbf7 2px, #f4f1eb 2px, #f4f1eb 4px)',
-                                        border: '1px solid #e6e2d8',
-                                        borderRadius: '6px',
-                                        boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.04)'
-                                      }}
-                                    >
-                                      <span style={{ color: '#082567', fontWeight: '800', letterSpacing: '1px', fontSize: '13px' }}>
-                                        {coupon.code}
+                                      marginTop: '8px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    {isBestValue && (
+                                      <span style={{ 
+                                        position: 'absolute', 
+                                        top: '-12px', 
+                                        right: '16px', 
+                                        background: '#e33170', 
+                                        color: '#ffffff', 
+                                        fontSize: '9px', 
+                                        fontWeight: '700', 
+                                        textTransform: 'uppercase', 
+                                        padding: '2px 8px', 
+                                        borderRadius: '10px'
+                                      }}>
+                                        BEST VALUE
                                       </span>
+                                    )}
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={(event) => setSelectedCouponCode(event.target.checked ? coupon.code : '')}
+                                      style={{ accentColor: '#e33170' }}
+                                    />
+                                    <div className="cart-coupon-code-box" style={{ padding: '4px 10px', border: '1px dashed #e33170', borderRadius: '6px', color: '#e33170', fontWeight: '700', fontSize: '12px' }}>
+                                      {coupon.code}
                                     </div>
-                                    <div className="cart-coupon-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '280px' }}>
-                                      <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '15px', color: '#111827', margin: 0, fontWeight: '800' }}>
+                                    <div className="cart-coupon-meta" style={{ flex: 1 }}>
+                                      <p className="cart-coupon-title" style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#111827' }}>
                                         Save ₹{coupon.savings.toFixed(0)}
                                       </p>
-                                      <p className="cart-coupon-desc" style={{ textAlign: 'left', margin: 0, lineHeight: '1.4', fontSize: '12px', color: '#6b7280' }}>
+                                      <p className="cart-coupon-desc" style={{ margin: 0, fontSize: '11px', color: '#6b7280' }}>
                                         {coupon.description}
                                       </p>
                                     </div>
-                                  </div>
-                                </label>
-                              );
-                            })}
+                                  </label>
+                                );
+                              })}
 
-                            {locked.length > 0 && (
-                              <div className="cart-coupons-locked-section" style={{ marginTop: '20px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-                                <h4 style={{ fontSize: '14px', color: '#6b7280', marginBottom: '12px', fontWeight: 600 }}>Locked Offers</h4>
-                                {locked.map(coupon => {
-                                  const rawExpiry = coupon.expiry_date || coupon.expiry || '';
-                                  const expiryDate = rawExpiry ? new Date(rawExpiry).toLocaleDateString() : 'N/A';
-                                  const tc = coupon.tc || 'T&C Apply';
-                                  
-                                  return (
-                                    <div className="cart-coupon-item is-locked" key={coupon.code} style={{ opacity: 0.6, cursor: 'not-allowed', filter: 'grayscale(1)', marginBottom: '12px', padding: '20px', border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-                                      <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                        <div style={{ flexShrink: 0, marginRight: '16px', display: 'flex', alignItems: 'center' }}>
-                                          <input type="checkbox" disabled />
-                                        </div>
-                                        <div 
-                                          className="cart-coupon-code-box" 
-                                          style={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            justifyContent: 'center',
-                                            height: '36px', 
-                                            width: '120px',
-                                            flexShrink: 0,
-                                            marginRight: '24px',
-                                            background: '#f3f4f6', 
-                                            color: '#9ca3af',
-                                            border: '1px dashed #d1d5db',
-                                            borderRadius: '6px',
-                                            fontWeight: 600
-                                          }}
-                                        >
-                                          {coupon.code}
-                                        </div>
-                                        <div className="cart-coupon-meta" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '280px' }}>
-                                          {coupon.eligibility.lockedReason === 'targetMismatch' ? (
-                                            <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '13px', color: '#6b7280', margin: 0, fontWeight: '800' }}>
-                                              Not applicable on current cart items
-                                            </p>
-                                          ) : (
-                                            <p className="cart-coupon-title" style={{ textAlign: 'left', fontSize: '13px', color: '#ef4444', margin: 0, fontWeight: '800' }}>
-                                              Add ₹{coupon.eligibility.diff.toFixed(0)} more to unlock this offer
-                                            </p>
-                                          )}
-                                          <p className="cart-coupon-desc" style={{ textAlign: 'left', margin: 0, lineHeight: '1.4', fontSize: '12px', color: '#6b7280' }}>
-                                            {coupon.description}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        );
-                      })()
+                              {locked.map(coupon => (
+                                <div className="cart-coupon-item is-locked" key={coupon.code} style={{ opacity: 0.5, cursor: 'not-allowed', filter: 'grayscale(1)', marginTop: '8px', padding: '16px', border: '1px solid #eef0f3', borderRadius: '12px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                  <input type="checkbox" disabled />
+                                  <div className="cart-coupon-code-box" style={{ padding: '4px 10px', border: '1px dashed #9ca3af', borderRadius: '6px', color: '#9ca3af', fontWeight: '700', fontSize: '12px' }}>
+                                    {coupon.code}
+                                  </div>
+                                  <div className="cart-coupon-meta" style={{ flex: 1 }}>
+                                    <p className="cart-coupon-title" style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>
+                                      Add ₹{coupon.eligibility.diff.toFixed(0)} more to unlock
+                                    </p>
+                                    <p className="cart-coupon-desc" style={{ margin: 0, fontSize: '11px', color: '#9ca3af' }}>
+                                      {coupon.description}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          );
+                        })()
                       )}
                     </div>
                   </div>
 
-                  <div className="cart-coupons-modal-footer" style={{ padding: '20px 24px', background: '#fdfbf7', borderTop: '1px solid #e6e2d8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="cart-coupons-footer-copy" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>
-                        Maximum Savings
-                      </span>
-                      <span className="cart-coupons-footer-text" style={{ fontSize: '20px', fontWeight: '800', color: '#082567' }}>
-                        ₹{selectedCouponSavings.toFixed(0)}
-                      </span>
+                  <div className="cart-coupons-modal-footer">
+                    <div className="cart-coupons-footer-copy">
+                      <span style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', marginRight: '6px' }}>Savings:</span>
+                      <strong style={{ fontSize: '16px', color: '#e33170' }}>₹{selectedCouponSavings.toFixed(0)}</strong>
                     </div>
                     <button
                       type="button"
                       className="cart-coupons-apply-btn"
                       onClick={handleApplySelectedCoupon}
-                      style={{ alignSelf: 'center', padding: '0 20px', height: '36px', fontSize: '12px', fontWeight: '700', borderRadius: '6px', background: '#ff3f6c', color: '#fff', boxShadow: '0 2px 8px rgba(255, 63, 108, 0.25)', letterSpacing: '0.5px' }}
                     >
                       APPLY COUPON
                     </button>
