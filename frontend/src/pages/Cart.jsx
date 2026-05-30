@@ -506,7 +506,7 @@ const Cart = () => {
                         </div>
                         <div className="fbt-card-details">
                           <h4>{item.name}</h4>
-                          <span className="fbt-card-price">₹{item.price.toFixed(2)}</span>
+                          <span className="fbt-card-price">₹{Number(item.price || 0).toFixed(2)}</span>
                         </div>
                         <button
                           type="button"
@@ -546,7 +546,7 @@ const Cart = () => {
                         <div className="ymal-card-details">
                           <h4>{item.name}</h4>
                           <div className="ymal-card-footer">
-                            <span className="ymal-card-price">₹{item.price.toFixed(2)}</span>
+                            <span className="ymal-card-price">₹{Number(item.price || 0).toFixed(2)}</span>
                             <button
                               type="button"
                               className="ymal-card-add-btn"
