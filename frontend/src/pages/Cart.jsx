@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, Percent, ShieldCheck, ShoppingBag, Trash2, Crown, Tag, X, 
   Heart, Truck, Info, RotateCcw, Award, Link as LinkIcon, Gift, 
-  ChevronLeft, ChevronRight 
+  ChevronLeft, ChevronRight, Check
 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import emptyCartData from '../assets/empty-cart.json';
