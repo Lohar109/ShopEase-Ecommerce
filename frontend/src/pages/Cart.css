@@ -196,18 +196,15 @@
   box-shadow: none;
 }
 
-.cart-item-action-btn:hover {
-  color: #0f172a;
+.cart-item-action-btn:hover,
+.cart-item-action-btn.remove:hover,
+.cart-item-action-btn.save:hover {
+  color: #64748b !important;
+  background: transparent !important;
   transform: none !important;
   box-shadow: none !important;
-}
-
-.cart-item-action-btn.remove:hover {
-  color: #ef4444;
-}
-
-.cart-item-action-btn.save:hover {
-  color: #e33170;
+  cursor: pointer !important;
+  transition: none !important;
 }
 
 /* Right Controls Column */
@@ -373,10 +370,12 @@
 }
 
 .fbt-card-add-btn:hover {
-  background-color: #e33170;
-  color: #ffffff;
+  background-color: rgba(227, 49, 112, 0.08) !important;
+  color: #e33170 !important;
   transform: none !important;
   box-shadow: none !important;
+  cursor: pointer !important;
+  transition: none !important;
 }
 
 /* YMAL Carousel */
@@ -519,10 +518,12 @@
 }
 
 .ymal-card-add-btn:hover {
-  background-color: #e33170;
-  color: #ffffff;
+  background-color: rgba(227, 49, 112, 0.08) !important;
+  color: #e33170 !important;
   transform: none !important;
   box-shadow: none !important;
+  cursor: pointer !important;
+  transition: none !important;
 }
 
 /* Right Summary Sidebar Column */
@@ -621,9 +622,13 @@
 }
 
 .offers-view-more-link:hover {
-  text-decoration: underline;
+  text-decoration: none !important;
+  color: #e33170 !important;
+  background: transparent !important;
   transform: none !important;
   box-shadow: none !important;
+  cursor: pointer !important;
+  transition: none !important;
 }
 
 /* Coupon box trigger style */
