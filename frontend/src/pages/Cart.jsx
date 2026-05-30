@@ -20,6 +20,13 @@ const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
 
+const truncateWords = (text, limit = 3) => {
+  if (!text) return '';
+  const words = text.split(/\s+/);
+  if (words.length <= limit) return text;
+  return words.slice(0, limit).join(' ') + '...';
+};
+
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
   const { toggleWishlist } = React.useContext(WishlistContext);
@@ -448,7 +455,7 @@ const Cart = () => {
                           <img src={item.image} alt={item.name} />
                         </div>
                         <div className="fbt-card-details">
-                          <h4>{item.name}</h4>
+                          <h4>{truncateWords(item.name, 3)}</h4>
                           <span className="fbt-card-price">₹{Number(item.price || 0).toFixed(2)}</span>
                         </div>
                         <button
