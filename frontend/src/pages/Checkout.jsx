@@ -97,11 +97,6 @@ const Checkout = () => {
           {/* Left Column: Delivery Address & Cart Items */}
           <div className="shipping-form-shell cart-list block lg:col-span-2">
             
-            {/* Header Text */}
-            <div className="shipping-page-header">
-              <h1>Review Your Order</h1>
-              <p>Review your items, delivery address, and price details before payment</p>
-            </div>
 
             {/* Card 1: Delivery Address */}
             <div className="shipping-form-card checkout-address-summary-card">
