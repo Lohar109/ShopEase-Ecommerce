@@ -108,11 +108,6 @@ const Payment = () => {
           {/* Left Main Column: Payment Methods & Details */}
           <div className="shipping-form-shell cart-list block lg:col-span-2">
             
-            {/* Header Text */}
-            <div className="shipping-page-header">
-              <h1>Payment</h1>
-              <p>Choose a payment method and complete your order</p>
-            </div>
 
             {/* 100% Secure Payments Alert banner */}
             <div className="payment-security-alert-box">
