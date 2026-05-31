@@ -8,7 +8,8 @@ import './Login.css';
 const Login = () => {
   const navigate = useNavigate();
   const [inputVal, setInputVal] = useState('');
-  const [otpVal, setOtpVal] = useState('');
+  const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
+  const [toastMessage, setToastMessage] = useState('');
   const [step, setStep] = useState(1); // 1: Enter Email/Mobile, 2: Enter OTP
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState('');
@@ -56,6 +57,61 @@ const Login = () => {
       setInputVal(val);
     }
   };
+  const handleOtpChange = (element, index) => {
+    const value = element.value.replace(/\D/g, '');
+    if (!value) {
+      const newOtp = [...otpArray];
+      newOtp[index] = '';
+      setOtpArray(newOtp);
+      return;
+    }
+    
+    const newOtp = [...otpArray];
+    newOtp[index] = value.slice(-1);
+    setOtpArray(newOtp);
+    
+    // Auto focus next input
+    if (value && element.nextSibling) {
+      element.nextSibling.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === 'Backspace') {
+      const newOtp = [...otpArray];
+      if (!otpArray[index] && e.target.previousSibling) {
+        newOtp[index - 1] = '';
+        setOtpArray(newOtp);
+        e.target.previousSibling.focus();
+      } else {
+        newOtp[index] = '';
+        setOtpArray(newOtp);
+      }
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData) {
+      const newOtp = [...otpArray];
+      for (let i = 0; i < 6; i++) {
+        newOtp[i] = pastedData[i] || '';
+      }
+      setOtpArray(newOtp);
+      
+      const focusIndex = Math.min(pastedData.length, 5);
+      const inputs = document.querySelectorAll('.otp-digit-input');
+      if (inputs[focusIndex]) {
+        inputs[focusIndex].focus();
+      }
+    }
+  };
+
+  const formatTimer = (seconds) => {
+    const s = seconds < 10 ? `0${seconds}` : seconds;
+    return `00:${s}`;
+  };
 
   const handleRequestOtp = (e) => {
     e.preventDefault();
@@ -82,18 +138,31 @@ const Login = () => {
       setLoading(false);
       setStep(2);
       setTimer(30);
-      alert(`[ShopEase Mock Service] OTP for verification is: 482065`);
+      setOtpArray(['', '', '', '', '', '']);
+      setToastMessage(`Verification code sent to ${inputVal}`);
+      
+      // Auto focus the first input after step transition
+      setTimeout(() => {
+        const firstInput = document.querySelector('.otp-digit-input');
+        if (firstInput) firstInput.focus();
+      }, 50);
+
+      // Dismiss toast after 4s
+      setTimeout(() => {
+        setToastMessage('');
+      }, 4000);
     }, 1000);
   };
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    if (!otpVal.trim() || otpVal.length !== 6) {
+    const fullOtp = otpArray.join('');
+    if (fullOtp.length !== 6) {
       setError('Please enter a valid 6-digit OTP.');
       return;
     }
 
-    if (otpVal !== '482065') {
+    if (fullOtp !== '482065') {
       setError('Incorrect OTP. Try entering 482065.');
       return;
     }
@@ -113,7 +182,17 @@ const Login = () => {
     if (timer > 0) return;
     setTimer(30);
     setError('');
-    alert(`[ShopEase Mock Service] New OTP is: 482065`);
+    setOtpArray(['', '', '', '', '', '']);
+    setToastMessage(`Verification code sent to ${inputVal}`);
+
+    setTimeout(() => {
+      const firstInput = document.querySelector('.otp-digit-input');
+      if (firstInput) firstInput.focus();
+    }, 50);
+
+    setTimeout(() => {
+      setToastMessage('');
+    }, 4000);
   };
 
   return (
@@ -209,45 +288,54 @@ const Login = () => {
           ) : (
             /* Form Step 2: Verify OTP */
             <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
-              <div className="otp-helper-banner">
-                <p>We've sent a 6-digit verification code to:</p>
-                <strong>{inputVal}</strong>
-                <button type="button" className="change-input-link" onClick={() => { setStep(1); setError(''); }}>
-                  Change
-                </button>
+              <div className="otp-verification-header">
+                <p className="otp-sent-to-text">
+                  Please enter the OTP sent to<br />
+                  <span className="otp-recipient-highlight">{inputVal}</span>. 
+                  <button type="button" className="otp-change-number-btn" onClick={() => { setStep(1); setError(''); }}>
+                    Change
+                  </button>
+                </p>
               </div>
 
-              <div className="floating-underline-input-group">
-                <input
-                  type="text"
-                  id="otp-input"
-                  className="underline-text-input text-center tracking-[0.25em]"
-                  placeholder=" "
-                  maxLength={6}
-                  value={otpVal}
-                  onChange={(e) => setOtpVal(e.target.value.replace(/\D/g, ''))}
-                  disabled={loading}
-                  required
-                  autoFocus
-                />
-                <label htmlFor="otp-input" className="underline-floating-label text-center-floating">
-                  Enter 6-Digit OTP (Use: 482065)
-                </label>
-                <span className="underline-focus-bar" />
+              <div className="otp-inputs-row" onPaste={handleOtpPaste}>
+                {otpArray.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e.target, idx)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                    className="otp-digit-input"
+                    disabled={loading}
+                    required
+                    autoFocus={idx === 0}
+                  />
+                ))}
               </div>
 
               <div className="otp-timer-resend-row">
                 {timer > 0 ? (
-                  <p className="otp-countdown-timer">Resend OTP in <span>{timer}s</span></p>
+                  <p className="otp-countdown-timer">
+                    Not received your code? <span>{formatTimer(timer)}</span>
+                  </p>
                 ) : (
-                  <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
-                    <RefreshCw size={12} /> Resend OTP
-                  </button>
+                  <div className="otp-resend-action-wrap">
+                    <p className="otp-countdown-timer">Not received your code? </p>
+                    <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
+                      Resend OTP
+                    </button>
+                  </div>
                 )}
               </div>
 
+              <div className="otp-mock-service-hint">
+                (For mock login, use OTP: <span>482065</span>)
+              </div>
+
               <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                {loading ? <span className="login-spinner-loader" /> : 'Verify & Login'}
+                {loading ? <span className="login-spinner-loader" /> : 'Verify'}
               </button>
             </form>
           )}
@@ -261,6 +349,14 @@ const Login = () => {
         </div>
 
       </div>
+
+      {/* Flipkart-Style Bottom Toast Notification */}
+      {toastMessage && (
+        <div className="login-bottom-toast">
+          <span className="toast-success-icon">✓</span>
+          <span className="toast-message-text">{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 };

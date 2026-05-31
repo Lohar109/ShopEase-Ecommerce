@@ -480,6 +480,147 @@
   font-weight: 600;
 }
 
+/* OTP Verification Flipkart-Style Layout */
+.otp-verification-header {
+  margin-bottom: 1.5rem;
+}
+
+.otp-sent-to-text {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  font-weight: 500;
+  margin: 0;
+}
+
+.otp-recipient-highlight {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.otp-change-number-btn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2874f0; /* exact Flipkart blue */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 6px;
+  padding: 0;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+
+.otp-change-number-btn:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.otp-inputs-row {
+  display: flex;
+  justify-content: space-between;
+  max-width: 320px;
+  margin: 2.2rem auto;
+  gap: 10px;
+}
+
+.otp-digit-input {
+  width: 40px;
+  height: 52px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.otp-digit-input:focus {
+  border-bottom-color: #fb641b; /* matching orange button */
+  transform: translateY(-2px);
+}
+
+.otp-digit-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.otp-resend-countdown-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+
+.otp-resend-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.otp-mock-service-hint {
+  text-align: center;
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.otp-mock-service-hint span {
+  color: #e33170;
+  font-weight: 700;
+}
+
+/* Flipkart-Style Bottom Toast Notification */
+.login-bottom-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #212121; /* dark toast style */
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  z-index: 9999;
+  font-size: 0.88rem;
+  font-weight: 500;
+  animation: slideUpFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-success-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #4caf50; /* green checkmark background */
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.toast-message-text {
+  letter-spacing: 0.2px;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    transform: translate(-50%, 20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
 /* 5. Mobile Responsiveness */
 @media (max-width: 680px) {
   .login-split-card {
