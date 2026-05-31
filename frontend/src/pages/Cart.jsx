@@ -377,68 +377,107 @@ const Cart = () => {
 
                   {/* Cart Items List */}
                   <div className="cart-items-list">
-                    {cartItems.map((item) => (
-                      <div className="cart-item-row" key={item.cartItemId}>
-                        {/* Product Image */}
-                        <Link to={`/product/${item.productId}`} className="cart-item-image-wrap">
-                          <img
-                            src={resolveImageSrc(item.image)}
-                            alt={item.productName}
-                            className="cart-item-image"
-                          />
-                        </Link>
+                    {cartItems.map((item) => {
+                      const qty = Number(item.quantity || 1);
+                      const originalPrice = Number(item.mrp ?? item.price ?? 0);
+                      
+                      let savingsPerUnit = 0;
+                      const isPercentage = String(item.discount_type || '').toLowerCase() === 'percentage';
+                      const isFixed = String(item.discount_type || '').toLowerCase() === 'fixed';
+                      const discountVal = Number(item.discount_value || 0);
 
-                        {/* Middle Info Details */}
-                        <div className="cart-item-middle-info">
-                          {/* Best Seller mock badge */}
-                          {item.price > 500 && (
-                            <span className="cart-item-bestseller-badge">Best Seller</span>
-                          )}
-                          <h3 className="cart-item-name">
-                            <Link to={`/product/${item.productId}`}>
-                              {item.productName}
-                            </Link>
-                          </h3>
-                          <div className="cart-item-attributes">
-                            <span>Size: {item.size || 'Natural'}</span>
-                            <span className="attr-divider">|</span>
-                            <span>Color: {item.color || 'Standard'}</span>
+                      if (discountVal > 0 && isPercentage) {
+                        savingsPerUnit = (originalPrice * discountVal) / 100;
+                      } else if (discountVal > 0 && isFixed) {
+                        savingsPerUnit = discountVal;
+                      } else {
+                        const m = Number(item.mrp || 0);
+                        const p = Number(item.price || 0);
+                        savingsPerUnit = Math.max(0, m - p);
+                      }
+
+                      const sellingPrice = originalPrice - savingsPerUnit;
+                      const hasDiscount = savingsPerUnit > 0;
+
+                      return (
+                        <div className="cart-item-row" key={item.cartItemId}>
+                          {/* Product Image */}
+                          <Link to={`/product/${item.productId}`} className="cart-item-image-wrap">
+                            <img
+                              src={resolveImageSrc(item.image)}
+                              alt={item.productName}
+                              className="cart-item-image"
+                            />
+                          </Link>
+
+                          {/* Middle Info Details */}
+                          <div className="cart-item-middle-info">
+                            {/* Best Seller mock badge */}
+                            {item.price > 500 && (
+                              <span className="cart-item-bestseller-badge">Best Seller</span>
+                            )}
+                            <h3 className="cart-item-name">
+                              <Link to={`/product/${item.productId}`}>
+                                {item.productName}
+                              </Link>
+                            </h3>
+                            <div className="cart-item-attributes">
+                              <span>Size: {item.size || 'Natural'}</span>
+                              <span className="attr-divider">|</span>
+                              <span>Color: {item.color || 'Standard'}</span>
+                            </div>
+                            
+                            {/* Item Actions */}
+                            <div className="cart-item-actions-row">
+                              <button
+                                type="button"
+                                className="cart-item-action-btn remove"
+                                onClick={() => handleRemove(item)}
+                              >
+                                <Trash2 size={14} />
+                                <span>Remove</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="cart-item-action-btn save"
+                                onClick={() => handleSaveForLater(item)}
+                              >
+                                <Heart size={14} />
+                                <span>Save for later</span>
+                              </button>
+                            </div>
                           </div>
-                          
-                          {/* Item Actions */}
-                          <div className="cart-item-actions-row">
-                            <button
-                              type="button"
-                              className="cart-item-action-btn remove"
-                              onClick={() => handleRemove(item)}
-                            >
-                              <Trash2 size={14} />
-                              <span>Remove</span>
-                            </button>
-                            <button
-                              type="button"
-                              className="cart-item-action-btn save"
-                              onClick={() => handleSaveForLater(item)}
-                            >
-                              <Heart size={14} />
-                              <span>Save for later</span>
-                            </button>
+
+                          {/* Right Controls & Pricing */}
+                          <div className="cart-item-right-controls">
+                            <div className="cart-qty-spinner">
+                              <button type="button" onClick={() => handleDecrease(item)}>−</button>
+                              <span>{item.quantity}</span>
+                              <button type="button" onClick={() => handleIncrease(item)}>+</button>
+                            </div>
+                            <div className="cart-item-price-display">
+                              {hasDiscount ? (
+                                <>
+                                  <span className="cart-item-price-selling">
+                                    ₹{(sellingPrice * qty).toFixed(2)}
+                                  </span>
+                                  <span className="cart-item-price-original">
+                                    ₹{(originalPrice * qty).toFixed(2)}
+                                  </span>
+                                  <span className="cart-item-price-discount">
+                                    {isPercentage ? `${discountVal}% OFF` : `₹${discountVal} OFF`}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="cart-item-price-selling">
+                                  ₹{(originalPrice * qty).toFixed(2)}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-
-                        {/* Right Controls & Pricing */}
-                        <div className="cart-item-right-controls">
-                          <div className="cart-qty-spinner">
-                            <button type="button" onClick={() => handleDecrease(item)}>−</button>
-                            <span>{item.quantity}</span>
-                            <button type="button" onClick={() => handleIncrease(item)}>+</button>
-                          </div>
-                          <div className="cart-item-price-display">
-                            ₹{(Number(item.price || 0) * item.quantity).toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
