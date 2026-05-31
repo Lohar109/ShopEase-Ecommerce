@@ -508,12 +508,15 @@
   margin-left: 6px;
   padding: 0;
   display: inline-block;
-  transition: opacity 0.2s;
+  transition: none;
+  user-select: none;
 }
 
 .otp-change-number-btn:hover {
-  opacity: 0.8;
-  text-decoration: underline;
+  text-decoration: none !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  cursor: pointer;
 }
 
 .otp-inputs-row {
