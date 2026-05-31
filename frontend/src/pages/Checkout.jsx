@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
-  MapPin, Edit2, ShoppingBag, Tag, Info, Truck, ShieldCheck, Check, ChevronDown, RotateCcw, Award
+  MapPin, Edit2, ShoppingBag, Tag, Info, Truck, ShieldCheck, Check, ChevronDown
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Shipping.css';
@@ -268,40 +268,6 @@ const Checkout = () => {
               </button>
             </div>
 
-            {/* Horizontal Trust Row bottom of sidebar */}
-            <div className="sidebar-horizontal-trust-card">
-              <div className="inline-trust-badge">
-                <div className="inline-trust-icon-circle">
-                  <Truck size={14} />
-                </div>
-                <strong>Free Shipping</strong>
-                <p>On all orders above ₹499</p>
-              </div>
-
-              <div className="inline-trust-badge">
-                <div className="inline-trust-icon-circle">
-                  <RotateCcw size={14} />
-                </div>
-                <strong>Easy Returns</strong>
-                <p>7 days return policy</p>
-              </div>
-
-              <div className="inline-trust-badge">
-                <div className="inline-trust-icon-circle">
-                  <ShieldCheck size={14} />
-                </div>
-                <strong>Secure Payments</strong>
-                <p>100% safe & trusted</p>
-              </div>
-
-              <div className="inline-trust-badge">
-                <div className="inline-trust-icon-circle">
-                  <Award size={14} />
-                </div>
-                <strong>Top Quality</strong>
-                <p>Premium quality products</p>
-              </div>
-            </div>
 
 
           </div>
