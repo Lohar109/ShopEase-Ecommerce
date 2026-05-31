@@ -1,40 +1,88 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Laptop, Heart, ShoppingBag, User, Sun, Cloud, ArrowRight, ShieldCheck, RefreshCw
+} from 'lucide-react';
 import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [inputVal, setInputVal] = useState('');
+  const [otpVal, setOtpVal] = useState('');
+  const [step, setStep] = useState(1); // 1: Enter Email/Mobile, 2: Enter OTP
+  const [timer, setTimer] = useState(30);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Timer logic for OTP resend
+  useEffect(() => {
+    let interval = null;
+    if (step === 2 && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((t) => t - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [step, timer]);
+
+  const handleRequestOtp = (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please enter both email and password.');
+    if (!inputVal.trim()) {
+      setError('Please enter your Email or Mobile number.');
       return;
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+
+    // Basic Validation: check if email or 10-digit mobile number
+    const isEmail = /\S+@\S+\.\S+/.test(inputVal);
+    const isMobile = /^\d{10}$/.test(inputVal.replace(/\D/g, ''));
+
+    if (!isEmail && !isMobile) {
+      setError('Please enter a valid Email address or 10-digit Mobile number.');
       return;
     }
 
     setError('');
     setLoading(true);
 
-    // Mock successful login
+    // Mock OTP dispatch
     setTimeout(() => {
       setLoading(false);
-      alert(`Welcome back to ShopEase! Authorized successfully as ${email}.`);
+      setStep(2);
+      setTimer(30);
+      alert(`[ShopEase Mock Service] OTP for verification is: 482065`);
+    }, 1000);
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (!otpVal.trim() || otpVal.length !== 6) {
+      setError('Please enter a valid 6-digit OTP.');
+      return;
+    }
+
+    if (otpVal !== '482065') {
+      setError('Incorrect OTP. Try entering 482065.');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    // Mock verification
+    setTimeout(() => {
+      setLoading(false);
+      alert('Login successful! Welcome back to ShopEase.');
       navigate('/');
     }, 1200);
+  };
+
+  const handleResendOtp = () => {
+    if (timer > 0) return;
+    setTimer(30);
+    setError('');
+    alert(`[ShopEase Mock Service] New OTP is: 482065`);
   };
 
   return (
@@ -43,116 +91,144 @@ const Login = () => {
       <div className="login-bg-glow blob-1" />
       <div className="login-bg-glow blob-2" />
 
-      <div className="login-card-wrap">
-        <div className="login-header-block">
-          <div className="login-logo-mark">
-            <Sparkles size={24} className="login-logo-icon" />
+      {/* Main Flipkart-Style Split Login Card */}
+      <div className="login-split-card">
+        
+        {/* Left Side: Brand Promo Panel */}
+        <div className="login-left-brand-panel">
+          <div className="brand-panel-text">
+            <h2>Login</h2>
+            <p>Get access to your Orders, Wishlist and Recommendations</p>
           </div>
-          <h1>Welcome Back</h1>
-          <p>Sign in to your premium ShopEase account</p>
+
+          {/* Premium Bottom Vector Illustration */}
+          <div className="brand-panel-illustration">
+            {/* Sun & Cloud floating backdrop */}
+            <div className="vector-sky-row">
+              <span className="vector-sun"><Sun size={20} strokeWidth={2.5} /></span>
+              <span className="vector-cloud"><Cloud size={24} strokeWidth={1.5} /></span>
+            </div>
+
+            {/* Laptop Screen & Floating badges */}
+            <div className="vector-devices-wrap">
+              {/* Left Badge: Heart */}
+              <div className="floating-badge badge-heart">
+                <Heart size={14} fill="#e33170" color="#e33170" />
+              </div>
+
+              {/* Main Laptop outline */}
+              <div className="vector-laptop-container">
+                <div className="laptop-screen-bezel">
+                  <div className="laptop-screen-glass">
+                    <User size={28} className="screen-avatar-icon" />
+                  </div>
+                </div>
+                <div className="laptop-base-stand" />
+              </div>
+
+              {/* Right Badge: ShopBag */}
+              <div className="floating-badge badge-bag">
+                <ShoppingBag size={14} fill="#f59e0b" color="#f59e0b" />
+              </div>
+            </div>
+            
+            {/* Table stand ground line */}
+            <div className="vector-ground-shelf" />
+          </div>
         </div>
 
-        {error && (
-          <div className="login-error-alert" role="alert">
-            <span className="error-alert-dot" />
-            <p>{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="login-form-fields">
-          {/* Email input field */}
-          <div className="login-input-group">
-            <label htmlFor="login-email">Email Address</label>
-            <div className="login-input-wrapper">
-              <Mail size={16} className="login-input-icon" />
-              <input
-                type="email"
-                id="login-email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
+        {/* Right Side: Interactive Action Forms */}
+        <div className="login-right-form-panel">
+          {error && (
+            <div className="login-error-alert" role="alert">
+              <span className="error-alert-dot" />
+              <p>{error}</p>
             </div>
-          </div>
+          )}
 
-          {/* Password input field */}
-          <div className="login-input-group">
-            <div className="login-password-header">
-              <label htmlFor="login-password">Password</label>
-              <a href="#forgot" className="forgot-password-link" onClick={(e) => e.preventDefault()}>
-                Forgot password?
-              </a>
-            </div>
-            <div className="login-input-wrapper">
-              <Lock size={16} className="login-input-icon" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="login-password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          {step === 1 ? (
+            /* Form Step 1: Input Credential */
+            <form onSubmit={handleRequestOtp} className="split-login-form">
+              <div className="floating-underline-input-group">
+                <input
+                  type="text"
+                  id="email-mobile-input"
+                  className="underline-text-input"
+                  placeholder=" " // necessary for CSS label state detection
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  disabled={loading}
+                  required
+                  autoFocus
+                />
+                <label htmlFor="email-mobile-input" className="underline-floating-label">
+                  Enter Email / Mobile number
+                </label>
+                <span className="underline-focus-bar" />
+              </div>
+
+              <p className="split-login-terms-text">
+                By continuing, you agree to ShopEase's <span>Terms of Use</span> and <span>Privacy Policy</span>.
+              </p>
+
+              <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                {loading ? <span className="login-spinner-loader" /> : 'Request OTP'}
               </button>
-            </div>
+            </form>
+          ) : (
+            /* Form Step 2: Verify OTP */
+            <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
+              <div className="otp-helper-banner">
+                <p>We've sent a 6-digit verification code to:</p>
+                <strong>{inputVal}</strong>
+                <button type="button" className="change-input-link" onClick={() => { setStep(1); setError(''); }}>
+                  Change
+                </button>
+              </div>
+
+              <div className="floating-underline-input-group">
+                <input
+                  type="text"
+                  id="otp-input"
+                  className="underline-text-input text-center tracking-[0.25em]"
+                  placeholder=" "
+                  maxLength={6}
+                  value={otpVal}
+                  onChange={(e) => setOtpVal(e.target.value.replace(/\D/g, ''))}
+                  disabled={loading}
+                  required
+                  autoFocus
+                />
+                <label htmlFor="otp-input" className="underline-floating-label text-center-floating">
+                  Enter 6-Digit OTP (Use: 482065)
+                </label>
+                <span className="underline-focus-bar" />
+              </div>
+
+              <div className="otp-timer-resend-row">
+                {timer > 0 ? (
+                  <p className="otp-countdown-timer">Resend OTP in <span>{timer}s</span></p>
+                ) : (
+                  <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
+                    <RefreshCw size={12} /> Resend OTP
+                  </button>
+                )}
+              </div>
+
+              <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                {loading ? <span className="login-spinner-loader" /> : 'Verify & Login'}
+              </button>
+            </form>
+          )}
+
+          {/* Bottom Card Sign-up Link */}
+          <div className="split-login-footer">
+            <span className="footer-register-link" onClick={() => alert('Registration screen triggered.')}>
+              New to ShopEase? Create an account
+            </span>
           </div>
-
-          {/* Remember me & Secure indicator */}
-          <div className="login-form-options">
-            <label className="login-remember-checkbox">
-              <input type="checkbox" defaultChecked />
-              <span className="checkbox-checkmark" />
-              Keep me signed in
-            </label>
-            <div className="secure-badge">
-              <ShieldCheck size={13} />
-              <span>Secure Session</span>
-            </div>
-          </div>
-
-          {/* Action button */}
-          <button type="submit" className="login-submit-btn" disabled={loading}>
-            {loading ? (
-              <span className="login-spinner-loader" />
-            ) : (
-              <>
-                Sign In <ArrowRight size={16} className="submit-arrow" />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="login-divider-row">
-          <span className="divider-line" />
-          <span className="divider-text">or continue with</span>
-          <span className="divider-line" />
         </div>
 
-        {/* Social Authentication buttons */}
-        <div className="social-auth-grid">
-          <button type="button" className="social-auth-btn" onClick={() => alert('Google social login triggered.')}>
-            <span className="social-logo-google">G</span> Google
-          </button>
-          <button type="button" className="social-auth-btn" onClick={() => alert('Apple social login triggered.')}>
-            <span className="social-logo-apple"></span> Apple
-          </button>
-        </div>
-
-        {/* Footer signup prompt */}
-        <p className="login-footer-signup-prompt">
-          Don't have an account? <span className="signup-link" onClick={() => alert('Sign up page triggered.')}>Create one now</span>
-        </p>
       </div>
     </div>
   );

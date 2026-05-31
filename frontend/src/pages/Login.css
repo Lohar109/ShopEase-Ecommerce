@@ -1,13 +1,13 @@
-/* Premium Login Page CSS Styling Engine */
+/* Premium Split Login Page CSS Layout Engine */
 
 .login-page-container {
   width: 100%;
-  min-height: 90vh; /* fits beautifully under standard header */
+  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 3rem 1.5rem;
-  background-color: #f8fafc; /* premium slate */
+  background-color: #f1f5f9; /* Slate background */
   position: relative;
   overflow: hidden;
   font-family: 'Poppins', sans-serif;
@@ -17,343 +17,407 @@
 .login-bg-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.18;
+  filter: blur(100px);
+  opacity: 0.15;
   z-index: 1;
   pointer-events: none;
 }
 
 .login-bg-glow.blob-1 {
-  width: 320px;
-  height: 320px;
+  width: 380px;
+  height: 380px;
   background: radial-gradient(circle, #e33170 0%, rgba(227, 49, 112, 0) 70%);
-  top: 10%;
-  left: 20%;
-  animation: floatBlob1 15s infinite alternate ease-in-out;
+  top: 5%;
+  left: 15%;
+  animation: floatBlob1 20s infinite alternate ease-in-out;
 }
 
 .login-bg-glow.blob-2 {
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, #008cff 0%, rgba(0, 140, 255, 0) 70%);
-  bottom: 10%;
-  right: 15%;
-  animation: floatBlob2 18s infinite alternate ease-in-out;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, #3b82f6 0%, rgba(59, 130, 246, 0) 70%);
+  bottom: 5%;
+  right: 10%;
+  animation: floatBlob2 22s infinite alternate ease-in-out;
 }
 
 @keyframes floatBlob1 {
   0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, 30px) scale(1.1); }
+  100% { transform: translate(50px, 40px) scale(1.1); }
 }
 
 @keyframes floatBlob2 {
   0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-30px, -50px) scale(1.05); }
+  100% { transform: translate(-40px, -60px) scale(1.05); }
 }
 
-/* 1. Login Card Wrapper */
-.login-card-wrap {
+/* 1. Main Flipkart-Style Split Login Card */
+.login-split-card {
+  display: flex;
   width: 100%;
-  max-width: 440px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+  max-width: 820px;
+  height: 520px;
+  background-color: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px -15px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.03);
   z-index: 2;
   position: relative;
-  text-align: left;
 }
 
-/* Logo mark */
-.login-header-block {
+/* 2. Left Side: Brand Promo Panel (Themed Pink Gradient) */
+.login-left-brand-panel {
+  width: 340px;
+  background: linear-gradient(145deg, #e33170 0%, #b21a50 100%);
+  padding: 3rem 2.2rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 2rem;
+  justify-content: space-between;
+  text-align: left;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.login-logo-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background-color: rgba(227, 49, 112, 0.08);
-  color: #e33170;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 10px rgba(227, 49, 112, 0.1);
-}
-
-.login-logo-icon {
-  animation: logoPulse 2.5s infinite ease-in-out;
-}
-
-@keyframes logoPulse {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(5deg); }
-}
-
-.login-header-block h1 {
+.brand-panel-text h2 {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #ffffff;
   letter-spacing: -0.02em;
 }
 
-.login-header-block p {
-  margin: 6px 0 0 0;
-  font-size: 0.88rem;
+.brand-panel-text p {
+  margin: 12px 0 0 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Bottom Vector Illustration (CSS Graphic) */
+.brand-panel-illustration {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 180px;
+}
+
+.vector-sky-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.vector-sun {
+  color: #fbbf24;
+  animation: spinSun 30s linear infinite;
+}
+
+.vector-cloud {
+  color: #ffffff;
+  animation: bobCloud 4s infinite alternate ease-in-out;
+}
+
+@keyframes spinSun {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bobCloud {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.vector-devices-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 90px;
+}
+
+/* Main Laptop base and stand */
+.vector-laptop-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.laptop-screen-bezel {
+  width: 105px;
+  height: 66px;
+  background-color: #0f172a;
+  border-radius: 6px 6px 0 0;
+  padding: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.laptop-screen-glass {
+  width: 100%;
+  height: 100%;
+  background-color: #f1f5f9;
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.screen-avatar-icon {
+  opacity: 0.85;
+}
+
+.laptop-base-stand {
+  width: 125px;
+  height: 5px;
+  background-color: #e2e8f0;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Floating Badges */
+.floating-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  position: absolute;
+  z-index: 3;
+}
+
+.badge-heart {
+  left: 35px;
+  bottom: 25px;
+  animation: floatHeart 3.5s infinite alternate ease-in-out;
+}
+
+.badge-bag {
+  right: 35px;
+  bottom: 25px;
+  animation: floatBag 3.5s infinite alternate ease-in-out 0.5s;
+}
+
+@keyframes floatHeart {
+  0% { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(-8px) rotate(4deg); }
+}
+
+@keyframes floatBag {
+  0% { transform: translateY(0) rotate(4deg); }
+  100% { transform: translateY(-8px) rotate(-4deg); }
+}
+
+.vector-ground-shelf {
+  width: 180px;
+  height: 4px;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 99px;
+  margin-top: 4px;
+}
+
+/* 3. Right Side: Interactive Action Forms */
+.login-right-form-panel {
+  flex: 1;
+  padding: 4rem 3.5rem 3.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+/* Underline Floating Input Layout */
+.floating-underline-input-group {
+  position: relative;
+  width: 100%;
+  margin-bottom: 2rem;
+  margin-top: 1.5rem;
+}
+
+.underline-text-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid #cbd5e1;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  color: #0f172a;
+  outline: none;
+  font-weight: 500;
+  transition: border-color 0.25s ease;
+}
+
+.underline-floating-label {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  font-weight: 500;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-center-floating {
+  width: 100%;
+  text-align: center;
+}
+
+.underline-focus-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #e33170;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Underline Float Effects */
+.underline-text-input:focus + .underline-floating-label,
+.underline-text-input:not(:placeholder-shown) + .underline-floating-label {
+  top: -12px;
+  font-size: 0.76rem;
+  color: #e33170;
+  font-weight: 700;
+}
+
+.underline-text-input:focus ~ .underline-focus-bar {
+  width: 100%;
+}
+
+.underline-text-input:focus {
+  border-bottom-color: #f1f5f9; /* hide standard border under focus bar */
+}
+
+/* OTP helper */
+.otp-helper-banner {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.otp-helper-banner p {
+  margin: 0 0 4px 0;
+}
+
+.otp-helper-banner strong {
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.change-input-link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #e33170;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  padding: 0;
+}
+
+.change-input-link:hover {
+  text-decoration: underline;
+}
+
+/* Timer and Countdown */
+.otp-timer-resend-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.otp-countdown-timer {
+  margin: 0;
+  font-size: 0.8rem;
   color: #64748b;
   font-weight: 500;
 }
 
-/* 2. Error alert styling */
-.login-error-alert {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #fef2f2;
-  border: 1px solid rgba(239, 68, 68, 0.15);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1.5rem;
-  animation: shakeAlert 0.4s ease-in-out;
-}
-
-@keyframes shakeAlert {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-
-.error-alert-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #ef4444;
-  flex-shrink: 0;
-}
-
-.login-error-alert p {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #991b1b;
-  font-weight: 600;
-}
-
-/* 3. Input fields & controls */
-.login-form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.login-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: left;
-}
-
-.login-input-group label {
-  font-size: 0.82rem;
+.otp-countdown-timer span {
+  color: #e33170;
   font-weight: 700;
-  color: #334155;
-  letter-spacing: 0.01em;
 }
 
-.login-password-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.forgot-password-link {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #e33170;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.forgot-password-link:hover {
-  text-decoration: underline;
-}
-
-.login-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.login-input-icon {
-  position: absolute;
-  left: 14px;
-  color: #94a3b8;
-  pointer-events: none;
-  transition: color 0.2s;
-}
-
-.login-input-wrapper input {
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  padding: 12px 14px 12px 42px;
-  font-size: 0.9rem;
-  color: #0f172a;
-  outline: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-}
-
-.login-input-wrapper input::placeholder {
-  color: #94a3b8;
-}
-
-.login-input-wrapper input:focus {
-  border-color: #e33170;
-  box-shadow: 0 0 0 4px rgba(227, 49, 112, 0.08);
-}
-
-.login-input-wrapper input:focus + .login-input-icon {
-  color: #e33170;
-}
-
-.password-toggle-btn {
-  position: absolute;
-  right: 12px;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 4px;
-  outline: none;
-}
-
-.password-toggle-btn:hover {
-  color: #475569;
-}
-
-/* Form checkboxes & badges */
-.login-form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.login-remember-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #475569;
-  cursor: pointer;
-  user-select: none;
-}
-
-.login-remember-checkbox input {
-  display: none;
-}
-
-.checkbox-checkmark {
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 4px;
-  background-color: #ffffff;
-  display: inline-block;
-  position: relative;
-  transition: all 0.2s;
-}
-
-.login-remember-checkbox input:checked + .checkbox-checkmark {
-  background-color: #e33170;
-  border-color: #e33170;
-}
-
-.login-remember-checkbox input:checked + .checkbox-checkmark::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 2px;
-  width: 4px;
-  height: 8px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.secure-badge {
+.resend-otp-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #10b981;
-  background-color: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.12);
-  padding: 2px 8px;
-  border-radius: 6px;
+  color: #e33170;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-/* 4. Action button */
-.login-submit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #e33170;
+.resend-otp-btn:hover {
+  text-decoration: underline;
+}
+
+/* Terms subtext */
+.split-login-terms-text {
+  font-size: 0.74rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0 0 2rem 0;
+}
+
+.split-login-terms-text span {
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+.split-login-terms-text span:hover {
+  text-decoration: underline;
+}
+
+/* Action button (Orange like Flipkart, but styled cleanly in premium HSL) */
+.split-login-action-btn.primary {
+  width: 100%;
+  background-color: #fb641b; /* exact Flipkart orange */
   color: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 14px;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 15px -4px rgba(227, 49, 112, 0.4);
-  outline: none;
-  margin-top: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(251, 100, 27, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.login-submit-btn:hover {
-  background-color: #d0205e;
-  transform: translateY(-1.5px);
-  box-shadow: 0 6px 20px -3px rgba(227, 49, 112, 0.5);
+.split-login-action-btn.primary:hover {
+  background-color: #e6530f;
+  box-shadow: 0 6px 16px rgba(251, 100, 27, 0.35);
+  transform: translateY(-1px);
 }
 
-.login-submit-btn:active {
+.split-login-action-btn.primary:active {
   transform: translateY(0);
 }
 
-.login-submit-btn:disabled {
-  background-color: #f472b6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.submit-arrow {
-  transition: transform 0.2s;
-}
-
-.login-submit-btn:hover .submit-arrow {
-  transform: translateX(4px);
-}
-
-/* Spinner Loader */
+/* Loader */
 .login-spinner-loader {
   width: 18px;
   height: 18px;
@@ -367,96 +431,71 @@
   to { transform: rotate(360deg); }
 }
 
-/* 5. Divider & Social authentication */
-.login-divider-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 1.75rem 0;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background-color: #f1f5f9;
-}
-
-.divider-text {
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.social-auth-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.social-auth-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 11px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #334155;
-  cursor: pointer;
-  transition: all 0.2s;
-  outline: none;
-}
-
-.social-auth-btn:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.social-logo-google {
-  font-family: 'Product Sans', sans-serif;
-  font-weight: 900;
-  color: #4285f4;
-}
-
-.social-logo-apple {
-  font-size: 1rem;
-  line-height: 0;
-  color: #0f172a;
-  position: relative;
-  top: -1px;
-}
-
-/* Signup prompt */
-.login-footer-signup-prompt {
-  margin: 2rem 0 0 0;
+/* Register footer prompt */
+.split-login-footer {
   text-align: center;
-  font-size: 0.82rem;
-  color: #64748b;
-  font-weight: 500;
+  margin-top: auto;
 }
 
-.signup-link {
-  color: #e33170;
+.footer-register-link {
+  font-size: 0.85rem;
   font-weight: 700;
+  color: #2874f0; /* exact Flipkart blue */
   cursor: pointer;
+  transition: color 0.2s;
 }
 
-.signup-link:hover {
+.footer-register-link:hover {
   text-decoration: underline;
 }
 
-/* 6. Mobile Responsiveness */
-@media (max-width: 480px) {
-  .login-card-wrap {
-    padding: 2.25rem 1.5rem;
-    border-radius: 18px;
+/* 4. Error Alert styling */
+.login-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fef2f2;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-alert-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  flex-shrink: 0;
+}
+
+.login-error-alert p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+/* 5. Mobile Responsiveness */
+@media (max-width: 680px) {
+  .login-split-card {
+    flex-direction: column;
+    height: auto;
+    max-width: 440px;
+    border-radius: 20px;
   }
-  .login-header-block h1 {
-    font-size: 1.4rem;
+  .login-left-brand-panel {
+    width: 100%;
+    height: 180px;
+    padding: 2rem;
+  }
+  .brand-panel-illustration {
+    display: none; /* hide illustration on collapsed mobile height */
+  }
+  .login-right-form-panel {
+    padding: 2.5rem 2rem;
+  }
+  .split-login-action-btn.primary {
+    margin-top: 1.5rem;
   }
 }
