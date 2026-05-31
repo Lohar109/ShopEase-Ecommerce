@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
-  MapPin, Edit2, ShoppingBag, Tag, ArrowLeft, Info, Truck, ShieldCheck, Check, ChevronDown
+  MapPin, Edit2, ShoppingBag, Tag, ArrowLeft, Info, Truck, ShieldCheck, Check, ChevronDown, RotateCcw, Award
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Shipping.css';
