@@ -27,6 +27,36 @@ const Login = () => {
     return () => clearInterval(interval);
   }, [step, timer]);
 
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    
+    // Check if the value starts with a digit or a plus sign
+    const isNumeric = /^[0-9+]/.test(val);
+    
+    if (isNumeric) {
+      // Strip any existing "+91" prefix
+      let cleanVal = val.replace(/^\+91\s*/, '');
+      // Keep only digits
+      cleanVal = cleanVal.replace(/\D/g, '');
+      // Strip a single leading zero if it was typed or pasted
+      cleanVal = cleanVal.replace(/^0/, '');
+      
+      // Limit to 10 digits for standard Indian mobile number
+      if (cleanVal.length > 10) {
+        cleanVal = cleanVal.slice(0, 10);
+      }
+      
+      if (cleanVal.length === 0) {
+        setInputVal('');
+      } else {
+        setInputVal(`+91 ${cleanVal}`);
+      }
+    } else {
+      // It's an email/other text, don't format with +91
+      setInputVal(val);
+    }
+  };
+
   const handleRequestOtp = (e) => {
     e.preventDefault();
     if (!inputVal.trim()) {
@@ -36,7 +66,8 @@ const Login = () => {
 
     // Basic Validation: check if email or 10-digit mobile number
     const isEmail = /\S+@\S+\.\S+/.test(inputVal);
-    const isMobile = /^\d{10}$/.test(inputVal.replace(/\D/g, ''));
+    const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
+    const isMobile = /^\d{10}$/.test(digitsOnly);
 
     if (!isEmail && !isMobile) {
       setError('Please enter a valid Email address or 10-digit Mobile number.');
@@ -156,7 +187,7 @@ const Login = () => {
                   className="underline-text-input"
                   placeholder=" " // necessary for CSS label state detection
                   value={inputVal}
-                  onChange={(e) => setInputVal(e.target.value)}
+                  onChange={handleInputChange}
                   disabled={loading}
                   required
                   autoFocus
