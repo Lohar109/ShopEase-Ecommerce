@@ -618,11 +618,12 @@
 
 /* 5. Center Action Pay Button */
 .payment-page-pay-action-block {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
 }
 
 .payment-cta-pay-btn {
@@ -634,14 +635,13 @@
   color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 1rem !important;
-  padding: 14px 44px !important;
+  padding: 14px 20px !important;
   border-radius: 12px !important;
   border: none !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
-  width: auto !important;
+  width: 100% !important;
   box-shadow: 0 8px 24px -6px rgba(17, 24, 39, 0.35) !important;
-  min-width: 280px;
 }
 
 .payment-cta-pay-btn:hover {

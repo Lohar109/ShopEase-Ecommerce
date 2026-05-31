@@ -275,21 +275,6 @@ const Payment = () => {
             </div>
 
 
-            {/* Pay Button & Policies footer */}
-            <div className="payment-page-pay-action-block">
-              <button 
-                type="button" 
-                className="cart-checkout-btn payment-cta-pay-btn"
-                onClick={handlePay}
-              >
-                <Lock size={14} className="pay-lock-icon" /> Pay ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </button>
-              
-              <p className="payment-footer-policy-links">
-                By proceeding, you agree to our <span>Terms & Conditions</span> and <span>Privacy Policy</span>.
-              </p>
-            </div>
-
           </div>
 
           {/* Right Column: Order Summary Sidebar */}
@@ -373,6 +358,21 @@ const Payment = () => {
                   <Check size={10} color="#ffffff" strokeWidth={3} />
                 </div>
                 <span>You're saving ₹{totalDiscount.toFixed(2)} on this order!</span>
+              </div>
+
+              {/* Pay Button & Policies footer */}
+              <div className="payment-page-pay-action-block">
+                <button 
+                  type="button" 
+                  className="cart-checkout-btn payment-cta-pay-btn"
+                  onClick={handlePay}
+                >
+                  <Lock size={14} className="pay-lock-icon" /> Pay ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </button>
+                
+                <p className="payment-footer-policy-links">
+                  By proceeding, you agree to our <span>Terms & Conditions</span> and <span>Privacy Policy</span>.
+                </p>
               </div>
             </div>
 
