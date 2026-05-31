@@ -376,22 +376,6 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Need Help Sidebar card */}
-            <div className="payment-sidebar-help-card">
-              <div className="help-card-left">
-                <div className="help-card-headset-circle">
-                  <Headphones size={15} />
-                </div>
-                <div className="help-card-content">
-                  <strong>Need Help?</strong>
-                  <p>Our support team is here for you</p>
-                </div>
-              </div>
-
-              <button type="button" className="help-card-chat-btn">
-                <MessageSquare size={13} /> Chat with Us
-              </button>
-            </div>
 
           </div>
 
