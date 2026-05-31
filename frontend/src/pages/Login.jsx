@@ -330,10 +330,6 @@ const Login = () => {
                 )}
               </div>
 
-              <div className="otp-mock-service-hint">
-                (For mock login, use OTP: <span>482065</span>)
-              </div>
-
               <button type="submit" className="split-login-action-btn primary" disabled={loading}>
                 {loading ? <span className="login-spinner-loader" /> : 'Verify'}
               </button>
@@ -341,11 +337,13 @@ const Login = () => {
           )}
 
           {/* Bottom Card Sign-up Link */}
-          <div className="split-login-footer">
-            <span className="footer-register-link" onClick={() => alert('Registration screen triggered.')}>
-              New to ShopEase? Create an account
-            </span>
-          </div>
+          {step === 1 && (
+            <div className="split-login-footer">
+              <span className="footer-register-link" onClick={() => alert('Registration screen triggered.')}>
+                New to ShopEase? Create an account
+              </span>
+            </div>
+          )}
         </div>
 
       </div>
