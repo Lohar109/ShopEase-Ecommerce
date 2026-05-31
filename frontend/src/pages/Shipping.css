@@ -189,6 +189,7 @@
   font-size: 0.85rem;
   color: #475569;
   line-height: 1.45;
+  max-width: 480px;
 }
 
 .address-phone {
