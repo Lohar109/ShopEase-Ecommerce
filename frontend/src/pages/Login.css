@@ -502,20 +502,31 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: #2874f0; /* exact Flipkart blue */
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
   cursor: pointer;
   margin-left: 6px;
   padding: 0;
   display: inline-block;
-  transition: none;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
   user-select: none;
 }
 
-.otp-change-number-btn:hover {
+.otp-change-number-btn:hover,
+.otp-change-number-btn:focus,
+.otp-change-number-btn:active {
   text-decoration: none !important;
   opacity: 1 !important;
   background: transparent !important;
+  background-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
   cursor: pointer;
 }
 
