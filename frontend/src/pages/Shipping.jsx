@@ -410,40 +410,8 @@ const Shipping = () => {
               
               {/* Summary Header */}
               <div className="order-summary-sidebar-header">
-                <h3>Order Summary</h3>
-                <span className="items-count-badge">{totalQty} {totalQty === 1 ? 'Item' : 'Items'}</span>
+                <h3>Price Details</h3>
               </div>
-
-              {/* Items List */}
-              <div className="sidebar-items-scroller">
-                {cartItems.map((item, idx) => {
-                  const src = item.image || item.thumbnail || (item.images && item.images[0]);
-                  const key = item.id || item._id || item.sku || item.name || idx;
-                  
-                  return (
-                    <div className="sidebar-product-row" key={key}>
-                      <div className="sidebar-product-thumb-wrap">
-                        {src ? (
-                          <img src={src} alt={item.name} className="sidebar-product-thumb" />
-                        ) : (
-                          <div className="sidebar-product-thumb--empty" />
-                        )}
-                      </div>
-                      
-                      <div className="sidebar-product-info">
-                        <p className="sidebar-product-title">{item.name}</p>
-                        <p className="sidebar-product-quantity">Qty: {item.quantity}</p>
-                      </div>
-                      
-                      <div className="sidebar-product-price">
-                        ₹{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="cart-summary-row-divider" />
 
               {/* Price Details */}
               <div className="cart-summary-row">
