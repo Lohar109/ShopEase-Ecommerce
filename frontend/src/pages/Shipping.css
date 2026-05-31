@@ -742,6 +742,222 @@
   box-shadow: none !important;
 }
 
+/* Order Summary & Checkout Review Styles */
+.checkout-address-summary-card,
+.checkout-items-summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -10px rgba(0,0,0,0.03);
+  margin-bottom: 1.5rem;
+}
+
+.checkout-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.checkout-card-title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a;
+}
+
+.checkout-card-title-left h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pdp-location-icon,
+.pdp-shopping-bag-icon,
+.price-tag-icon {
+  color: #e33170;
+}
+
+.checkout-header-edit-btn {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e33170;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  box-shadow: none;
+  width: auto;
+}
+
+.checkout-header-edit-btn:hover {
+  background-color: rgba(227, 49, 112, 0.05);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.checkout-address-body {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.checkout-address-block-text {
+  margin: 0 0 6px 0;
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.checkout-address-phone-text {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.checkout-address-phone-text strong {
+  color: #334155;
+}
+
+/* Order Items 3-Column Grid */
+.checkout-order-items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-order-item-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1.25rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px dashed #f1f5f9;
+  align-items: center;
+}
+
+.checkout-order-item-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.checkout-item-thumb-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.checkout-item-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.checkout-item-thumb--empty {
+  width: 100%;
+  height: 100%;
+  background-color: #e2e8f0;
+  border-radius: 8px;
+}
+
+.checkout-item-meta {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.checkout-item-name {
+  margin: 0 0 4px 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.checkout-item-attributes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+.checkout-item-pricing-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 48px;
+}
+
+.checkout-item-qty {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.checkout-item-total-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Sidebar header & button overrides */
+.checkout-sidebar-price-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+  color: #0f172a;
+}
+
+.checkout-sidebar-price-header h3 {
+  margin: 0 !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.checkout-back-shipping-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e33170;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 1rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  width: 100%;
+  box-shadow: none;
+}
+
+.checkout-back-shipping-btn:hover {
+  background-color: rgba(227, 49, 112, 0.05);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 /* Fluid Responsiveness for Shipping */
 @media (max-width: 768px) {
   .saved-address-item {
