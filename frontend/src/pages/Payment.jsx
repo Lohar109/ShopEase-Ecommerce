@@ -20,8 +20,7 @@ const Payment = () => {
   // Selected Payment Method State
   const [selectedMethod, setSelectedMethod] = useState('card'); // upi, card, netbanking, wallets, bnpl, gpay
 
-  // Security Save Card Switch State
-  const [saveCardSecurely, setSaveCardSecurely] = useState(true);
+
 
   // Dynamic pricing calculations
   const { totalMRP, totalDiscount, totalQty } = useMemo(() => {
@@ -280,28 +279,6 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Switch Save card row box */}
-            <div className="save-card-secure-switch-box">
-              <div className="switch-box-left">
-                <div className="switch-box-shield-wrap">
-                  <ShieldCheck size={18} />
-                </div>
-                <div className="switch-box-text">
-                  <strong>Save this card securely for faster payments</strong>
-                  <p>You can remove cards anytime from your account settings.</p>
-                </div>
-              </div>
-
-              <div className="switch-box-right">
-                <button 
-                  type="button" 
-                  className={`ios-toggle-switch ${saveCardSecurely ? 'checked' : ''}`}
-                  onClick={() => setSaveCardSecurely(!saveCardSecurely)}
-                >
-                  <span className="ios-toggle-switch-handle" />
-                </button>
-              </div>
-            </div>
 
             {/* Pay Button & Policies footer */}
             <div className="payment-page-pay-action-block">
