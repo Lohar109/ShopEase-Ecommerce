@@ -259,11 +259,6 @@ const Shipping = () => {
           {/* Left Main Column: Shipping Addresses & Delivery Options */}
           <div className="shipping-form-shell cart-list block lg:col-span-2">
             
-            {/* Header Description */}
-            <div className="shipping-page-header">
-              <h1>Shipping Address</h1>
-              <p>Choose a delivery address and shipping method</p>
-            </div>
 
             {/* Saved Addresses Card */}
             <div className="shipping-form-card saved-addresses-card-wrap">
