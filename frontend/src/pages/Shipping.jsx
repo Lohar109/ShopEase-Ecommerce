@@ -352,9 +352,6 @@ const Shipping = () => {
                   onClick={() => setDeliveryMethod('standard')}
                 >
                   <div className="delivery-method-left">
-                    <span className={`delivery-radio ${deliveryMethod === 'standard' ? 'checked' : ''}`} aria-hidden="true">
-                      {deliveryMethod === 'standard' && <span className="delivery-radio-inner-dot" />}
-                    </span>
                     <div className="delivery-method-icon-circle standard">
                       <Truck size={16} />
                     </div>
@@ -373,9 +370,6 @@ const Shipping = () => {
                   onClick={() => setDeliveryMethod('express')}
                 >
                   <div className="delivery-method-left">
-                    <span className={`delivery-radio ${deliveryMethod === 'express' ? 'checked' : ''}`} aria-hidden="true">
-                      {deliveryMethod === 'express' && <span className="delivery-radio-inner-dot" />}
-                    </span>
                     <div className="delivery-method-icon-circle express">
                       <Truck size={16} />
                     </div>
@@ -394,9 +388,6 @@ const Shipping = () => {
                   onClick={() => setDeliveryMethod('sameday')}
                 >
                   <div className="delivery-method-left">
-                    <span className={`delivery-radio ${deliveryMethod === 'sameday' ? 'checked' : ''}`} aria-hidden="true">
-                      {deliveryMethod === 'sameday' && <span className="delivery-radio-inner-dot" />}
-                    </span>
                     <div className="delivery-method-icon-circle sameday">
                       <Truck size={16} />
                     </div>
