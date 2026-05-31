@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
-  MapPin, Edit2, ShoppingBag, Tag, ArrowLeft, Info, Truck, ShieldCheck, Check, ChevronDown, RotateCcw, Award
+  MapPin, Edit2, ShoppingBag, Tag, Info, Truck, ShieldCheck, Check, ChevronDown, RotateCcw, Award
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Shipping.css';
@@ -304,13 +304,6 @@ const Checkout = () => {
               Proceed to Payment
             </button>
 
-            <button 
-              type="button" 
-              className="checkout-back-shipping-btn" 
-              onClick={() => navigate('/checkout/shipping', { state })}
-            >
-              <ArrowLeft size={14} /> Back to Shipping
-            </button>
 
           </div>
 
