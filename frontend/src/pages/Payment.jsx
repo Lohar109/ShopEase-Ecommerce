@@ -18,7 +18,7 @@ const Payment = () => {
   const deliveryMethod = state?.deliveryMethod || 'standard';
 
   // Selected Payment Method State
-  const [selectedMethod, setSelectedMethod] = useState('recommended_card'); // recommended_card, upi, card, netbanking, wallets, bnpl, gpay
+  const [selectedMethod, setSelectedMethod] = useState('card'); // upi, card, netbanking, wallets, bnpl, gpay
 
   // Security Save Card Switch State
   const [saveCardSecurely, setSaveCardSecurely] = useState(true);
@@ -133,52 +133,9 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Recommended for You section */}
-            <div className="payment-methods-sub-section">
-              <h3>Recommended for You</h3>
-              
-              <div 
-                className={`recommended-card-option ${selectedMethod === 'recommended_card' ? 'selected' : ''}`}
-                onClick={() => setSelectedMethod('recommended_card')}
-              >
-                {/* Left check radio */}
-                <div className="recommended-radio-column">
-                  <span className={`address-radio-circle ${selectedMethod === 'recommended_card' ? 'checked' : ''}`}>
-                    {selectedMethod === 'recommended_card' && <span className="address-radio-checked-dot" />}
-                  </span>
-                </div>
-
-                {/* Visa brand Box */}
-                <div className="recommended-brand-logo-wrap">
-                  <span className="brand-logo-text-visa">VISA</span>
-                </div>
-
-                {/* Card description details */}
-                <div className="recommended-card-details">
-                  <div className="card-name-badge-row">
-                    <span className="recommended-default-badge">Default</span>
-                    <strong>Axis Bank Credit Card</strong>
-                  </div>
-                  <p className="card-number-mask">•••• •••• •••• 4242</p>
-                  <p className="card-expiry-date">Expires 12/27</p>
-                </div>
-
-                {/* Right metadata info */}
-                <div className="recommended-holder-dropdown">
-                  <span className="card-holder-name-tag">Rohan Sharma</span>
-                  <ChevronDown size={14} className="dropdown-arrow-gray" />
-                </div>
-
-                {/* Premium floating background shield illustration */}
-                <div className="recommended-card-bg-shield">
-                  <ShieldCheck size={76} strokeWidth={0.5} />
-                </div>
-              </div>
-            </div>
-
-            {/* Other Payment Methods Section */}
+            {/* Payment Methods Section */}
             <div className="payment-methods-sub-section other-methods">
-              <h3>Other Payment Methods</h3>
+              <h3>Payment Methods</h3>
 
               <div className="payment-methods-grid">
                 
