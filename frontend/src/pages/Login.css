@@ -362,14 +362,30 @@
   font-size: 0.8rem;
   font-weight: 700;
   color: #e33170;
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
   cursor: pointer;
   padding: 0;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+  user-select: none;
 }
 
-.resend-otp-btn:hover {
-  text-decoration: underline;
+.resend-otp-btn:hover,
+.resend-otp-btn:focus,
+.resend-otp-btn:active {
+  text-decoration: none !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
 }
 
 /* Terms subtext */
