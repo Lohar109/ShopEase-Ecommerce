@@ -290,14 +290,14 @@ const Payment = () => {
                     <div className="sidebar-product-row" key={key} style={{ padding: '10px 0', borderBottom: idx < cartItems.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
                       <div className="sidebar-product-thumb-wrap">
                         {src ? (
-                          <img src={src} alt={item.name} className="sidebar-product-thumb" />
+                          <img src={src} alt={item.productName || item.name} className="sidebar-product-thumb" />
                         ) : (
                           <div className="sidebar-product-thumb--empty" />
                         )}
                       </div>
                       
                       <div className="sidebar-product-info">
-                        <p className="sidebar-product-title" style={{ fontSize: '0.88rem', fontWeight: '600' }}>{item.name}</p>
+                        <p className="sidebar-product-title" style={{ fontSize: '0.88rem', fontWeight: '600' }}>{item.productName || item.name}</p>
                         <p className="sidebar-product-quantity">Qty: {item.quantity}</p>
                       </div>
                       
