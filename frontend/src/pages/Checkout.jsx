@@ -257,6 +257,15 @@ const Checkout = () => {
                 </div>
                 <span>You're saving ₹{totalDiscount.toFixed(2)} on this order!</span>
               </div>
+
+              {/* Main Action button */}
+              <button 
+                type="button" 
+                className="cart-checkout-btn" 
+                onClick={handlePlaceOrder}
+              >
+                Proceed to Payment
+              </button>
             </div>
 
             {/* Horizontal Trust Row bottom of sidebar */}
@@ -293,16 +302,6 @@ const Checkout = () => {
                 <p>Premium quality products</p>
               </div>
             </div>
-
-            {/* Main Action buttons */}
-            <button 
-              type="button" 
-              className="cart-checkout-btn" 
-              onClick={handlePlaceOrder}
-              style={{ width: '100%', padding: '14px 16px', background: '#111827', color: '#ffffff', fontWeight: '700', borderRadius: '12px', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s', marginTop: '4px' }}
-            >
-              Proceed to Payment
-            </button>
 
 
           </div>
