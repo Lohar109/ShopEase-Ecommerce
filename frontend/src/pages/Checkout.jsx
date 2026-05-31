@@ -78,8 +78,13 @@ const Checkout = () => {
     .join(', ');
 
   const handlePlaceOrder = () => {
-    toast.success("Order Placed Successfully!");
-    // Clear cart or redirect
+    navigate('/checkout/payment', {
+      state: {
+        cartItems,
+        shippingAddress: activeAddress,
+        deliveryMethod,
+      },
+    });
   };
 
   return (

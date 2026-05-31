@@ -1,0 +1,870 @@
+/* Premium Payment Page Styling Engine */
+
+/* Main Containers & Sub-sections */
+.payment-methods-sub-section {
+  text-align: left;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.payment-methods-sub-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.payment-methods-sub-section.other-methods {
+  margin-top: 2.2rem;
+}
+
+/* 1. 100% Secure Payments Alert Box */
+.payment-security-alert-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0fdf4; /* ultra light green */
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
+  text-align: left;
+}
+
+.security-alert-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.security-alert-shield-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #16a34a; /* premium green */
+}
+
+.security-alert-text strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.security-alert-text p {
+  margin: 2px 0 0 0;
+  font-size: 0.78rem;
+  color: #166534;
+}
+
+.security-alert-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+}
+
+.secured-by-label {
+  font-size: 0.65rem;
+  color: #86efac;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.razorpay-logo-badge {
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  font-family: 'Montserrat', 'Poppins', sans-serif;
+  display: inline-flex;
+  align-items: center;
+}
+
+.razorpay-logo-badge::before {
+  content: "▲";
+  margin-right: 3px;
+  font-size: 0.65rem;
+  color: #008cff;
+  transform: rotate(30deg);
+}
+
+/* 2. Recommended VISA Card Row */
+.recommended-card-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+}
+
+.recommended-card-option:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
+}
+
+.recommended-card-option.selected {
+  border-color: #e33170;
+  background: linear-gradient(135deg, rgba(227, 49, 112, 0.04) 0%, rgba(227, 49, 112, 0.01) 100%);
+  box-shadow: 0 10px 25px -5px rgba(227, 49, 112, 0.08), 0 0 1px 1px rgba(227, 49, 112, 0.1);
+}
+
+/* Visa brand Box */
+.recommended-brand-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 34px;
+  background-color: #0a1f5c; /* Visa blue */
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.brand-logo-text-visa {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #ffffff;
+  letter-spacing: -0.05em;
+  text-shadow: 0.5px 0.5px #f4b400;
+}
+
+/* Recommended card details */
+.recommended-card-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+}
+
+.card-name-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.card-name-badge-row strong {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.recommended-default-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #e33170;
+  background-color: rgba(227, 49, 112, 0.08);
+  border: 1px solid rgba(227, 49, 112, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.card-number-mask {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.15em;
+  font-family: monospace;
+}
+
+.card-expiry-date {
+  margin: 2px 0 0 0;
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Right holder name & dropdown */
+.recommended-holder-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.card-holder-name-tag {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dropdown-arrow-gray {
+  color: #94a3b8;
+}
+
+/* Shield watermark background */
+.recommended-card-bg-shield {
+  position: absolute;
+  right: 15px;
+  bottom: -15px;
+  color: #e33170;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.recommended-card-option:hover .recommended-card-bg-shield {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.recommended-card-option.selected .recommended-card-bg-shield {
+  opacity: 0.06;
+}
+
+/* 3. Other Payment Methods Grid */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-method-grid-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  overflow: hidden;
+}
+
+.payment-method-grid-cell:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.payment-method-grid-cell.selected {
+  border-color: #e33170;
+  background-color: rgba(227, 49, 112, 0.015);
+  box-shadow: 0 4px 15px -5px rgba(227, 49, 112, 0.04);
+}
+
+.method-cell-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.method-cell-text strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.method-cell-text p {
+  margin: 2px 0 0 0;
+  font-size: 0.74rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badges for cards */
+.instant-badge, .emi-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.instant-badge {
+  color: #e33170;
+  background-color: rgba(227, 49, 112, 0.08);
+}
+
+.emi-badge {
+  color: #e33170;
+  background-color: rgba(227, 49, 112, 0.08);
+}
+
+/* CSS Shapes/Illustrations for Brand Logos */
+
+.method-cell-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 28px;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  border: 1.5px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+/* UPI */
+.method-cell-icon-wrap.upi {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.upi-triangle-illustration {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upi-triangle-illustration::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 12px solid #097939; /* UPI Green */
+  top: -2px;
+}
+
+.upi-triangle-illustration::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 9px solid #ffffff;
+  top: 1px;
+}
+
+.triangle-node {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: #0b70b5; /* UPI Blue */
+  z-index: 3;
+}
+
+.triangle-node.apex {
+  top: -4px;
+  left: 5px;
+  background-color: #ea580c;
+}
+
+.triangle-node.left-base {
+  bottom: -3px;
+  left: -2px;
+}
+
+.triangle-node.right-base {
+  bottom: -3px;
+  right: -2px;
+}
+
+/* MasterCard Circles */
+.mastercard-circles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+  height: 16px;
+}
+
+.mastercard-circles .circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.mastercard-circles .circle.left-orange {
+  background-color: #eb001b; /* Mastercard red */
+  left: 0;
+}
+
+.mastercard-circles .circle.right-red {
+  background-color: #f79e1b; /* Mastercard orange/yellow */
+  right: 0;
+  opacity: 0.9;
+}
+
+/* NetBanking Pillar Temple */
+.method-cell-icon-wrap.netbanking {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  position: relative;
+}
+
+.banking-roof {
+  position: absolute;
+  top: 5px;
+  width: 20px;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 5px solid #334155;
+}
+
+.banking-pillar {
+  position: absolute;
+  bottom: 5px;
+  width: 3px;
+  height: 9px;
+  background-color: #475569;
+}
+
+.banking-pillar.left {
+  left: 14px;
+}
+
+.banking-pillar.middle {
+  left: 21px;
+}
+
+.banking-pillar.right {
+  left: 28px;
+}
+
+/* Wallets Paytm */
+.method-cell-icon-wrap.wallets {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.paytm-brand-tag {
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #00baf2; /* Light Blue */
+  text-shadow: 0.5px 0.5px rgba(0, 0, 0, 0.05);
+}
+
+.paytm-brand-tag::after {
+  content: "tm";
+  color: #002970; /* Dark Blue */
+  font-weight: 900;
+}
+
+/* Simpl BNPL */
+.method-cell-icon-wrap.simpl {
+  background-color: #10b981; /* Simpl Teal/Green */
+  border-color: #10b981;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.simpl-text-label {
+  font-family: 'Century Gothic', system-ui, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.simpl-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  top: 6px;
+  right: 5px;
+}
+
+/* Google Pay GPay */
+.method-cell-icon-wrap.gpay {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  display: flex;
+  gap: 1px;
+}
+
+.gpay-brand-first {
+  font-family: 'Product Sans', 'Arial', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4285f4; /* Google Blue */
+}
+
+.gpay-brand-second {
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #5f6368;
+}
+
+/* 4. Save Card Secure Switch Box */
+.save-card-secure-switch-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff0f5; /* extremely light elegant pink background */
+  border: 1px solid rgba(227, 49, 112, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 15px rgba(227, 49, 112, 0.01);
+  text-align: left;
+}
+
+.switch-box-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switch-box-shield-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: rgba(227, 49, 112, 0.08);
+  color: #e33170;
+}
+
+.switch-box-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.switch-box-text p {
+  margin: 3px 0 0 0;
+  font-size: 0.76rem;
+  color: #475569;
+}
+
+/* iOS Toggle Switch */
+.ios-toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background-color: #cbd5e1;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  outline: none;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.ios-toggle-switch:focus {
+  box-shadow: 0 0 0 2px rgba(227, 49, 112, 0.2), inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.ios-toggle-switch.checked {
+  background-color: #e33170;
+}
+
+.ios-toggle-switch-handle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios-toggle-switch.checked .ios-toggle-switch-handle {
+  transform: translateX(22px);
+}
+
+/* 5. Center Action Pay Button */
+.payment-page-pay-action-block {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-cta-pay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #111827 !important; /* deep premium dark */
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  padding: 14px 44px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  width: auto !important;
+  box-shadow: 0 8px 24px -6px rgba(17, 24, 39, 0.35) !important;
+  min-width: 280px;
+}
+
+.payment-cta-pay-btn:hover {
+  background-color: #1f2937 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px -4px rgba(17, 24, 39, 0.45) !important;
+}
+
+.payment-cta-pay-btn:active {
+  transform: translateY(0) !important;
+}
+
+.pay-lock-icon {
+  margin-right: 2px;
+  opacity: 0.9;
+}
+
+.payment-footer-policy-links {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+  text-align: center;
+  max-width: 440px;
+  line-height: 1.4;
+}
+
+.payment-footer-policy-links span {
+  color: #e33170;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payment-footer-policy-links span:hover {
+  text-decoration: underline;
+}
+
+/* 6. Sidebar Product Scroller */
+.order-summary-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.order-summary-sidebar-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.items-count-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.sidebar-items-scroller {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 1.25rem;
+}
+
+/* Customize scrollbar */
+.sidebar-items-scroller::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-items-scroller::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 99px;
+}
+
+.sidebar-items-scroller::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+}
+
+.sidebar-items-scroller::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.sidebar-product-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.sidebar-product-thumb-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-product-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-product-thumb--empty {
+  width: 100%;
+  height: 100%;
+  background-color: #e2e8f0;
+}
+
+.sidebar-product-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 0;
+}
+
+.sidebar-product-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-product-quantity {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sidebar-product-price {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* 7. Need Help Sidebar Card */
+.payment-sidebar-help-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff5f8; /* Soft themed secondary pink */
+  border: 1px solid rgba(227, 49, 112, 0.1);
+  border-radius: 16px;
+  padding: 1.1rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 12px rgba(227, 49, 112, 0.005);
+  text-align: left;
+}
+
+.help-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.help-card-headset-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(227, 49, 112, 0.06);
+  color: #e33170;
+  flex-shrink: 0;
+}
+
+.help-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.help-card-content strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.help-card-content p {
+  margin: 2px 0 0 0;
+  font-size: 0.74rem;
+  color: #475569;
+}
+
+.help-card-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #ffffff !important;
+  color: #e33170 !important;
+  border: 1px solid rgba(227, 49, 112, 0.25) !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  width: auto !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+}
+
+.help-card-chat-btn:hover {
+  background: #e33170 !important;
+  color: #ffffff !important;
+  border-color: #e33170 !important;
+  box-shadow: 0 4px 10px rgba(227, 49, 112, 0.15) !important;
+}

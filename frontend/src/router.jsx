@@ -7,6 +7,7 @@ import Checkout from "./pages/Checkout";
 import Shipping from "./pages/Shipping";
 import Wishlist from "./pages/Wishlist";
 import Shop from "./pages/Shop";
+import Payment from "./pages/Payment";
 
 const AppRouter = () => (
   <Routes>
@@ -16,7 +17,7 @@ const AppRouter = () => (
     <Route path="/product/:id" element={<ProductDetail />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/checkout/shipping" element={<Shipping />} />
-    <Route path="/checkout/payment" element={<Checkout />} />
+    <Route path="/checkout/payment" element={<Payment />} />
     <Route path="/checkout/summary" element={<Checkout />} />
     <Route path="/checkout" element={<Checkout />} />
   </Routes>
