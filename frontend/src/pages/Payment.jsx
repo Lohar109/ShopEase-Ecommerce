@@ -274,41 +274,6 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Order Items Summary Card */}
-            <div className="shipping-form-card checkout-items-summary-card" style={{ marginTop: '2rem' }}>
-              <div className="order-summary-sidebar-header" style={{ marginBottom: '1.25rem' }}>
-                <h3>Order Summary</h3>
-                <span className="items-count-badge">{totalQty} {totalQty === 1 ? 'Item' : 'Items'}</span>
-              </div>
-
-              <div className="sidebar-items-scroller" style={{ maxHeight: 'none' }}>
-                {cartItems.map((item, idx) => {
-                  const src = item.image || item.thumbnail || (item.images && item.images[0]);
-                  const key = item.id || item._id || item.sku || item.name || idx;
-                  
-                  return (
-                    <div className="sidebar-product-row" key={key} style={{ padding: '10px 0', borderBottom: idx < cartItems.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
-                      <div className="sidebar-product-thumb-wrap">
-                        {src ? (
-                          <img src={src} alt={item.productName || item.name} className="sidebar-product-thumb" />
-                        ) : (
-                          <div className="sidebar-product-thumb--empty" />
-                        )}
-                      </div>
-                      
-                      <div className="sidebar-product-info">
-                        <p className="sidebar-product-title" style={{ fontSize: '0.88rem', fontWeight: '600' }}>{item.productName || item.name}</p>
-                        <p className="sidebar-product-quantity">Qty: {item.quantity}</p>
-                      </div>
-                      
-                      <div className="sidebar-product-price" style={{ fontSize: '0.9rem' }}>
-                        ₹{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
 
           </div>
 
