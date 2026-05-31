@@ -401,25 +401,6 @@ const Shipping = () => {
               </div>
             </div>
 
-            {/* Free Shipping Progress Alert Box */}
-            <div className="shipping-progress-alert-card">
-              <div className="progress-alert-header">
-                <div className="progress-alert-left">
-                  <Truck size={16} className="truck-pulse" />
-                  <span>{isFreeShippingUnlocked ? "Yay! You've unlocked FREE Shipping" : `Add ₹${(499 - totalMRP).toFixed(2)} more to unlock FREE Shipping`}</span>
-                </div>
-                <div className="progress-alert-right">
-                  <span>{isFreeShippingUnlocked ? "You're saving ₹99" : "Standard Delivery is ₹99"}</span>
-                </div>
-              </div>
-              
-              <div className="shipping-progress-track">
-                <div 
-                  className="shipping-progress-bar-fill" 
-                  style={{ width: `${freeShippingProgressPercentage}%` }} 
-                />
-              </div>
-            </div>
 
           </div>
 
