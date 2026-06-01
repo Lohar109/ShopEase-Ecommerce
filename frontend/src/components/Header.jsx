@@ -55,15 +55,12 @@ const Header = () => {
         </div>
         <form className="search-form" action="#" method="GET" onSubmit={(event) => event.preventDefault()}>
           <div className="search-input-wrap">
-            <span className="search-leading-icon" aria-hidden="true">
-              <Search size={14} />
-            </span>
             <input
               type="text"
               id="search"
               name="q"
               className="search-input"
-              placeholder="Search products..."
+              placeholder="Search for Products, Brands and More"
               autoComplete="off"
               value={query}
               onFocus={() => setIsSuggestionOpen(true)}
@@ -73,6 +70,9 @@ const Header = () => {
                 setIsSuggestionOpen(true);
               }}
             />
+            <span className="search-leading-icon" aria-hidden="true">
+              <Search size={18} />
+            </span>
             {showSuggestions && (
               <ul className="search-suggestions" role="listbox" aria-label="Search suggestions">
                 {filteredSuggestions.map((item) => (
