@@ -681,6 +681,80 @@
   }
 }
 
+/* Registration OTP Verification Layout Styles */
+.register-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1.5px solid #cbd5e1;
+  padding: 8px 0;
+  margin-bottom: 1.5rem;
+}
+
+.register-field-row.disabled-mobile-row {
+  border-bottom-color: #cbd5e1;
+}
+
+.disabled-mobile-row .register-field-left {
+  text-align: left;
+}
+
+.register-field-label {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.register-field-value {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.register-field-action-btn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2874f0 !important; /* Flipkart blue */
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  user-select: none;
+}
+
+.register-field-action-btn:hover {
+  text-decoration: underline !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.register-field-row.otp-status-row {
+  border-bottom: none;
+  margin-bottom: 1.8rem;
+  align-items: center;
+}
+
+.otp-status-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.otp-status-countdown {
+  font-size: 0.82rem;
+  color: #e33170;
+  font-weight: 700;
+}
+
 /* 5. Mobile Responsiveness */
 @media (max-width: 680px) {
   .login-split-card {

@@ -9,6 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [inputVal, setInputVal] = useState('');
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
+  const [registerOtp, setRegisterOtp] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [viewMode, setViewMode] = useState('login'); // 'login' or 'register'
   const [step, setStep] = useState(1); // 1: Enter Email/Mobile, 2: Enter OTP
@@ -147,12 +148,18 @@ const Login = () => {
       setStep(2);
       setTimer(30);
       setOtpArray(['', '', '', '', '', '']);
+      setRegisterOtp('');
       setToastMessage(`Verification code sent to ${inputVal}`);
       
       // Auto focus the first input after step transition
       setTimeout(() => {
-        const firstInput = document.querySelector('.otp-digit-input');
-        if (firstInput) firstInput.focus();
+        if (viewMode === 'register') {
+          const regInput = document.querySelector('#register-otp-input');
+          if (regInput) regInput.focus();
+        } else {
+          const firstInput = document.querySelector('.otp-digit-input');
+          if (firstInput) firstInput.focus();
+        }
       }, 50);
 
       // Dismiss toast after 4s
@@ -164,7 +171,7 @@ const Login = () => {
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    const fullOtp = otpArray.join('');
+    const fullOtp = viewMode === 'register' ? registerOtp : otpArray.join('');
     if (fullOtp.length !== 6) {
       setError('Please enter a valid 6-digit OTP.');
       return;
@@ -181,7 +188,7 @@ const Login = () => {
     // Mock verification
     setTimeout(() => {
       setLoading(false);
-      alert('Login successful! Welcome back to ShopEase.');
+      alert(viewMode === 'register' ? 'Registration successful! Welcome to ShopEase.' : 'Login successful! Welcome back to ShopEase.');
       navigate('/');
     }, 1200);
   };
@@ -191,11 +198,17 @@ const Login = () => {
     setTimer(30);
     setError('');
     setOtpArray(['', '', '', '', '', '']);
+    setRegisterOtp('');
     setToastMessage(`Verification code sent to ${inputVal}`);
 
     setTimeout(() => {
-      const firstInput = document.querySelector('.otp-digit-input');
-      if (firstInput) firstInput.focus();
+      if (viewMode === 'register') {
+        const regInput = document.querySelector('#register-otp-input');
+        if (regInput) regInput.focus();
+      } else {
+        const firstInput = document.querySelector('.otp-digit-input');
+        if (firstInput) firstInput.focus();
+      }
     }, 50);
 
     setTimeout(() => {
@@ -306,53 +319,120 @@ const Login = () => {
             </form>
           ) : (
             /* Form Step 2: Verify OTP */
-            <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
-              <div className="otp-verification-header">
-                <p className="otp-sent-to-text">
-                  Please enter the OTP sent to<br />
-                  <span className="otp-recipient-highlight">{inputVal}</span>. 
-                  <button type="button" className="otp-change-number-btn" onClick={() => { setStep(1); setError(''); }}>
-                    Change
+            viewMode === 'register' ? (
+              /* Registration OTP Screen */
+              <form onSubmit={handleVerifyOtp} className="split-login-form step-otp register-otp">
+                <div className="register-field-row disabled-mobile-row">
+                  <div className="register-field-left">
+                    <label className="register-field-label">Mobile Number</label>
+                    <div className="register-field-value">{inputVal}</div>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="register-field-action-btn"
+                    onClick={() => { setStep(1); setError(''); }}
+                  >
+                    Change?
                   </button>
-                </p>
-              </div>
+                </div>
 
-              <div className="otp-inputs-row" onPaste={handleOtpPaste}>
-                {otpArray.map((digit, idx) => (
+                <div className="register-field-row otp-status-row">
+                  <span className="otp-status-text">OTP sent to Mobile</span>
+                  {timer > 0 ? (
+                    <span className="otp-status-countdown">Resend in {formatTimer(timer)}</span>
+                  ) : (
+                    <button 
+                      type="button" 
+                      className="register-field-action-btn"
+                      onClick={handleResendOtp}
+                    >
+                      Resend?
+                    </button>
+                  )}
+                </div>
+
+                <div className="floating-underline-input-group">
                   <input
-                    key={idx}
                     type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target, idx)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                    className="otp-digit-input"
+                    id="register-otp-input"
+                    className="underline-text-input"
+                    placeholder=" "
+                    maxLength={6}
+                    value={registerOtp}
+                    onChange={(e) => setRegisterOtp(e.target.value.replace(/\D/g, ''))}
                     disabled={loading}
                     required
-                    autoFocus={idx === 0}
+                    autoFocus
                   />
-                ))}
-              </div>
+                  <label htmlFor="register-otp-input" className="underline-floating-label">
+                    Enter OTP
+                  </label>
+                  <span className="underline-focus-bar" />
+                </div>
 
-              <div className="otp-timer-resend-row">
-                {timer > 0 ? (
-                  <p className="otp-countdown-timer">
-                    Not received your code? <span>{formatTimer(timer)}</span>
-                  </p>
-                ) : (
-                  <div className="otp-resend-action-wrap">
-                    <p className="otp-countdown-timer">Not received your code? </p>
-                    <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
-                      Resend OTP
+                <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                  {loading ? <span className="login-spinner-loader" /> : 'Signup'}
+                </button>
+
+                <button
+                  type="button"
+                  className="split-login-action-btn secondary-white"
+                  onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                  disabled={loading}
+                >
+                  Existing User? Log in
+                </button>
+              </form>
+            ) : (
+              /* Login OTP Screen */
+              <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
+                <div className="otp-verification-header">
+                  <p className="otp-sent-to-text">
+                    Please enter the OTP sent to<br />
+                    <span className="otp-recipient-highlight">{inputVal}</span>. 
+                    <button type="button" className="otp-change-number-btn" onClick={() => { setStep(1); setError(''); }}>
+                      Change
                     </button>
-                  </div>
-                )}
-              </div>
+                  </p>
+                </div>
 
-              <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                {loading ? <span className="login-spinner-loader" /> : 'Verify'}
-              </button>
-            </form>
+                <div className="otp-inputs-row" onPaste={handleOtpPaste}>
+                  {otpArray.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(e.target, idx)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                      className="otp-digit-input"
+                      disabled={loading}
+                      required
+                      autoFocus={idx === 0}
+                    />
+                  ))}
+                </div>
+
+                <div className="otp-timer-resend-row">
+                  {timer > 0 ? (
+                    <p className="otp-countdown-timer">
+                      Not received your code? <span>{formatTimer(timer)}</span>
+                    </p>
+                  ) : (
+                    <div className="otp-resend-action-wrap">
+                      <p className="otp-countdown-timer">Not received your code? </p>
+                      <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
+                        Resend OTP
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                  {loading ? <span className="login-spinner-loader" /> : 'Verify'}
+                </button>
+              </form>
+            )
           )}
 
           {/* Bottom Card Sign-up Link */}
