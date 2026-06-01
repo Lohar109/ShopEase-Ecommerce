@@ -420,8 +420,7 @@ nav {
 }
 
 .signup-action-link:hover {
-    text-decoration: underline !important;
-    text-underline-offset: 3px;
+    text-decoration: none !important;
     opacity: 0.9;
 }
 
