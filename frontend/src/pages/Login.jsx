@@ -303,7 +303,7 @@ const Login = () => {
               </div>
 
               <p className="split-login-terms-text">
-                By continuing, you agree to ShopEase's <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and <span>Privacy Policy</span>.
+                By continuing, you agree to ShopEase's <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
               </p>
 
               <button type="submit" className="split-login-action-btn primary" disabled={loading}>

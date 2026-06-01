@@ -10,6 +10,7 @@ import Shop from "./pages/Shop";
 import Payment from "./pages/Payment";
 import Login from "./pages/Login";
 import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const AppRouter = () => (
   <Routes>
@@ -24,6 +25,7 @@ const AppRouter = () => (
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/login" element={<Login />} />
     <Route path="/terms" element={<TermsOfUse />} />
+    <Route path="/privacy" element={<PrivacyPolicy />} />
   </Routes>
 );
 

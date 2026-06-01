@@ -139,7 +139,7 @@ const MainPage = () => {
             <h3>Company</h3>
             <a href="#">About ShopEase</a>
             <a href="#">Careers</a>
-            <a href="#">Privacy Policy</a>
+            <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
           </div>
 

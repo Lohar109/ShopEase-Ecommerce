@@ -339,7 +339,7 @@ const Payment = () => {
                 </button>
                 
                 <p className="payment-footer-policy-links">
-                  By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</Link> and <span>Privacy Policy</span>.
+                  By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
                 </p>
               </div>
             </div>
