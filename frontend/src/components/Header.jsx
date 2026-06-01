@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
-import { Heart, Search, ShoppingCart, Sparkles, User } from "lucide-react";
+import { Heart, Search, ShoppingCart, Sparkles, User, ChevronDown, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download } from "lucide-react";
 import { useLocation, NavLink, Link } from "react-router-dom";
 import { WishlistContext } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
@@ -120,11 +120,97 @@ const Header = () => {
               </span>
             </Link>
           </li>
-          <li>
-            <Link to="/login" className="nav-text-badge-link" aria-label="Login">
+          <li className="nav-login-dropdown-wrapper">
+            <Link to="/login" className="nav-text-badge-link nav-login-trigger" aria-label="Login">
               <User size={16} />
               <span>Login</span>
+              <ChevronDown size={12} className="nav-chevron-icon" />
             </Link>
+            
+            {/* High-Fidelity Hover Dropdown Card */}
+            <div className="nav-login-dropdown-card">
+              <div className="dropdown-signup-row">
+                <span className="signup-prompt-text">New customer?</span>
+                <Link 
+                  to="/login" 
+                  className="signup-action-link" 
+                  onClick={() => {
+                    localStorage.setItem('shopease_auth_mode', 'register');
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+              <div className="dropdown-divider" />
+              <ul className="dropdown-menu-list">
+                <li>
+                  <Link to="/profile" className="dropdown-item">
+                    <User size={16} />
+                    <span>My Profile</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/" className="dropdown-item">
+                    <Sparkles size={16} />
+                    <span>ShopEase Plus Zone</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/orders" className="dropdown-item">
+                    <Package size={16} />
+                    <span>Orders</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/wishlist" className="dropdown-item">
+                    <Heart size={16} />
+                    <span>Wishlist</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/seller" className="dropdown-item">
+                    <Store size={16} />
+                    <span>Become a Seller</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/rewards" className="dropdown-item">
+                    <Gift size={16} />
+                    <span>Rewards</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/gift-cards" className="dropdown-item">
+                    <CreditCard size={16} />
+                    <span>Gift Cards</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/settings" className="dropdown-item">
+                    <Bell size={16} />
+                    <span>Notification Preferences</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/support" className="dropdown-item">
+                    <Headphones size={16} />
+                    <span>24x7 Customer Care</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/advertise" className="dropdown-item">
+                    <Megaphone size={16} />
+                    <span>Advertise</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/download" className="dropdown-item">
+                    <Download size={16} />
+                    <span>Download App</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </nav>

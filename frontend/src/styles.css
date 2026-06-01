@@ -326,6 +326,154 @@ nav {
     opacity: 1;
 }
 
+/* Login Hover Dropdown Card Styles */
+.nav-login-dropdown-wrapper {
+    position: relative;
+}
+
+.nav-login-dropdown-card {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: -16px;
+    width: 270px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 1.25rem 0.5rem 0.75rem 0.5rem;
+    z-index: 1100;
+    
+    /* Animation & Hide state */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Hover Bridge: Prevents dropdown from closing when cursor is in the gap */
+.nav-login-dropdown-card::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background: transparent;
+    pointer-events: auto;
+}
+
+/* Caret indicator pointing to Login button */
+.nav-login-dropdown-card::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 28px;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    transform: rotate(45deg);
+    border-left: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
+    z-index: -1;
+}
+
+/* Show Dropdown on Hover */
+.nav-login-dropdown-wrapper:hover .nav-login-dropdown-card {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Rotate Chevron on Hover */
+.nav-chevron-icon {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-login-dropdown-wrapper:hover .nav-chevron-icon {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Content Typography & Colors */
+.dropdown-signup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.75rem 0.75rem 0.75rem;
+    font-size: 0.88rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.signup-prompt-text {
+    color: #4b5563; /* Slate 600 */
+    font-weight: 400;
+}
+
+.signup-action-link {
+    color: var(--brand-accent, #c10654) !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease, text-decoration 0.2s ease;
+}
+
+.signup-action-link:hover {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    opacity: 0.9;
+}
+
+.dropdown-divider {
+    border-top: 1px solid #f1f5f9;
+    margin: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.dropdown-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu-list li {
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    color: #374151 !important; /* Slate 700 */
+    font-size: 0.88rem;
+    font-weight: 400;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.dropdown-item svg {
+    color: #6b7280; /* Gray 500 */
+    transition: color 0.18s ease;
+    flex-shrink: 0;
+}
+
+.dropdown-item span {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.dropdown-item:hover {
+    background-color: #f8fafc; /* Soft Slate highlight */
+    color: var(--brand-accent, #c10654) !important;
+}
+
+.dropdown-item:hover svg {
+    color: var(--brand-accent, #c10654);
+}
+
 .nav-badge {
     position: absolute;
     top: -8px;

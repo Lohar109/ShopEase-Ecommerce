@@ -11,7 +11,11 @@ const Login = () => {
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
   const [registerOtp, setRegisterOtp] = useState('');
   const [toastMessage, setToastMessage] = useState('');
-  const [viewMode, setViewMode] = useState('login'); // 'login' or 'register'
+  const [viewMode, setViewMode] = useState(() => {
+    const saved = localStorage.getItem('shopease_auth_mode');
+    localStorage.removeItem('shopease_auth_mode');
+    return saved === 'register' ? 'register' : 'login';
+  });
   const [step, setStep] = useState(1); // 1: Enter Email/Mobile, 2: Enter OTP
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState('');
