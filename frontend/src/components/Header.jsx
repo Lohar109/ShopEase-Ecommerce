@@ -125,21 +125,6 @@ const Header = () => {
               <User size={20} />
             </Link>
           </li>
-          <li>
-            <details className="nav-menu-dropdown">
-              <summary className="nav-icon-link nav-menu-trigger" aria-label="Menu">
-                <span className="hamburger-text">☰</span>
-              </summary>
-              <ul className="nav-menu-panel" role="menu" aria-label="User menu">
-                <li><a href="/profile">Profile</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/addresses">Addresses</a></li>
-                <li><a href="/settings">Settings</a></li>
-                <li><a href="/support">Help / Support</a></li>
-                <li><a href="/logout">Logout</a></li>
-              </ul>
-            </details>
-          </li>
         </ul>
       </nav>
     </header>
