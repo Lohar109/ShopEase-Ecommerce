@@ -121,8 +121,9 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link to="/login" className="nav-icon-link" aria-label="Login">
-              <User size={20} />
+            <Link to="/login" className="nav-text-badge-link" aria-label="Login">
+              <User size={16} />
+              <span>Login</span>
             </Link>
           </li>
         </ul>
