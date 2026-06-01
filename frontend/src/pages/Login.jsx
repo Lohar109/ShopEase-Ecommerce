@@ -10,6 +10,7 @@ const Login = () => {
   const [inputVal, setInputVal] = useState('');
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
   const [toastMessage, setToastMessage] = useState('');
+  const [viewMode, setViewMode] = useState('login'); // 'login' or 'register'
   const [step, setStep] = useState(1); // 1: Enter Email/Mobile, 2: Enter OTP
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState('');
@@ -116,18 +117,25 @@ const Login = () => {
   const handleRequestOtp = (e) => {
     e.preventDefault();
     if (!inputVal.trim()) {
-      setError('Please enter your Email or Mobile number.');
+      setError(viewMode === 'register' ? 'Please enter your Mobile number.' : 'Please enter your Email or Mobile number.');
       return;
     }
 
-    // Basic Validation: check if email or 10-digit mobile number
-    const isEmail = /\S+@\S+\.\S+/.test(inputVal);
-    const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
-    const isMobile = /^\d{10}$/.test(digitsOnly);
-
-    if (!isEmail && !isMobile) {
-      setError('Please enter a valid Email address or 10-digit Mobile number.');
-      return;
+    if (viewMode === 'register') {
+      const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
+      const isMobile = /^\d{10}$/.test(digitsOnly);
+      if (!isMobile) {
+        setError('Please enter a valid 10-digit Mobile number.');
+        return;
+      }
+    } else {
+      const isEmail = /\S+@\S+\.\S+/.test(inputVal);
+      const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
+      const isMobile = /^\d{10}$/.test(digitsOnly);
+      if (!isEmail && !isMobile) {
+        setError('Please enter a valid Email address or 10-digit Mobile number.');
+        return;
+      }
     }
 
     setError('');
@@ -207,8 +215,8 @@ const Login = () => {
         {/* Left Side: Brand Promo Panel */}
         <div className="login-left-brand-panel">
           <div className="brand-panel-text">
-            <h2>Login</h2>
-            <p>Get access to your Orders, Wishlist and Recommendations</p>
+            <h2>{viewMode === 'register' ? "Looks like you're new here!" : "Login"}</h2>
+            <p>{viewMode === 'register' ? "Sign up with your mobile number to get started" : "Get access to your Orders, Wishlist and Recommendations"}</p>
           </div>
 
           {/* Premium Bottom Vector Illustration */}
@@ -272,7 +280,7 @@ const Login = () => {
                   autoFocus
                 />
                 <label htmlFor="email-mobile-input" className="underline-floating-label">
-                  Enter Email / Mobile number
+                  {viewMode === 'register' ? 'Enter Mobile number' : 'Enter Email / Mobile number'}
                 </label>
                 <span className="underline-focus-bar" />
               </div>
@@ -282,8 +290,19 @@ const Login = () => {
               </p>
 
               <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                {loading ? <span className="login-spinner-loader" /> : 'Request OTP'}
+                {loading ? <span className="login-spinner-loader" /> : (viewMode === 'register' ? 'CONTINUE' : 'Request OTP')}
               </button>
+
+              {viewMode === 'register' && (
+                <button
+                  type="button"
+                  className="split-login-action-btn secondary-white"
+                  onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                  disabled={loading}
+                >
+                  Existing User? Log in
+                </button>
+              )}
             </form>
           ) : (
             /* Form Step 2: Verify OTP */
@@ -337,9 +356,9 @@ const Login = () => {
           )}
 
           {/* Bottom Card Sign-up Link */}
-          {step === 1 && (
+          {step === 1 && viewMode === 'login' && (
             <div className="split-login-footer">
-              <span className="footer-register-link" onClick={() => alert('Registration screen triggered.')}>
+              <span className="footer-register-link" onClick={() => { setViewMode('register'); setStep(1); setError(''); setInputVal(''); }}>
                 New to ShopEase? Create an account
               </span>
             </div>

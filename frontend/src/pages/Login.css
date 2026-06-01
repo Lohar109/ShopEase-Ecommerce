@@ -433,6 +433,36 @@
   transform: translateY(0);
 }
 
+.split-login-action-btn.secondary-white {
+  width: 100%;
+  background-color: #ffffff !important;
+  color: #2874f0 !important; /* exact Flipkart blue */
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 14px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  margin-top: 1rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s !important;
+  transform: none !important;
+  user-select: none;
+}
+
+.split-login-action-btn.secondary-white:hover {
+  background-color: #f8fafc !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+.split-login-action-btn.secondary-white:active {
+  transform: translateY(0) !important;
+}
+
 /* Loader */
 .login-spinner-loader {
   width: 18px;
