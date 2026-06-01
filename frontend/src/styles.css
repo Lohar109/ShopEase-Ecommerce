@@ -93,7 +93,7 @@ nav {
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8; /* Slate 400 */
+    color: #cbd5e1; /* Slate 200 for good contrast on black */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -105,9 +105,9 @@ nav {
     width: 100%;
     height: 40px;
     padding: 0.42rem 1rem 0.42rem 2.6rem;
-    border: 1px solid #cbd5e1; /* Slate 200 */
-    background: #ffffff;
-    color: #1e293b; /* Slate 800 */
+    border: 2px solid #e33170; /* ShopEase brand pink border */
+    background: #000000; /* Pure black to match header background */
+    color: #ffffff; /* Pure white text for high contrast */
     border-radius: 12px;
     outline: none;
     font-family: 'Poppins', sans-serif;
@@ -116,21 +116,21 @@ nav {
 }
 
 .search-input::placeholder {
-    color: #94a3b8; /* Slate 400 */
+    color: #94a3b8; /* Slate 400 placeholder */
 }
 
 .search-input:hover {
-    border-color: #94a3b8;
+    border-color: #ff4e88; /* Slightly brighter pink on hover */
 }
 
 .search-input:focus {
-    border-color: #e33170; /* ShopEase brand pink */
-    box-shadow: 0 0 0 3px rgba(227, 49, 112, 0.15); /* Brand pink glow */
-    background-color: #ffffff;
+    border-color: #e33170;
+    box-shadow: 0 0 0 3px rgba(227, 49, 112, 0.25); /* Brand pink glow */
+    background-color: #000000; /* Keep background black on focus */
 }
 
 .search-input:focus + .search-leading-icon {
-    color: #e33170; /* Icon turns brand pink on focus */
+    color: #e33170; /* Icon transitions to brand pink on focus */
 }
 
 .search-suggestions {
