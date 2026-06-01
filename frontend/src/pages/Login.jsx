@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   Laptop, Heart, ShoppingBag, User, Sun, Cloud, ArrowRight, ShieldCheck, RefreshCw
 } from 'lucide-react';
@@ -303,7 +303,7 @@ const Login = () => {
               </div>
 
               <p className="split-login-terms-text">
-                By continuing, you agree to ShopEase's <span>Terms of Use</span> and <span>Privacy Policy</span>.
+                By continuing, you agree to ShopEase's <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and <span>Privacy Policy</span>.
               </p>
 
               <button type="submit" className="split-login-action-btn primary" disabled={loading}>

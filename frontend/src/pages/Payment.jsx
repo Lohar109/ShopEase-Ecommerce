@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   ShoppingBag, Truck, Info, ShieldCheck, Check, Tag, Headphones, MessageSquare, Lock, ChevronDown
 } from 'lucide-react';
@@ -339,7 +339,7 @@ const Payment = () => {
                 </button>
                 
                 <p className="payment-footer-policy-links">
-                  By proceeding, you agree to our <span>Terms & Conditions</span> and <span>Privacy Policy</span>.
+                  By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</Link> and <span>Privacy Policy</span>.
                 </p>
               </div>
             </div>

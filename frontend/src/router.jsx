@@ -9,6 +9,7 @@ import Wishlist from "./pages/Wishlist";
 import Shop from "./pages/Shop";
 import Payment from "./pages/Payment";
 import Login from "./pages/Login";
+import TermsOfUse from "./pages/TermsOfUse";
 
 const AppRouter = () => (
   <Routes>
@@ -22,6 +23,7 @@ const AppRouter = () => (
     <Route path="/checkout/summary" element={<Checkout />} />
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/login" element={<Login />} />
+    <Route path="/terms" element={<TermsOfUse />} />
   </Routes>
 );
 

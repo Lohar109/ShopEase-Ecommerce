@@ -140,7 +140,7 @@ const MainPage = () => {
             <a href="#">About ShopEase</a>
             <a href="#">Careers</a>
             <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <Link to="/terms">Terms of Service</Link>
           </div>
 
           <div className="home-footer-column">
