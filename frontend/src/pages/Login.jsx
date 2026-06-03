@@ -35,33 +35,7 @@ const Login = () => {
   }, [step, timer]);
 
   const handleInputChange = (e) => {
-    const val = e.target.value;
-    
-    // Check if the value starts with a digit or a plus sign
-    const isNumeric = /^[0-9+]/.test(val);
-    
-    if (isNumeric) {
-      // Strip any existing "+91" prefix
-      let cleanVal = val.replace(/^\+91\s*/, '');
-      // Keep only digits
-      cleanVal = cleanVal.replace(/\D/g, '');
-      // Strip a single leading zero if it was typed or pasted
-      cleanVal = cleanVal.replace(/^0/, '');
-      
-      // Limit to 10 digits for standard Indian mobile number
-      if (cleanVal.length > 10) {
-        cleanVal = cleanVal.slice(0, 10);
-      }
-      
-      if (cleanVal.length === 0) {
-        setInputVal('');
-      } else {
-        setInputVal(`+91 ${cleanVal}`);
-      }
-    } else {
-      // It's an email/other text, don't format with +91
-      setInputVal(val);
-    }
+    setInputVal(e.target.value);
   };
   const handleOtpChange = (element, index) => {
     const value = element.value.replace(/\D/g, '');
@@ -122,25 +96,14 @@ const Login = () => {
   const handleRequestOtp = (e) => {
     e.preventDefault();
     if (!inputVal.trim()) {
-      setError(viewMode === 'register' ? 'Please enter your Mobile number.' : 'Please enter your Email or Mobile number.');
+      setError('Please enter your Email address.');
       return;
     }
 
-    if (viewMode === 'register') {
-      const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
-      const isMobile = /^\d{10}$/.test(digitsOnly);
-      if (!isMobile) {
-        setError('Please enter a valid 10-digit Mobile number.');
-        return;
-      }
-    } else {
-      const isEmail = /\S+@\S+\.\S+/.test(inputVal);
-      const digitsOnly = inputVal.replace(/^\+91\s*/, '').replace(/\D/g, '');
-      const isMobile = /^\d{10}$/.test(digitsOnly);
-      if (!isEmail && !isMobile) {
-        setError('Please enter a valid Email address or 10-digit Mobile number.');
-        return;
-      }
+    const isEmail = /\S+@\S+\.\S+/.test(inputVal);
+    if (!isEmail) {
+      setError('Please enter a valid Email address.');
+      return;
     }
 
     setError('');
@@ -233,7 +196,7 @@ const Login = () => {
         <div className="login-left-brand-panel">
           <div className="brand-panel-text">
             <h2>{viewMode === 'register' ? "Looks like you're new here!" : "Login"}</h2>
-            <p>{viewMode === 'register' ? "Sign up with your mobile number to get started" : "Get access to your Orders, Wishlist and Recommendations"}</p>
+            <p>{viewMode === 'register' ? "Sign up with your email address to get started" : "Get access to your Orders, Wishlist and Recommendations"}</p>
           </div>
 
           {/* Premium Bottom Vector Illustration */}
@@ -297,7 +260,7 @@ const Login = () => {
                   autoFocus
                 />
                 <label htmlFor="email-mobile-input" className="underline-floating-label">
-                  {viewMode === 'register' ? 'Enter Mobile number' : 'Enter Email / Mobile number'}
+                  Enter Email address
                 </label>
                 <span className="underline-focus-bar" />
               </div>
@@ -328,7 +291,7 @@ const Login = () => {
               <form onSubmit={handleVerifyOtp} className="split-login-form step-otp register-otp">
                 <div className="register-field-row disabled-mobile-row">
                   <div className="register-field-left">
-                    <label className="register-field-label">Mobile Number</label>
+                    <label className="register-field-label">Email Address</label>
                     <div className="register-field-value">{inputVal}</div>
                   </div>
                   <button 
@@ -341,7 +304,7 @@ const Login = () => {
                 </div>
 
                 <div className="register-field-row otp-status-row">
-                  <span className="otp-status-text">OTP sent to Mobile</span>
+                  <span className="otp-status-text">OTP sent to Email</span>
                   {timer > 0 ? (
                     <span className="otp-status-countdown">Resend in {formatTimer(timer)}</span>
                   ) : (
