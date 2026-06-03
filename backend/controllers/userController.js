@@ -147,8 +147,11 @@ exports.sendOtp = async (req, res) => {
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
           <div style="text-align: center; margin-bottom: 24px;">
-            <h2 style="color: #db2777; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 0.5px;">ShopEase</h2>
-            <p style="color: #6b7280; font-size: 14px; margin-top: 4px; margin-bottom: 0;">Your ultimate shopping destination</p>
+            <div style="display: inline-block; background-color: #000000; padding: 10px 28px; border-radius: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <span style="color: #ffffff; font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.5px; line-height: 1; display: inline-block;">Shop<span style="color: #FF6B6B;">E</span>ase</span>
+              <div style="width: 50px; height: 3px; border-bottom: 2px solid #FF6B6B; border-radius: 50%; margin: 2px 0 0 auto;"></div>
+            </div>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 8px; margin-bottom: 0;">Your ultimate shopping destination</p>
           </div>
           <div style="padding: 20px; background-color: #fdf2f8; border-radius: 8px; text-align: center; border: 1px solid #fbcfe8;">
             <p style="color: #374151; font-size: 16px; margin-top: 0; margin-bottom: 16px; font-weight: 500;">Please use the following verification code to complete your verification:</p>
