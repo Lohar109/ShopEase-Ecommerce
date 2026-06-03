@@ -2786,7 +2786,7 @@ const ProductForm = () => {
 
         return {
           size_value: !sizeValue,
-          size_unit: !sizeUnit,
+          size_unit: false,
           color: !color,
           price: price === '',
           stock: stock === '',
