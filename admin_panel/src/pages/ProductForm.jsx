@@ -2236,6 +2236,11 @@ const ProductForm = () => {
             : [newVar(p?.main_image || '')]
         );
 
+        const hasUnitExtra = vs.some(v => v.size_unit || v.size_info);
+        const hasVarietySub = vs.some(v => v.variety || v.variety_label || v.sub_size || v.sub_size_unit);
+        setShowUnitExtra(hasUnitExtra);
+        setShowVarietySub(hasVarietySub);
+
         // Initialize baseline snapshot for comparison tracking
         const discountSnapshots = {};
         vs.forEach(v => {
@@ -2440,6 +2445,8 @@ const ProductForm = () => {
   const [variantRows, setVariantRows] = useState([
     newVar()
   ]);
+  const [showUnitExtra, setShowUnitExtra] = useState(false);
+  const [showVarietySub, setShowVarietySub] = useState(false);
   const [savedVariantDiscounts, setSavedVariantDiscounts] = useState({});
   const [updatingVariantDiscountId, setUpdatingVariantDiscountId] = useState(null);
 
@@ -3000,26 +3007,36 @@ const ProductForm = () => {
         },
         faqs: faqs,
         faqs_header_image: faqsHeaderImage,
-        variants: variantRows.map(v => ({
-          id: v.id || null,
-          size: composeVariantSize(v),
-          size_value: v.size_value || '',
-          size_unit: v.size_unit || '',
-          size_info: v.size_info || '',
-          variety: v.variety || v.variety_label || '',
-          variety_label: v.variety_label || v.variety || '',
-          sub_size: v.sub_size || '',
-          sub_size_unit: v.sub_size_unit || '',
-          color: v.color,
-          price: v.price,
-          override_discount: v.override_discount,
-          discount_type: v.override_discount ? (v.discount_type || '') : '',
-          discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : 0,
-          stock: v.stock,
-          sku: v.sku,
-          image: v.image,
-          use_separate_gallery: v.use_separate_gallery || false
-        }))
+        variants: variantRows.map(v => {
+          const size_value = v.size_value || '';
+          const size_unit = showUnitExtra ? (v.size_unit || '') : '';
+          const size_info = showUnitExtra ? (v.size_info || '') : '';
+          const sub_size = showVarietySub ? (v.sub_size || '') : '';
+          const sub_size_unit = showVarietySub ? (v.sub_size_unit || '') : '';
+          const variety = showVarietySub ? (v.variety || v.variety_label || '') : '';
+          const variety_label = showVarietySub ? (v.variety_label || v.variety || '') : '';
+          
+          return {
+            id: v.id || null,
+            size: composeVariantSize({ size_value, size_unit, sub_size, sub_size_unit, size_info }),
+            size_value,
+            size_unit,
+            size_info,
+            variety,
+            variety_label,
+            sub_size,
+            sub_size_unit,
+            color: v.color,
+            price: v.price,
+            override_discount: v.override_discount,
+            discount_type: v.override_discount ? (v.discount_type || '') : '',
+            discount_value: v.override_discount ? (v.discount_value === '' ? 0 : Number(v.discount_value)) : 0,
+            stock: v.stock,
+            sku: v.sku,
+            image: v.image,
+            use_separate_gallery: v.use_separate_gallery || false
+          };
+        })
       };
 
       console.log("FINAL SUBMIT PAYLOAD:", formData);
@@ -3051,6 +3068,10 @@ const ProductForm = () => {
               }))
               : [newVar(mainImage || '')]
           );
+          const hasUnitExtra = vs.some(v => v.size_unit || v.size_info);
+          const hasVarietySub = vs.some(v => v.variety || v.variety_label || v.sub_size || v.sub_size_unit);
+          setShowUnitExtra(hasUnitExtra);
+          setShowVarietySub(hasVarietySub);
           
           if (updated.product) {
             setEditProductData(updated.product);
@@ -3444,7 +3465,12 @@ const ProductForm = () => {
   const parentOptions = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
   const currentParentOptions = t === 'subsubcategory' ? subcategoriesOptions : parentOptions;
   const canQuickAdd = (t === 'subcategory' || t === 'subsubcategory') ? Boolean(pId && val.trim()) : Boolean(val.trim());
-  const variantCols = '80px 70px 180px 180px 80px 70px 120px 100px 80px 150px 120px 80px auto';
+  const variantCols = [
+    '80px', // Size
+    showUnitExtra ? '70px 180px' : '', // Unit, Extra Info
+    showVarietySub ? '180px 80px 70px' : '', // Variety, Sub Size, Sub Unit
+    '120px 100px 80px 150px 120px 80px auto' // Color, Price, Stock, SKU, Image, Sep. Gallery, Actions
+  ].filter(Boolean).join(' ');
 
   if (isEditMode && !editProductData && loadingProduct) {
     return (
@@ -6198,6 +6224,26 @@ const ProductForm = () => {
                         <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>Inventory</h3>
                       </div>
                     </div>
+                    <div style={{ display: 'flex', gap: 24, marginBottom: 20, background: '#f8f9fa', padding: '12px 16px', borderRadius: 12, border: '1px solid #e9ecef', flexWrap: 'wrap' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#495057', userSelect: 'none' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={showUnitExtra} 
+                          onChange={(e) => setShowUnitExtra(e.target.checked)} 
+                          style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#c10654' }}
+                        />
+                        <span>Include Unit & Extra Info</span>
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#495057', userSelect: 'none' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={showVarietySub} 
+                          onChange={(e) => setShowVarietySub(e.target.checked)} 
+                          style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#c10654' }}
+                        />
+                        <span>Include Variety, Sub Size & Sub Unit</span>
+                      </label>
+                    </div>
                     <label style={{ fontWeight: 600, marginBottom: 16, display: 'block', fontSize: 13, textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Product Variants</label>
                     <div className="custom-scrollbar-container" style={{ width: '100%', overflowX: 'auto', marginBottom: 16, fontFamily: 'Poppins, sans-serif' }}>
                       <div style={{ minWidth: 'max-content', padding: '0 4px' }}>
@@ -6213,11 +6259,19 @@ const ProductForm = () => {
                           }}
                         >
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Size</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Unit</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Variety</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Size</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Unit</div>
+                          {showUnitExtra && (
+                            <>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Unit</div>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Extra Info</div>
+                            </>
+                          )}
+                          {showVarietySub && (
+                            <>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Variety</div>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Size</div>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Sub Unit</div>
+                            </>
+                          )}
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Color</div>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Price</div>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 12, fontWeight: 600 }}>Stock</div>
@@ -6248,21 +6302,29 @@ const ProductForm = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.size_value ? 'pf-error' : ''}`} type="text" value={variant.size_value || ''} onChange={e => handleVariantChange(index, 'size_value', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_value ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.size_unit ? 'pf-error' : ''}`} type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_unit ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.variety || variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                  <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
-                                </div>
+                                {showUnitExtra && (
+                                  <>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.size_unit ? 'pf-error' : ''}`} type="text" value={variant.size_unit || ''} onChange={e => handleVariantChange(index, 'size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.size_unit ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <input className="custom-input" type="text" value={variant.size_info || ''} onChange={e => handleVariantChange(index, 'size_info', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'left' }} />
+                                    </div>
+                                  </>
+                                )}
+                                {showVarietySub && (
+                                  <>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <input className="custom-input" type="text" value={variant.variety || variant.variety_label || ''} onChange={e => handleVariantChange(index, 'variety', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <input className="custom-input" type="text" value={variant.sub_size || ''} onChange={e => handleVariantChange(index, 'sub_size', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <input className="custom-input" type="text" value={variant.sub_size_unit || ''} onChange={e => handleVariantChange(index, 'sub_size_unit', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: '1px solid #a0a0a0', textAlign: 'center' }} />
+                                    </div>
+                                  </>
+                                )}
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                   <input className={`custom-input ${saveValidationErrors.inventory?.[index]?.color ? 'pf-error' : ''}`} type="text" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} style={{ width: '100%', height: 40, padding: '0 8px', borderRadius: 12, border: saveValidationErrors.inventory?.[index]?.color ? '2px solid #ef4444' : '1px solid #a0a0a0', textAlign: 'center' }} />
                                 </div>
