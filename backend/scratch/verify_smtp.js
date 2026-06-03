@@ -57,9 +57,11 @@ async function testSMTP() {
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <div style="text-align: center; margin-bottom: 24px;">
-          <div style="display: inline-block; background-color: #000000; padding: 10px 28px; border-radius: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <span style="color: #ffffff; font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.5px; line-height: 1; display: inline-block;">Shop<span style="color: #FF6B6B;">E</span>ase</span>
-            <div style="width: 50px; height: 3px; border-bottom: 2px solid #FF6B6B; border-radius: 50%; margin: 2px 0 0 auto;"></div>
+          <div style="display: inline-block; background-color: #000000; padding: 12px 32px; border-radius: 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="position: relative; display: inline-block;">
+              <span style="color: #ffffff; font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.5px; line-height: 1.2; display: block;">Shop<span style="color: #FF6B6B;">E</span>ase</span>
+              <div style="position: absolute; left: 54px; right: 2px; bottom: -4px; height: 6px; border-bottom: 2px solid #FF6B6B; border-radius: 50%;"></div>
+            </div>
           </div>
           <p style="color: #6b7280; font-size: 14px; margin-top: 8px; margin-bottom: 0;">Your ultimate shopping destination</p>
         </div>
