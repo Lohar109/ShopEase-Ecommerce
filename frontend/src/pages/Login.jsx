@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import './Login.css';
 
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000");
+
 const Login = () => {
   const navigate = useNavigate();
   const [inputVal, setInputVal] = useState('');
@@ -93,7 +95,7 @@ const Login = () => {
     return `00:${s}`;
   };
 
-  const handleRequestOtp = (e) => {
+  const handleRequestOtp = async (e) => {
     e.preventDefault();
     if (!inputVal.trim()) {
       setError('Please enter your Email address.');
@@ -109,9 +111,23 @@ const Login = () => {
     setError('');
     setLoading(true);
 
-    // Mock OTP dispatch
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch(`${API_ORIGIN}/api/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: inputVal.trim(),
+          mode: viewMode
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification code.');
+      }
+
       setStep(2);
       setTimer(30);
       setOtpArray(['', '', '', '', '', '']);
@@ -133,10 +149,14 @@ const Login = () => {
       setTimeout(() => {
         setToastMessage('');
       }, 4000);
-    }, 1000);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const fullOtp = viewMode === 'register' ? registerOtp : otpArray.join('');
     if (fullOtp.length !== 6) {
@@ -144,43 +164,86 @@ const Login = () => {
       return;
     }
 
-    if (fullOtp !== '482065') {
-      setError('Incorrect OTP. Try entering 482065.');
-      return;
-    }
-
     setError('');
     setLoading(true);
 
-    // Mock verification
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch(`${API_ORIGIN}/api/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: inputVal.trim(),
+          otp: fullOtp,
+          mode: viewMode
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Verification failed.');
+      }
+
+      if (data.token) {
+        localStorage.setItem('shopease_token', data.token);
+        localStorage.setItem('shopease_user_email', inputVal.trim());
+      }
+
       alert(viewMode === 'register' ? 'Registration successful! Welcome to ShopEase.' : 'Login successful! Welcome back to ShopEase.');
       navigate('/');
-    }, 1200);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (timer > 0) return;
-    setTimer(30);
     setError('');
-    setOtpArray(['', '', '', '', '', '']);
-    setRegisterOtp('');
-    setToastMessage(`Verification code sent to ${inputVal}`);
+    setLoading(true);
 
-    setTimeout(() => {
-      if (viewMode === 'register') {
-        const regInput = document.querySelector('#register-otp-input');
-        if (regInput) regInput.focus();
-      } else {
-        const firstInput = document.querySelector('.otp-digit-input');
-        if (firstInput) firstInput.focus();
+    try {
+      const response = await fetch(`${API_ORIGIN}/api/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: inputVal.trim(),
+          mode: viewMode
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification code.');
       }
-    }, 50);
 
-    setTimeout(() => {
-      setToastMessage('');
-    }, 4000);
+      setTimer(30);
+      setOtpArray(['', '', '', '', '', '']);
+      setRegisterOtp('');
+      setToastMessage(`Verification code sent to ${inputVal}`);
+
+      setTimeout(() => {
+        if (viewMode === 'register') {
+          const regInput = document.querySelector('#register-otp-input');
+          if (regInput) regInput.focus();
+        } else {
+          const firstInput = document.querySelector('.otp-digit-input');
+          if (firstInput) firstInput.focus();
+        }
+      }, 50);
+
+      setTimeout(() => {
+        setToastMessage('');
+      }, 4000);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

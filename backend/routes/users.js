@@ -4,5 +4,7 @@ const userController = require('../controllers/userController');
 
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
+router.post('/send-otp', userController.sendOtp);
+router.post('/verify-otp', userController.verifyOtp);
 
 module.exports = router;
