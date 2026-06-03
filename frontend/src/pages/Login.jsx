@@ -300,170 +300,172 @@ const Login = () => {
 
         {/* Right Side: Interactive Action Forms */}
         <div className="login-right-form-panel">
-          {error && (
-            <div className="login-error-alert" role="alert">
-              <span className="error-alert-dot" />
-              <p>{error}</p>
-            </div>
-          )}
-
-          {step === 1 ? (
-            /* Form Step 1: Input Credential */
-            <form onSubmit={handleRequestOtp} className="split-login-form">
-              <div className="floating-underline-input-group">
-                <input
-                  type="text"
-                  id="email-mobile-input"
-                  className="underline-text-input"
-                  placeholder=" " // necessary for CSS label state detection
-                  value={inputVal}
-                  onChange={handleInputChange}
-                  disabled={loading}
-                  required
-                  autoFocus
-                />
-                <label htmlFor="email-mobile-input" className="underline-floating-label">
-                  Enter Email address
-                </label>
-                <span className="underline-focus-bar" />
+          <div className="login-form-body-wrapper">
+            {error && (
+              <div className="login-error-alert" role="alert">
+                <span className="error-alert-dot" />
+                <p>{error}</p>
               </div>
+            )}
 
-              <p className="split-login-terms-text">
-                By continuing, you agree to ShopEase's <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
-              </p>
-
-              <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                {loading ? <span className="login-spinner-loader" /> : (viewMode === 'register' ? 'CONTINUE' : 'Request OTP')}
-              </button>
-
-              {viewMode === 'register' && (
-                <button
-                  type="button"
-                  className="split-login-action-btn secondary-white"
-                  onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
-                  disabled={loading}
-                >
-                  Existing User? Log in
-                </button>
-              )}
-            </form>
-          ) : (
-            /* Form Step 2: Verify OTP */
-            viewMode === 'register' ? (
-              /* Registration OTP Screen */
-              <form onSubmit={handleVerifyOtp} className="split-login-form step-otp register-otp">
-                <div className="register-field-row disabled-mobile-row">
-                  <div className="register-field-left">
-                    <label className="register-field-label">Email Address</label>
-                    <div className="register-field-value">{inputVal}</div>
-                  </div>
-                  <button 
-                    type="button" 
-                    className="register-field-action-btn"
-                    onClick={() => { setStep(1); setError(''); }}
-                  >
-                    Change?
-                  </button>
-                </div>
-
-                <div className="register-field-row otp-status-row">
-                  <span className="otp-status-text">OTP sent to Email</span>
-                  {timer > 0 ? (
-                    <span className="otp-status-countdown">Resend in {formatTimer(timer)}</span>
-                  ) : (
-                    <button 
-                      type="button" 
-                      className="register-field-action-btn"
-                      onClick={handleResendOtp}
-                    >
-                      Resend?
-                    </button>
-                  )}
-                </div>
-
+            {step === 1 ? (
+              /* Form Step 1: Input Credential */
+              <form onSubmit={handleRequestOtp} className="split-login-form">
                 <div className="floating-underline-input-group">
                   <input
                     type="text"
-                    id="register-otp-input"
+                    id="email-mobile-input"
                     className="underline-text-input"
-                    placeholder=" "
-                    maxLength={6}
-                    value={registerOtp}
-                    onChange={(e) => setRegisterOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder=" " // necessary for CSS label state detection
+                    value={inputVal}
+                    onChange={handleInputChange}
                     disabled={loading}
                     required
                     autoFocus
                   />
-                  <label htmlFor="register-otp-input" className="underline-floating-label">
-                    Enter OTP
+                  <label htmlFor="email-mobile-input" className="underline-floating-label">
+                    Enter Email address
                   </label>
                   <span className="underline-focus-bar" />
                 </div>
 
+                <p className="split-login-terms-text">
+                  By continuing, you agree to ShopEase's <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+                </p>
+
                 <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                  {loading ? <span className="login-spinner-loader" /> : 'Signup'}
+                  {loading ? <span className="login-spinner-loader" /> : (viewMode === 'register' ? 'CONTINUE' : 'Request OTP')}
                 </button>
 
-                <button
-                  type="button"
-                  className="split-login-action-btn secondary-white"
-                  onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
-                  disabled={loading}
-                >
-                  Existing User? Log in
-                </button>
+                {viewMode === 'register' && (
+                  <button
+                    type="button"
+                    className="split-login-action-btn secondary-white"
+                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                    disabled={loading}
+                  >
+                    Existing User? Log in
+                  </button>
+                )}
               </form>
             ) : (
-              /* Login OTP Screen */
-              <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
-                <div className="otp-verification-header">
-                  <p className="otp-sent-to-text">
-                    Please enter the OTP sent to<br />
-                    <span className="otp-recipient-highlight">{inputVal}</span>. 
-                    <button type="button" className="otp-change-number-btn" onClick={() => { setStep(1); setError(''); }}>
-                      Change
+              /* Form Step 2: Verify OTP */
+              viewMode === 'register' ? (
+                /* Registration OTP Screen */
+                <form onSubmit={handleVerifyOtp} className="split-login-form step-otp register-otp">
+                  <div className="register-field-row disabled-mobile-row">
+                    <div className="register-field-left">
+                      <label className="register-field-label">Email Address</label>
+                      <div className="register-field-value">{inputVal}</div>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="register-field-action-btn"
+                      onClick={() => { setStep(1); setError(''); }}
+                    >
+                      Change?
                     </button>
-                  </p>
-                </div>
+                  </div>
 
-                <div className="otp-inputs-row" onPaste={handleOtpPaste}>
-                  {otpArray.map((digit, idx) => (
+                  <div className="register-field-row otp-status-row">
+                    <span className="otp-status-text">OTP sent to Email</span>
+                    {timer > 0 ? (
+                      <span className="otp-status-countdown">Resend in {formatTimer(timer)}</span>
+                    ) : (
+                      <button 
+                        type="button" 
+                        className="register-field-action-btn"
+                        onClick={handleResendOtp}
+                      >
+                        Resend?
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="floating-underline-input-group">
                     <input
-                      key={idx}
                       type="text"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e.target, idx)}
-                      onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                      className="otp-digit-input"
+                      id="register-otp-input"
+                      className="underline-text-input"
+                      placeholder=" "
+                      maxLength={6}
+                      value={registerOtp}
+                      onChange={(e) => setRegisterOtp(e.target.value.replace(/\D/g, ''))}
                       disabled={loading}
                       required
-                      autoFocus={idx === 0}
+                      autoFocus
                     />
-                  ))}
-                </div>
+                    <label htmlFor="register-otp-input" className="underline-floating-label">
+                      Enter OTP
+                    </label>
+                    <span className="underline-focus-bar" />
+                  </div>
 
-                <div className="otp-timer-resend-row">
-                  {timer > 0 ? (
-                    <p className="otp-countdown-timer">
-                      Not received your code? <span>{formatTimer(timer)}</span>
-                    </p>
-                  ) : (
-                    <div className="otp-resend-action-wrap">
-                      <p className="otp-countdown-timer">Not received your code? </p>
-                      <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
-                        Resend OTP
+                  <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                    {loading ? <span className="login-spinner-loader" /> : 'Signup'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="split-login-action-btn secondary-white"
+                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                    disabled={loading}
+                  >
+                    Existing User? Log in
+                  </button>
+                </form>
+              ) : (
+                /* Login OTP Screen */
+                <form onSubmit={handleVerifyOtp} className="split-login-form step-otp">
+                  <div className="otp-verification-header">
+                    <p className="otp-sent-to-text">
+                      Please enter the OTP sent to<br />
+                      <span className="otp-recipient-highlight">{inputVal}</span>. 
+                      <button type="button" className="otp-change-number-btn" onClick={() => { setStep(1); setError(''); }}>
+                        Change
                       </button>
-                    </div>
-                  )}
-                </div>
+                    </p>
+                  </div>
 
-                <button type="submit" className="split-login-action-btn primary" disabled={loading}>
-                  {loading ? <span className="login-spinner-loader" /> : 'Verify'}
-                </button>
-              </form>
-            )
-          )}
+                  <div className="otp-inputs-row" onPaste={handleOtpPaste}>
+                    {otpArray.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(e.target, idx)}
+                        onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                        className="otp-digit-input"
+                        disabled={loading}
+                        required
+                        autoFocus={idx === 0}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="otp-timer-resend-row">
+                    {timer > 0 ? (
+                      <p className="otp-countdown-timer">
+                        Not received your code? <span>{formatTimer(timer)}</span>
+                      </p>
+                    ) : (
+                      <div className="otp-resend-action-wrap">
+                        <p className="otp-countdown-timer">Not received your code? </p>
+                        <button type="button" className="resend-otp-btn" onClick={handleResendOtp}>
+                          Resend OTP
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <button type="submit" className="split-login-action-btn primary" disabled={loading}>
+                    {loading ? <span className="login-spinner-loader" /> : 'Verify'}
+                  </button>
+                </form>
+              )
+            )}
+          </div>
 
           {/* Bottom Card Sign-up Link */}
           {step === 1 && viewMode === 'login' && (

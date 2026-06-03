@@ -237,6 +237,12 @@
   text-align: left;
 }
 
+.login-form-body-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 /* Underline Floating Input Layout */
 .floating-underline-input-group {
   position: relative;
