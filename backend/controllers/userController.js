@@ -96,7 +96,10 @@ const ensureOtpTable = async () => {
 
 // Setup Nodemailer transporter using credentials from .env
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  family: 4, // Force IPv4 to prevent IPv6 ENETUNREACH errors on deployed environments
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASS
