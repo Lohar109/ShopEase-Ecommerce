@@ -42,8 +42,8 @@ async function testSMTP() {
 
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // true for port 465, false for other ports (using STARTTLS)
     family: 4, // Force IPv4 to prevent IPv6 ENETUNREACH errors on deployed environments
     auth: {
       user: process.env.GMAIL_USER,
