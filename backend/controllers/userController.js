@@ -78,6 +78,11 @@ exports.loginUser = async (req, res) => {
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const dns = require('dns');
+
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 let isOtpTableReady = false;
 
@@ -100,6 +105,9 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // true for port 465, false for other ports (using STARTTLS)
   family: 4, // Force IPv4 to prevent IPv6 ENETUNREACH errors on deployed environments
+  lookup: (hostname, options, callback) => {
+    return dns.lookup(hostname, { family: 4 }, callback);
+  },
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASS
