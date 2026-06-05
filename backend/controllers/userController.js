@@ -85,6 +85,55 @@ if (dns.setDefaultResultOrder) {
 }
 
 let isOtpTableReady = false;
+let cachedTransporter = null;
+
+const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASS;
+const mailFromName = process.env.MAIL_FROM_NAME || 'ShopEase Support';
+const mailFromEmail = process.env.MAIL_FROM_EMAIL || smtpUser;
+
+const createOtpTransporter = () => {
+  if (!smtpUser || !smtpPass) {
+    throw new Error('Email transport is not configured. Set SMTP_USER and SMTP_PASS, or GMAIL_USER and GMAIL_APP_PASS, in the deployment environment.');
+  }
+
+  if (!mailFromEmail) {
+    throw new Error('Email transport is not configured. Set MAIL_FROM_EMAIL or SMTP_USER in the deployment environment.');
+  }
+
+  const transportOptions = {
+    family: 4,
+    lookup: (hostname, options, callback) => {
+      return dns.lookup(hostname, { family: 4 }, callback);
+    },
+    auth: {
+      user: smtpUser,
+      pass: smtpPass
+    }
+  };
+
+  if (process.env.SMTP_SERVICE) {
+    return nodemailer.createTransport({
+      service: process.env.SMTP_SERVICE,
+      ...transportOptions
+    });
+  }
+
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: String(process.env.SMTP_SECURE || 'false') === 'true',
+    ...transportOptions
+  });
+};
+
+const getOtpTransporter = () => {
+  if (!cachedTransporter) {
+    cachedTransporter = createOtpTransporter();
+  }
+
+  return cachedTransporter;
+};
 
 const ensureOtpTable = async () => {
   if (isOtpTableReady) return;
@@ -98,21 +147,6 @@ const ensureOtpTable = async () => {
   `);
   isOtpTableReady = true;
 };
-
-// Setup Nodemailer transporter using credentials from .env
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // true for port 465, false for other ports (using STARTTLS)
-  family: 4, // Force IPv4 to prevent IPv6 ENETUNREACH errors on deployed environments
-  lookup: (hostname, options, callback) => {
-    return dns.lookup(hostname, { family: 4 }, callback);
-  },
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASS
-  }
-});
 
 exports.sendOtp = async (req, res) => {
   const { email, mode } = req.body;
@@ -152,7 +186,7 @@ exports.sendOtp = async (req, res) => {
 
     // Send the email using ShopEase branded style
     const mailOptions = {
-      from: `"ShopEase Support" <${process.env.GMAIL_USER}>`,
+      from: `"${mailFromName}" <${mailFromEmail}>`,
       to: email,
       subject: `ShopEase Verification Code - ${otp}`,
       html: `
@@ -181,6 +215,7 @@ exports.sendOtp = async (req, res) => {
       `
     };
 
+    const transporter = getOtpTransporter();
     await transporter.sendMail(mailOptions);
     res.json({ message: 'OTP sent successfully.' });
   } catch (err) {
