@@ -51,7 +51,7 @@ async function testSMTP() {
     secure: false, // true for port 465, false for other ports (using STARTTLS)
     family: 4, // Force IPv4 to prevent IPv6 ENETUNREACH errors on deployed environments
     lookup: (hostname, options, callback) => {
-      return dns.lookup(hostname, { family: 4 }, callback);
+      return dns.lookup(hostname, { ...options, family: 4 }, callback);
     },
     auth: {
       user: process.env.GMAIL_USER,

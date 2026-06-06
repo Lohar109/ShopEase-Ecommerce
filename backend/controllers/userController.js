@@ -104,7 +104,7 @@ const createOtpTransporter = () => {
   const transportOptions = {
     family: 4,
     lookup: (hostname, options, callback) => {
-      return dns.lookup(hostname, { family: 4 }, callback);
+      return dns.lookup(hostname, { ...options, family: 4 }, callback);
     },
     auth: {
       user: smtpUser,
