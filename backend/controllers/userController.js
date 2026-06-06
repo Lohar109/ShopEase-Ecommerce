@@ -92,7 +92,7 @@ const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASS;
 const mailFromName = process.env.MAIL_FROM_NAME || 'ShopEase Support';
 const mailFromEmail = process.env.MAIL_FROM_EMAIL || smtpUser;
 
-const createOtpTransporter = () => {
+const createOtpTransporter = async () => {
   if (!smtpUser || !smtpPass) {
     throw new Error('Email transport is not configured. Set SMTP_USER and SMTP_PASS, or GMAIL_USER and GMAIL_APP_PASS, in the deployment environment.');
   }
@@ -101,11 +101,21 @@ const createOtpTransporter = () => {
     throw new Error('Email transport is not configured. Set MAIL_FROM_EMAIL or SMTP_USER in the deployment environment.');
   }
 
+  const targetHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  
+  // Resolve host to IPv4 dynamically using dns.lookup to force IPv4 connection
+  const resolvedIp = await new Promise((resolve) => {
+    dns.lookup(targetHost, { family: 4 }, (err, address) => {
+      if (err) {
+        console.warn('DNS lookup failed for SMTP host:', err.message);
+        resolve(targetHost); // fallback to domain name
+      } else {
+        resolve(address);
+      }
+    });
+  });
+
   const transportOptions = {
-    family: 4,
-    lookup: (hostname, options, callback) => {
-      return dns.lookup(hostname, { ...options, family: 4 }, callback);
-    },
     auth: {
       user: smtpUser,
       pass: smtpPass
@@ -120,16 +130,20 @@ const createOtpTransporter = () => {
   }
 
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    host: resolvedIp,
     port: Number(process.env.SMTP_PORT || 587),
     secure: String(process.env.SMTP_SECURE || 'false') === 'true',
+    tls: {
+      servername: targetHost, // Verifies SSL certificate against the domain, not the IP
+      rejectUnauthorized: true
+    },
     ...transportOptions
   });
 };
 
-const getOtpTransporter = () => {
+const getOtpTransporter = async () => {
   if (!cachedTransporter) {
-    cachedTransporter = createOtpTransporter();
+    cachedTransporter = await createOtpTransporter();
   }
 
   return cachedTransporter;
@@ -215,7 +229,7 @@ exports.sendOtp = async (req, res) => {
       `
     };
 
-    const transporter = getOtpTransporter();
+    const transporter = await getOtpTransporter();
     await transporter.sendMail(mailOptions);
     res.json({ message: 'OTP sent successfully.' });
   } catch (err) {
