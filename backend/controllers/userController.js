@@ -92,7 +92,7 @@ const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASS;
 const mailFromName = process.env.MAIL_FROM_NAME || 'ShopEase Support';
 const mailFromEmail = process.env.MAIL_FROM_EMAIL || smtpUser;
 
-const createOtpTransporter = async () => {
+const createOtpTransporter = () => {
   if (!smtpUser || !smtpPass) {
     throw new Error('Email transport is not configured. Set SMTP_USER and SMTP_PASS, or GMAIL_USER and GMAIL_APP_PASS, in the deployment environment.');
   }
@@ -102,18 +102,6 @@ const createOtpTransporter = async () => {
   }
 
   const targetHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-  
-  // Resolve host to IPv4 dynamically using dns.lookup to force IPv4 connection
-  const resolvedIp = await new Promise((resolve) => {
-    dns.lookup(targetHost, { family: 4 }, (err, address) => {
-      if (err) {
-        console.warn('DNS lookup failed for SMTP host:', err.message);
-        resolve(targetHost); // fallback to domain name
-      } else {
-        resolve(address);
-      }
-    });
-  });
 
   const transportOptions = {
     auth: {
@@ -130,20 +118,16 @@ const createOtpTransporter = async () => {
   }
 
   return nodemailer.createTransport({
-    host: resolvedIp,
+    host: targetHost,
     port: Number(process.env.SMTP_PORT || 587),
     secure: String(process.env.SMTP_SECURE || 'false') === 'true',
-    tls: {
-      servername: targetHost, // Verifies SSL certificate against the domain, not the IP
-      rejectUnauthorized: true
-    },
     ...transportOptions
   });
 };
 
-const getOtpTransporter = async () => {
+const getOtpTransporter = () => {
   if (!cachedTransporter) {
-    cachedTransporter = await createOtpTransporter();
+    cachedTransporter = createOtpTransporter();
   }
 
   return cachedTransporter;
