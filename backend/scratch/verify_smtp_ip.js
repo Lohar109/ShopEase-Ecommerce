@@ -33,7 +33,7 @@ async function testSMTP() {
 
   const mailOptions = {
     from: `"ShopEase Support" <${process.env.GMAIL_USER}>`,
-    to: process.env.GMAIL_USER, // Send to self
+    to: 'vaibhavlohar109@gmail.com', // Send to the user's email
     subject: `ShopEase IP Verification Test Code - ${otp}`,
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
