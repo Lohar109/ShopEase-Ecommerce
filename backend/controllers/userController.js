@@ -78,11 +78,6 @@ exports.loginUser = async (req, res) => {
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const dns = require('dns');
-
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
 
 let isOtpTableReady = false;
 let cachedTransporter = null;
