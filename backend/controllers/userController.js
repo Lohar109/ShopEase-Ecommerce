@@ -1,6 +1,9 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const dbUrl = process.env.DATABASE_URL || '';
 const sanitizedDbUrl = dbUrl
@@ -76,57 +79,9 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 let isOtpTableReady = false;
-let cachedTransporter = null;
-
-const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
-const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASS;
-const mailFromName = process.env.MAIL_FROM_NAME || 'ShopEase Support';
-const mailFromEmail = process.env.MAIL_FROM_EMAIL || smtpUser;
-
-const createOtpTransporter = () => {
-  if (!smtpUser || !smtpPass) {
-    throw new Error('Email transport is not configured. Set SMTP_USER and SMTP_PASS, or GMAIL_USER and GMAIL_APP_PASS, in the deployment environment.');
-  }
-
-  if (!mailFromEmail) {
-    throw new Error('Email transport is not configured. Set MAIL_FROM_EMAIL or SMTP_USER in the deployment environment.');
-  }
-
-  const targetHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-
-  const transportOptions = {
-    auth: {
-      user: smtpUser,
-      pass: smtpPass
-    }
-  };
-
-  if (process.env.SMTP_SERVICE) {
-    return nodemailer.createTransport({
-      service: process.env.SMTP_SERVICE,
-      ...transportOptions
-    });
-  }
-
-  return nodemailer.createTransport({
-    host: targetHost,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: String(process.env.SMTP_SECURE || 'false') === 'true',
-    ...transportOptions
-  });
-};
-
-const getOtpTransporter = () => {
-  if (!cachedTransporter) {
-    cachedTransporter = createOtpTransporter();
-  }
-
-  return cachedTransporter;
-};
 
 const ensureOtpTable = async () => {
   if (isOtpTableReady) return;
@@ -177,9 +132,9 @@ exports.sendOtp = async (req, res) => {
       [email, otp, expiresAt]
     );
 
-    // Send the email using ShopEase branded style
-    const mailOptions = {
-      from: `"${mailFromName}" <${mailFromEmail}>`,
+    // Send the email using ShopEase branded style via Resend
+    await resend.emails.send({
+      from: 'ShopEase <onboarding@resend.dev>',
       to: email,
       subject: `ShopEase Verification Code - ${otp}`,
       html: `
@@ -206,10 +161,7 @@ exports.sendOtp = async (req, res) => {
           </div>
         </div>
       `
-    };
-
-    const transporter = await getOtpTransporter();
-    await transporter.sendMail(mailOptions);
+    });
     res.json({ message: 'OTP sent successfully.' });
   } catch (err) {
     console.error('Error sending OTP:', err);
