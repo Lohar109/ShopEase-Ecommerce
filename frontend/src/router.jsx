@@ -11,6 +11,7 @@ import Payment from "./pages/Payment";
 import Login from "./pages/Login";
 import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Profile from "./pages/Profile";
 
 const AppRouter = () => (
   <Routes>
@@ -26,6 +27,7 @@ const AppRouter = () => (
     <Route path="/login" element={<Login />} />
     <Route path="/terms" element={<TermsOfUse />} />
     <Route path="/privacy" element={<PrivacyPolicy />} />
+    <Route path="/profile" element={<Profile />} />
   </Routes>
 );
 
