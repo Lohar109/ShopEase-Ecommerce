@@ -149,12 +149,7 @@ const Header = () => {
                     <span>My Profile</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/" className="dropdown-item">
-                    <Sparkles size={16} />
-                    <span>ShopEase Plus Zone</span>
-                  </Link>
-                </li>
+
                 <li>
                   <Link to="/orders" className="dropdown-item">
                     <Package size={16} />
