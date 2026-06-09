@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 const port = process.env.PORT || 5000;
 const dbUrl = process.env.DATABASE_URL || '';
 const sanitizedDbUrl = dbUrl
