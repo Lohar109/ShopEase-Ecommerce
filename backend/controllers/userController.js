@@ -136,7 +136,11 @@ exports.sendOtp = async (req, res) => {
       const result = await resend.emails.send({
         from: 'ShopEase <noreply@shopease.sbs>',
         to: email,
-        subject: `Your ShopEase OTP is ${otp}`,
+        subject: 'OTP for ShopEase Login',
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 24px;">
