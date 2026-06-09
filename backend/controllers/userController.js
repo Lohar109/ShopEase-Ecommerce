@@ -134,7 +134,7 @@ exports.sendOtp = async (req, res) => {
 
     try {
       const result = await resend.emails.send({
-        from: 'ShopEase <onboarding@resend.dev>',
+        from: 'ShopEase <noreply@shopease.sbs>',
         to: email,
         subject: `Your ShopEase OTP is ${otp}`,
         html: `<p>Your OTP is <strong>${otp}</strong>. Valid for 10 minutes.</p>`
