@@ -134,7 +134,7 @@
     border-radius: 10px;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
-    transition: all 0.2s ease;
+    transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .sidebar-icon {
@@ -152,6 +152,8 @@
 .sidebar-nav-btn:hover {
     background: rgba(193, 6, 84, 0.04);
     color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .sidebar-nav-btn:hover .sidebar-icon {
