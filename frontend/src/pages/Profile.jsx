@@ -255,11 +255,9 @@ const Profile = () => {
                   ) : (
                     <div className="edit-actions-group">
                       <button onClick={handleSaveProfile} className="profile-save-btn">
-                        <Check size={15} />
                         <span>Save</span>
                       </button>
                       <button onClick={handleEditProfileToggle} className="profile-cancel-btn">
-                        <X size={15} />
                         <span>Cancel</span>
                       </button>
                     </div>
@@ -375,11 +373,9 @@ const Profile = () => {
                   ) : (
                     <div className="edit-actions-group">
                       <button onClick={handleSaveAddress} className="profile-save-btn">
-                        <Check size={15} />
                         <span>Save Address</span>
                       </button>
                       <button onClick={handleEditAddressToggle} className="profile-cancel-btn">
-                        <X size={15} />
                         <span>Cancel</span>
                       </button>
                     </div>

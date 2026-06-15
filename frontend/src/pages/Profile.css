@@ -285,10 +285,12 @@
     box-shadow: 0 4px 12px rgba(193, 6, 84, 0.2);
 }
 
-.profile-save-btn:hover {
-    background: #a00445;
-    border-color: #a00445;
-    transform: translateY(-1px);
+.profile-save-btn:hover, .profile-save-btn:active {
+    background: var(--brand-accent, #c10654) !important;
+    border-color: var(--brand-accent, #c10654) !important;
+    color: #ffffff !important;
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(193, 6, 84, 0.2) !important;
 }
 
 .profile-cancel-btn {
@@ -307,9 +309,12 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.profile-cancel-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #111827;
+.profile-cancel-btn:hover, .profile-cancel-btn:active {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: transparent !important;
+    color: #4b5563 !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Detail Display Grid */
@@ -390,6 +395,18 @@
 .form-input-field input:focus, .form-input-field select:focus {
     border-color: var(--brand-accent, #c10654);
     box-shadow: 0 0 0 3px rgba(193, 6, 84, 0.1);
+}
+
+.form-input-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    background-size: 14px;
+    padding-right: 2.75rem;
+    cursor: pointer;
 }
 
 .form-input-field.readonly-field input {
