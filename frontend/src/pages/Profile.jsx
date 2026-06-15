@@ -3,7 +3,8 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Heart, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
-  Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock
+  Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
+  Search, Filter, Truck, XCircle, RotateCcw
 } from "lucide-react";
 import "./Profile.css";
 
@@ -18,6 +19,71 @@ const SIDEBAR_ITEMS = [
   { id: 'care', label: '24x7 Customer Care', icon: Headphones, path: '/profile?tab=care' },
   { id: 'advertise', label: 'Advertise', icon: Megaphone, path: '/profile?tab=advertise' },
   { id: 'download', label: 'Download App', icon: Download, path: '/profile?tab=download' },
+];
+
+const INITIAL_ORDERS = [
+  {
+    orderId: "#SE123456789",
+    orderDate: "09 Jun 2024, 05:12 PM",
+    paymentMethod: "Paid via UPI",
+    totalAmount: 1249,
+    status: "Delivered",
+    productName: "boAt Airdopes 131 Pro",
+    productDesc: "Wireless Earbuds with 40H Playback",
+    quantity: 1,
+    statusDetail: "Delivered on 12 Jun 2024",
+    imageUrl: "https://images.unsplash.com/photo-1608156639585-b3a032ef9689?q=80&w=300&auto=format&fit=crop"
+  },
+  {
+    orderId: "#SE123456788",
+    orderDate: "07 Jun 2024, 11:24 AM",
+    paymentMethod: "Paid via Card",
+    totalAmount: 799,
+    status: "Shipped",
+    productName: "Lavie Women's Shoulder Bag",
+    productDesc: "Elegant & Stylish Handbag",
+    quantity: 1,
+    statusDetail: "Shipped on 08 Jun 2024",
+    statusDetailSub: "Expected Delivery: 11 Jun 2024",
+    imageUrl: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=300&auto=format&fit=crop"
+  },
+  {
+    orderId: "#SE123456787",
+    orderDate: "05 Jun 2024, 09:15 PM",
+    paymentMethod: "Paid via UPI",
+    totalAmount: 2299,
+    status: "Processing",
+    productName: "Noise ColorFit Pulse 3",
+    productDesc: "Smartwatch with 1.85\" Display",
+    quantity: 1,
+    statusDetail: "Processing",
+    statusDetailSub: "Will be shipped soon",
+    imageUrl: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=300&auto=format&fit=crop"
+  },
+  {
+    orderId: "#SE123456786",
+    orderDate: "12 May 2024, 02:45 PM",
+    paymentMethod: "Paid via Card",
+    totalAmount: 3499,
+    status: "Cancelled",
+    productName: "Adidas Men's Running Shoes",
+    productDesc: "Comfortable Gym & Training Footwear",
+    quantity: 1,
+    statusDetail: "Cancelled on 13 May 2024",
+    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300&auto=format&fit=crop"
+  },
+  {
+    orderId: "#SE123456785",
+    orderDate: "28 Apr 2024, 10:15 AM",
+    paymentMethod: "Paid via UPI",
+    totalAmount: 1899,
+    status: "Returned",
+    productName: "Zara Slim Fit Cotton Shirt",
+    productDesc: "Classic Fit Casual Shirt",
+    quantity: 1,
+    statusDetail: "Returned on 30 Apr 2024",
+    imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=300&auto=format&fit=crop"
+  }
 ];
 
 const Profile = () => {
@@ -66,6 +132,52 @@ const Profile = () => {
     };
   });
   const [addressFormData, setAddressFormData] = useState({ ...addressData });
+
+  // State to manage active orders, search query, and active filter tab
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem("shopease_orders_list");
+    if (saved) return JSON.parse(saved);
+    return INITIAL_ORDERS;
+  });
+  const [ordersSearchQuery, setOrdersSearchQuery] = useState("");
+  const [ordersActiveTab, setOrdersActiveTab] = useState("All");
+
+  useEffect(() => {
+    localStorage.setItem("shopease_orders_list", JSON.stringify(orders));
+  }, [orders]);
+
+  const handleCancelOrder = (orderId) => {
+    if (window.confirm("Are you sure you want to cancel this order?")) {
+      const now = new Date();
+      const months = ["Jun", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const formattedDate = `${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      
+      setOrders(prevOrders => 
+        prevOrders.map(order => {
+          if (order.orderId === orderId) {
+            return {
+              ...order,
+              status: "Cancelled",
+              statusDetail: `Cancelled on ${formattedDate}`,
+              statusDetailSub: undefined
+            };
+          }
+          return order;
+        })
+      );
+    }
+  };
+
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      order.orderId.toLowerCase().includes(ordersSearchQuery.toLowerCase()) ||
+      order.productName.toLowerCase().includes(ordersSearchQuery.toLowerCase());
+      
+    if (ordersActiveTab === "All") {
+      return matchesSearch;
+    }
+    return order.status === ordersActiveTab && matchesSearch;
+  });
 
   // Seller Onboarding States
   const [sellerApplication, setSellerApplication] = useState(() => {
@@ -914,7 +1026,137 @@ const Profile = () => {
             </div>
           )}
 
-          {currentTab !== "profile" && currentTab !== "seller" && (
+          {currentTab === "orders" && (
+            <div className="orders-tab-content">
+              {/* Header Box */}
+              <div className="orders-header-row">
+                <div className="orders-title-group">
+                  <h1>My Orders</h1>
+                  <p>Track, view and manage all your orders</p>
+                </div>
+                <div className="orders-actions-wrap">
+                  <div className="orders-search-wrapper">
+                    <Search size={16} className="orders-search-icon" />
+                    <input 
+                      type="text" 
+                      placeholder="Search by Order ID or Product" 
+                      value={ordersSearchQuery}
+                      onChange={(e) => setOrdersSearchQuery(e.target.value)}
+                      className="orders-search-input"
+                    />
+                  </div>
+                  <button className="orders-filter-btn">
+                    <Filter size={15} />
+                    <span>Filter</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Sub-navigation Tabs */}
+              <div className="orders-nav-tabs">
+                {["All", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setOrdersActiveTab(tab)}
+                    className={`orders-tab-btn ${ordersActiveTab === tab ? "active" : ""}`}
+                  >
+                    {tab === "All" ? "All Orders" : tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Orders Cards List */}
+              <div className="orders-cards-list">
+                {filteredOrders.length > 0 ? (
+                  filteredOrders.map((order) => (
+                    <div key={order.orderId} className="order-card-row">
+                      {/* Left Metadata Column */}
+                      <div className="order-meta-col">
+                        <div className="meta-item">
+                          <span className="meta-label">ORDER ID</span>
+                          <span className="meta-value bold-value">{order.orderId}</span>
+                        </div>
+                        <div className="meta-item">
+                          <span className="meta-label">ORDER DATE</span>
+                          <span className="meta-value">{order.orderDate}</span>
+                        </div>
+                        <div className="meta-item">
+                          <span className="meta-label">PAYMENT</span>
+                          <span className="meta-value">{order.paymentMethod}</span>
+                        </div>
+                        <div className="meta-item">
+                          <span className="meta-label">TOTAL AMOUNT</span>
+                          <span className="meta-value price-value">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Product Column */}
+                      <div className="order-product-col">
+                        <div className="product-image-container">
+                          <img src={order.imageUrl} alt={order.productName} className="order-product-image" />
+                        </div>
+                        <div className="product-details-container">
+                          <h4 className="product-title">{order.productName}</h4>
+                          <p className="product-desc">{order.productDesc}</p>
+                          <div className="product-qty-row">
+                            <span className="product-price">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                            <span className="qty-divider">•</span>
+                            <span className="product-qty">Qty: {order.quantity}</span>
+                          </div>
+                          <div className={`product-status-details status-${order.status.toLowerCase()}`}>
+                            <span className="status-detail-text">{order.statusDetail}</span>
+                            {order.statusDetailSub && (
+                              <span className="status-detail-subtext">{order.statusDetailSub}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Action/Status Column */}
+                      <div className="order-actions-col">
+                        <div className={`order-status-badge badge-${order.status.toLowerCase()}`}>
+                          {order.status === "Delivered" && <CheckCircle size={14} className="status-badge-icon" />}
+                          {order.status === "Shipped" && <Truck size={14} className="status-badge-icon" />}
+                          {order.status === "Processing" && <Clock size={14} className="status-badge-icon" />}
+                          {order.status === "Cancelled" && <XCircle size={14} className="status-badge-icon" />}
+                          {order.status === "Returned" && <RotateCcw size={14} className="status-badge-icon" />}
+                          <span>{order.status}</span>
+                        </div>
+                        <div className="order-actions-buttons">
+                          <button className="order-btn-outline-pink">View Details</button>
+                          {order.status === "Delivered" && (
+                            <button className="order-btn-outline-gray">Buy Again</button>
+                          )}
+                          {order.status === "Shipped" && (
+                            <button className="order-btn-outline-gray">Track Order</button>
+                          )}
+                          {order.status === "Processing" && (
+                            <button 
+                              onClick={() => handleCancelOrder(order.orderId)} 
+                              className="order-btn-outline-gray"
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="orders-empty-state">
+                    <p>No orders found matching your criteria.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Help Footer */}
+              <div className="orders-footer-help">
+                <p>Can't find your order? <span className="help-link-pink" onClick={() => alert("Please contact our customer support at support@shopease.com")}>Click here</span></p>
+              </div>
+            </div>
+          )}
+
+          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && (
             <div className="profile-tab-placeholder">
               <div className="pane-header-box">
                 <div className="pane-title-group">
