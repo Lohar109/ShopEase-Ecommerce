@@ -170,6 +170,11 @@
     flex-direction: column;
     gap: 2rem;
     min-width: 0;
+    width: 100%;
+}
+
+.profile-tab-content {
+    width: 100%;
 }
 
 /* Pane Header Box */
@@ -497,6 +502,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    width: 100%;
 }
 
 .placeholder-details-card {
@@ -608,6 +614,7 @@
 
 .seller-tab-content {
     animation: fadeIn 0.4s ease;
+    width: 100%;
 }
 
 .seller-login-btn {
