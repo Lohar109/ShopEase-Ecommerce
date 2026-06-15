@@ -1321,26 +1321,6 @@
     box-shadow: 0 0 0 3px rgba(193, 6, 84, 0.1);
 }
 
-.orders-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    color: #4b5563;
-    padding: 0.55rem 1.1rem;
-    border-radius: 10px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Poppins', sans-serif;
-}
-
-.orders-filter-btn:hover {
-    border-color: var(--brand-accent, #c10654);
-    color: var(--brand-accent, #c10654);
-}
 
 /* Tab buttons bar */
 .orders-nav-tabs {

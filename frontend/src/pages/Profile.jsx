@@ -4,7 +4,7 @@ import {
   User, Package, Heart, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
-  Search, Filter, Truck, XCircle, RotateCcw
+  Search, Truck, XCircle, RotateCcw
 } from "lucide-react";
 import "./Profile.css";
 
@@ -1045,10 +1045,6 @@ const Profile = () => {
                       className="orders-search-input"
                     />
                   </div>
-                  <button className="orders-filter-btn">
-                    <Filter size={15} />
-                    <span>Filter</span>
-                  </button>
                 </div>
               </div>
 
