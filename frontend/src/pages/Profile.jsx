@@ -4,8 +4,9 @@ import {
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
-  Search, Truck, XCircle, RotateCcw
+  Search, Truck, XCircle, RotateCcw, Star, Award, Info
 } from "lucide-react";
+import toast from "react-hot-toast";
 import "./Profile.css";
 
 const SIDEBAR_ITEMS = [
@@ -164,6 +165,72 @@ const Profile = () => {
           return order;
         })
       );
+    }
+  };
+
+  // Rewards tab states
+  const [availablePoints, setAvailablePoints] = useState(() => {
+    const saved = localStorage.getItem("shopease_available_points");
+    return saved ? parseInt(saved, 10) : 750;
+  });
+  const [pointsEarned, setPointsEarned] = useState(() => {
+    const saved = localStorage.getItem("shopease_points_earned");
+    return saved ? parseInt(saved, 10) : 1250;
+  });
+  const [pointsUsed, setPointsUsed] = useState(() => {
+    const saved = localStorage.getItem("shopease_points_used");
+    return saved ? parseInt(saved, 10) : 500;
+  });
+  const [rewardsActivities, setRewardsActivities] = useState(() => {
+    const saved = localStorage.getItem("shopease_rewards_activities");
+    if (saved) return JSON.parse(saved);
+    return [
+      { date: "09 Jun 2024", desc: "Order #SE123456789", points: 120, status: "Credited" },
+      { date: "01 Jun 2024", desc: "Order #SE123456780", points: 80, status: "Credited" },
+      { date: "25 May 2024", desc: "Redeemed Amazon Pay Voucher (₹50)", points: -500, status: "Debited" },
+      { date: "18 May 2024", desc: "Order #SE123456770", points: 60, status: "Credited" }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("shopease_available_points", availablePoints);
+  }, [availablePoints]);
+
+  useEffect(() => {
+    localStorage.setItem("shopease_points_earned", pointsEarned);
+  }, [pointsEarned]);
+
+  useEffect(() => {
+    localStorage.setItem("shopease_points_used", pointsUsed);
+  }, [pointsUsed]);
+
+  useEffect(() => {
+    localStorage.setItem("shopease_rewards_activities", JSON.stringify(rewardsActivities));
+  }, [rewardsActivities]);
+
+  const handleRedeemVoucher = (voucherName, pointCost) => {
+    if (availablePoints < pointCost) {
+      toast.error(`Insufficient points! Minimum ${pointCost} points required to redeem.`);
+      return;
+    }
+    
+    if (window.confirm(`Are you sure you want to redeem ${pointCost} points for a ${voucherName}?`)) {
+      setAvailablePoints(prev => prev - pointCost);
+      setPointsUsed(prev => prev + pointCost);
+      
+      const now = new Date();
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const formattedDate = `${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      
+      const newActivity = {
+        date: formattedDate,
+        desc: `Redeemed ${voucherName}`,
+        points: -pointCost,
+        status: "Debited"
+      };
+      
+      setRewardsActivities(prev => [newActivity, ...prev]);
+      toast.success(`Successfully redeemed ${voucherName}! Check your email for details.`);
     }
   };
 
@@ -1139,14 +1206,296 @@ const Profile = () => {
                 )}
               </div>
 
-              {/* Help Footer */}
-              <div className="orders-footer-help">
-                <p>Can't find your order? <span className="help-link-pink" onClick={() => alert("Please contact our customer support at support@shopease.com")}>Click here</span></p>
+            </div>
+          )}
+
+          {currentTab === "rewards" && (
+            <div className="rewards-tab-content">
+              {/* Header block */}
+              <div className="rewards-header-row">
+                <div className="rewards-title-group">
+                  <h1>My Rewards</h1>
+                  <p>Earn points on every order and redeem exciting rewards!</p>
+                </div>
+                <button 
+                  className="rewards-how-it-works-btn"
+                  onClick={() => toast("Shop more to earn points: 1 Point per ₹10 spent! Redeem points for shopping vouchers.", { icon: "ℹ️" })}
+                >
+                  <Info size={16} />
+                  <span>How It Works</span>
+                </button>
+              </div>
+
+              {/* Summary Cards Grid */}
+              <div className="rewards-summary-grid">
+                <div className="reward-summary-card pink-theme">
+                  <div className="reward-card-header">
+                    <div className="reward-card-icon-circle">
+                      <Star size={20} className="reward-icon-pink" />
+                    </div>
+                    <div className="reward-card-label-group">
+                      <span className="reward-card-label">Available Points</span>
+                      <h2 className="reward-card-value">{availablePoints}</h2>
+                      <span className="reward-card-subtext">Worth ₹{Math.floor(availablePoints * 0.1)}</span>
+                    </div>
+                  </div>
+                  <button 
+                    className="reward-card-action-btn-pink"
+                    onClick={() => {
+                      const element = document.getElementById("redeem-vouchers-section");
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                  >
+                    Redeem Now
+                  </button>
+                </div>
+
+                <div className="reward-summary-card purple-theme">
+                  <div className="reward-card-header">
+                    <div className="reward-card-icon-circle">
+                      <Clock size={20} className="reward-icon-purple" />
+                    </div>
+                    <div className="reward-card-label-group">
+                      <span className="reward-card-label">Points Earned</span>
+                      <h2 className="reward-card-value">{pointsEarned}</h2>
+                      <span className="reward-card-subtext">This Year</span>
+                    </div>
+                  </div>
+                  <span className="reward-card-link-purple" onClick={() => toast("View History coming soon!", { icon: "🔮" })}>
+                    View History &rarr;
+                  </span>
+                </div>
+
+                <div className="reward-summary-card green-theme">
+                  <div className="reward-card-header">
+                    <div className="reward-card-icon-circle">
+                      <Gift size={20} className="reward-icon-green" />
+                    </div>
+                    <div className="reward-card-label-group">
+                      <span className="reward-card-label">Points Used</span>
+                      <h2 className="reward-card-value">{pointsUsed}</h2>
+                      <span className="reward-card-subtext">This Year</span>
+                    </div>
+                  </div>
+                  <span className="reward-card-link-green" onClick={() => toast("View History coming soon!", { icon: "🔮" })}>
+                    View History &rarr;
+                  </span>
+                </div>
+
+                <div className="reward-summary-card orange-theme">
+                  <div className="reward-card-header">
+                    <div className="reward-card-icon-circle">
+                      <Award size={20} className="reward-icon-orange" />
+                    </div>
+                    <div className="reward-card-label-group">
+                      <span className="reward-card-label">Expiring Soon</span>
+                      <h2 className="reward-card-value">120</h2>
+                      <span className="reward-card-subtext">Points expire on 30 Jun 2024</span>
+                    </div>
+                  </div>
+                  <span className="reward-card-link-orange" onClick={() => toast("Expiry Details: 120 points expire at the end of this month.", { icon: "⚠️" })}>
+                    View Details &rarr;
+                  </span>
+                </div>
+              </div>
+
+              {/* Redeem Your Points Grid */}
+              <div id="redeem-vouchers-section" className="vouchers-section-wrapper">
+                <div className="vouchers-section-header">
+                  <h3>Redeem Your Points</h3>
+                  <span className="view-all-rewards-link" onClick={() => toast("All rewards displayed here.")}>
+                    View All Rewards &rarr;
+                  </span>
+                </div>
+
+                <div className="vouchers-grid">
+                  {/* Amazon Pay Voucher */}
+                  <div className="voucher-card">
+                    <div className="voucher-logo-area">
+                      <svg width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M78.6 63.8c-2.3 4.2-6.5 6.9-11.4 6.9-6.9 0-11.9-5-11.9-12 0-6.9 5-12 11.9-12 5.1 0 9.2 2.9 11.4 7.2" stroke="#FF9900" strokeWidth="10" strokeLinecap="round"/>
+                        <path d="M84.4 34.6c0 14.5-9.3 26.3-21.7 26.3S41 49.1 41 34.6s9.3-26.3 21.7-26.3S84.4 20.1 84.4 34.6z" fill="#000000"/>
+                        <path d="M84.4 34.6V62c0 9.8 4.7 15.6 12 15.6" stroke="#000000" strokeWidth="10" strokeLinecap="round"/>
+                        <path d="M25 88c22.5 15.6 55.5 15.6 78 0" stroke="#FF9900" strokeWidth="10" strokeLinecap="round"/>
+                        <path d="M96.5 76c2 4 4.5 9 6.5 12-3-1-8.5-3-12-3.5" stroke="#FF9900" strokeWidth="10" strokeLinecap="round"/>
+                      </svg>
+                      <div className="voucher-title-group">
+                        <span className="voucher-subtitle">Amazon Pay Voucher</span>
+                        <h4 className="voucher-amount">₹50</h4>
+                      </div>
+                    </div>
+                    <div className="voucher-card-footer">
+                      <span className="voucher-points-cost">500 Points</span>
+                      <button className="voucher-redeem-btn" onClick={() => handleRedeemVoucher("Amazon Pay Voucher (₹50)", 500)}>
+                        Redeem
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Flipkart Voucher */}
+                  <div className="voucher-card">
+                    <div className="voucher-logo-area">
+                      <svg width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 30h88l10 78H10L20 30z" fill="#2874F0"/>
+                        <circle cx="64" cy="64" r="28" fill="#FFE500"/>
+                        <path d="M50 64h28M64 50v28" stroke="#2874F0" strokeWidth="8" strokeLinecap="round"/>
+                        <path d="M34 16h60l-5 14H39l-5-14z" fill="#FFE500"/>
+                      </svg>
+                      <div className="voucher-title-group">
+                        <span className="voucher-subtitle">Flipkart Voucher</span>
+                        <h4 className="voucher-amount">₹100</h4>
+                      </div>
+                    </div>
+                    <div className="voucher-card-footer">
+                      <span className="voucher-points-cost">1000 Points</span>
+                      <button className="voucher-redeem-btn" onClick={() => handleRedeemVoucher("Flipkart Voucher (₹100)", 1000)}>
+                        Redeem
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* PhonePe Voucher */}
+                  <div className="voucher-card">
+                    <div className="voucher-logo-area">
+                      <svg width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="128" height="128" rx="28" fill="#5f259f"/>
+                        <path d="M36 36h40c12 0 18 6 18 15s-6 15-18 15H52v26H36V36zm16 14v16h24c5 0 8-2 8-8s-3-8-8-8H52z" fill="#ffffff"/>
+                        <path d="M92 92H76c-3-6-5-14-5-20h16c0 4 1 12 5 20z" fill="#ffffff"/>
+                      </svg>
+                      <div className="voucher-title-group">
+                        <span className="voucher-subtitle">PhonePe Voucher</span>
+                        <h4 className="voucher-amount">₹200</h4>
+                      </div>
+                    </div>
+                    <div className="voucher-card-footer">
+                      <span className="voucher-points-cost">2000 Points</span>
+                      <button className="voucher-redeem-btn" onClick={() => handleRedeemVoucher("PhonePe Voucher (₹200)", 2000)}>
+                        Redeem
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ShopEase Coupon */}
+                  <div className="voucher-card">
+                    <div className="voucher-logo-area">
+                      <svg width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" y="24" width="108" height="80" rx="12" fill="#c10654" stroke="#ffffff" strokeWidth="4"/>
+                        <circle cx="10" cy="64" r="14" fill="#f3f4f6"/>
+                        <circle cx="118" cy="64" r="14" fill="#f3f4f6"/>
+                        <path d="M50 78l28-28M48 48h2M78 78h2" stroke="#ffffff" strokeWidth="8" strokeLinecap="round"/>
+                      </svg>
+                      <div className="voucher-title-group">
+                        <span className="voucher-subtitle">ShopEase Coupon</span>
+                        <h4 className="voucher-amount">₹150 Off</h4>
+                      </div>
+                    </div>
+                    <div className="voucher-card-footer">
+                      <span className="voucher-points-cost">1500 Points</span>
+                      <button className="voucher-redeem-btn" onClick={() => handleRedeemVoucher("ShopEase Coupon (₹150 Off)", 1500)}>
+                        Redeem
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Layout section */}
+              <div className="rewards-bottom-layout">
+                {/* Recent Activity */}
+                <div className="recent-activity-panel">
+                  <div className="panel-header-row">
+                    <h3>Recent Activity</h3>
+                    <span className="view-all-activity-link" onClick={() => toast("Full history coming soon!")}>
+                      View All Activity &rarr;
+                    </span>
+                  </div>
+                  <div className="activity-table-wrapper">
+                    <table className="activity-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Description</th>
+                          <th>Points</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rewardsActivities.map((act, idx) => {
+                          const isCredit = act.status === "Credited";
+                          return (
+                            <tr key={idx}>
+                              <td>{act.date}</td>
+                              <td>{act.desc}</td>
+                              <td className={isCredit ? "points-credited" : "points-debited"}>
+                                {isCredit ? `+${act.points}` : act.points}
+                              </td>
+                              <td>
+                                <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                  {act.status}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Earn More Points */}
+                <div className="earn-more-panel">
+                  <h3>Earn More Points</h3>
+                  <div className="earn-more-list">
+                    <div className="earn-more-list-item">
+                      <div className="earn-more-icon-circle pink-bg">
+                        <Package size={16} className="reward-icon-pink" />
+                      </div>
+                      <div className="earn-more-details">
+                        <h4>Shop More</h4>
+                        <p>Earn points on every eligible purchase.</p>
+                      </div>
+                    </div>
+
+                    <div className="earn-more-list-item purple-bg">
+                      <div className="earn-more-icon-circle purple-bg-light">
+                        <Star size={16} className="reward-icon-purple" />
+                      </div>
+                      <div className="earn-more-details">
+                        <h4>Exclusive Offers</h4>
+                        <p>Look out for special offers to earn extra points.</p>
+                      </div>
+                    </div>
+
+                    <div className="earn-more-list-item green-bg">
+                      <div className="earn-more-icon-circle green-bg-light">
+                        <Gift size={16} className="reward-icon-green" />
+                      </div>
+                      <div className="earn-more-details">
+                        <h4>Bonus Points</h4>
+                        <p>Get bonus points on your birthday & special days.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    className="explore-offers-btn"
+                    onClick={() => toast("Navigating to offers dashboard...", { icon: "🛍️" })}
+                  >
+                    Explore Offers
+                  </button>
+                </div>
+              </div>
+
+              {/* Alert Footer Bar */}
+              <div className="rewards-footer-alert-bar">
+                <Info size={16} className="alert-bar-info-icon" />
+                <span><strong>1 Point = ₹0.10</strong> | Minimum 500 Points required to redeem.</span>
               </div>
             </div>
           )}
 
-          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && (
+          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && (
             <div className="profile-tab-placeholder">
               <div className="pane-header-box">
                 <div className="pane-title-group">

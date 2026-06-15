@@ -1752,3 +1752,509 @@
         width: auto;
     }
 }
+
+/* Rewards Tab Styles */
+.rewards-tab-content {
+    animation: fadeIn 0.4s ease;
+    width: 100%;
+}
+
+.rewards-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.rewards-title-group h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.5px;
+}
+
+.rewards-title-group p {
+    font-size: 0.92rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.rewards-how-it-works-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid rgba(193, 6, 84, 0.3);
+    color: var(--brand-accent, #c10654);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.rewards-how-it-works-btn:hover {
+    background: rgba(193, 6, 84, 0.03);
+    border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Summary Grid */
+.rewards-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.reward-summary-card {
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 160px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Colors and Themes */
+.reward-summary-card.pink-theme {
+    background: linear-gradient(135deg, rgba(193, 6, 84, 0.03) 0%, rgba(236, 72, 153, 0.01) 100%);
+    border: 1px solid rgba(193, 6, 84, 0.08);
+}
+.reward-summary-card.purple-theme {
+    background: linear-gradient(135deg, rgba(95, 37, 159, 0.03) 0%, rgba(139, 92, 246, 0.01) 100%);
+    border: 1px solid rgba(95, 37, 159, 0.08);
+}
+.reward-summary-card.green-theme {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(52, 211, 153, 0.01) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.08);
+}
+.reward-summary-card.orange-theme {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.03) 0%, rgba(251, 191, 36, 0.01) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.08);
+}
+
+.reward-card-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.reward-card-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pink-theme .reward-card-icon-circle {
+    background: rgba(193, 6, 84, 0.08);
+}
+.purple-theme .reward-card-icon-circle {
+    background: rgba(95, 37, 159, 0.08);
+}
+.green-theme .reward-card-icon-circle {
+    background: rgba(16, 185, 129, 0.08);
+}
+.orange-theme .reward-card-icon-circle {
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.reward-icon-pink { color: var(--brand-accent, #c10654); }
+.reward-icon-purple { color: #5f259f; }
+.reward-icon-green { color: #10b981; }
+.reward-icon-orange { color: #f59e0b; }
+
+.reward-card-label-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.reward-card-label {
+    font-size: 0.82rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.reward-card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0.1rem 0;
+    line-height: 1.2;
+}
+
+.pink-theme .reward-card-value { color: var(--brand-accent, #c10654); }
+.purple-theme .reward-card-value { color: #5f259f; }
+.green-theme .reward-card-value { color: #10b981; }
+.orange-theme .reward-card-value { color: #f59e0b; }
+
+.reward-card-subtext {
+    font-size: 0.78rem;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+/* Action Buttons / Links in Cards */
+.reward-card-action-btn-pink {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid rgba(193, 6, 84, 0.3);
+    color: var(--brand-accent, #c10654);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.reward-card-action-btn-pink:hover {
+    background: rgba(193, 6, 84, 0.03);
+    border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.reward-card-link-purple,
+.reward-card-link-green,
+.reward-card-link-orange {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    transition: opacity 0.2s ease;
+}
+
+.reward-card-link-purple { color: #5f259f; }
+.reward-card-link-green { color: #10b981; }
+.reward-card-link-orange { color: #f59e0b; }
+
+.reward-card-link-purple:hover,
+.reward-card-link-green:hover,
+.reward-card-link-orange:hover {
+    opacity: 0.8;
+}
+
+/* Redeem Your Points Section */
+.vouchers-section-wrapper {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+}
+
+.vouchers-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px dashed #e5e7eb;
+    padding-bottom: 0.75rem;
+}
+
+.vouchers-section-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.view-all-rewards-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-accent, #c10654);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.view-all-rewards-link:hover {
+    opacity: 0.8;
+}
+
+.vouchers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.25rem;
+}
+
+.voucher-card {
+    background: rgba(249, 250, 251, 0.5);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s ease;
+}
+
+.voucher-card:hover {
+    border-color: rgba(193, 6, 84, 0.2);
+}
+
+.voucher-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.voucher-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.voucher-subtitle {
+    font-size: 0.78rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.voucher-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.voucher-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 0.75rem;
+}
+
+.voucher-points-cost {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-accent, #c10654);
+}
+
+.voucher-redeem-btn {
+    background: #ffffff;
+    border: 1px solid rgba(193, 6, 84, 0.3);
+    color: var(--brand-accent, #c10654);
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.voucher-redeem-btn:hover {
+    background: rgba(193, 6, 84, 0.03);
+    border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Bottom Split Layout */
+.rewards-bottom-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.recent-activity-panel, .earn-more-panel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+}
+
+.recent-activity-panel .panel-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.recent-activity-panel h3, .earn-more-panel h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.view-all-activity-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-accent, #c10654);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.view-all-activity-link:hover {
+    opacity: 0.8;
+}
+
+.activity-table-wrapper {
+    overflow-x: auto;
+}
+
+.activity-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    text-align: left;
+}
+
+.activity-table th {
+    font-weight: 600;
+    color: #4b5563;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.activity-table td {
+    padding: 0.85rem 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    color: #4b5563;
+}
+
+.activity-table tr:last-child td {
+    border-bottom: none;
+}
+
+.points-credited {
+    font-weight: 600;
+    color: #10b981;
+}
+
+.points-debited {
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.status-credited {
+    background: rgba(16, 185, 129, 0.08);
+    color: #10b981;
+}
+
+.status-debited {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+/* Earn More Panel */
+.earn-more-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.earn-more-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    margin: 1.25rem 0;
+}
+
+.earn-more-list-item {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+}
+
+.earn-more-icon-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.earn-more-icon-circle.pink-bg { background: rgba(193, 6, 84, 0.06); }
+.earn-more-icon-circle.purple-bg-light { background: rgba(95, 37, 159, 0.06); }
+.earn-more-icon-circle.green-bg-light { background: rgba(16, 185, 129, 0.06); }
+
+.earn-more-details h4 {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.15rem 0;
+}
+
+.earn-more-details p {
+    font-size: 0.76rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.explore-offers-btn {
+    width: 100%;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid rgba(193, 6, 84, 0.3);
+    color: var(--brand-accent, #c10654);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.explore-offers-btn:hover {
+    background: rgba(193, 6, 84, 0.03);
+    border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Footer Alert Bar */
+.rewards-footer-alert-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(193, 6, 84, 0.03);
+    border: 1px solid rgba(193, 6, 84, 0.08);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+
+.alert-bar-info-icon {
+    color: var(--brand-accent, #c10654);
+    flex-shrink: 0;
+}
+
+/* Mobile responsive scaling */
+@media (max-width: 768px) {
+    .rewards-bottom-layout {
+        grid-template-columns: 1fr;
+    }
+}
