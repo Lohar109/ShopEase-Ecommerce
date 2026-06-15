@@ -1629,6 +1629,8 @@
 .order-btn-outline-pink:hover {
     background: rgba(193, 6, 84, 0.03);
     border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .order-btn-outline-gray {
@@ -1650,6 +1652,8 @@
     background: #f9fafb;
     border-color: #9ca3af;
     color: #111827;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Empty State */
