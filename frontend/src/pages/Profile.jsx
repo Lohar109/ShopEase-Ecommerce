@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
-  User, Package, Heart, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
+  User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw
@@ -11,7 +11,6 @@ import "./Profile.css";
 const SIDEBAR_ITEMS = [
   { id: 'profile', label: 'My Profile', icon: User, path: '/profile' },
   { id: 'orders', label: 'Orders', icon: Package, path: '/profile?tab=orders' },
-  { id: 'wishlist', label: 'Wishlist', icon: Heart, path: '/wishlist' },
   { id: 'seller', label: 'Become a Seller', icon: Store, path: '/profile?tab=seller' },
   { id: 'rewards', label: 'Rewards', icon: Gift, path: '/profile?tab=rewards' },
   { id: 'giftcards', label: 'Gift Cards', icon: CreditCard, path: '/profile?tab=giftcards' },
