@@ -773,7 +773,7 @@ const Profile = () => {
                           <UserPlus size={22} />
                         </div>
                         <div className="seller-step-info">
-                          <h4>1. Register</h4>
+                          <h4>Register</h4>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -782,7 +782,7 @@ const Profile = () => {
                           <FileText size={22} />
                         </div>
                         <div className="seller-step-info">
-                          <h4>2. Submit Details</h4>
+                          <h4>Submit Details</h4>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -791,7 +791,7 @@ const Profile = () => {
                           <CheckCircle size={22} />
                         </div>
                         <div className="seller-step-info">
-                          <h4>3. Verification</h4>
+                          <h4>Verification</h4>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -800,7 +800,7 @@ const Profile = () => {
                           <TrendingUp size={22} />
                         </div>
                         <div className="seller-step-info">
-                          <h4>4. Start Selling</h4>
+                          <h4>Start Selling</h4>
                         </div>
                       </div>
                     </div>
