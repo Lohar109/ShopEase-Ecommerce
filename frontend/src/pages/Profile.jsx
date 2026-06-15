@@ -4,7 +4,7 @@ import {
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
-  Search, Truck, XCircle, RotateCcw, Star, Award, Info
+  Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
@@ -241,9 +241,15 @@ const Profile = () => {
     pincode: "",
     country: "India",
     bankAccount: "",
+    confirmBankAccount: "",
     ifsc: "",
+    bankName: "HDFC Bank",
+    branchName: "Andheri West, Mumbai",
     holderName: ""
   });
+
+  const [ifscVerified, setIfscVerified] = useState(false);
+  const [uploadedChequeName, setUploadedChequeName] = useState("");
 
   const handleSellerInputChange = (e) => {
     const { name, value } = e.target;
@@ -255,6 +261,22 @@ const Profile = () => {
 
   const handleSellerSubmit = (e) => {
     e.preventDefault();
+
+    if (sellerFormData.bankAccount !== sellerFormData.confirmBankAccount) {
+      toast.error("Account Numbers do not match! Please check and confirm.");
+      return;
+    }
+
+    if (!ifscVerified) {
+      toast.error("Please verify your IFSC code first.");
+      return;
+    }
+
+    if (!uploadedChequeName) {
+      toast.error("Please upload a copy of your cancelled cheque or passbook.");
+      return;
+    }
+
     const addressString = `${sellerFormData.addressLine1}${sellerFormData.addressLine2 ? ', ' + sellerFormData.addressLine2 : ''}, ${sellerFormData.city}, ${sellerFormData.state} - ${sellerFormData.pincode}, ${sellerFormData.country}`;
     const submission = {
       ...sellerFormData,
@@ -266,11 +288,15 @@ const Profile = () => {
     setSellerApplication(submission);
     setShowSellerForm(false);
     setFormStep(1);
+    setIfscVerified(false);
+    setUploadedChequeName("");
   };
 
   const handleResetSellerApplication = () => {
     localStorage.removeItem("shopease_seller_data");
     setSellerApplication(null);
+    setIfscVerified(false);
+    setUploadedChequeName("");
     setSellerFormData({
       storeName: "",
       category: "Electronics",
@@ -286,7 +312,10 @@ const Profile = () => {
       pincode: "",
       country: "India",
       bankAccount: "",
+      confirmBankAccount: "",
       ifsc: "",
+      bankName: "HDFC Bank",
+      branchName: "Andheri West, Mumbai",
       holderName: ""
     });
   };
@@ -743,7 +772,7 @@ const Profile = () => {
                       <div className="seller-step-icon-wrapper">
                         {formStep === 1 && <Store size={22} className="seller-step-icon" />}
                         {formStep === 2 && <FileText size={22} className="seller-step-icon" />}
-                        {formStep === 3 && <CreditCard size={22} className="seller-step-icon" />}
+                        {formStep === 3 && <Landmark size={22} className="seller-step-icon" />}
                       </div>
                       <div className="seller-step-header-text">
                         {formStep === 1 && (
@@ -984,52 +1013,164 @@ const Profile = () => {
 
                       {formStep === 3 && (
                         <div className="form-step-content">
-                          <div className="form-input-field">
-                            <label>Account Holder Name *</label>
-                            <div className="input-with-icon-wrapper">
+                          {/* Inside Card Security Notice */}
+                          <div className="bank-security-notice">
+                            <Shield size={16} className="security-notice-shield-icon" />
+                            <span>Your bank details are 100% secure and encrypted. We do not share your bank information.</span>
+                          </div>
+
+                          <h4 className="form-section-title">Bank Account Details</h4>
+
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Account Holder Name *</label>
                               <input 
                                 type="text" 
                                 name="holderName" 
                                 value={sellerFormData.holderName} 
                                 onChange={handleSellerInputChange} 
-                                placeholder="Account owner or entity name"
+                                placeholder="Pooja Gilada"
                                 required 
                               />
-                              <User size={18} className="input-right-icon" />
+                              <span className="field-helper-text">Name should be as per bank records</span>
                             </div>
-                          </div>
 
-                          <div className="form-input-field">
-                            <label>Bank Account Number *</label>
-                            <div className="input-with-icon-wrapper">
+                            <div className="form-input-field">
+                              <label>Account Number *</label>
                               <input 
-                                type="password" 
+                                type="text" 
                                 name="bankAccount" 
                                 value={sellerFormData.bankAccount} 
                                 onChange={handleSellerInputChange} 
-                                placeholder="Enter bank account number"
+                                placeholder="50200012345678"
                                 pattern="^[0-9]{9,18}$"
                                 title="Please enter a valid 9 to 18-digit bank account number."
                                 required 
                               />
-                              <Lock size={18} className="input-right-icon" />
+                              <span className="field-helper-text">Enter your active bank account number</span>
                             </div>
                           </div>
 
-                          <div className="form-input-field">
-                            <label>IFSC Code *</label>
-                            <div className="input-with-icon-wrapper">
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Confirm Account Number *</label>
                               <input 
                                 type="text" 
-                                name="ifsc" 
-                                value={sellerFormData.ifsc} 
+                                name="confirmBankAccount" 
+                                value={sellerFormData.confirmBankAccount} 
                                 onChange={handleSellerInputChange} 
-                                placeholder="e.g. SBIN0001234"
-                                pattern="^[A-Za-z]{4}[0-9A-Za-z]{7}$"
-                                title="Please enter a valid 11-character IFSC code."
+                                placeholder="50200012345678"
                                 required 
                               />
-                              <CreditCard size={18} className="input-right-icon" />
+                              <span className="field-helper-text">Re-enter account number to confirm</span>
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>IFSC Code *</label>
+                              <div className="ifsc-input-verify-wrapper">
+                                <input 
+                                  type="text" 
+                                  name="ifsc" 
+                                  value={sellerFormData.ifsc} 
+                                  onChange={handleSellerInputChange} 
+                                  placeholder="HDFCO0001234"
+                                  pattern="^[A-Za-z]{4}[0-9A-Za-z]{7}$"
+                                  title="Please enter a valid 11-character IFSC code."
+                                  required 
+                                />
+                                <button 
+                                  type="button" 
+                                  className="verify-ifsc-btn"
+                                  onClick={() => {
+                                    if (sellerFormData.ifsc.length === 11) {
+                                      setIfscVerified(true);
+                                      toast.success("IFSC Code verified successfully!");
+                                    } else {
+                                      toast.error("Please enter a valid 11-character IFSC code.");
+                                    }
+                                  }}
+                                >
+                                  Verify IFSC
+                                </button>
+                              </div>
+                              <span className="field-helper-text">Enter 11 character IFSC code</span>
+                              
+                              {ifscVerified && (
+                                <div className="ifsc-verified-badge">
+                                  <Check size={12} className="badge-check-icon" />
+                                  <span>{sellerFormData.bankName} Limited</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Bank Name *</label>
+                              <select 
+                                name="bankName" 
+                                value={sellerFormData.bankName} 
+                                onChange={handleSellerInputChange}
+                                required
+                              >
+                                <option value="HDFC Bank">HDFC Bank</option>
+                                <option value="SBI">SBI</option>
+                                <option value="ICICI Bank">ICICI Bank</option>
+                                <option value="Axis Bank">Axis Bank</option>
+                              </select>
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>Branch Name *</label>
+                              <input 
+                                type="text" 
+                                name="branchName" 
+                                value={sellerFormData.branchName} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Andheri West, Mumbai"
+                                required 
+                              />
+                              <span className="field-helper-text">Enter your bank branch name</span>
+                            </div>
+                          </div>
+
+                          <h4 className="form-section-title">Upload Cancelled Cheque / Passbook</h4>
+                          <p className="upload-description">Upload a clear image of your cancelled cheque or passbook first page.</p>
+
+                          <div className="upload-grid-row">
+                            <div className="upload-dropzone-col">
+                              <label className="dropzone-label">
+                                <input 
+                                  type="file" 
+                                  accept="image/*,.pdf" 
+                                  className="dropzone-file-input" 
+                                  onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                      setUploadedChequeName(e.target.files[0].name);
+                                      toast.success(`Selected file: ${e.target.files[0].name}`);
+                                    }
+                                  }}
+                                />
+                                <div className="dropzone-inner-content">
+                                  <UploadCloud size={32} className="upload-cloud-icon" />
+                                  <span className="upload-action-text">
+                                    {uploadedChequeName ? `File: ${uploadedChequeName}` : "Click to upload or drag and drop"}
+                                  </span>
+                                  <span className="upload-sub-text">JPG, PNG or PDF (Max. 5MB)</span>
+                                </div>
+                              </label>
+                            </div>
+
+                            <div className="upload-example-col">
+                              <img 
+                                src="/cancelled_cheque_example.png" 
+                                alt="Cancelled Cheque Example" 
+                                className="cheque-example-img" 
+                              />
+                              <div className="example-details">
+                                <span className="example-label">Example</span>
+                                <p className="example-desc">Make sure account number and IFSC are clearly visible.</p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1055,7 +1196,7 @@ const Profile = () => {
                         )}
 
                         <button type="submit" className="seller-btn-primary">
-                          <span>{formStep === 3 ? "Submit Application" : "Next Step"}</span>
+                          <span>{formStep === 3 ? "Submit for Verification" : "Next Step"}</span>
                           <ArrowRight size={16} className="btn-right-icon" />
                         </button>
                       </div>
