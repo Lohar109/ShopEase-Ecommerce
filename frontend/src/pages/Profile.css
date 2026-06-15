@@ -206,6 +206,7 @@
     padding: 2rem;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
     margin-bottom: 1.5rem;
+    width: 100%;
 }
 
 .section-header-row {
@@ -390,6 +391,7 @@
     padding: 0.65rem 0.85rem;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
 }
 
 .form-input-field input:focus, .form-input-field select:focus {
