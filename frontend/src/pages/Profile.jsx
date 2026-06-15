@@ -3,7 +3,7 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Heart, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
-  Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, ArrowRight, Clock
+  Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock
 } from "lucide-react";
 import "./Profile.css";
 
@@ -757,7 +757,6 @@ const Profile = () => {
 
                       <button onClick={() => setShowSellerForm(true)} className="seller-cta-btn">
                         <span>Start Selling Now</span>
-                        <ArrowRight size={16} />
                       </button>
                     </div>
                     <div className="seller-hero-img-wrap">

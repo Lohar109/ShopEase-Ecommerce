@@ -708,7 +708,7 @@
     background: var(--brand-accent, #c10654);
     color: #ffffff;
     border: none;
-    padding: 0.8rem 1.8rem;
+    padding: 0.55rem 1.8rem;
     font-size: 0.94rem;
     font-weight: 600;
     border-radius: 12px;
@@ -720,8 +720,8 @@
 
 .seller-cta-btn:hover {
     background: #a00445;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(193, 6, 84, 0.35);
+    transform: none;
+    box-shadow: 0 4px 15px rgba(193, 6, 84, 0.25);
 }
 
 .seller-hero-img-wrap {
