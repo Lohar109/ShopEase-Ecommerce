@@ -1338,11 +1338,18 @@
 
 .orders-tab-btn:hover {
     color: #1f2937;
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .orders-tab-btn.active {
     color: var(--brand-accent, #c10654);
     font-weight: 600;
+}
+
+.orders-tab-btn.active:hover {
+    color: var(--brand-accent, #c10654);
 }
 
 .orders-tab-btn.active::after {
