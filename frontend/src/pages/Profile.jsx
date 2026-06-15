@@ -181,7 +181,6 @@ const Profile = () => {
           <ArrowLeft size={16} />
           <span>Back to Shop</span>
         </Link>
-        <div className="profile-badge-tag">User Account</div>
       </div>
 
       <div className="profile-layout-grid">
