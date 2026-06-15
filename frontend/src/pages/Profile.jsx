@@ -1028,12 +1028,7 @@ const Profile = () => {
 
           {currentTab === "orders" && (
             <div className="orders-tab-content">
-              {/* Header Box */}
               <div className="orders-header-row">
-                <div className="orders-title-group">
-                  <h1>My Orders</h1>
-                  <p>Track, view and manage all your orders</p>
-                </div>
                 <div className="orders-actions-wrap">
                   <div className="orders-search-wrapper">
                     <Search size={16} className="orders-search-icon" />
