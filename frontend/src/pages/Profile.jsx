@@ -235,14 +235,6 @@ const Profile = () => {
         <main className="profile-content-pane">
           {currentTab === "profile" && (
             <div className="profile-tab-content">
-              {/* Tab Header */}
-              <div className="pane-header-box">
-                <div className="pane-title-group">
-                  <h1>My Profile</h1>
-                  <p>Manage your personal information and account details</p>
-                </div>
-              </div>
-
               {/* Personal Information Section */}
               <section className="profile-card-section">
                 <div className="section-header-row">
