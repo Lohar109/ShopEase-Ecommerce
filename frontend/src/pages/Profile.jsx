@@ -369,7 +369,7 @@ const Profile = () => {
                   <h2 className="section-title">Address</h2>
                   {!isEditingAddress ? (
                     <button onClick={handleEditAddressToggle} className="profile-action-btn">
-                      <MapPin size={15} />
+                      <Edit3 size={15} />
                       <span>Manage Addresses</span>
                     </button>
                   ) : (

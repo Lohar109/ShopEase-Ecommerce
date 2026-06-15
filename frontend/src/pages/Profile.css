@@ -256,11 +256,11 @@
 }
 
 .profile-action-btn:hover {
-    background: var(--brand-accent, #c10654);
-    color: #ffffff;
-    border-color: var(--brand-accent, #c10654);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(193, 6, 84, 0.15);
+    background: #ffffff !important;
+    color: var(--brand-accent, #c10654) !important;
+    border-color: rgba(193, 6, 84, 0.3) !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(193, 6, 84, 0.05) !important;
 }
 
 .edit-actions-group {
