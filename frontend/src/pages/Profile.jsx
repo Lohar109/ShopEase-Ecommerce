@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Heart, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
-  Edit3, MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
+  MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, ArrowRight, Clock
 } from "lucide-react";
 import "./Profile.css";
@@ -241,7 +241,6 @@ const Profile = () => {
                   <h2 className="section-title">Personal Information</h2>
                   {!isEditing ? (
                     <button onClick={handleEditProfileToggle} className="profile-action-btn">
-                      <Edit3 size={15} />
                       <span>Edit Profile</span>
                     </button>
                   ) : (
@@ -359,8 +358,7 @@ const Profile = () => {
                   <h2 className="section-title">Address</h2>
                   {!isEditingAddress ? (
                     <button onClick={handleEditAddressToggle} className="profile-action-btn">
-                      <Edit3 size={15} />
-                      <span>Manage Addresses</span>
+                      <span>Edit Addresses</span>
                     </button>
                   ) : (
                     <div className="edit-actions-group">
