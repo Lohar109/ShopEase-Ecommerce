@@ -729,19 +729,6 @@ const Profile = () => {
               ) : (
                 /* DEFAULT MERCHANT LANDING VIEW */
                 <div className="seller-landing-pane">
-                  <div className="pane-header-box">
-                    <div className="pane-title-group">
-                      <h1>Become a Seller</h1>
-                      <p>Start selling on ShopEase and grow your business with millions of customers</p>
-                    </div>
-                    <button 
-                      onClick={() => alert("The merchant portal is currently undergoing system upgrades. Please try again later.")} 
-                      className="seller-login-btn"
-                    >
-                      <Lock size={14} />
-                      <span>Seller Login</span>
-                    </button>
-                  </div>
 
                   {/* Hero Segment */}
                   <div className="seller-hero-row">
