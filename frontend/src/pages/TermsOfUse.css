@@ -82,7 +82,7 @@
 .terms-layout-grid {
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 3rem;
+    gap: 1.25rem;
     align-items: start;
 }
 

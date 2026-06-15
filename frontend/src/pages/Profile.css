@@ -46,7 +46,7 @@
 .profile-layout-grid {
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 2.5rem;
+    gap: 1.25rem;
     align-items: start;
 }
 
