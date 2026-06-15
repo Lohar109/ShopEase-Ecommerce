@@ -774,7 +774,6 @@ const Profile = () => {
                         </div>
                         <div className="seller-step-info">
                           <h4>1. Register</h4>
-                          <p>Create your seller profile under 2 minutes</p>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -784,7 +783,6 @@ const Profile = () => {
                         </div>
                         <div className="seller-step-info">
                           <h4>2. Submit Details</h4>
-                          <p>Provide tax information & bank details</p>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -794,7 +792,6 @@ const Profile = () => {
                         </div>
                         <div className="seller-step-info">
                           <h4>3. Verification</h4>
-                          <p>Our verification team approves details</p>
                         </div>
                       </div>
                       <div className="workflow-arrow" />
@@ -804,7 +801,6 @@ const Profile = () => {
                         </div>
                         <div className="seller-step-info">
                           <h4>4. Start Selling</h4>
-                          <p>List your catalogs and receive orders</p>
                         </div>
                       </div>
                     </div>
