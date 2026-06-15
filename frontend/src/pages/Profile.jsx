@@ -230,9 +230,16 @@ const Profile = () => {
     storeName: "",
     category: "Electronics",
     description: "",
-    gstin: "",
+    businessType: "Individual",
     pan: "",
-    businessAddress: "",
+    gstin: "",
+    registrationNumber: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "Maharashtra",
+    pincode: "",
+    country: "India",
     bankAccount: "",
     ifsc: "",
     holderName: ""
@@ -248,8 +255,10 @@ const Profile = () => {
 
   const handleSellerSubmit = (e) => {
     e.preventDefault();
+    const addressString = `${sellerFormData.addressLine1}${sellerFormData.addressLine2 ? ', ' + sellerFormData.addressLine2 : ''}, ${sellerFormData.city}, ${sellerFormData.state} - ${sellerFormData.pincode}, ${sellerFormData.country}`;
     const submission = {
       ...sellerFormData,
+      businessAddress: addressString,
       status: "UNDER_REVIEW",
       submittedAt: new Date().toISOString()
     };
@@ -266,9 +275,16 @@ const Profile = () => {
       storeName: "",
       category: "Electronics",
       description: "",
-      gstin: "",
+      businessType: "Individual",
       pan: "",
-      businessAddress: "",
+      gstin: "",
+      registrationNumber: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "Maharashtra",
+      pincode: "",
+      country: "India",
       bankAccount: "",
       ifsc: "",
       holderName: ""
@@ -688,24 +704,30 @@ const Profile = () => {
                         />
                       </div>
                       
-                      <div className={`progress-step ${formStep >= 1 ? "active" : ""}`}>
-                        <div className="step-number">1</div>
+                      <div className={`progress-step ${formStep >= 1 ? "active" : ""} ${formStep > 1 ? "completed" : ""}`}>
+                        <div className="step-number">
+                          {formStep > 1 ? <Check size={16} strokeWidth={3} /> : 1}
+                        </div>
                         <div className="step-labels">
                           <span className="step-title">Store Setup</span>
                           <span className="step-desc">Tell us about your store</span>
                         </div>
                       </div>
 
-                      <div className={`progress-step ${formStep >= 2 ? "active" : ""}`}>
-                        <div className="step-number">2</div>
+                      <div className={`progress-step ${formStep >= 2 ? "active" : ""} ${formStep > 2 ? "completed" : ""}`}>
+                        <div className="step-number">
+                          {formStep > 2 ? <Check size={16} strokeWidth={3} /> : 2}
+                        </div>
                         <div className="step-labels">
                           <span className="step-title">Tax & Address</span>
                           <span className="step-desc">Add your business details</span>
                         </div>
                       </div>
 
-                      <div className={`progress-step ${formStep >= 3 ? "active" : ""}`}>
-                        <div className="step-number">3</div>
+                      <div className={`progress-step ${formStep >= 3 ? "active" : ""} ${formStep > 3 ? "completed" : ""}`}>
+                        <div className="step-number">
+                          {formStep > 3 ? <Check size={16} strokeWidth={3} /> : 3}
+                        </div>
                         <div className="step-labels">
                           <span className="step-title">Bank Verification</span>
                           <span className="step-desc">Verify your bank account</span>
@@ -732,8 +754,8 @@ const Profile = () => {
                         )}
                         {formStep === 2 && (
                           <>
-                            <h3>Tax & Compliance</h3>
-                            <p>Provide your business registration tax details and physical address.</p>
+                            <h3>Tax & Business Address</h3>
+                            <p>Please provide your tax information and business address.</p>
                           </>
                         )}
                         {formStep === 3 && (
@@ -808,50 +830,154 @@ const Profile = () => {
 
                       {formStep === 2 && (
                         <div className="form-step-content">
-                          <div className="form-input-field">
-                            <label>GSTIN (15 Characters) *</label>
-                            <div className="input-with-icon-wrapper">
-                              <input 
-                                type="text" 
-                                name="gstin" 
-                                value={sellerFormData.gstin} 
-                                onChange={handleSellerInputChange} 
-                                placeholder="e.g. 22AAAAA0000A1Z5"
-                                pattern="^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[0-9A-Za-z]{3}$"
-                                title="Please enter a valid 15-character GSTIN format."
-                                required 
-                              />
-                              <FileText size={18} className="input-right-icon" />
+                          <h4 className="form-section-title">Tax Information</h4>
+                          
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Business Type *</label>
+                              <select 
+                                name="businessType" 
+                                value={sellerFormData.businessType} 
+                                onChange={handleSellerInputChange}
+                                required
+                              >
+                                <option value="Individual">Individual</option>
+                                <option value="Sole Proprietorship">Sole Proprietorship</option>
+                                <option value="Partnership">Partnership</option>
+                                <option value="Private Limited Company">Private Limited Company</option>
+                                <option value="Public Limited Company">Public Limited Company</option>
+                              </select>
                             </div>
-                          </div>
 
-                          <div className="form-input-field">
-                            <label>Business PAN (10 Characters) *</label>
-                            <div className="input-with-icon-wrapper">
+                            <div className="form-input-field">
+                              <label>PAN Number *</label>
                               <input 
                                 type="text" 
                                 name="pan" 
                                 value={sellerFormData.pan} 
                                 onChange={handleSellerInputChange} 
-                                placeholder="e.g. ABCDE1234F"
+                                placeholder="ABCDE1234F"
                                 pattern="^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$"
                                 title="Please enter a valid 10-character PAN format."
                                 required 
                               />
-                              <Shield size={18} className="input-right-icon" />
+                              <span className="field-helper-text">Enter valid PAN number</span>
                             </div>
                           </div>
 
-                          <div className="form-input-field">
-                            <label>Business Address *</label>
-                            <textarea 
-                              name="businessAddress" 
-                              value={sellerFormData.businessAddress} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="Complete registered business address..."
-                              rows={3}
-                              required
-                            />
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>GST Number (Optional)</label>
+                              <input 
+                                type="text" 
+                                name="gstin" 
+                                value={sellerFormData.gstin} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. 27ABCDE1234F1Z5"
+                                pattern="^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[0-9A-Za-z]{3}$"
+                                title="Please enter a valid 15-character GSTIN format."
+                              />
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>Business Registration Number (Optional)</label>
+                              <input 
+                                type="text" 
+                                name="registrationNumber" 
+                                value={sellerFormData.registrationNumber} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. UDYAM-MH-01-0001234"
+                              />
+                            </div>
+                          </div>
+
+                          <h4 className="form-section-title">Business Address</h4>
+                          
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Address Line 1 *</label>
+                              <input 
+                                type="text" 
+                                name="addressLine1" 
+                                value={sellerFormData.addressLine1} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="123, MG Road, Opp. City Mall"
+                                required 
+                              />
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>Address Line 2 (Optional)</label>
+                              <input 
+                                type="text" 
+                                name="addressLine2" 
+                                value={sellerFormData.addressLine2} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Unit No. 5, 2nd Floor"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-grid-3-col">
+                            <div className="form-input-field">
+                              <label>City *</label>
+                              <input 
+                                type="text" 
+                                name="city" 
+                                value={sellerFormData.city} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Mumbai"
+                                required 
+                              />
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>State *</label>
+                              <select 
+                                name="state" 
+                                value={sellerFormData.state} 
+                                onChange={handleSellerInputChange}
+                                required
+                              >
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="West Bengal">West Bengal</option>
+                              </select>
+                            </div>
+
+                            <div className="form-input-field">
+                              <label>Pincode *</label>
+                              <input 
+                                type="text" 
+                                name="pincode" 
+                                value={sellerFormData.pincode} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="400001"
+                                pattern="^[1-9][0-9]{5}$"
+                                title="Please enter a valid 6-digit pin code."
+                                required 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-grid-2-col">
+                            <div className="form-input-field">
+                              <label>Country *</label>
+                              <select 
+                                name="country" 
+                                value={sellerFormData.country} 
+                                onChange={handleSellerInputChange}
+                                required
+                              >
+                                <option value="India">India</option>
+                              </select>
+                            </div>
+                            <div />
                           </div>
                         </div>
                       )}
@@ -922,9 +1048,9 @@ const Profile = () => {
                           <button 
                             type="button" 
                             onClick={() => setFormStep(prev => prev - 1)} 
-                            className="seller-btn-secondary"
+                            className="seller-btn-secondary back-btn-with-arrow"
                           >
-                            Back
+                            <span>&larr; Back</span>
                           </button>
                         )}
 
@@ -937,8 +1063,12 @@ const Profile = () => {
                   </div>
 
                   {/* Security notice footer */}
-                  <div className="seller-form-security-footer">
-                    <Shield size={16} className="security-footer-icon" />
+                  <div className={`seller-form-security-footer step-${formStep}`}>
+                    {formStep === 2 ? (
+                      <Lock size={16} className="security-footer-icon" />
+                    ) : (
+                      <Shield size={16} className="security-footer-icon" />
+                    )}
                     <span>Your information is secure and will only be used to set up your seller account.</span>
                   </div>
                 </div>

@@ -1236,9 +1236,67 @@
     color: #4b5563;
 }
 
+.seller-form-security-footer.step-2 {
+    background: rgba(244, 63, 94, 0.03); /* light rose/red */
+    border: 1px solid rgba(244, 63, 94, 0.08);
+}
+
+.seller-form-security-footer.step-2 .security-footer-icon {
+    color: #f43f5e; /* rose/red */
+}
+
 .security-footer-icon {
     color: #3b82f6;
     flex-shrink: 0;
+}
+
+/* Step 2 Form Grids & Subheadings */
+.form-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 1.75rem 0 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 0.5rem;
+    width: 100%;
+}
+
+.form-grid-2-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-grid-3-col {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.field-helper-text {
+    font-size: 0.74rem;
+    color: #9ca3af;
+    margin-top: 0.2rem;
+    margin-left: 0.25rem;
+    display: block;
+}
+
+.back-btn-with-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.back-btn-with-arrow span {
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.back-btn-with-arrow:hover span {
+    transform: translateX(-3px);
 }
 
 /* Status Review Screen */
@@ -1420,6 +1478,11 @@
     .status-details-grid {
         grid-template-columns: 1fr;
         gap: 1.25rem;
+    }
+
+    .form-grid-2-col, .form-grid-3-col {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }
 
