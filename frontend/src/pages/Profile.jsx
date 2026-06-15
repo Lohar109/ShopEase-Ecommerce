@@ -778,10 +778,10 @@ const Profile = () => {
                       </div>
                       <div className="workflow-arrow">
                         <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
-                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line" />
                         </svg>
-                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
-                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        <svg className="mobile-arrow" width="2" height="36" viewBox="0 0 2 36" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="36" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line-vertical" />
                         </svg>
                       </div>
                       <div className="seller-step-node">
@@ -794,10 +794,10 @@ const Profile = () => {
                       </div>
                       <div className="workflow-arrow">
                         <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
-                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line" />
                         </svg>
-                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
-                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        <svg className="mobile-arrow" width="2" height="36" viewBox="0 0 2 36" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="36" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line-vertical" />
                         </svg>
                       </div>
                       <div className="seller-step-node">
@@ -810,10 +810,10 @@ const Profile = () => {
                       </div>
                       <div className="workflow-arrow">
                         <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
-                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line" />
                         </svg>
-                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
-                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        <svg className="mobile-arrow" width="2" height="36" viewBox="0 0 2 36" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="36" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" className="moving-stepper-line-vertical" />
                         </svg>
                       </div>
                       <div className="seller-step-node">
