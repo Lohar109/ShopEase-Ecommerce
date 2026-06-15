@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
-  MapPin, Home, ChevronRight, ArrowLeft, Check, X, Shield, Lock,
+  MapPin, Home, ChevronRight, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw, Star, Award, Info
 } from "lucide-react";
@@ -678,23 +678,70 @@ const Profile = () => {
               ) : showSellerForm ? (
                 /* STEP-BY-STEP REGISTRATION FORM */
                 <div className="seller-form-box">
-
-                  <div className="seller-form-card">
-                    {/* Progress indicator */}
+                  {/* Stepper Card */}
+                  <div className="seller-stepper-card">
                     <div className="seller-form-progress">
+                      <div className="progress-lines-bg">
+                        <div 
+                          className="progress-line-fill" 
+                          style={{ width: `${(formStep - 1) * 50}%` }}
+                        />
+                      </div>
+                      
                       <div className={`progress-step ${formStep >= 1 ? "active" : ""}`}>
                         <div className="step-number">1</div>
-                        <span>Store Setup</span>
+                        <div className="step-labels">
+                          <span className="step-title">Store Setup</span>
+                          <span className="step-desc">Tell us about your store</span>
+                        </div>
                       </div>
-                      <div className="progress-line" />
+
                       <div className={`progress-step ${formStep >= 2 ? "active" : ""}`}>
                         <div className="step-number">2</div>
-                        <span>Tax & Address</span>
+                        <div className="step-labels">
+                          <span className="step-title">Tax & Address</span>
+                          <span className="step-desc">Add your business details</span>
+                        </div>
                       </div>
-                      <div className="progress-line" />
+
                       <div className={`progress-step ${formStep >= 3 ? "active" : ""}`}>
                         <div className="step-number">3</div>
-                        <span>Bank Verification</span>
+                        <div className="step-labels">
+                          <span className="step-title">Bank Verification</span>
+                          <span className="step-desc">Verify your bank account</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Form Content Card */}
+                  <div className="seller-form-card">
+                    {/* Header with Icon */}
+                    <div className="seller-step-header">
+                      <div className="seller-step-icon-wrapper">
+                        {formStep === 1 && <Store size={22} className="seller-step-icon" />}
+                        {formStep === 2 && <FileText size={22} className="seller-step-icon" />}
+                        {formStep === 3 && <CreditCard size={22} className="seller-step-icon" />}
+                      </div>
+                      <div className="seller-step-header-text">
+                        {formStep === 1 && (
+                          <>
+                            <h3>Store Information</h3>
+                            <p>Let's start with your store identity and category details.</p>
+                          </>
+                        )}
+                        {formStep === 2 && (
+                          <>
+                            <h3>Tax & Compliance</h3>
+                            <p>Provide your business registration tax details and physical address.</p>
+                          </>
+                        )}
+                        {formStep === 3 && (
+                          <>
+                            <h3>Bank Payout Details</h3>
+                            <p>Enter your bank account credentials to receive customer payouts directly.</p>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -708,19 +755,19 @@ const Profile = () => {
                     }}>
                       {formStep === 1 && (
                         <div className="form-step-content">
-                          <h3>Store Information</h3>
-                          <p className="step-instruction">Let's start with your store identity and category details.</p>
-                          
                           <div className="form-input-field">
                             <label>Store Name *</label>
-                            <input 
-                              type="text" 
-                              name="storeName" 
-                              value={sellerFormData.storeName} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="e.g. Gilada Fashion Hub"
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="text" 
+                                name="storeName" 
+                                value={sellerFormData.storeName} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. Gilada Fashion Hub"
+                                required 
+                              />
+                              <Store size={18} className="input-right-icon" />
+                            </div>
                           </div>
 
                           <div className="form-input-field">
@@ -740,49 +787,59 @@ const Profile = () => {
                           </div>
 
                           <div className="form-input-field">
-                            <label>Store Description</label>
-                            <textarea 
-                              name="description" 
-                              value={sellerFormData.description} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="Briefly describe what products you plan to sell..."
-                              rows={4}
-                            />
+                            <label>Store Description *</label>
+                            <div className="textarea-counter-wrapper">
+                              <textarea 
+                                name="description" 
+                                value={sellerFormData.description} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Briefly describe what products you plan to sell..."
+                                rows={4}
+                                maxLength={500}
+                                required
+                              />
+                              <span className="textarea-character-counter">
+                                {sellerFormData.description ? sellerFormData.description.length : 0} / 500
+                              </span>
+                            </div>
                           </div>
                         </div>
                       )}
 
                       {formStep === 2 && (
                         <div className="form-step-content">
-                          <h3>Tax & Compliance</h3>
-                          <p className="step-instruction">Provide your business registration tax details and physical address.</p>
-                          
                           <div className="form-input-field">
                             <label>GSTIN (15 Characters) *</label>
-                            <input 
-                              type="text" 
-                              name="gstin" 
-                              value={sellerFormData.gstin} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="e.g. 22AAAAA0000A1Z5"
-                              pattern="^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[0-9A-Za-z]{3}$"
-                              title="Please enter a valid 15-character GSTIN format."
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="text" 
+                                name="gstin" 
+                                value={sellerFormData.gstin} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. 22AAAAA0000A1Z5"
+                                pattern="^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[0-9A-Za-z]{3}$"
+                                title="Please enter a valid 15-character GSTIN format."
+                                required 
+                              />
+                              <FileText size={18} className="input-right-icon" />
+                            </div>
                           </div>
 
                           <div className="form-input-field">
                             <label>Business PAN (10 Characters) *</label>
-                            <input 
-                              type="text" 
-                              name="pan" 
-                              value={sellerFormData.pan} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="e.g. ABCDE1234F"
-                              pattern="^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$"
-                              title="Please enter a valid 10-character PAN format."
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="text" 
+                                name="pan" 
+                                value={sellerFormData.pan} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. ABCDE1234F"
+                                pattern="^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$"
+                                title="Please enter a valid 10-character PAN format."
+                                required 
+                              />
+                              <Shield size={18} className="input-right-icon" />
+                            </div>
                           </div>
 
                           <div className="form-input-field">
@@ -801,47 +858,53 @@ const Profile = () => {
 
                       {formStep === 3 && (
                         <div className="form-step-content">
-                          <h3>Bank Payout Details</h3>
-                          <p className="step-instruction">Enter your bank account credentials to receive customer payouts directly.</p>
-                          
                           <div className="form-input-field">
                             <label>Account Holder Name *</label>
-                            <input 
-                              type="text" 
-                              name="holderName" 
-                              value={sellerFormData.holderName} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="Account owner or entity name"
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="text" 
+                                name="holderName" 
+                                value={sellerFormData.holderName} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Account owner or entity name"
+                                required 
+                              />
+                              <User size={18} className="input-right-icon" />
+                            </div>
                           </div>
 
                           <div className="form-input-field">
                             <label>Bank Account Number *</label>
-                            <input 
-                              type="password" 
-                              name="bankAccount" 
-                              value={sellerFormData.bankAccount} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="Enter bank account number"
-                              pattern="^[0-9]{9,18}$"
-                              title="Please enter a valid 9 to 18-digit bank account number."
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="password" 
+                                name="bankAccount" 
+                                value={sellerFormData.bankAccount} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="Enter bank account number"
+                                pattern="^[0-9]{9,18}$"
+                                title="Please enter a valid 9 to 18-digit bank account number."
+                                required 
+                              />
+                              <Lock size={18} className="input-right-icon" />
+                            </div>
                           </div>
 
                           <div className="form-input-field">
                             <label>IFSC Code *</label>
-                            <input 
-                              type="text" 
-                              name="ifsc" 
-                              value={sellerFormData.ifsc} 
-                              onChange={handleSellerInputChange} 
-                              placeholder="e.g. SBIN0001234"
-                              pattern="^[A-Za-z]{4}[0-9A-Za-z]{7}$"
-                              title="Please enter a valid 11-character IFSC code."
-                              required 
-                            />
+                            <div className="input-with-icon-wrapper">
+                              <input 
+                                type="text" 
+                                name="ifsc" 
+                                value={sellerFormData.ifsc} 
+                                onChange={handleSellerInputChange} 
+                                placeholder="e.g. SBIN0001234"
+                                pattern="^[A-Za-z]{4}[0-9A-Za-z]{7}$"
+                                title="Please enter a valid 11-character IFSC code."
+                                required 
+                              />
+                              <CreditCard size={18} className="input-right-icon" />
+                            </div>
                           </div>
                         </div>
                       )}
@@ -866,10 +929,17 @@ const Profile = () => {
                         )}
 
                         <button type="submit" className="seller-btn-primary">
-                          {formStep === 3 ? "Submit Application" : "Next Step"}
+                          <span>{formStep === 3 ? "Submit Application" : "Next Step"}</span>
+                          <ArrowRight size={16} className="btn-right-icon" />
                         </button>
                       </div>
                     </form>
+                  </div>
+
+                  {/* Security notice footer */}
+                  <div className="seller-form-security-footer">
+                    <Shield size={16} className="security-footer-icon" />
+                    <span>Your information is secure and will only be used to set up your seller account.</span>
                   </div>
                 </div>
               ) : (

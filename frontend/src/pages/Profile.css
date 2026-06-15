@@ -953,90 +953,216 @@
 
 /* Onboarding Step Form */
 .seller-form-card, .seller-status-card {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 20px;
     padding: 2.5rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+}
+
+.seller-stepper-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
 }
 
 .seller-form-progress {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
-    margin-bottom: 2.5rem;
-    padding: 0 1rem;
+    padding: 0;
+}
+
+.progress-lines-bg {
+    position: absolute;
+    top: 17px;
+    left: 45px;
+    right: 45px;
+    height: 4px;
+    background: #f3f4f6;
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.progress-line-fill {
+    height: 100%;
+    background: var(--brand-accent, #c10654);
+    border-radius: 2px;
+    transition: width 0.3s ease;
 }
 
 .progress-step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    text-align: center;
     position: relative;
     z-index: 2;
+    flex: 1;
 }
 
 .progress-step .step-number {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: #e5e7eb;
-    color: #6b7280;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    color: #9ca3af;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.86rem;
     font-weight: 600;
-    border: 2px solid transparent;
+    margin-bottom: 0.75rem;
     transition: all 0.3s ease;
-}
-
-.progress-step span {
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: #9ca3af;
-    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 .progress-step.active .step-number {
-    background: linear-gradient(135deg, rgba(193, 6, 84, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+    background: var(--brand-accent, #c10654);
     border-color: var(--brand-accent, #c10654);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(193, 6, 84, 0.2);
+}
+
+.step-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.step-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #4b5563;
+    transition: color 0.3s ease;
+}
+
+.progress-step.active .step-title {
     color: var(--brand-accent, #c10654);
 }
 
-.progress-step.active span {
-    color: var(--brand-accent, #c10654);
-}
-
-.progress-line {
-    flex: 1;
-    height: 2px;
-    background: #e5e7eb;
-    margin: 0 -0.5rem;
-    margin-top: -1.75rem;
-    position: relative;
-    z-index: 1;
+.step-desc {
+    font-size: 0.74rem;
+    color: #9ca3af;
+    font-weight: 400;
 }
 
 .form-step-content {
     animation: fadeIn 0.3s ease;
 }
 
-.form-step-content h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 0.25rem 0;
+/* Form inputs icon wrappers */
+.input-with-icon-wrapper {
+    position: relative;
+    width: 100%;
 }
 
-.step-instruction {
+.input-with-icon-wrapper input {
+    padding-right: 2.75rem;
+}
+
+.input-right-icon {
+    position: absolute;
+    right: 0.95rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.textarea-counter-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.textarea-counter-wrapper textarea {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    resize: vertical;
+    padding-bottom: 2rem;
+}
+
+.textarea-counter-wrapper textarea:focus {
+    border-color: var(--brand-accent, #c10654);
+    box-shadow: 0 0 0 3px rgba(193, 6, 84, 0.1);
+}
+
+.textarea-character-counter {
+    position: absolute;
+    right: 0.95rem;
+    bottom: 0.75rem;
+    font-size: 0.74rem;
+    color: #9ca3af;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.form-input-field textarea {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    resize: vertical;
+}
+
+.form-input-field textarea:focus {
+    border-color: var(--brand-accent, #c10654);
+    box-shadow: 0 0 0 3px rgba(193, 6, 84, 0.1);
+}
+
+/* Step header with icon bubble */
+.seller-step-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.seller-step-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(193, 6, 84, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.seller-step-icon {
+    color: var(--brand-accent, #c10654);
+}
+
+.seller-step-header-text h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.15rem 0;
+}
+
+.seller-step-header-text p {
     font-size: 0.84rem;
     color: #6b7280;
-    margin: 0 0 1.5rem 0;
+    margin: 0;
 }
 
 .form-step-actions {
@@ -1048,11 +1174,11 @@
 }
 
 .seller-btn-secondary {
-    background: #f3f4f6;
-    border: none;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     color: #4b5563;
     padding: 0.65rem 1.75rem;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     font-size: 0.88rem;
@@ -1061,7 +1187,9 @@
 }
 
 .seller-btn-secondary:hover {
-    background: #e5e7eb;
+    background: #f9fafb;
+    border-color: var(--brand-accent, #c10654);
+    color: var(--brand-accent, #c10654);
 }
 
 .seller-btn-primary {
@@ -1069,18 +1197,48 @@
     border: none;
     color: #ffffff;
     padding: 0.65rem 1.75rem;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     font-size: 0.88rem;
     transition: all 0.25s ease;
     font-family: 'Poppins', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     box-shadow: 0 4px 12px rgba(193, 6, 84, 0.2);
 }
 
 .seller-btn-primary:hover {
     background: #a00445;
     box-shadow: 0 6px 16px rgba(193, 6, 84, 0.3);
+}
+
+.btn-right-icon {
+    transition: transform 0.2s ease;
+}
+
+.seller-btn-primary:hover .btn-right-icon {
+    transform: translateX(3px);
+}
+
+/* Security notice footer */
+.seller-form-security-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(59, 130, 246, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    border-radius: 12px;
+    padding: 0.85rem 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+
+.security-footer-icon {
+    color: #3b82f6;
+    flex-shrink: 0;
 }
 
 /* Status Review Screen */
@@ -1240,14 +1398,23 @@
         gap: 1.25rem;
     }
     
-    .progress-line {
+    .progress-lines-bg {
         display: none;
     }
     
     .progress-step {
-        flex-direction: row;
-        align-items: center;
-        gap: 0.75rem;
+        flex-direction: row !important;
+        align-items: center !important;
+        text-align: left !important;
+        gap: 0.85rem !important;
+    }
+    
+    .progress-step .step-number {
+        margin-bottom: 0 !important;
+    }
+    
+    .step-labels {
+        align-items: flex-start !important;
     }
     
     .status-details-grid {
@@ -1255,6 +1422,7 @@
         gap: 1.25rem;
     }
 }
+
 
 /* Orders tab section */
 .orders-tab-content {
