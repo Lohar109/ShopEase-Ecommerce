@@ -1211,20 +1211,6 @@ const Profile = () => {
 
           {currentTab === "rewards" && (
             <div className="rewards-tab-content">
-              {/* Header block */}
-              <div className="rewards-header-row">
-                <div className="rewards-title-group">
-                  <h1>My Rewards</h1>
-                  <p>Earn points on every order and redeem exciting rewards!</p>
-                </div>
-                <button 
-                  className="rewards-how-it-works-btn"
-                  onClick={() => toast("Shop more to earn points: 1 Point per ₹10 spent! Redeem points for shopping vouchers.", { icon: "ℹ️" })}
-                >
-                  <Info size={16} />
-                  <span>How It Works</span>
-                </button>
-              </div>
 
               {/* Summary Cards Grid */}
               <div className="rewards-summary-grid">
