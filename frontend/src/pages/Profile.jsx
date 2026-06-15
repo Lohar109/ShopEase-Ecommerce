@@ -678,12 +678,6 @@ const Profile = () => {
               ) : showSellerForm ? (
                 /* STEP-BY-STEP REGISTRATION FORM */
                 <div className="seller-form-box">
-                  <div className="pane-header-box">
-                    <div className="pane-title-group">
-                      <h1>Register as a Seller</h1>
-                      <p>Provide your details to set up your ShopEase merchant account</p>
-                    </div>
-                  </div>
 
                   <div className="seller-form-card">
                     {/* Progress indicator */}
