@@ -51,8 +51,9 @@
     width: 100%;
 }
 
-/* Left Sidebar Navigation */
 .profile-sidebar-nav {
+    position: sticky;
+    top: 90px;
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
