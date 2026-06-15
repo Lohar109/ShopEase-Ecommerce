@@ -769,34 +769,55 @@ const Profile = () => {
                     <h3>How it Works</h3>
                     <div className="seller-workflow-flow">
                       <div className="seller-step-node">
-                        <div className="seller-step-circle">
+                        <div className="seller-step-circle pink-light-bg pink-text">
                           <UserPlus size={22} />
                         </div>
                         <div className="seller-step-info">
                           <h4>Register</h4>
                         </div>
                       </div>
-                      <div className="workflow-arrow" />
+                      <div className="workflow-arrow">
+                        <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                        </svg>
+                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        </svg>
+                      </div>
                       <div className="seller-step-node">
-                        <div className="seller-step-circle">
+                        <div className="seller-step-circle blue-light-bg blue-text">
                           <FileText size={22} />
                         </div>
                         <div className="seller-step-info">
                           <h4>Submit Details</h4>
                         </div>
                       </div>
-                      <div className="workflow-arrow" />
+                      <div className="workflow-arrow">
+                        <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                        </svg>
+                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        </svg>
+                      </div>
                       <div className="seller-step-node">
-                        <div className="seller-step-circle">
+                        <div className="seller-step-circle green-light-bg green-text">
                           <CheckCircle size={22} />
                         </div>
                         <div className="seller-step-info">
                           <h4>Verification</h4>
                         </div>
                       </div>
-                      <div className="workflow-arrow" />
+                      <div className="workflow-arrow">
+                        <svg className="desktop-arrow" width="100%" height="2" viewBox="0 0 100 2" fill="none" preserveAspectRatio="none">
+                          <line x1="0" y1="1" x2="100" y2="1" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line" />
+                        </svg>
+                        <svg className="mobile-arrow" width="2" height="24" viewBox="0 0 2 24" fill="none" preserveAspectRatio="none">
+                          <line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" strokeWidth="2" strokeDasharray="4 4" className="moving-stepper-line-vertical" />
+                        </svg>
+                      </div>
                       <div className="seller-step-node">
-                        <div className="seller-step-circle">
+                        <div className="seller-step-circle purple-light-bg purple-text">
                           <TrendingUp size={22} />
                         </div>
                         <div className="seller-step-info">
