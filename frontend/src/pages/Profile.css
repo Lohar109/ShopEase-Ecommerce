@@ -389,6 +389,12 @@
     margin-left: 0.25rem;
 }
 
+.required-star {
+    color: var(--brand-accent, #c10654);
+    margin-left: 0.15rem;
+    font-weight: bold;
+}
+
 .form-input-field input, .form-input-field select {
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
@@ -1029,6 +1035,13 @@
     box-shadow: 0 4px 12px rgba(193, 6, 84, 0.2);
 }
 
+.progress-step.completed .step-number {
+    background: #ffffff;
+    border-color: var(--brand-accent, #c10654);
+    color: var(--brand-accent, #c10654);
+    box-shadow: none;
+}
+
 .step-labels {
     display: flex;
     flex-direction: column;
@@ -1227,26 +1240,35 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: rgba(59, 130, 246, 0.03);
-    border: 1px solid rgba(59, 130, 246, 0.08);
     border-radius: 12px;
     padding: 0.85rem 1.25rem;
     margin-top: 1.5rem;
     font-size: 0.8rem;
-    color: #4b5563;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.seller-form-security-footer.step-1 {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1e40af;
+}
+
+.seller-form-security-footer.step-1 .security-footer-icon {
+    color: #1e40af;
 }
 
 .seller-form-security-footer.step-2 {
-    background: rgba(244, 63, 94, 0.03); /* light rose/red */
-    border: 1px solid rgba(244, 63, 94, 0.08);
+    background: #fff1f2;
+    border: 1px solid #ffe4e6;
+    color: #9f1239;
 }
 
 .seller-form-security-footer.step-2 .security-footer-icon {
-    color: #f43f5e; /* rose/red */
+    color: #9f1239;
 }
 
 .security-footer-icon {
-    color: #3b82f6;
     flex-shrink: 0;
 }
 
@@ -1300,12 +1322,13 @@
 }
 
 .seller-form-security-footer.step-3 {
-    background: rgba(245, 158, 11, 0.03); /* light orange */
-    border: 1px solid rgba(245, 158, 11, 0.08);
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    color: #92400e;
 }
 
 .seller-form-security-footer.step-3 .security-footer-icon {
-    color: #f59e0b; /* orange */
+    color: #92400e;
 }
 
 /* Step 3 Bank & File Upload styling */
@@ -1330,7 +1353,7 @@
 .ifsc-input-verify-wrapper {
     display: flex;
     gap: 0.75rem;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
 }
 
@@ -1383,7 +1406,7 @@
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 1.5rem;
-    align-items: stretch;
+    align-items: center;
     margin-bottom: 1.5rem;
 }
 
@@ -1393,7 +1416,7 @@
 
 .dropzone-label {
     display: block;
-    border: 2px dashed #d1d5db;
+    border: 2px dashed #cbd5e1;
     border-radius: 16px;
     padding: 2.25rem 1.5rem;
     text-align: center;

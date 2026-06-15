@@ -729,7 +729,7 @@ const Profile = () => {
                       <div className="progress-lines-bg">
                         <div 
                           className="progress-line-fill" 
-                          style={{ width: `${(formStep - 1) * 50}%` }}
+                          style={{ width: `${formStep === 1 ? 0 : 50}%` }}
                         />
                       </div>
                       
@@ -777,20 +777,20 @@ const Profile = () => {
                       <div className="seller-step-header-text">
                         {formStep === 1 && (
                           <>
-                            <h3>Store Information</h3>
-                            <p>Let's start with your store identity and category details.</p>
+                            <h3>Store Setup</h3>
+                            <p>Tell us about your store to set up your merchant account.</p>
                           </>
                         )}
                         {formStep === 2 && (
                           <>
-                            <h3>Tax & Business Address</h3>
-                            <p>Please provide your tax information and business address.</p>
+                            <h3>Tax & Address</h3>
+                            <p>Please provide your business tax information and address details.</p>
                           </>
                         )}
                         {formStep === 3 && (
                           <>
-                            <h3>Bank Payout Details</h3>
-                            <p>Enter your bank account credentials to receive customer payouts directly.</p>
+                            <h3>Bank Verification</h3>
+                            <p>Add your bank account details to receive payments from ShopEase.</p>
                           </>
                         )}
                       </div>
@@ -807,7 +807,7 @@ const Profile = () => {
                       {formStep === 1 && (
                         <div className="form-step-content">
                           <div className="form-input-field">
-                            <label>Store Name *</label>
+                            <label>Store Name<span className="required-star">*</span></label>
                             <div className="input-with-icon-wrapper">
                               <input 
                                 type="text" 
@@ -822,7 +822,7 @@ const Profile = () => {
                           </div>
 
                           <div className="form-input-field">
-                            <label>Store Category *</label>
+                            <label>Store Category<span className="required-star">*</span></label>
                             <select 
                               name="category" 
                               value={sellerFormData.category} 
@@ -838,7 +838,7 @@ const Profile = () => {
                           </div>
 
                           <div className="form-input-field">
-                            <label>Store Description *</label>
+                            <label>Store Description<span className="required-star">*</span></label>
                             <div className="textarea-counter-wrapper">
                               <textarea 
                                 name="description" 
@@ -863,7 +863,7 @@ const Profile = () => {
                           
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Business Type *</label>
+                              <label>Business Type<span className="required-star">*</span></label>
                               <select 
                                 name="businessType" 
                                 value={sellerFormData.businessType} 
@@ -879,7 +879,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>PAN Number *</label>
+                              <label>PAN Number<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="pan" 
@@ -924,7 +924,7 @@ const Profile = () => {
                           
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Address Line 1 *</label>
+                              <label>Address Line 1<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="addressLine1" 
@@ -949,7 +949,7 @@ const Profile = () => {
 
                           <div className="form-grid-3-col">
                             <div className="form-input-field">
-                              <label>City *</label>
+                              <label>City<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="city" 
@@ -961,7 +961,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>State *</label>
+                              <label>State<span className="required-star">*</span></label>
                               <select 
                                 name="state" 
                                 value={sellerFormData.state} 
@@ -980,7 +980,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>Pincode *</label>
+                              <label>Pincode<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="pincode" 
@@ -996,7 +996,7 @@ const Profile = () => {
 
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Country *</label>
+                              <label>Country<span className="required-star">*</span></label>
                               <select 
                                 name="country" 
                                 value={sellerFormData.country} 
@@ -1023,7 +1023,7 @@ const Profile = () => {
 
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Account Holder Name *</label>
+                              <label>Account Holder Name<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="holderName" 
@@ -1036,7 +1036,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>Account Number *</label>
+                              <label>Account Number<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="bankAccount" 
@@ -1053,7 +1053,7 @@ const Profile = () => {
 
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Confirm Account Number *</label>
+                              <label>Confirm Account Number<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="confirmBankAccount" 
@@ -1066,7 +1066,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>IFSC Code *</label>
+                              <label>IFSC Code<span className="required-star">*</span></label>
                               <div className="ifsc-input-verify-wrapper">
                                 <input 
                                   type="text" 
@@ -1106,7 +1106,7 @@ const Profile = () => {
 
                           <div className="form-grid-2-col">
                             <div className="form-input-field">
-                              <label>Bank Name *</label>
+                              <label>Bank Name<span className="required-star">*</span></label>
                               <select 
                                 name="bankName" 
                                 value={sellerFormData.bankName} 
@@ -1121,7 +1121,7 @@ const Profile = () => {
                             </div>
 
                             <div className="form-input-field">
-                              <label>Branch Name *</label>
+                              <label>Branch Name<span className="required-star">*</span></label>
                               <input 
                                 type="text" 
                                 name="branchName" 
@@ -1205,12 +1205,24 @@ const Profile = () => {
 
                   {/* Security notice footer */}
                   <div className={`seller-form-security-footer step-${formStep}`}>
-                    {formStep === 2 ? (
-                      <Lock size={16} className="security-footer-icon" />
-                    ) : (
-                      <Shield size={16} className="security-footer-icon" />
+                    {formStep === 1 && (
+                      <>
+                        <Shield size={16} className="security-footer-icon" />
+                        <span>Your information is secure and will only be used to set up your seller account.</span>
+                      </>
                     )}
-                    <span>Your information is secure and will only be used to set up your seller account.</span>
+                    {formStep === 2 && (
+                      <>
+                        <Lock size={16} className="security-footer-icon" />
+                        <span>Your information is secure and will only be used to set up your seller account.</span>
+                      </>
+                    )}
+                    {formStep === 3 && (
+                      <>
+                        <Clock size={16} className="security-footer-icon" />
+                        <span>Verification may take up to 24-48 hours. You will be notified via email once approved.</span>
+                      </>
+                    )}
                   </div>
                 </div>
               ) : (
