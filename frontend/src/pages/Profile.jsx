@@ -5,7 +5,7 @@ import {
   MapPin, Home, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud,
-  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle
+  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle, Target, Trophy, ShoppingBag
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
@@ -331,6 +331,18 @@ const Profile = () => {
       icon: "🎫"
     });
     setSupportTicket({ issueType: "", description: "" });
+  };
+
+  const handleCreateCampaign = () => {
+    toast.success("Initializing Campaign Creator Tool...", { icon: "📈" });
+  };
+
+  const handleCreateOffer = () => {
+    toast.success("Initializing Deal and Offer Creator...", { icon: "🏷️" });
+  };
+
+  const handleContactSales = () => {
+    toast.success("Connecting with our Advertising Relations team...", { icon: "🤝" });
   };
 
   const handleSellerInputChange = (e) => {
@@ -2465,7 +2477,216 @@ const Profile = () => {
             </div>
           )}
 
-          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && currentTab !== "notifications" && currentTab !== "care" && (
+          {currentTab === "advertise" && (
+            <div className="advertise-tab-content">
+              {/* 1. Hero Banner */}
+              <div className="advertise-hero-banner">
+                <div className="advertise-hero-left">
+                  <h1>Advertise on <span className="highlight-text">ShopEase</span></h1>
+                  <p className="advertise-subtitle">Promote your products, increase visibility and reach millions of active customers across India.</p>
+                  
+                  <div className="advertise-bullets-row">
+                    <div className="bullet-item">
+                      <div className="bullet-icon-circle">
+                        <Users size={16} />
+                      </div>
+                      <div className="bullet-text">
+                        <h4>Millions of</h4>
+                        <p>Active Users</p>
+                      </div>
+                    </div>
+                    <div className="bullet-item">
+                      <div className="bullet-icon-circle">
+                        <TrendingUp size={16} />
+                      </div>
+                      <div className="bullet-text">
+                        <h4>Boost Brand</h4>
+                        <p>Visibility</p>
+                      </div>
+                    </div>
+                    <div className="bullet-item">
+                      <div className="bullet-icon-circle">
+                        <Target size={16} />
+                      </div>
+                      <div className="bullet-text">
+                        <h4>Higher Conversions</h4>
+                        <p>& Sales</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="advertise-btn-group">
+                    <button onClick={handleCreateCampaign} className="btn-filled-pink">Start Advertising</button>
+                    <button onClick={() => toast.success("Loading advertising guides...")} className="btn-outlined-pink">Learn More</button>
+                  </div>
+                </div>
+
+                <div className="advertise-hero-illustration">
+                  <div className="illustration-glow-effect"></div>
+                  <img src="/assets/advertise_hero.png" alt="Advertising Megaphone" className="advertise-banner-img" />
+                </div>
+              </div>
+
+              {/* 2. Advertising Solutions Grid */}
+              <div className="solutions-section">
+                <h2>Advertising Solutions</h2>
+                <div className="solutions-grid">
+                  {/* Sponsored Products */}
+                  <div className="solution-column-card card-pink">
+                    <div className="solution-icon-wrapper circle-pink">
+                      <Tag size={20} />
+                    </div>
+                    <h3>Sponsored Products</h3>
+                    <p className="solution-card-desc">Promote your products in search results and product pages.</p>
+                    
+                    <ul className="solution-features-list">
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Increase product visibility</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Reach high-intent customers</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Pay only for performance</span>
+                      </li>
+                    </ul>
+                    
+                    <button onClick={handleCreateCampaign} className="solution-card-btn btn-pink">Create Campaign</button>
+                  </div>
+
+                  {/* Brand Showcase */}
+                  <div className="solution-column-card card-orange">
+                    <div className="solution-icon-wrapper circle-orange">
+                      <Store size={20} />
+                    </div>
+                    <h3>Brand Showcase</h3>
+                    <p className="solution-card-desc">Showcase your brand with a dedicated banner and store.</p>
+                    
+                    <ul className="solution-features-list">
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Build brand awareness</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Premium brand presence</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Drive more traffic</span>
+                      </li>
+                    </ul>
+                    
+                    <button onClick={() => toast.success("Opening brand showcase details...")} className="solution-card-btn btn-orange">Learn More</button>
+                  </div>
+
+                  {/* Deals & Offers */}
+                  <div className="solution-column-card card-purple">
+                    <div className="solution-icon-wrapper circle-purple">
+                      <Zap size={20} />
+                    </div>
+                    <h3>Deals & Offers</h3>
+                    <p className="solution-card-desc">Promote your offers and discounts to attract more buyers.</p>
+                    
+                    <ul className="solution-features-list">
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Highlight exciting offers</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Increase engagement</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Boost conversions</span>
+                      </li>
+                    </ul>
+                    
+                    <button onClick={handleCreateOffer} className="solution-card-btn btn-purple">Create Offer</button>
+                  </div>
+
+                  {/* Premium Placement */}
+                  <div className="solution-column-card card-green">
+                    <div className="solution-icon-wrapper circle-green">
+                      <Star size={20} />
+                    </div>
+                    <h3>Premium Placement</h3>
+                    <p className="solution-card-desc">Get premium placements on homepage and category pages.</p>
+                    
+                    <ul className="solution-features-list">
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Maximum visibility</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Top slots on key pages</span>
+                      </li>
+                      <li>
+                        <Check size={14} className="check-icon" />
+                        <span>Higher brand recall</span>
+                      </li>
+                    </ul>
+                    
+                    <button onClick={handleContactSales} className="solution-card-btn btn-green">Contact Sales</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Grow Your Business horizontal banner */}
+              <div className="grow-business-banner">
+                <div className="grow-left-block">
+                  <div className="trophy-wrapper">
+                    <Trophy size={32} className="trophy-icon-style" />
+                  </div>
+                  <div className="grow-title-text">
+                    <h3>Grow Your Business with <span className="highlight-text">ShopEase</span></h3>
+                    <p>Join thousands of successful sellers who are growing their business with our advertising solutions.</p>
+                  </div>
+                </div>
+
+                <div className="grow-stats-group">
+                  <div className="grow-stat-box">
+                    <div className="stat-icon-wrapper">
+                      <Users size={16} />
+                    </div>
+                    <div className="stat-text-val">
+                      <h4>10M+</h4>
+                      <p>Monthly Visitors</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grow-stat-box">
+                    <div className="stat-icon-wrapper">
+                      <Store size={16} />
+                    </div>
+                    <div className="stat-text-val">
+                      <h4>50K+</h4>
+                      <p>Active Sellers</p>
+                    </div>
+                  </div>
+
+                  <div className="grow-stat-box">
+                    <div className="stat-icon-wrapper">
+                      <ShoppingBag size={16} />
+                    </div>
+                    <div className="stat-text-val">
+                      <h4>5M+</h4>
+                      <p>Products Sold</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={handleCreateCampaign} className="grow-cta-btn">Start Now</button>
+              </div>
+            </div>
+          )}
+
+          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && currentTab !== "notifications" && currentTab !== "care" && currentTab !== "advertise" && (
             <div className="profile-tab-placeholder">
               <div className="pane-header-box">
                 <div className="pane-title-group">
