@@ -2536,3 +2536,310 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Notification Preferences Tab Styles */
+.notifications-tab-content {
+    animation: fadeIn 0.4s ease;
+    width: 100%;
+}
+
+.notifications-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.notifications-title-group h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.5px;
+}
+
+.notifications-title-group p {
+    font-size: 0.92rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.unsubscribe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid rgba(193, 6, 84, 0.3);
+    color: var(--brand-accent, #c10654);
+    padding: 0.55rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 2px 8px rgba(193, 6, 84, 0.05);
+}
+
+.unsubscribe-btn:hover {
+    background: rgba(193, 6, 84, 0.03);
+    border-color: var(--brand-accent, #c10654);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.notifications-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.notification-section-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+}
+
+.notification-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.notification-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Color codes for icons */
+.notification-icon-wrapper.gift-wrapper {
+    background: rgba(193, 6, 84, 0.08);
+    color: var(--brand-accent, #c10654);
+}
+
+.notification-icon-wrapper.tag-wrapper {
+    background: rgba(244, 63, 94, 0.08);
+    color: #f43f5e;
+}
+
+.notification-icon-wrapper.shield-wrapper {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+.notification-icon-wrapper.general-wrapper {
+    background: rgba(139, 92, 246, 0.08);
+    color: #8b5cf6;
+}
+
+.notification-header-details {
+    flex-grow: 1;
+}
+
+.notification-header-details h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.15rem 0;
+}
+
+.notification-header-details p {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.channel-headers {
+    display: flex;
+    width: 260px;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+
+.channel-headers span {
+    width: 70px;
+    text-align: center;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.notification-settings-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.setting-row-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 0;
+    border-bottom: 1px dashed #f3f4f6;
+}
+
+.setting-row-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0.5rem;
+}
+
+.setting-info {
+    flex-grow: 1;
+    padding-right: 2rem;
+}
+
+.setting-info h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.2rem 0;
+}
+
+.setting-info p {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.setting-channels-toggles {
+    display: flex;
+    width: 260px;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Custom switch toggle styling (iOS shape) */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+}
+
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: relative;
+    cursor: pointer;
+    display: block;
+    width: 44px;
+    height: 24px;
+    background-color: #cbd5e1;
+    transition: .25s ease;
+    border-radius: 99px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .25s ease;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.switch-toggle input:checked + .switch-slider {
+    background-color: var(--brand-accent, #c10654);
+}
+
+.switch-toggle input:checked + .switch-slider:before {
+    transform: translateX(20px);
+}
+
+/* Responsive Rules for Notifications Tab */
+@media (max-width: 768px) {
+    .notifications-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .unsubscribe-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .notification-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .channel-headers {
+        display: none; /* Hide header text on tablet/mobile */
+    }
+    
+    .setting-row-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .setting-info {
+        padding-right: 0;
+    }
+    
+    .setting-channels-toggles {
+        width: 100%;
+        justify-content: space-around;
+        background: #f9fafb;
+        padding: 0.75rem;
+        border-radius: 12px;
+        border: 1px solid #f3f4f6;
+    }
+    
+    /* Add inline labels on mobile viewports for the toggles */
+    .switch-toggle::before {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-right: 0.5rem;
+        align-self: center;
+        text-transform: uppercase;
+    }
+    
+    .switch-toggle:nth-child(1)::before {
+        content: "Email";
+    }
+    
+    .switch-toggle:nth-child(2)::before {
+        content: "SMS";
+    }
+    
+    .switch-toggle:nth-child(3)::before {
+        content: "Push";
+    }
+    
+    .switch-toggle {
+        width: auto;
+        gap: 0.25rem;
+    }
+}
+

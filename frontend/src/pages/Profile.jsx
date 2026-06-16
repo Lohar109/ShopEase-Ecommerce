@@ -4,7 +4,8 @@ import {
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
   MapPin, Home, ChevronRight, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
-  Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud
+  Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud,
+  BellOff, Tag
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
@@ -249,6 +250,57 @@ const Profile = () => {
 
   const [ifscVerified, setIfscVerified] = useState(false);
   const [uploadedChequeName, setUploadedChequeName] = useState("");
+
+  // Notification Preferences States
+  const [notificationPrefs, setNotificationPrefs] = useState(() => {
+    const saved = localStorage.getItem("shopease_notification_prefs");
+    if (saved) return JSON.parse(saved);
+    return {
+      orderConfirmations: { email: true, sms: true, push: true },
+      shippingUpdates: { email: true, sms: false, push: true },
+      cancellationsReturns: { email: true, sms: false, push: true },
+      exclusiveOffers: { email: true, sms: true, push: true },
+      saleDiscounts: { email: true, sms: true, push: false },
+      priceDrops: { email: false, sms: false, push: true },
+      accountActivity: { email: true, sms: false, push: true },
+      securityAlerts: { email: true, sms: true, push: true },
+      newArrivals: { email: false, sms: false, push: true },
+      surveysFeedback: { email: false, sms: false, push: false }
+    };
+  });
+
+  const handleTogglePref = (prefKey, channel) => {
+    setNotificationPrefs(prev => {
+      const updated = {
+        ...prev,
+        [prefKey]: {
+          ...prev[prefKey],
+          [channel]: !prev[prefKey][channel]
+        }
+      };
+      localStorage.setItem("shopease_notification_prefs", JSON.stringify(updated));
+      return updated;
+    });
+    toast.success("Preferences updated successfully!", { duration: 1500 });
+  };
+
+  const handleUnsubscribeAll = () => {
+    const unsubscribed = {
+      orderConfirmations: { email: false, sms: false, push: false },
+      shippingUpdates: { email: false, sms: false, push: false },
+      cancellationsReturns: { email: false, sms: false, push: false },
+      exclusiveOffers: { email: false, sms: false, push: false },
+      saleDiscounts: { email: false, sms: false, push: false },
+      priceDrops: { email: false, sms: false, push: false },
+      accountActivity: { email: false, sms: false, push: false },
+      securityAlerts: { email: false, sms: false, push: false },
+      newArrivals: { email: false, sms: false, push: false },
+      surveysFeedback: { email: false, sms: false, push: false }
+    };
+    setNotificationPrefs(unsubscribed);
+    localStorage.setItem("shopease_notification_prefs", JSON.stringify(unsubscribed));
+    toast.success("Unsubscribed from all notifications.", { duration: 2000 });
+  };
 
   const handleSellerInputChange = (e) => {
     const { name, value } = e.target;
@@ -1700,7 +1752,441 @@ const Profile = () => {
             </div>
           )}
 
-          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && (
+          {currentTab === "notifications" && (
+            <div className="notifications-tab-content">
+              {/* Header Row */}
+              <div className="notifications-header-row">
+                <div className="notifications-title-group">
+                  <h1>Notification Preferences</h1>
+                  <p>Choose how and when you want to hear from ShopEase.</p>
+                </div>
+                <button 
+                  onClick={handleUnsubscribeAll}
+                  className="unsubscribe-btn"
+                >
+                  <BellOff size={16} />
+                  <span>Unsubscribe from All</span>
+                </button>
+              </div>
+
+              {/* Preferences Cards */}
+              <div className="notifications-cards-list">
+                
+                {/* 1. Order Updates */}
+                <div className="notification-section-card">
+                  <div className="notification-card-header">
+                    <div className="notification-icon-wrapper gift-wrapper">
+                      <Gift size={20} />
+                    </div>
+                    <div className="notification-header-details">
+                      <h3>Order Updates</h3>
+                      <p>Stay updated about your orders and deliveries.</p>
+                    </div>
+                    <div className="channel-headers">
+                      <span>Email</span>
+                      <span>SMS</span>
+                      <span>Push</span>
+                    </div>
+                  </div>
+
+                  <div className="notification-settings-list">
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Order Confirmations</h4>
+                        <p>Get notified when your order is placed successfully.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.orderConfirmations.email} 
+                            onChange={() => handleTogglePref("orderConfirmations", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.orderConfirmations.sms} 
+                            onChange={() => handleTogglePref("orderConfirmations", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.orderConfirmations.push} 
+                            onChange={() => handleTogglePref("orderConfirmations", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Shipping & Delivery Updates</h4>
+                        <p>Get notified about shipping, out for delivery and delivered updates.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.shippingUpdates.email} 
+                            onChange={() => handleTogglePref("shippingUpdates", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.shippingUpdates.sms} 
+                            onChange={() => handleTogglePref("shippingUpdates", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.shippingUpdates.push} 
+                            onChange={() => handleTogglePref("shippingUpdates", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Order Cancellations & Returns</h4>
+                        <p>Get notified for order cancellations, returns and refunds.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.cancellationsReturns.email} 
+                            onChange={() => handleTogglePref("cancellationsReturns", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.cancellationsReturns.sms} 
+                            onChange={() => handleTogglePref("cancellationsReturns", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.cancellationsReturns.push} 
+                            onChange={() => handleTogglePref("cancellationsReturns", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Offers & Promotions */}
+                <div className="notification-section-card">
+                  <div className="notification-card-header">
+                    <div className="notification-icon-wrapper tag-wrapper">
+                      <Tag size={20} />
+                    </div>
+                    <div className="notification-header-details">
+                      <h3>Offers & Promotions</h3>
+                      <p>Never miss an exciting deal or discount.</p>
+                    </div>
+                    <div className="channel-headers">
+                      <span>Email</span>
+                      <span>SMS</span>
+                      <span>Push</span>
+                    </div>
+                  </div>
+
+                  <div className="notification-settings-list">
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Exclusive Offers</h4>
+                        <p>Receive exclusive offers, deals and early access.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.exclusiveOffers.email} 
+                            onChange={() => handleTogglePref("exclusiveOffers", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.exclusiveOffers.sms} 
+                            onChange={() => handleTogglePref("exclusiveOffers", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.exclusiveOffers.push} 
+                            onChange={() => handleTogglePref("exclusiveOffers", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Sale & Discounts</h4>
+                        <p>Get notified about sales, discounts and limited time offers.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.saleDiscounts.email} 
+                            onChange={() => handleTogglePref("saleDiscounts", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.saleDiscounts.sms} 
+                            onChange={() => handleTogglePref("saleDiscounts", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.saleDiscounts.push} 
+                            onChange={() => handleTogglePref("saleDiscounts", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Price Drop Alerts</h4>
+                        <p>Be the first to know when the price of your wishlist items drops.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.priceDrops.email} 
+                            onChange={() => handleTogglePref("priceDrops", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.priceDrops.sms} 
+                            onChange={() => handleTogglePref("priceDrops", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.priceDrops.push} 
+                            onChange={() => handleTogglePref("priceDrops", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Account & Security */}
+                <div className="notification-section-card">
+                  <div className="notification-card-header">
+                    <div className="notification-icon-wrapper shield-wrapper">
+                      <Shield size={20} />
+                    </div>
+                    <div className="notification-header-details">
+                      <h3>Account & Security</h3>
+                      <p>Important updates related to your account.</p>
+                    </div>
+                    <div className="channel-headers">
+                      <span>Email</span>
+                      <span>SMS</span>
+                      <span>Push</span>
+                    </div>
+                  </div>
+
+                  <div className="notification-settings-list">
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Account Activity</h4>
+                        <p>Get notified about logins, password changes and profile updates.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.accountActivity.email} 
+                            onChange={() => handleTogglePref("accountActivity", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.accountActivity.sms} 
+                            onChange={() => handleTogglePref("accountActivity", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.accountActivity.push} 
+                            onChange={() => handleTogglePref("accountActivity", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Security Alerts</h4>
+                        <p>Important alerts about suspicious activity and security updates.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.securityAlerts.email} 
+                            onChange={() => handleTogglePref("securityAlerts", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.securityAlerts.sms} 
+                            onChange={() => handleTogglePref("securityAlerts", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.securityAlerts.push} 
+                            onChange={() => handleTogglePref("securityAlerts", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. General Notifications */}
+                <div className="notification-section-card">
+                  <div className="notification-card-header">
+                    <div className="notification-icon-wrapper general-wrapper">
+                      <Megaphone size={20} />
+                    </div>
+                    <div className="notification-header-details">
+                      <h3>General Notifications</h3>
+                      <p>General updates from ShopEase.</p>
+                    </div>
+                    <div className="channel-headers">
+                      <span>Email</span>
+                      <span>SMS</span>
+                      <span>Push</span>
+                    </div>
+                  </div>
+
+                  <div className="notification-settings-list">
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>New Arrivals</h4>
+                        <p>Get notified about new products and collections.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.newArrivals.email} 
+                            onChange={() => handleTogglePref("newArrivals", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.newArrivals.sms} 
+                            onChange={() => handleTogglePref("newArrivals", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.newArrivals.push} 
+                            onChange={() => handleTogglePref("newArrivals", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="setting-row-item">
+                      <div className="setting-info">
+                        <h4>Surveys & Feedback</h4>
+                        <p>Receive requests for surveys and share your feedback.</p>
+                      </div>
+                      <div className="setting-channels-toggles">
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.surveysFeedback.email} 
+                            onChange={() => handleTogglePref("surveysFeedback", "email")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.surveysFeedback.sms} 
+                            onChange={() => handleTogglePref("surveysFeedback", "sms")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                        <label className="switch-toggle">
+                          <input 
+                            type="checkbox" 
+                            checked={notificationPrefs.surveysFeedback.push} 
+                            onChange={() => handleTogglePref("surveysFeedback", "push")}
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && currentTab !== "notifications" && (
             <div className="profile-tab-placeholder">
               <div className="pane-header-box">
                 <div className="pane-title-group">
