@@ -14,7 +14,6 @@ const SIDEBAR_ITEMS = [
   { id: 'orders', label: 'Orders', icon: Package, path: '/profile?tab=orders' },
   { id: 'seller', label: 'Become a Seller', icon: Store, path: '/profile?tab=seller' },
   { id: 'rewards', label: 'Rewards', icon: Gift, path: '/profile?tab=rewards' },
-  { id: 'giftcards', label: 'Gift Cards', icon: CreditCard, path: '/profile?tab=giftcards' },
   { id: 'notifications', label: 'Notification Preferences', icon: Bell, path: '/profile?tab=notifications' },
   { id: 'care', label: '24x7 Customer Care', icon: Headphones, path: '/profile?tab=care' },
   { id: 'advertise', label: 'Advertise', icon: Megaphone, path: '/profile?tab=advertise' },

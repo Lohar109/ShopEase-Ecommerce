@@ -175,12 +175,6 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/gift-cards" className="dropdown-item">
-                    <CreditCard size={16} />
-                    <span>Gift Cards</span>
-                  </Link>
-                </li>
-                <li>
                   <Link to="/settings" className="dropdown-item">
                     <Bell size={16} />
                     <span>Notification Preferences</span>
