@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
-  MapPin, Home, ChevronRight, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
+  MapPin, Home, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud,
-  BellOff, Tag
+  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
@@ -300,6 +300,37 @@ const Profile = () => {
     setNotificationPrefs(unsubscribed);
     localStorage.setItem("shopease_notification_prefs", JSON.stringify(unsubscribed));
     toast.success("Unsubscribed from all notifications.", { duration: 2000 });
+  };
+
+  // 24x7 Customer Care States & Handlers
+  const [supportSearchQuery, setSupportSearchQuery] = useState("");
+  const [supportTicket, setSupportTicket] = useState({ issueType: "", description: "" });
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState(null);
+
+  const handleSupportSearch = (e) => {
+    e.preventDefault();
+    if (!supportSearchQuery.trim()) {
+      toast.error("Please enter a search term.");
+      return;
+    }
+    toast.success(`Searching support topics for: "${supportSearchQuery}"`, { icon: "🔍" });
+  };
+
+  const handleTicketSubmit = (e) => {
+    e.preventDefault();
+    if (!supportTicket.issueType) {
+      toast.error("Please select an issue type.");
+      return;
+    }
+    if (!supportTicket.description.trim()) {
+      toast.error("Please describe your issue.");
+      return;
+    }
+    toast.success("Support ticket submitted successfully! We will get back to you shortly.", {
+      duration: 3000,
+      icon: "🎫"
+    });
+    setSupportTicket({ issueType: "", description: "" });
   };
 
   const handleSellerInputChange = (e) => {
@@ -2186,7 +2217,255 @@ const Profile = () => {
             </div>
           )}
 
-          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && currentTab !== "notifications" && (
+          {currentTab === "care" && (
+            <div className="care-tab-content">
+              {/* 1. Hero Banner */}
+              <div className="care-hero-banner">
+                <div className="care-hero-text">
+                  <h1>We're Here to Help!</h1>
+                  <p>Find answers to your queries or connect with our support team. Our team is available 24x7 to assist you.</p>
+                  
+                  <div className="search-topics-section">
+                    <label className="search-topics-label">Search Support Topics</label>
+                    <form onSubmit={handleSupportSearch} className="care-search-form">
+                      <div className="search-input-wrapper">
+                        <Search size={18} className="search-icon-inside" />
+                        <input 
+                          type="text" 
+                          placeholder="Search for help topics, issues or questions..."
+                          value={supportSearchQuery}
+                          onChange={(e) => setSupportSearchQuery(e.target.value)}
+                        />
+                      </div>
+                      <button type="submit" className="care-search-btn">Search</button>
+                    </form>
+                  </div>
+                </div>
+                
+                <div className="care-hero-illustration">
+                  <div className="illustration-backdrop-circle"></div>
+                  <img src="/assets/support_agent.png" alt="Customer Support Agent" className="support-agent-img" />
+                  <div className="badge-247">24/7</div>
+                </div>
+              </div>
+
+              {/* 2. Middle Row: Popular Topics & Need More Help? */}
+              <div className="care-row-split middle-row">
+                {/* Popular Topics */}
+                <div className="popular-topics-container">
+                  <h2>Popular Topics</h2>
+                  <div className="popular-topics-grid">
+                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
+                      <div className="topic-icon-wrapper">
+                        <Package size={22} />
+                      </div>
+                      <div className="topic-details">
+                        <h3>Track Order</h3>
+                        <p>Track your order status in real-time</p>
+                      </div>
+                      <ChevronRight size={18} className="topic-arrow" />
+                    </div>
+
+                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
+                      <div className="topic-icon-wrapper">
+                        <RotateCcw size={22} />
+                      </div>
+                      <div className="topic-details">
+                        <h3>Return Product</h3>
+                        <p>Request a return or check eligibility</p>
+                      </div>
+                      <ChevronRight size={18} className="topic-arrow" />
+                    </div>
+
+                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
+                      <div className="topic-icon-wrapper">
+                        <CreditCard size={22} />
+                      </div>
+                      <div className="topic-details">
+                        <h3>Refund Status</h3>
+                        <p>Check your refund status and history</p>
+                      </div>
+                      <ChevronRight size={18} className="topic-arrow" />
+                    </div>
+
+                    <div className="topic-card" onClick={() => toast.success("Opening payment resolutions desk...", { icon: "💳" })}>
+                      <div className="topic-icon-wrapper">
+                        <Landmark size={22} />
+                      </div>
+                      <div className="topic-details">
+                        <h3>Payment Issue</h3>
+                        <p>Resolve payment failures or errors</p>
+                      </div>
+                      <ChevronRight size={18} className="topic-arrow" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Need More Help? */}
+                <div className="help-channels-container">
+                  <h2>Need More Help?</h2>
+                  <div className="help-channels-list">
+                    <div className="help-channel-item" onClick={() => toast.success("Connecting to a live chat agent...", { icon: "💬" })}>
+                      <div className="channel-icon-wrapper">
+                        <MessageSquare size={18} />
+                      </div>
+                      <div className="channel-details">
+                        <h3>Chat Support</h3>
+                        <p>Talk to our support executive</p>
+                      </div>
+                      <div className="channel-action-area">
+                        <span className="channel-badge green-badge">Available 24x7</span>
+                        <ChevronRight size={18} className="channel-arrow" />
+                      </div>
+                    </div>
+
+                    <a href="mailto:support@shopease.sbs" className="help-channel-item link-item">
+                      <div className="channel-icon-wrapper">
+                        <Mail size={18} />
+                      </div>
+                      <div className="channel-details">
+                        <h3>Email Support</h3>
+                        <p>support@shopease.sbs</p>
+                      </div>
+                      <div className="channel-action-area">
+                        <ChevronRight size={18} className="channel-arrow" />
+                      </div>
+                    </a>
+
+                    <a href="tel:+911234567890" className="help-channel-item link-item">
+                      <div className="channel-icon-wrapper">
+                        <Phone size={18} />
+                      </div>
+                      <div className="channel-details">
+                        <h3>Call Support</h3>
+                        <p>+91 12345 67890 <span className="subtext">(Toll Free)</span></p>
+                      </div>
+                      <div className="channel-action-area">
+                        <span className="channel-badge green-badge">Available 24x7</span>
+                        <ChevronRight size={18} className="channel-arrow" />
+                      </div>
+                    </a>
+
+                    <a href="https://wa.me/911234567890" target="_blank" rel="noopener noreferrer" className="help-channel-item link-item">
+                      <div className="channel-icon-wrapper">
+                        <MessageCircle size={18} />
+                      </div>
+                      <div className="channel-details">
+                        <h3>WhatsApp Support</h3>
+                        <p>+91 12345 67890</p>
+                      </div>
+                      <div className="channel-action-area">
+                        <span className="channel-badge green-badge">Available 24x7</span>
+                        <ChevronRight size={18} className="channel-arrow" />
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Bottom Row: Raise a Support Ticket & Frequently Asked Questions */}
+              <div className="care-row-split bottom-row">
+                {/* Raise a Support Ticket */}
+                <div className="ticket-form-card">
+                  <div className="ticket-header-block">
+                    <div className="ticket-title-desc">
+                      <h2>Raise a Support Ticket</h2>
+                      <p>Can't find what you're looking for? Submit a ticket and we'll get back to you.</p>
+                    </div>
+                    <div className="ticket-graphic-icon">
+                      <svg className="clipboard-icon-svg" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="15" y="10" width="30" height="42" rx="4" fill="#FFEAEB" stroke="#c10654" strokeWidth="2"/>
+                        <rect x="22" y="6" width="16" height="8" rx="2" fill="#c10654"/>
+                        <line x1="22" y1="22" x2="38" y2="22" stroke="#c10654" strokeWidth="2" strokeLinecap="round"/>
+                        <line x1="22" y1="30" x2="34" y2="30" stroke="#c10654" strokeWidth="2" strokeLinecap="round"/>
+                        <line x1="22" y1="38" x2="38" y2="38" stroke="#c10654" strokeWidth="2" strokeLinecap="round"/>
+                        <circle cx="44" cy="44" r="8" fill="#4ade80" />
+                        <path d="M41 44L43 46L47 42" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleTicketSubmit} className="ticket-form">
+                    <div className="form-group">
+                      <select 
+                        value={supportTicket.issueType}
+                        onChange={(e) => setSupportTicket(prev => ({ ...prev, issueType: e.target.value }))}
+                        className="ticket-select"
+                      >
+                        <option value="" disabled>Select Issue Type</option>
+                        <option value="Order Tracking">Order Tracking</option>
+                        <option value="Returns & Refunds">Returns & Refunds</option>
+                        <option value="Payment Issue">Payment Issue</option>
+                        <option value="Seller Onboarding">Seller Onboarding</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group textarea-group">
+                      <textarea 
+                        placeholder="Describe your issue in detail..."
+                        value={supportTicket.description}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 1000) {
+                            setSupportTicket(prev => ({ ...prev, description: e.target.value }));
+                          }
+                        }}
+                        className="ticket-textarea"
+                        rows={4}
+                      />
+                      <span className="char-counter">{supportTicket.description.length}/1000</span>
+                    </div>
+
+                    <button type="submit" className="ticket-submit-btn">Submit Ticket</button>
+                  </form>
+                </div>
+
+                {/* Frequently Asked Questions */}
+                <div className="faq-accordion-container">
+                  <div className="faq-header-block">
+                    <h2>Frequently Asked Questions</h2>
+                    <span className="view-all-faqs" onClick={() => toast.success("Loading all FAQ topics...", { icon: "📖" })}>View All FAQs</span>
+                  </div>
+
+                  <div className="faq-accordion-list">
+                    {[
+                      {
+                        q: "How do I track my order?",
+                        a: "You can track your order using the 'Track Order' option under your profile page or by entering your order ID on the tracking page."
+                      },
+                      {
+                        q: "How long does a refund take?",
+                        a: "Refunds usually take 5-7 business days to reflect in your original payment method once the return is processed."
+                      },
+                      {
+                        q: "My payment failed but money was deducted. What should I do?",
+                        a: "If money was deducted for a failed payment, it is usually refunded automatically by your bank within 2-3 business days. If not, raise a ticket with payment details."
+                      },
+                      {
+                        q: "How do I return a product?",
+                        a: "Go to your Orders, select the item you want to return, and click on 'Return Product'. If eligible, we will schedule a pickup."
+                      }
+                    ].map((item, index) => {
+                      const isExpanded = expandedFaqIndex === index;
+                      return (
+                        <div key={index} className={`faq-accordion-item ${isExpanded ? 'active' : ''}`}>
+                          <div className="faq-question-row" onClick={() => setExpandedFaqIndex(isExpanded ? null : index)}>
+                            <h3>{item.q}</h3>
+                            <ChevronDown size={18} className="faq-chevron" />
+                          </div>
+                          <div className="faq-answer-row">
+                            <p>{item.a}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentTab !== "profile" && currentTab !== "seller" && currentTab !== "orders" && currentTab !== "rewards" && currentTab !== "notifications" && currentTab !== "care" && (
             <div className="profile-tab-placeholder">
               <div className="pane-header-box">
                 <div className="pane-title-group">
