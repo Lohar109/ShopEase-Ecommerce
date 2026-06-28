@@ -216,7 +216,10 @@ const Profile = () => {
   });
   const [rewardsActivities, setRewardsActivities] = useState(() => {
     const saved = localStorage.getItem("shopease_rewards_activities");
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.length >= 12) return parsed;
+    }
     return [
       { date: "09 Jun 2024", desc: "Order #SE123456789", points: 120, status: "Credited" },
       { date: "01 Jun 2024", desc: "Order #SE123456780", points: 80, status: "Credited" },
@@ -225,7 +228,14 @@ const Profile = () => {
       { date: "12 May 2024", desc: "Order #SE123456750", points: 100, status: "Credited" },
       { date: "05 May 2024", desc: "Welcome Bonus", points: 200, status: "Credited" },
       { date: "28 Apr 2024", desc: "Order #SE123456740", points: 90, status: "Credited" },
-      { date: "20 Apr 2024", desc: "Redeemed BookMyShow Voucher (₹20)", points: -200, status: "Debited" }
+      { date: "20 Apr 2024", desc: "Redeemed BookMyShow Voucher (₹20)", points: -200, status: "Debited" },
+      { date: "15 Apr 2024", desc: "Order #SE123456720", points: 150, status: "Credited" },
+      { date: "10 Apr 2024", desc: "Redeemed Myntra Voucher (₹10)", points: -100, status: "Debited" },
+      { date: "02 Apr 2024", desc: "Order #SE123456710", points: 70, status: "Credited" },
+      { date: "25 Mar 2024", desc: "Profile Completion Bonus", points: 50, status: "Credited" },
+      { date: "15 Mar 2024", desc: "Order #SE123456690", points: 110, status: "Credited" },
+      { date: "08 Mar 2024", desc: "Redeemed Uber Voucher (₹15)", points: -150, status: "Debited" },
+      { date: "01 Mar 2024", desc: "First Purchase Bonus", points: 100, status: "Credited" }
     ];
   });
   const [showAllRewardsActivity, setShowAllRewardsActivity] = useState(false);
@@ -1727,7 +1737,7 @@ const Profile = () => {
                                       <td className="activity-date-col">{act.date}</td>
                                       <td>{act.desc}</td>
                                       <td className={isCredit ? "points-credited" : "points-debited"}>
-                                        {isCredit ? `+${act.points}` : act.points}
+                                        {Math.abs(act.points)}
                                       </td>
                                       <td>
                                         <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
@@ -1760,7 +1770,7 @@ const Profile = () => {
                                 <td>{act.date}</td>
                                 <td>{act.desc}</td>
                                 <td className={isCredit ? "points-credited" : "points-debited"}>
-                                  {isCredit ? `+${act.points}` : act.points}
+                                  {Math.abs(act.points)}
                                 </td>
                                 <td>
                                   <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
