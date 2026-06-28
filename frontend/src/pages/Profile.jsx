@@ -1715,36 +1715,43 @@ const Profile = () => {
                   <div className="panel-header-row">
                     <h3>Recent Activity</h3>
                   </div>
-                  <div className="activity-table-wrapper">
-                    <table className="activity-table">
+                  <div className="activity-table-container">
+                    {/* Fixed Header Table */}
+                    <table className="activity-table header-only-table">
                       <thead>
                         <tr>
-                          <th>Date</th>
-                          <th>Description</th>
-                          <th>Points</th>
-                          <th>Status</th>
+                          <th className="col-date">Date</th>
+                          <th className="col-desc">Description</th>
+                          <th className="col-points">Points</th>
+                          <th className="col-status">Status</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {rewardsActivities.slice(0, 10).map((act, idx) => {
-                          const isCredit = act.status === "Credited";
-                          return (
-                            <tr key={idx}>
-                              <td>{act.date}</td>
-                              <td>{act.desc}</td>
-                              <td className={isCredit ? "points-credited" : "points-debited"}>
-                                {Math.abs(act.points)}
-                              </td>
-                              <td>
-                                <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
-                                  {act.status}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
                     </table>
+                    
+                    {/* Scrollable Body Table */}
+                    <div className="activity-table-scrollbar-wrapper">
+                      <table className="activity-table body-only-table">
+                        <tbody>
+                          {rewardsActivities.slice(0, 10).map((act, idx) => {
+                            const isCredit = act.status === "Credited";
+                            return (
+                              <tr key={idx}>
+                                <td className="col-date">{act.date}</td>
+                                <td className="col-desc">{act.desc}</td>
+                                <td className={`col-points ${isCredit ? "points-credited" : "points-debited"}`}>
+                                  {Math.abs(act.points)}
+                                </td>
+                                <td className="col-status">
+                                  <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                    {act.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
 
