@@ -4173,6 +4173,64 @@
     }
 }
 
+/* Weekly activity grouping styling */
+.weekly-activity-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.weekly-group-container {
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+}
+
+.weekly-group-header {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+    padding-bottom: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.weekly-group-header h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #c10654;
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.activity-table.weekly-table {
+    margin-top: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.activity-table.weekly-table tr {
+    background: transparent !important;
+}
+
+.activity-table.weekly-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.activity-table.weekly-table tr:last-child td {
+    border-bottom: none;
+}
+
+.activity-date-col {
+    width: 110px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+
 
 
 

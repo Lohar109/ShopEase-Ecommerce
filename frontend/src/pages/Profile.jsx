@@ -86,6 +86,39 @@ const INITIAL_ORDERS = [
   }
 ];
 
+const getWeekLabel = (dateStr) => {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "Other";
+  
+  // Find the Sunday of that week
+  const day = date.getDay(); // 0 is Sunday, 1 is Monday, etc.
+  const sunday = new Date(date);
+  sunday.setDate(date.getDate() - day);
+  
+  const saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
+  
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  
+  const formatShortDate = (d) => {
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  };
+  
+  return `Week of ${formatShortDate(sunday)} - ${formatShortDate(saturday)}`;
+};
+
+const groupByWeek = (activities) => {
+  const groups = {};
+  activities.forEach(act => {
+    const weekLabel = getWeekLabel(act.date);
+    if (!groups[weekLabel]) {
+      groups[weekLabel] = [];
+    }
+    groups[weekLabel].push(act);
+  });
+  return groups;
+};
+
 const Profile = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "profile";
@@ -188,9 +221,14 @@ const Profile = () => {
       { date: "09 Jun 2024", desc: "Order #SE123456789", points: 120, status: "Credited" },
       { date: "01 Jun 2024", desc: "Order #SE123456780", points: 80, status: "Credited" },
       { date: "25 May 2024", desc: "Redeemed Amazon Pay Voucher (₹50)", points: -500, status: "Debited" },
-      { date: "18 May 2024", desc: "Order #SE123456770", points: 60, status: "Credited" }
+      { date: "18 May 2024", desc: "Order #SE123456770", points: 60, status: "Credited" },
+      { date: "12 May 2024", desc: "Order #SE123456750", points: 100, status: "Credited" },
+      { date: "05 May 2024", desc: "Welcome Bonus", points: 200, status: "Credited" },
+      { date: "28 Apr 2024", desc: "Order #SE123456740", points: 90, status: "Credited" },
+      { date: "20 Apr 2024", desc: "Redeemed BookMyShow Voucher (₹20)", points: -200, status: "Debited" }
     ];
   });
+  const [showAllRewardsActivity, setShowAllRewardsActivity] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("shopease_available_points", availablePoints);
@@ -1666,40 +1704,75 @@ const Profile = () => {
                 <div className="recent-activity-panel">
                   <div className="panel-header-row">
                     <h3>Recent Activity</h3>
-                    <span className="view-all-activity-link" onClick={() => toast("Full history coming soon!")}>
-                      View All Activity &rarr;
-                    </span>
+                    {rewardsActivities.length > 5 && (
+                      <span className="view-all-activity-link" onClick={() => setShowAllRewardsActivity(!showAllRewardsActivity)}>
+                        {showAllRewardsActivity ? "Show Recent" : "View All Activity"}
+                      </span>
+                    )}
                   </div>
                   <div className="activity-table-wrapper">
-                    <table className="activity-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Description</th>
-                          <th>Points</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rewardsActivities.map((act, idx) => {
-                          const isCredit = act.status === "Credited";
-                          return (
-                            <tr key={idx}>
-                              <td>{act.date}</td>
-                              <td>{act.desc}</td>
-                              <td className={isCredit ? "points-credited" : "points-debited"}>
-                                {isCredit ? `+${act.points}` : act.points}
-                              </td>
-                              <td>
-                                <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
-                                  {act.status}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    {showAllRewardsActivity ? (
+                      <div className="weekly-activity-groups">
+                        {Object.entries(groupByWeek(rewardsActivities)).map(([weekLabel, acts], gIdx) => (
+                          <div key={gIdx} className="weekly-group-container">
+                            <div className="weekly-group-header">
+                              <h4>{weekLabel}</h4>
+                            </div>
+                            <table className="activity-table weekly-table">
+                              <tbody>
+                                {acts.map((act, idx) => {
+                                  const isCredit = act.status === "Credited";
+                                  return (
+                                    <tr key={idx}>
+                                      <td className="activity-date-col">{act.date}</td>
+                                      <td>{act.desc}</td>
+                                      <td className={isCredit ? "points-credited" : "points-debited"}>
+                                        {isCredit ? `+${act.points}` : act.points}
+                                      </td>
+                                      <td>
+                                        <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                          {act.status}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <table className="activity-table">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Points</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rewardsActivities.slice(0, 5).map((act, idx) => {
+                            const isCredit = act.status === "Credited";
+                            return (
+                              <tr key={idx}>
+                                <td>{act.date}</td>
+                                <td>{act.desc}</td>
+                                <td className={isCredit ? "points-credited" : "points-debited"}>
+                                  {isCredit ? `+${act.points}` : act.points}
+                                </td>
+                                <td>
+                                  <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                    {act.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </div>
 
