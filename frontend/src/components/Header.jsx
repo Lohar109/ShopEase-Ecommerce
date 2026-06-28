@@ -156,12 +156,7 @@ const Header = () => {
                     <span>Orders</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/wishlist" className="dropdown-item">
-                    <Heart size={16} />
-                    <span>Wishlist</span>
-                  </Link>
-                </li>
+
                 <li>
                   <Link to="/profile?tab=seller" className="dropdown-item">
                     <Store size={16} />
