@@ -2388,6 +2388,26 @@
 
 .activity-table-wrapper {
     overflow-x: auto;
+    max-height: 290px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.activity-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.activity-table-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.activity-table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+}
+
+.activity-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.22);
 }
 
 .activity-table {

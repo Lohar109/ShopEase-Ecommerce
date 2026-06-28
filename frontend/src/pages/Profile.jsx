@@ -1714,75 +1714,37 @@ const Profile = () => {
                 <div className="recent-activity-panel">
                   <div className="panel-header-row">
                     <h3>Recent Activity</h3>
-                    {rewardsActivities.length > 5 && (
-                      <span className="view-all-activity-link" onClick={() => setShowAllRewardsActivity(!showAllRewardsActivity)}>
-                        {showAllRewardsActivity ? "Show Recent" : "View All Activity"}
-                      </span>
-                    )}
                   </div>
                   <div className="activity-table-wrapper">
-                    {showAllRewardsActivity ? (
-                      <div className="weekly-activity-groups">
-                        {Object.entries(groupByWeek(rewardsActivities)).map(([weekLabel, acts], gIdx) => (
-                          <div key={gIdx} className="weekly-group-container">
-                            <div className="weekly-group-header">
-                              <h4>{weekLabel}</h4>
-                            </div>
-                            <table className="activity-table weekly-table">
-                              <tbody>
-                                {acts.map((act, idx) => {
-                                  const isCredit = act.status === "Credited";
-                                  return (
-                                    <tr key={idx}>
-                                      <td className="activity-date-col">{act.date}</td>
-                                      <td>{act.desc}</td>
-                                      <td className={isCredit ? "points-credited" : "points-debited"}>
-                                        {Math.abs(act.points)}
-                                      </td>
-                                      <td>
-                                        <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
-                                          {act.status}
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <table className="activity-table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Points</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rewardsActivities.slice(0, 5).map((act, idx) => {
-                            const isCredit = act.status === "Credited";
-                            return (
-                              <tr key={idx}>
-                                <td>{act.date}</td>
-                                <td>{act.desc}</td>
-                                <td className={isCredit ? "points-credited" : "points-debited"}>
-                                  {Math.abs(act.points)}
-                                </td>
-                                <td>
-                                  <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
-                                    {act.status}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    )}
+                    <table className="activity-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Description</th>
+                          <th>Points</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rewardsActivities.slice(0, 10).map((act, idx) => {
+                          const isCredit = act.status === "Credited";
+                          return (
+                            <tr key={idx}>
+                              <td>{act.date}</td>
+                              <td>{act.desc}</td>
+                              <td className={isCredit ? "points-credited" : "points-debited"}>
+                                {Math.abs(act.points)}
+                              </td>
+                              <td>
+                                <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                  {act.status}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
