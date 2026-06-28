@@ -1632,9 +1632,6 @@ const Profile = () => {
                       <span className="reward-card-subtext">This Year</span>
                     </div>
                   </div>
-                  <span className="reward-card-link-purple" onClick={() => toast("View History coming soon!", { icon: "🔮" })}>
-                    View History &rarr;
-                  </span>
                 </div>
 
                 <div className="reward-summary-card green-theme">
@@ -1648,9 +1645,6 @@ const Profile = () => {
                       <span className="reward-card-subtext">This Year</span>
                     </div>
                   </div>
-                  <span className="reward-card-link-green" onClick={() => toast("View History coming soon!", { icon: "🔮" })}>
-                    View History &rarr;
-                  </span>
                 </div>
 
                 <div className="reward-summary-card orange-theme">
