@@ -531,12 +531,6 @@ const Profile = () => {
             </p>
           </div>
         </div>
-        <div className="profile-hero-actions">
-          <Link to="/" className="profile-hero-back-btn">
-            <ArrowLeft size={16} />
-            <span>Back to Shop</span>
-          </Link>
-        </div>
       </div>
 
       <div className="profile-tab-wrapper">
