@@ -1658,9 +1658,6 @@ const Profile = () => {
                       <span className="reward-card-subtext">Points expire on 30 Jun 2024</span>
                     </div>
                   </div>
-                  <span className="reward-card-link-orange" onClick={() => toast("Expiry Details: 120 points expire at the end of this month.", { icon: "⚠️" })}>
-                    View Details &rarr;
-                  </span>
                 </div>
               </div>
               {/* Bottom Layout section */}
