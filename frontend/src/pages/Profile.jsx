@@ -466,65 +466,33 @@ const Profile = () => {
 
   return (
     <div className="profile-page-container">
-      {/* Top Navigation / Breadcrumbs */}
-      <div className="profile-header-nav">
-        <Link to="/" className="profile-back-link">
-          <ArrowLeft size={16} />
-          <span>Back to Shop</span>
-        </Link>
+      {/* Premium Profile Header Banner */}
+      <div className="profile-hero-header">
+        <div className="profile-hero-user-info">
+          <div className="profile-hero-avatar">
+            {profileData.firstName.charAt(0).toUpperCase()}
+            {profileData.lastName.charAt(0).toUpperCase()}
+          </div>
+          <div className="profile-hero-welcome">
+            <span className="profile-hero-greeting">Welcome back,</span>
+            <h1 className="profile-hero-name">{profileData.firstName} {profileData.lastName}</h1>
+            <p className="profile-hero-meta">
+              <span className="meta-item">{profileData.email}</span>
+              <span className="meta-divider">•</span>
+              <span className="meta-item">{profileData.mobile}</span>
+            </p>
+          </div>
+        </div>
+        <div className="profile-hero-actions">
+          <Link to="/" className="profile-hero-back-btn">
+            <ArrowLeft size={16} />
+            <span>Back to Shop</span>
+          </Link>
+        </div>
       </div>
 
-      <div className="profile-layout-grid">
-        {/* Left Navigation Sidebar */}
-        <aside className="profile-sidebar-nav">
-          <div className="user-brief-card">
-            <div className="user-avatar-circle">
-              {profileData.firstName.charAt(0).toUpperCase()}
-              {profileData.lastName.charAt(0).toUpperCase()}
-            </div>
-            <div className="user-brief-info">
-              <span className="user-brief-greeting">Hello,</span>
-              <h3 className="user-brief-name">{profileData.firstName} {profileData.lastName}</h3>
-            </div>
-          </div>
-          <div className="sidebar-divider" />
-          <ul className="sidebar-link-list">
-            {SIDEBAR_ITEMS.map((item) => {
-              const IconComponent = item.icon;
-              const isActive = currentTab === item.id;
-              
-              if (item.path.startsWith('/profile')) {
-                return (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => setSearchParams({ tab: item.id })}
-                      className={`sidebar-nav-btn ${isActive ? "active" : ""}`}
-                    >
-                      <IconComponent size={16} className="sidebar-icon" />
-                      <span>{item.label}</span>
-                    </button>
-                  </li>
-                );
-              } else {
-                return (
-                  <li key={item.id}>
-                    <Link
-                      to={item.path}
-                      className="sidebar-nav-btn"
-                    >
-                      <IconComponent size={16} className="sidebar-icon" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                );
-              }
-            })}
-          </ul>
-        </aside>
-
-        {/* Right Content Area */}
-        <main className="profile-content-pane">
-          {currentTab === "profile" && (
+      <div className="profile-tab-wrapper">
+        {currentTab === "profile" && (
             <div className="profile-tab-content">
               {/* Personal Information Section */}
               <section className="profile-card-section">
@@ -2707,7 +2675,6 @@ const Profile = () => {
               </div>
             </div>
           )}
-        </main>
       </div>
     </div>
   );
