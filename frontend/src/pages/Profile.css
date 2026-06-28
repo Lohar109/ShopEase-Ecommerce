@@ -4323,6 +4323,23 @@
     background: rgba(0, 0, 0, 0.22);
 }
 
+/* 24x7 Support middle row layout redesign */
+.care-row-split-full {
+    width: 100%;
+}
+
+.help-channels-container .help-channels-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .help-channels-container .help-channels-list {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 
 

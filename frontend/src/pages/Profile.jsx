@@ -2247,58 +2247,8 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* 2. Middle Row: Popular Topics & Need More Help? */}
-              <div className="care-row-split middle-row">
-                {/* Popular Topics */}
-                <div className="popular-topics-container">
-                  <h2>Popular Topics</h2>
-                  <div className="popular-topics-grid">
-                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
-                      <div className="topic-icon-wrapper">
-                        <Package size={22} />
-                      </div>
-                      <div className="topic-details">
-                        <h3>Track Order</h3>
-                        <p>Track your order status in real-time</p>
-                      </div>
-                      <ChevronRight size={18} className="topic-arrow" />
-                    </div>
-
-                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
-                      <div className="topic-icon-wrapper">
-                        <RotateCcw size={22} />
-                      </div>
-                      <div className="topic-details">
-                        <h3>Return Product</h3>
-                        <p>Request a return or check eligibility</p>
-                      </div>
-                      <ChevronRight size={18} className="topic-arrow" />
-                    </div>
-
-                    <div className="topic-card" onClick={() => setSearchParams({ tab: "orders" })}>
-                      <div className="topic-icon-wrapper">
-                        <CreditCard size={22} />
-                      </div>
-                      <div className="topic-details">
-                        <h3>Refund Status</h3>
-                        <p>Check your refund status and history</p>
-                      </div>
-                      <ChevronRight size={18} className="topic-arrow" />
-                    </div>
-
-                    <div className="topic-card" onClick={() => toast.success("Opening payment resolutions desk...", { icon: "💳" })}>
-                      <div className="topic-icon-wrapper">
-                        <Landmark size={22} />
-                      </div>
-                      <div className="topic-details">
-                        <h3>Payment Issue</h3>
-                        <p>Resolve payment failures or errors</p>
-                      </div>
-                      <ChevronRight size={18} className="topic-arrow" />
-                    </div>
-                  </div>
-                </div>
-
+              {/* 2. Middle Row: Need More Help? */}
+              <div className="care-row-split-full middle-row">
                 {/* Need More Help? */}
                 <div className="help-channels-container">
                   <h2>Need More Help?</h2>
