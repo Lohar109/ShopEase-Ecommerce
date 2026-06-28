@@ -2422,6 +2422,10 @@
     color: #4b5563;
     padding: 0.75rem 0.5rem;
     border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 2;
 }
 
 .activity-table td {
