@@ -151,7 +151,7 @@ const Header = () => {
                 </li>
 
                 <li>
-                  <Link to="/orders" className="dropdown-item">
+                  <Link to="/profile?tab=orders" className="dropdown-item">
                     <Package size={16} />
                     <span>Orders</span>
                   </Link>
@@ -163,37 +163,37 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/seller" className="dropdown-item">
+                  <Link to="/profile?tab=seller" className="dropdown-item">
                     <Store size={16} />
                     <span>Become a Seller</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/rewards" className="dropdown-item">
+                  <Link to="/profile?tab=rewards" className="dropdown-item">
                     <Gift size={16} />
                     <span>Rewards</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/settings" className="dropdown-item">
+                  <Link to="/profile?tab=notifications" className="dropdown-item">
                     <Bell size={16} />
                     <span>Notification Preferences</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/support" className="dropdown-item">
+                  <Link to="/profile?tab=care" className="dropdown-item">
                     <Headphones size={16} />
                     <span>24x7 Customer Care</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/advertise" className="dropdown-item">
+                  <Link to="/profile?tab=advertise" className="dropdown-item">
                     <Megaphone size={16} />
                     <span>Advertise</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/download" className="dropdown-item">
+                  <Link to="/profile?tab=download" className="dropdown-item">
                     <Download size={16} />
                     <span>Download App</span>
                   </Link>
