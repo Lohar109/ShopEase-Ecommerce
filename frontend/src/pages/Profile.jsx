@@ -514,25 +514,6 @@ const Profile = () => {
 
   return (
     <div className="profile-page-container">
-      {/* Premium Profile Header Banner */}
-      <div className="profile-hero-header">
-        <div className="profile-hero-user-info">
-          <div className="profile-hero-avatar">
-            {profileData.firstName.charAt(0).toUpperCase()}
-            {profileData.lastName.charAt(0).toUpperCase()}
-          </div>
-          <div className="profile-hero-welcome">
-            <span className="profile-hero-greeting">Welcome back,</span>
-            <h1 className="profile-hero-name">{profileData.firstName} {profileData.lastName}</h1>
-            <p className="profile-hero-meta">
-              <span className="meta-item">{profileData.email}</span>
-              <span className="meta-divider">•</span>
-              <span className="meta-item">{profileData.mobile}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="profile-tab-wrapper">
         {currentTab === "profile" && (
             <div className="profile-tab-content">
