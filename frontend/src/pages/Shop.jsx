@@ -16,7 +16,16 @@ import {
   Sparkles,
   Store,
   Volleyball,
-  Watch
+  Watch,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  ShieldCheck,
+  Check,
+  Grid,
+  List,
+  SlidersHorizontal,
+  ArrowLeft
 } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import ProductSkeleton from "../components/ProductSkeleton";
@@ -75,14 +84,50 @@ const normalizeCategoryKey = (value) =>
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-");
 
+const SUBCATEGORY_HERO_CONTENT = {
+  watches: {
+    description: "Timeless designs for every style and occasion. Explore our wide range of premium watches.",
+    badges: ["100% Original", "Best Prices", "2 Year Warranty", "Easy Returns"]
+  },
+  "men's fashion": {
+    description: "Upgrade your wardrobe with our premium collection of men's clothing, footwear, and accessories.",
+    badges: ["Top Quality", "Best Deals", "Easy Exchanges", "Free Shipping"]
+  },
+  "women's fashion": {
+    description: "Discover elegant clothing, bags, shoes, and jewelry tailored for the modern woman.",
+    badges: ["Top Quality", "Best Deals", "Easy Exchanges", "Free Shipping"]
+  },
+  electronics: {
+    description: "Cutting-edge tech, top-tier audio, high-performance computers, and computing gear.",
+    badges: ["100% Original", "Best Prices", "Brand Warranty", "Easy Returns"]
+  }
+};
+
+const getHeroContent = (name) => {
+  const normalized = String(name || "").trim().toLowerCase();
+  if (SUBCATEGORY_HERO_CONTENT[normalized]) {
+    return SUBCATEGORY_HERO_CONTENT[normalized];
+  }
+  return {
+    description: `Explore our wide range of premium products in ${name || "this category"}. Quality guaranteed.`,
+    badges: ["100% Original", "Best Prices", "Easy Returns", "Secure Checkout"]
+  };
+};
+
 const Shop = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [selectedSubSubcategory, setSelectedSubSubcategory] = useState(null);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(50000);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [sortBy, setSortBy] = useState("popularity");
+  const [viewMode, setViewMode] = useState("grid");
   const navType = useNavigationType();
 
   // 1. Scroll event listener to track and save current scroll position
@@ -250,6 +295,57 @@ const Shop = () => {
     }
   }, [searchParams, mainCategories, categories]);
 
+  useEffect(() => {
+    const requestedSubSub = normalizeCategoryKey(searchParams.get("subsubcategory"));
+    if (categories.length === 0 || !selectedSubcategory) {
+      setSelectedSubSubcategory(null);
+      return;
+    }
+    const matched = categories.find(c => 
+      String(c.parent_id) === String(selectedSubcategory) && 
+      normalizeCategoryKey(c.name) === requestedSubSub
+    );
+    setSelectedSubSubcategory(matched ? matched.id : null);
+  }, [searchParams, selectedSubcategory, categories]);
+
+  const getProductPrice = (product) => {
+    const firstVariant = Array.isArray(product?.variants) && product.variants.length > 0 ? product.variants[0] : null;
+    const basePrice = firstVariant ? Number(firstVariant.price || 0) : 0;
+    const discountValue = firstVariant ? Number(firstVariant.discount_value) || 0 : 0;
+    const discountType = firstVariant ? String(firstVariant.discount_type || 'Percentage').toLowerCase() : 'percentage';
+    
+    if (discountValue > 0) {
+      if (discountType === 'percentage') {
+        return basePrice - (basePrice * (discountValue / 100));
+      } else {
+        return basePrice - discountValue;
+      }
+    }
+    return basePrice;
+  };
+
+  const brandCounts = useMemo(() => {
+    const counts = {};
+    if (!selectedSubcategory) return counts;
+
+    // Filter products within the subcategory
+    const subcategoryProducts = products.filter((product) => {
+      let currentId = String(product?.category_id || "");
+      while (currentId) {
+        if (currentId === String(selectedSubcategory)) return true;
+        const currentCategory = categoryById[currentId];
+        currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
+      }
+      return false;
+    });
+
+    subcategoryProducts.forEach((product) => {
+      const b = product.brand ? String(product.brand).trim() : "Generic";
+      counts[b] = (counts[b] || 0) + 1;
+    });
+    return counts;
+  }, [products, selectedSubcategory, categoryById]);
+
   const getFilteredProducts = () => {
     if (!selectedCategory) return products;
 
@@ -267,7 +363,283 @@ const Shop = () => {
     return products.filter((product) => checkMatch(product, activeCatId));
   };
 
-  const visibleProducts = getFilteredProducts();
+  const getFilteredAndSortedProducts = () => {
+    if (!selectedCategory) return products;
+
+    // 1. Filter by category levels
+    let list = [];
+    if (selectedSubSubcategory) {
+      list = products.filter((product) => String(product.category_id) === String(selectedSubSubcategory));
+    } else {
+      list = getFilteredProducts();
+    }
+
+    // 2. Filter by Price Range
+    list = list.filter((product) => {
+      const price = getProductPrice(product);
+      return price >= minPrice && price <= maxPrice;
+    });
+
+    // 3. Filter by Brand
+    if (selectedBrands.length > 0) {
+      list = list.filter((product) => {
+        const b = product.brand ? String(product.brand).trim() : "Generic";
+        return selectedBrands.includes(b);
+      });
+    }
+
+    // 4. Sort products
+    if (sortBy === "price-low") {
+      list.sort((a, b) => getProductPrice(a) - getProductPrice(b));
+    } else if (sortBy === "price-high") {
+      list.sort((a, b) => getProductPrice(b) - getProductPrice(a));
+    } else if (sortBy === "rating") {
+      list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortBy === "newest") {
+      list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    }
+
+    return list;
+  };
+
+  const visibleProducts = getFilteredAndSortedProducts();
+
+  const handleClearAllFilters = () => {
+    setMinPrice(0);
+    setMaxPrice(50000);
+    setSelectedBrands([]);
+    setSelectedSubSubcategory(null);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("subsubcategory");
+    setSearchParams(nextParams);
+  };
+
+  const subSubList = selectedSubcategory ? subcategoriesByParent[selectedSubcategory] || [] : [];
+  const isSubSubPage = selectedSubcategory && subSubList.length > 0;
+
+  // Render the redesigned subcategory page if it has sub-subcategories
+  if (isSubSubPage) {
+    const currentCategoryObj = categoryById[selectedCategory];
+    const currentSubcategoryObj = categoryById[selectedSubcategory];
+    const heroContent = getHeroContent(currentSubcategoryObj?.name);
+    const heroImage = currentSubcategoryObj?.image || `/category-icons/${currentSubcategoryObj?.name}.png`;
+
+    return (
+      <main className="shop-page subcategory-page-layout">
+        <div className="max-w-7xl mx-auto px-4 w-full">
+          {/* Breadcrumbs */}
+          <div className="subcategory-breadcrumbs">
+            <span className="breadcrumb-item" onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({}); }}>Home</span>
+            <span className="breadcrumb-separator">&gt;</span>
+            <span className="breadcrumb-item" onClick={() => { setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({ category: normalizeCategoryKey(currentCategoryObj?.name) }); }}>{currentCategoryObj?.name}</span>
+            <span className="breadcrumb-separator">&gt;</span>
+            <span className="breadcrumb-current">{currentSubcategoryObj?.name}</span>
+          </div>
+
+          {/* Hero Banner */}
+          <div className="subcategory-hero-banner">
+            <div className="hero-banner-left">
+              <h1 className="hero-banner-title">{currentSubcategoryObj?.name}</h1>
+              <p className="hero-banner-desc">{heroContent.description}</p>
+              <div className="hero-banner-badges">
+                {heroContent.badges.map((badge, idx) => (
+                  <div key={idx} className="hero-badge-item">
+                    <ShieldCheck size={16} className="hero-badge-icon" />
+                    <span>{badge}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hero-banner-right">
+              <img src={heroImage} alt={currentSubcategoryObj?.name} className="hero-banner-img" />
+            </div>
+          </div>
+
+          {/* Shop by Type */}
+          <div className="shop-by-type-section">
+            <h2 className="section-title">Shop by Type</h2>
+            <div className="sub-sub-carousel-wrapper">
+              <button className="carousel-control-btn left-btn" onClick={() => {
+                const carousel = document.querySelector(".sub-sub-carousel");
+                if (carousel) carousel.scrollBy({ left: -200, behavior: "smooth" });
+              }}>
+                <ChevronLeft size={20} />
+              </button>
+              <div className="sub-sub-carousel">
+                {subSubList.map((sub) => {
+                  const isSelected = String(selectedSubSubcategory) === String(sub.id);
+                  const displayName = sub.name.replace(/_/g, " ");
+                  const count = products.filter(p => String(p.category_id) === String(sub.id)).length;
+                  
+                  return (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => {
+                        const nextParams = new URLSearchParams(searchParams);
+                        if (isSelected) {
+                          nextParams.delete("subsubcategory");
+                        } else {
+                          nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+                        }
+                        setSearchParams(nextParams);
+                      }}
+                      className={`sub-sub-card ${isSelected ? 'is-selected' : ''}`}
+                    >
+                      <div className="sub-sub-img-circle">
+                        <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
+                      </div>
+                      <div className="sub-sub-details">
+                        <span className="sub-sub-name">{displayName}</span>
+                        <span className="sub-sub-count">{count}+ Products</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <button className="carousel-control-btn right-btn" onClick={() => {
+                const carousel = document.querySelector(".sub-sub-carousel");
+                if (carousel) carousel.scrollBy({ left: 200, behavior: "smooth" });
+              }}>
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Split Layout: Sidebar & Products */}
+          <div className="subcategory-split-layout">
+            {/* Filters Sidebar */}
+            <aside className="filters-sidebar">
+              <div className="sidebar-header">
+                <h3>Filters</h3>
+                <button className="clear-all-btn" onClick={handleClearAllFilters}>Clear All</button>
+              </div>
+              
+              <div className="filter-section">
+                <h4 className="filter-title">Price Range</h4>
+                <div className="price-inputs-row">
+                  <div className="price-input-box">
+                    <span className="currency-symbol">₹</span>
+                    <input
+                      type="number"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(Math.max(0, Number(e.target.value)))}
+                    />
+                  </div>
+                  <div className="price-input-box">
+                    <span className="currency-symbol">₹</span>
+                    <input
+                      type="number"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Math.max(0, Number(e.target.value)))}
+                    />
+                  </div>
+                </div>
+                <div className="price-slider-wrapper">
+                  <input
+                    type="range"
+                    min="0"
+                    max="50000"
+                    step="100"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="price-slider-input"
+                  />
+                </div>
+              </div>
+
+              {Object.keys(brandCounts).length > 0 && (
+                <div className="filter-section">
+                  <h4 className="filter-title">Brand</h4>
+                  <div className="brand-list-wrapper">
+                    {Object.entries(brandCounts).map(([brandName, count]) => {
+                      const isChecked = selectedBrands.includes(brandName);
+                      return (
+                        <label key={brandName} className="brand-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              if (isChecked) {
+                                setSelectedBrands(selectedBrands.filter(b => b !== brandName));
+                              } else {
+                                setSelectedBrands([...selectedBrands, brandName]);
+                              }
+                            }}
+                          />
+                          <span className="checkbox-custom-box">
+                            {isChecked && <Check size={12} className="checkmark-icon" />}
+                          </span>
+                          <span className="brand-name-text">{brandName}</span>
+                          <span className="brand-count-badge">({count})</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </aside>
+
+            {/* Products Container */}
+            <div className="products-layout-container">
+              <div className="products-grid-header">
+                <div className="results-count">
+                  Showing 1-{visibleProducts.length} of {visibleProducts.length} Products
+                </div>
+                <div className="header-controls-right">
+                  <div className="sort-by-wrapper">
+                    <span className="sort-label">Sort by:</span>
+                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
+                      <option value="popularity">Popularity</option>
+                      <option value="price-low">Price: Low to High</option>
+                      <option value="price-high">Price: High to Low</option>
+                      <option value="rating">Customer Rating</option>
+                      <option value="newest">Newest Arrivals</option>
+                    </select>
+                  </div>
+                  <div className="view-toggle-buttons">
+                    <button
+                      className={`view-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid size={18} />
+                    </button>
+                    <button
+                      className={`view-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {isLoading ? (
+                <div className="subcategory-product-grid skeleton-active">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <ProductSkeleton key={`sub-skeleton-${index}`} />
+                  ))}
+                </div>
+              ) : visibleProducts.length === 0 ? (
+                <div className="subcategory-empty-products">
+                  <SearchX size={64} className="empty-icon" />
+                  <h3>No products found matching your filters</h3>
+                  <p>Try resetting the price range or brand filters.</p>
+                  <button className="reset-filters-btn" onClick={handleClearAllFilters}>Reset Filters</button>
+                </div>
+              ) : (
+                <div className={`subcategory-product-grid ${viewMode === 'list' ? 'list-view-active' : ''}`}>
+                  {visibleProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="shop-page">
