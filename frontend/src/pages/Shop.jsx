@@ -326,13 +326,14 @@ const Shop = () => {
 
   const brandCounts = useMemo(() => {
     const counts = {};
-    if (!selectedSubcategory) return counts;
+    const activeLevelId = selectedSubcategory || selectedCategory;
+    if (!activeLevelId) return counts;
 
-    // Filter products within the subcategory
+    // Filter products within the active category level
     const subcategoryProducts = products.filter((product) => {
       let currentId = String(product?.category_id || "");
       while (currentId) {
-        if (currentId === String(selectedSubcategory)) return true;
+        if (currentId === String(activeLevelId)) return true;
         const currentCategory = categoryById[currentId];
         currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
       }
@@ -344,7 +345,7 @@ const Shop = () => {
       counts[b] = (counts[b] || 0) + 1;
     });
     return counts;
-  }, [products, selectedSubcategory, categoryById]);
+  }, [products, selectedCategory, selectedSubcategory, categoryById]);
 
   const getFilteredProducts = () => {
     if (!selectedCategory) return products;
@@ -414,15 +415,19 @@ const Shop = () => {
     setSearchParams(nextParams);
   };
 
-  const subSubList = selectedSubcategory ? subcategoriesByParent[selectedSubcategory] || [] : [];
-  const isSubSubPage = selectedSubcategory && subSubList.length > 0;
+  const childList = selectedSubcategory 
+    ? (subcategoriesByParent[selectedSubcategory] || [])
+    : (subcategoriesByParent[selectedCategory] || []);
 
-  // Render the redesigned subcategory page if it has sub-subcategories
-  if (isSubSubPage) {
+  const isCategoryActive = selectedCategory !== null;
+
+  // Render the redesigned subcategory page if it has sub-subcategories or is a main category page
+  if (isCategoryActive) {
     const currentCategoryObj = categoryById[selectedCategory];
-    const currentSubcategoryObj = categoryById[selectedSubcategory];
-    const heroContent = getHeroContent(currentSubcategoryObj?.name);
-    const heroImage = currentSubcategoryObj?.image || `/category-icons/${currentSubcategoryObj?.name}.png`;
+    const currentSubcategoryObj = selectedSubcategory ? categoryById[selectedSubcategory] : null;
+    const activeMainObj = currentSubcategoryObj || currentCategoryObj;
+    const heroContent = getHeroContent(activeMainObj?.name);
+    const heroImage = activeMainObj?.image || `/category-icons/${activeMainObj?.name}.png`;
 
     return (
       <main className="shop-page subcategory-page-layout">
@@ -431,15 +436,21 @@ const Shop = () => {
           <div className="subcategory-breadcrumbs">
             <span className="breadcrumb-item" onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({}); }}>Home</span>
             <span className="breadcrumb-separator">&gt;</span>
-            <span className="breadcrumb-item" onClick={() => { setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({ category: normalizeCategoryKey(currentCategoryObj?.name) }); }}>{currentCategoryObj?.name}</span>
-            <span className="breadcrumb-separator">&gt;</span>
-            <span className="breadcrumb-current">{currentSubcategoryObj?.name}</span>
+            {currentSubcategoryObj ? (
+              <>
+                <span className="breadcrumb-item" onClick={() => { setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({ category: normalizeCategoryKey(currentCategoryObj?.name) }); }}>{currentCategoryObj?.name}</span>
+                <span className="breadcrumb-separator">&gt;</span>
+                <span className="breadcrumb-current">{currentSubcategoryObj?.name}</span>
+              </>
+            ) : (
+              <span className="breadcrumb-current">{currentCategoryObj?.name}</span>
+            )}
           </div>
 
           {/* Hero Banner */}
           <div className="subcategory-hero-banner">
             <div className="hero-banner-left">
-              <h1 className="hero-banner-title">{currentSubcategoryObj?.name}</h1>
+              <h1 className="hero-banner-title">{activeMainObj?.name}</h1>
               <p className="hero-banner-desc">{heroContent.description}</p>
               <div className="hero-banner-badges">
                 {heroContent.badges.map((badge, idx) => (
@@ -451,60 +462,83 @@ const Shop = () => {
               </div>
             </div>
             <div className="hero-banner-right">
-              <img src={heroImage} alt={currentSubcategoryObj?.name} className="hero-banner-img" />
+              <img src={heroImage} alt={activeMainObj?.name} className="hero-banner-img" />
             </div>
           </div>
 
           {/* Shop by Type */}
-          <div className="shop-by-type-section">
-            <h2 className="section-title">Shop by Type</h2>
-            <div className="sub-sub-carousel-wrapper">
-              <button className="carousel-control-btn left-btn" onClick={() => {
-                const carousel = document.querySelector(".sub-sub-carousel");
-                if (carousel) carousel.scrollBy({ left: -200, behavior: "smooth" });
-              }}>
-                <ChevronLeft size={20} />
-              </button>
-              <div className="sub-sub-carousel">
-                {subSubList.map((sub) => {
-                  const isSelected = String(selectedSubSubcategory) === String(sub.id);
-                  const displayName = sub.name.replace(/_/g, " ");
-                  const count = products.filter(p => String(p.category_id) === String(sub.id)).length;
-                  
-                  return (
-                    <button
-                      key={sub.id}
-                      type="button"
-                      onClick={() => {
-                        const nextParams = new URLSearchParams(searchParams);
-                        if (isSelected) {
-                          nextParams.delete("subsubcategory");
-                        } else {
-                          nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+          {childList.length > 0 && (
+            <div className="shop-by-type-section">
+              <h2 className="section-title">Shop by Type</h2>
+              <div className="sub-sub-carousel-wrapper">
+                <button className="carousel-control-btn left-btn" onClick={() => {
+                  const carousel = document.querySelector(".sub-sub-carousel");
+                  if (carousel) carousel.scrollBy({ left: -200, behavior: "smooth" });
+                }}>
+                  <ChevronLeft size={20} />
+                </button>
+                <div className="sub-sub-carousel">
+                  {childList.map((sub) => {
+                    const isSelected = selectedSubcategory 
+                      ? String(selectedSubSubcategory) === String(sub.id)
+                      : false;
+                    const displayName = sub.name.replace(/_/g, " ");
+                    
+                    // Recursive helper to count products in category & descendants
+                    const getRecursiveProductCount = (catId) => {
+                      const checkMatch = (product, targetCatId) => {
+                        let currentId = String(product?.category_id || "");
+                        while (currentId) {
+                          if (currentId === String(targetCatId)) return true;
+                          const currentCategory = categoryById[currentId];
+                          currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
                         }
-                        setSearchParams(nextParams);
-                      }}
-                      className={`sub-sub-card ${isSelected ? 'is-selected' : ''}`}
-                    >
-                      <div className="sub-sub-img-circle">
-                        <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
-                      </div>
-                      <div className="sub-sub-details">
-                        <span className="sub-sub-name">{displayName}</span>
-                        <span className="sub-sub-count">{count}+ Products</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                        return false;
+                      };
+                      return products.filter(p => checkMatch(p, catId)).length;
+                    };
+
+                    const count = getRecursiveProductCount(sub.id);
+                    
+                    return (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => {
+                          const nextParams = new URLSearchParams(searchParams);
+                          if (selectedSubcategory) {
+                            if (isSelected) {
+                              nextParams.delete("subsubcategory");
+                            } else {
+                              nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+                            }
+                          } else {
+                            nextParams.set("subcategory", normalizeCategoryKey(sub.name));
+                          }
+                          setSearchParams(nextParams);
+                        }}
+                        className={`sub-sub-card ${isSelected ? 'is-selected' : ''}`}
+                      >
+                        <div className="sub-sub-img-circle">
+                          <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
+                        </div>
+                        <div className="sub-sub-details">
+                          <span className="sub-sub-name">{displayName}</span>
+                          <span className="sub-sub-count">{count}+ Products</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button className="carousel-control-btn right-btn" onClick={() => {
+                  const carousel = document.querySelector(".sub-sub-carousel");
+                  if (carousel) carousel.scrollBy({ left: 200, behavior: "smooth" });
+                }}>
+                  <ChevronRight size={20} />
+                </button>
               </div>
-              <button className="carousel-control-btn right-btn" onClick={() => {
-                const carousel = document.querySelector(".sub-sub-carousel");
-                if (carousel) carousel.scrollBy({ left: 200, behavior: "smooth" });
-              }}>
-                <ChevronRight size={20} />
-              </button>
             </div>
-          </div>
+          )}
 
           {/* Split Layout: Sidebar & Products */}
           <div className="subcategory-split-layout">
