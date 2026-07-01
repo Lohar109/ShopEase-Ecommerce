@@ -478,75 +478,155 @@ const Shop = () => {
             )}
           </div>
 
-          {/* Premium Category Header: Combined Welcome Info & Circles Carousel Box */}
-          <div className="category-header-combined-box">
-            <div className="category-info-card">
-              <h1 className="info-card-title">{activeMainObj?.name}</h1>
-              <p className="info-card-desc">{heroContent.description}</p>
-              <div className="info-badges-row">
-                <div className="info-badge">
-                  <Package size={14} className="info-badge-icon" />
-                  <span>{totalProductCount}+ Products</span>
+          {selectedSubcategory ? (
+            /* Subcategory Page UI */
+            <>
+              <div className="subcategory-welcome-banner">
+                <div className="banner-left-content">
+                  <h1 className="banner-title">{activeMainObj?.name}</h1>
+                  <p className="banner-desc">{heroContent.description}</p>
+                  <div className="banner-badges-row">
+                    {heroContent.badges.map((badgeText, idx) => (
+                      <div className="banner-badge" key={idx}>
+                        {idx === 0 && <ShieldCheck size={14} className="banner-badge-icon" />}
+                        {idx === 1 && <Award size={14} className="banner-badge-icon" />}
+                        {idx === 2 && <Sparkles size={14} className="banner-badge-icon" />}
+                        {idx === 3 && <Package size={14} className="banner-badge-icon" />}
+                        <span>{badgeText}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="info-badge">
-                  <Award size={14} className="info-badge-icon" />
-                  <span>Top Brands</span>
-                </div>
-                <div className="info-badge">
-                  <Sparkles size={14} className="info-badge-icon" />
-                  <span>Premium Quality</span>
+                <div className="banner-right-image-wrap">
+                  <img src={heroImage} alt={activeMainObj?.name} className="banner-model-img" />
                 </div>
               </div>
-            </div>
 
-            {childList.length > 0 && (
-              <div className="category-circles-carousel-wrapper">
-                <div className="category-circles-carousel animate-marquee hover:[animation-play-state:paused]">
-                  {Array.from({ length: 2 }).map((_, loopIndex) => (
-                    <div
-                      key={`sub-loop-${loopIndex}`}
-                      className="category-circles-marquee-group"
-                      aria-hidden={loopIndex === 1}
-                    >
+              {childList.length > 0 && (
+                <div className="shop-by-type-section">
+                  <h3 className="shop-by-type-title">Shop by Type</h3>
+                  <div className="shop-by-type-carousel-wrapper">
+                    <div className="shop-by-type-carousel">
                       {childList.map((sub) => {
-                        const isSelected = selectedSubcategory 
+                        const isSelected = selectedSubSubcategory 
                           ? String(selectedSubSubcategory) === String(sub.id)
                           : false;
                         const displayName = sub.name.replace(/_/g, " ");
+                        const count = getRecursiveProductCount(sub.id);
                         
                         return (
                           <button
-                            key={`${loopIndex}-${sub.id}`}
+                            key={sub.id}
                             type="button"
                             onClick={() => {
                               const nextParams = new URLSearchParams(searchParams);
-                              if (selectedSubcategory) {
-                                if (isSelected) {
-                                  nextParams.delete("subsubcategory");
-                                } else {
-                                  nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
-                                }
+                              if (isSelected) {
+                                nextParams.delete("subsubcategory");
                               } else {
-                                nextParams.set("subcategory", normalizeCategoryKey(sub.name));
+                                nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
                               }
                               setSearchParams(nextParams);
                             }}
-                            className={`circle-carousel-item ${isSelected ? 'is-selected' : ''}`}
+                            className={`shop-type-card ${isSelected ? 'is-selected' : ''}`}
                           >
-                            <div className="circle-img-wrap">
+                            <div className="type-card-left-img-wrap">
                               <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
                             </div>
-                            <span className="circle-label">{displayName}</span>
-                            {isSelected && <div className="circle-active-line" />}
+                            <div className="type-card-right-text">
+                              <span className="type-card-name">{displayName}</span>
+                              <span className="type-card-count">{count}+ Products</span>
+                            </div>
                           </button>
                         );
                       })}
                     </div>
-                  ))}
+                    {childList.length > 4 && (
+                      <button 
+                        type="button"
+                        className="type-carousel-arrow-btn" 
+                        onClick={() => {
+                          const carousel = document.querySelector(".shop-by-type-carousel");
+                          if (carousel) carousel.scrollBy({ left: 240, behavior: "smooth" });
+                        }}
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* Main Category Page UI: Combined Welcome Info & Circles Carousel Box */
+            <div className="category-header-combined-box">
+              <div className="category-info-card">
+                <h1 className="info-card-title">{activeMainObj?.name}</h1>
+                <p className="info-card-desc">{heroContent.description}</p>
+                <div className="info-badges-row">
+                  <div className="info-badge">
+                    <Package size={14} className="info-badge-icon" />
+                    <span>{totalProductCount}+ Products</span>
+                  </div>
+                  <div className="info-badge">
+                    <Award size={14} className="info-badge-icon" />
+                    <span>Top Brands</span>
+                  </div>
+                  <div className="info-badge">
+                    <Sparkles size={14} className="info-badge-icon" />
+                    <span>Premium Quality</span>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
+
+              {childList.length > 0 && (
+                <div className="category-circles-carousel-wrapper">
+                  <div className="category-circles-carousel animate-marquee hover:[animation-play-state:paused]">
+                    {Array.from({ length: 2 }).map((_, loopIndex) => (
+                      <div
+                        key={`sub-loop-${loopIndex}`}
+                        className="category-circles-marquee-group"
+                        aria-hidden={loopIndex === 1}
+                      >
+                        {childList.map((sub) => {
+                          const isSelected = selectedSubcategory 
+                            ? String(selectedSubSubcategory) === String(sub.id)
+                            : false;
+                          const displayName = sub.name.replace(/_/g, " ");
+                          
+                          return (
+                            <button
+                              key={`${loopIndex}-${sub.id}`}
+                              type="button"
+                              onClick={() => {
+                                const nextParams = new URLSearchParams(searchParams);
+                                if (selectedSubcategory) {
+                                  if (isSelected) {
+                                    nextParams.delete("subsubcategory");
+                                  } else {
+                                    nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+                                  }
+                                } else {
+                                  nextParams.set("subcategory", normalizeCategoryKey(sub.name));
+                                }
+                                setSearchParams(nextParams);
+                              }}
+                              className={`circle-carousel-item ${isSelected ? 'is-selected' : ''}`}
+                            >
+                              <div className="circle-img-wrap">
+                                <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
+                              </div>
+                              <span className="circle-label">{displayName}</span>
+                              {isSelected && <div className="circle-active-line" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Three-Column Split Layout */}
           <div className="category-three-col-layout">
