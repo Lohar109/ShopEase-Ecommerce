@@ -3521,24 +3521,25 @@ button:hover {
    Redesigned Category Page Split Header & 3-Column Grid
    ========================================================================== */
 
-/* Category Header Split */
-.category-header-split {
+/* Category Combined Header Box */
+.category-header-combined-box {
     display: flex;
-    gap: 1.5rem;
     margin-bottom: 2.5rem;
     align-items: stretch;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    overflow: hidden;
 }
 
 .category-info-card {
     flex: 0 0 32%;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    border-right: 1px solid #f3f4f6;
 }
 
 .info-card-title {
@@ -3586,11 +3587,7 @@ button:hover {
     position: relative;
     display: flex;
     align-items: center;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
     padding: 1rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     overflow: hidden;
 }
 
@@ -3913,11 +3910,13 @@ button:hover {
 
 /* Responsiveness for 3 columns */
 @media (max-width: 991px) {
-    .category-header-split {
+    .category-header-combined-box {
         flex-direction: column;
     }
     .category-info-card {
         flex: 1;
+        border-right: none;
+        border-bottom: 1px solid #f3f4f6;
     }
     .category-three-col-layout {
         grid-template-columns: 1fr;

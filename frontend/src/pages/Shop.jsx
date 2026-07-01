@@ -475,8 +475,8 @@ const Shop = () => {
             )}
           </div>
 
-          {/* Premium Category Header Split: Welcome Info Card + Circles Carousel */}
-          <div className="category-header-split">
+          {/* Premium Category Header: Combined Welcome Info & Circles Carousel Box */}
+          <div className="category-header-combined-box">
             <div className="category-info-card">
               <h1 className="info-card-title">{activeMainObj?.name}</h1>
               <p className="info-card-desc">{heroContent.description}</p>
