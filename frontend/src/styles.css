@@ -3614,7 +3614,7 @@ button:hover {
     border: none;
     padding: 0;
     flex-shrink: 0;
-    width: 80px;
+    width: 96px;
     position: relative;
     transition: transform 0.2s ease;
 }
@@ -3624,8 +3624,8 @@ button:hover {
 }
 
 .circle-img-wrap {
-    width: 58px;
-    height: 58px;
+    width: 110px;
+    height: 110px;
     border-radius: 999px;
     background: #f8fafc;
     border: 1px solid #e5e7eb;

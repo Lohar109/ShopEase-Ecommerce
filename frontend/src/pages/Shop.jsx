@@ -498,12 +498,6 @@ const Shop = () => {
 
             {childList.length > 0 && (
               <div className="category-circles-carousel-wrapper">
-                <button className="carousel-control-btn left-btn" onClick={() => {
-                  const carousel = document.querySelector(".category-circles-carousel");
-                  if (carousel) carousel.scrollBy({ left: -200, behavior: "smooth" });
-                }}>
-                  <ChevronLeft size={20} />
-                </button>
                 <div className="category-circles-carousel">
                   {childList.map((sub) => {
                     const isSelected = selectedSubcategory 
@@ -539,12 +533,6 @@ const Shop = () => {
                     );
                   })}
                 </div>
-                <button className="carousel-control-btn right-btn" onClick={() => {
-                  const carousel = document.querySelector(".category-circles-carousel");
-                  if (carousel) carousel.scrollBy({ left: 200, behavior: "smooth" });
-                }}>
-                  <ChevronRight size={20} />
-                </button>
               </div>
             )}
           </div>
