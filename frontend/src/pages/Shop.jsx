@@ -785,65 +785,6 @@ const Shop = () => {
               )}
             </div>
 
-            {/* Column 3: Promo Sidebar */}
-            <aside className="promo-sidebar">
-              <div className="promo-banner-card">
-                <div className="promo-text-wrap">
-                  <span className="promo-kicker">New Season</span>
-                  <h3 className="promo-title">New Style</h3>
-                  <span className="promo-discount">Up to 50% Off</span>
-                  <button type="button" className="promo-cta-btn" onClick={() => toast.success("Shopping new arrivals now...", { icon: "🛍️" })}>
-                    SHOP NOW
-                  </button>
-                </div>
-                <div className="promo-img-wrap">
-                  <img src="/assets/fashion_promo_model.png" alt="Stylish model" className="promo-model-img" />
-                </div>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="promo-trust-badges">
-                <div className="promo-trust-badge-item">
-                  <div className="trust-icon-box">
-                    <ShieldCheck size={18} />
-                  </div>
-                  <div className="trust-badge-text">
-                    <strong>100% Original</strong>
-                    <span>Products</span>
-                  </div>
-                </div>
-
-                <div className="promo-trust-badge-item">
-                  <div className="trust-icon-box">
-                    <Package size={18} />
-                  </div>
-                  <div className="trust-badge-text">
-                    <strong>Easy Returns</strong>
-                    <span>&amp; Refunds</span>
-                  </div>
-                </div>
-
-                <div className="promo-trust-badge-item">
-                  <div className="trust-icon-box">
-                    <Store size={18} />
-                  </div>
-                  <div className="trust-badge-text">
-                    <strong>Fast Delivery</strong>
-                    <span>Pan India</span>
-                  </div>
-                </div>
-
-                <div className="promo-trust-badge-item">
-                  <div className="trust-icon-box">
-                    <Award size={18} />
-                  </div>
-                  <div className="trust-badge-text">
-                    <strong>Secure Payment</strong>
-                    <span>100% Safe</span>
-                  </div>
-                </div>
-              </div>
-            </aside>
           </div>
         </div>
       </main>

@@ -3681,10 +3681,10 @@ button:hover {
     border-radius: 999px;
 }
 
-/* Three-Column main layout grid */
+/* Combined main layout grid */
 .category-three-col-layout {
     display: grid;
-    grid-template-columns: 240px 1fr 260px;
+    grid-template-columns: 240px 1fr;
     gap: 1.5rem;
     align-items: start;
     margin-bottom: 4rem;
@@ -3734,13 +3734,26 @@ button:hover {
 
 /* Middle grid product list adjustments */
 .subcategory-product-grid.three-cols {
-    grid-template-columns: repeat(3, 1fr);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
 }
 
 @media (max-width: 1200px) {
     .subcategory-product-grid.three-cols {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .subcategory-product-grid.three-cols {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .subcategory-product-grid.three-cols {
+        grid-template-columns: 1fr;
     }
 }
 
