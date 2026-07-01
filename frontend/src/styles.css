@@ -3286,6 +3286,24 @@ button:hover {
     padding-right: 4px;
 }
 
+/* Thinner custom scrollbar for sidebar lists */
+.brand-list-wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+
+.brand-list-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.brand-list-wrapper::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 999px;
+}
+
+.brand-list-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
 .brand-checkbox-label {
     display: flex;
     align-items: center;
