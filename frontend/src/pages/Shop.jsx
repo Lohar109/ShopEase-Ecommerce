@@ -779,37 +779,7 @@ const Shop = () => {
 
             {/* Column 2: Products Container */}
             <div className="products-layout-container">
-              <div className="products-grid-header">
-                <div className="results-count">
-                  Showing 1-{Math.min(12, visibleProducts.length)} of {visibleProducts.length} Products
-                </div>
-                <div className="header-controls-right">
-                  <div className="sort-by-wrapper">
-                    <span className="sort-label">Sort by:</span>
-                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-                      <option value="popularity">Popularity</option>
-                      <option value="price-low">Price: Low to High</option>
-                      <option value="price-high">Price: High to Low</option>
-                      <option value="rating">Customer Rating</option>
-                      <option value="newest">Newest Arrivals</option>
-                    </select>
-                  </div>
-                  <div className="view-toggle-buttons">
-                    <button
-                      className={`view-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
-                      onClick={() => setViewMode('grid')}
-                    >
-                      <Grid size={18} />
-                    </button>
-                    <button
-                      className={`view-btn ${viewMode === 'list' ? 'is-active' : ''}`}
-                      onClick={() => setViewMode('list')}
-                    >
-                      <List size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
+
 
               {isLoading ? (
                 <div className="subcategory-product-grid skeleton-active three-cols">
