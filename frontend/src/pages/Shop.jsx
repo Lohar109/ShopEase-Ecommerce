@@ -20,6 +20,8 @@ import {
   Watch,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Star,
   ShieldCheck,
   Check,
@@ -668,7 +670,9 @@ const Shop = () => {
                   onClick={() => setIsSizeExpanded(!isSizeExpanded)}
                 >
                   <span className="filter-title">Size</span>
-                  <span className="accordion-arrow">{isSizeExpanded ? "−" : "+"}</span>
+                  <span className="accordion-arrow">
+                    {isSizeExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
                 </button>
                 {isSizeExpanded && (
                   <div className="filter-accordion-content brand-list-wrapper">
@@ -706,7 +710,9 @@ const Shop = () => {
                   onClick={() => setIsColorExpanded(!isColorExpanded)}
                 >
                   <span className="filter-title">Color</span>
-                  <span className="accordion-arrow">{isColorExpanded ? "−" : "+"}</span>
+                  <span className="accordion-arrow">
+                    {isColorExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
                 </button>
                 {isColorExpanded && (
                   <div className="filter-accordion-content brand-list-wrapper">
@@ -744,7 +750,9 @@ const Shop = () => {
                   onClick={() => setIsRatingExpanded(!isRatingExpanded)}
                 >
                   <span className="filter-title">Rating</span>
-                  <span className="accordion-arrow">{isRatingExpanded ? "−" : "+"}</span>
+                  <span className="accordion-arrow">
+                    {isRatingExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
                 </button>
                 {isRatingExpanded && (
                   <div className="filter-accordion-content brand-list-wrapper">

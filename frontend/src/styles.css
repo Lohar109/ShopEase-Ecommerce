@@ -3690,7 +3690,6 @@ button:hover {
     margin-bottom: 4rem;
 }
 
-/* Filter sidebar accordion styles */
 .filter-accordion-header {
     display: flex;
     justify-content: space-between;
@@ -3701,6 +3700,16 @@ button:hover {
     padding: 0;
     cursor: pointer;
     outline: none;
+    transition: none;
+}
+
+/* Explicitly override general button hover style */
+.filter-accordion-header:hover {
+    background: none !important;
+    background-color: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
 }
 
 .filter-accordion-header .filter-title {
