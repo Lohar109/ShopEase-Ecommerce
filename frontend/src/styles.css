@@ -3622,7 +3622,15 @@ button:hover {
     flex-shrink: 0;
     width: 115px;
     position: relative;
-    transition: transform 0.3s ease-in-out;
+}
+
+/* Explicitly override general button hover style */
+.circle-carousel-item:hover {
+    background: none !important;
+    background-color: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
 }
 
 .circle-img-wrap {
@@ -3635,7 +3643,6 @@ button:hover {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: all 0.3s ease-in-out;
 }
 
 .circle-carousel-item.is-selected .circle-img-wrap {
@@ -3648,11 +3655,6 @@ button:hover {
     width: 75%;
     height: 75%;
     object-fit: contain;
-    transition: transform 0.3s ease-in-out;
-}
-
-.circle-carousel-item:hover .circle-img-wrap img {
-    transform: translateY(-0.25rem) scale(1.05);
 }
 
 .circle-label {
@@ -3664,11 +3666,6 @@ button:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    transition: color 0.3s ease-in-out;
-}
-
-.circle-carousel-item:hover .circle-label {
-    color: #e33170;
 }
 
 .circle-carousel-item.is-selected .circle-label {
