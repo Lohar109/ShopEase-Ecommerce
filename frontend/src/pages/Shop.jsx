@@ -14,6 +14,7 @@ import {
   Smartphone,
   Sofa,
   Sparkles,
+  Award,
   Store,
   Volleyball,
   Watch,
@@ -128,6 +129,13 @@ const Shop = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortBy, setSortBy] = useState("popularity");
   const [viewMode, setViewMode] = useState("grid");
+  const [isSizeExpanded, setIsSizeExpanded] = useState(false);
+  const [isColorExpanded, setIsColorExpanded] = useState(false);
+  const [isRatingExpanded, setIsRatingExpanded] = useState(false);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedRatings, setSelectedRatings] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const navType = useNavigationType();
 
   // 1. Scroll event listener to track and save current scroll position
@@ -410,6 +418,10 @@ const Shop = () => {
     setMaxPrice(50000);
     setSelectedBrands([]);
     setSelectedSubSubcategory(null);
+    setSelectedSizes([]);
+    setSelectedColors([]);
+    setSelectedRatings([]);
+    setCurrentPage(1);
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("subsubcategory");
     setSearchParams(nextParams);
@@ -429,6 +441,22 @@ const Shop = () => {
     const heroContent = getHeroContent(activeMainObj?.name);
     const heroImage = activeMainObj?.image || `/category-icons/${activeMainObj?.name}.png`;
 
+    // Recursive helper to count products in category & descendants
+    const getRecursiveProductCount = (catId) => {
+      const checkMatch = (product, targetCatId) => {
+        let currentId = String(product?.category_id || "");
+        while (currentId) {
+          if (currentId === String(targetCatId)) return true;
+          const currentCategory = categoryById[currentId];
+          currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
+        }
+        return false;
+      };
+      return products.filter(p => checkMatch(p, catId)).length;
+    };
+
+    const totalProductCount = getRecursiveProductCount(activeMainObj?.id);
+
     return (
       <main className="shop-page subcategory-page-layout">
         <div className="max-w-7xl mx-auto px-4 w-full">
@@ -447,58 +475,41 @@ const Shop = () => {
             )}
           </div>
 
-          {/* Hero Banner */}
-          <div className="subcategory-hero-banner">
-            <div className="hero-banner-left">
-              <h1 className="hero-banner-title">{activeMainObj?.name}</h1>
-              <p className="hero-banner-desc">{heroContent.description}</p>
-              <div className="hero-banner-badges">
-                {heroContent.badges.map((badge, idx) => (
-                  <div key={idx} className="hero-badge-item">
-                    <ShieldCheck size={16} className="hero-badge-icon" />
-                    <span>{badge}</span>
-                  </div>
-                ))}
+          {/* Premium Category Header Split: Welcome Info Card + Circles Carousel */}
+          <div className="category-header-split">
+            <div className="category-info-card">
+              <h1 className="info-card-title">{activeMainObj?.name}</h1>
+              <p className="info-card-desc">{heroContent.description}</p>
+              <div className="info-badges-row">
+                <div className="info-badge">
+                  <Package size={14} className="info-badge-icon" />
+                  <span>{totalProductCount}+ Products</span>
+                </div>
+                <div className="info-badge">
+                  <Award size={14} className="info-badge-icon" />
+                  <span>Top Brands</span>
+                </div>
+                <div className="info-badge">
+                  <Sparkles size={14} className="info-badge-icon" />
+                  <span>Premium Quality</span>
+                </div>
               </div>
             </div>
-            <div className="hero-banner-right">
-              <img src={heroImage} alt={activeMainObj?.name} className="hero-banner-img" />
-            </div>
-          </div>
 
-          {/* Shop by Type */}
-          {childList.length > 0 && (
-            <div className="shop-by-type-section">
-              <h2 className="section-title">Shop by Type</h2>
-              <div className="sub-sub-carousel-wrapper">
+            {childList.length > 0 && (
+              <div className="category-circles-carousel-wrapper">
                 <button className="carousel-control-btn left-btn" onClick={() => {
-                  const carousel = document.querySelector(".sub-sub-carousel");
+                  const carousel = document.querySelector(".category-circles-carousel");
                   if (carousel) carousel.scrollBy({ left: -200, behavior: "smooth" });
                 }}>
                   <ChevronLeft size={20} />
                 </button>
-                <div className="sub-sub-carousel">
+                <div className="category-circles-carousel">
                   {childList.map((sub) => {
                     const isSelected = selectedSubcategory 
                       ? String(selectedSubSubcategory) === String(sub.id)
                       : false;
                     const displayName = sub.name.replace(/_/g, " ");
-                    
-                    // Recursive helper to count products in category & descendants
-                    const getRecursiveProductCount = (catId) => {
-                      const checkMatch = (product, targetCatId) => {
-                        let currentId = String(product?.category_id || "");
-                        while (currentId) {
-                          if (currentId === String(targetCatId)) return true;
-                          const currentCategory = categoryById[currentId];
-                          currentId = currentCategory?.parent_id ? String(currentCategory.parent_id) : null;
-                        }
-                        return false;
-                      };
-                      return products.filter(p => checkMatch(p, catId)).length;
-                    };
-
-                    const count = getRecursiveProductCount(sub.id);
                     
                     return (
                       <button
@@ -517,32 +528,30 @@ const Shop = () => {
                           }
                           setSearchParams(nextParams);
                         }}
-                        className={`sub-sub-card ${isSelected ? 'is-selected' : ''}`}
+                        className={`circle-carousel-item ${isSelected ? 'is-selected' : ''}`}
                       >
-                        <div className="sub-sub-img-circle">
+                        <div className="circle-img-wrap">
                           <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
                         </div>
-                        <div className="sub-sub-details">
-                          <span className="sub-sub-name">{displayName}</span>
-                          <span className="sub-sub-count">{count}+ Products</span>
-                        </div>
+                        <span className="circle-label">{displayName}</span>
+                        {isSelected && <div className="circle-active-line" />}
                       </button>
                     );
                   })}
                 </div>
                 <button className="carousel-control-btn right-btn" onClick={() => {
-                  const carousel = document.querySelector(".sub-sub-carousel");
+                  const carousel = document.querySelector(".category-circles-carousel");
                   if (carousel) carousel.scrollBy({ left: 200, behavior: "smooth" });
                 }}>
                   <ChevronRight size={20} />
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Split Layout: Sidebar & Products */}
-          <div className="subcategory-split-layout">
-            {/* Filters Sidebar */}
+          {/* Three-Column Split Layout */}
+          <div className="category-three-col-layout">
+            {/* Column 1: Filters Sidebar */}
             <aside className="filters-sidebar">
               <div className="sidebar-header">
                 <h3>Filters</h3>
@@ -582,6 +591,48 @@ const Shop = () => {
                 </div>
               </div>
 
+              {childList.length > 0 && (
+                <div className="filter-section">
+                  <h4 className="filter-title">Category</h4>
+                  <div className="brand-list-wrapper">
+                    {childList.map((sub) => {
+                      const isChecked = selectedSubcategory 
+                        ? String(selectedSubSubcategory) === String(sub.id)
+                        : false;
+                      const displayName = sub.name.replace(/_/g, " ");
+                      const count = getRecursiveProductCount(sub.id);
+                      
+                      return (
+                        <label key={sub.id} className="brand-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              const nextParams = new URLSearchParams(searchParams);
+                              if (selectedSubcategory) {
+                                if (isChecked) {
+                                  nextParams.delete("subsubcategory");
+                                } else {
+                                  nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+                                }
+                              } else {
+                                nextParams.set("subcategory", normalizeCategoryKey(sub.name));
+                              }
+                              setSearchParams(nextParams);
+                            }}
+                          />
+                          <span className="checkbox-custom-box">
+                            {isChecked && <Check size={12} className="checkmark-icon" />}
+                          </span>
+                          <span className="brand-name-text">{displayName}</span>
+                          <span className="brand-count-badge">({count})</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {Object.keys(brandCounts).length > 0 && (
                 <div className="filter-section">
                   <h4 className="filter-title">Brand</h4>
@@ -612,13 +663,129 @@ const Shop = () => {
                   </div>
                 </div>
               )}
+
+              {/* Size Accordion */}
+              <div className="filter-section">
+                <button 
+                  type="button" 
+                  className="filter-accordion-header"
+                  onClick={() => setIsSizeExpanded(!isSizeExpanded)}
+                >
+                  <span className="filter-title">Size</span>
+                  <span className="accordion-arrow">{isSizeExpanded ? "−" : "+"}</span>
+                </button>
+                {isSizeExpanded && (
+                  <div className="filter-accordion-content brand-list-wrapper">
+                    {["S", "M", "L", "XL", "XXL"].map((size) => {
+                      const isChecked = selectedSizes.includes(size);
+                      return (
+                        <label key={size} className="brand-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              if (isChecked) {
+                                setSelectedSizes(selectedSizes.filter(s => s !== size));
+                              } else {
+                                setSelectedSizes([...selectedSizes, size]);
+                              }
+                            }}
+                          />
+                          <span className="checkbox-custom-box">
+                            {isChecked && <Check size={12} className="checkmark-icon" />}
+                          </span>
+                          <span className="brand-name-text">{size}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Color Accordion */}
+              <div className="filter-section">
+                <button 
+                  type="button" 
+                  className="filter-accordion-header"
+                  onClick={() => setIsColorExpanded(!isColorExpanded)}
+                >
+                  <span className="filter-title">Color</span>
+                  <span className="accordion-arrow">{isColorExpanded ? "−" : "+"}</span>
+                </button>
+                {isColorExpanded && (
+                  <div className="filter-accordion-content brand-list-wrapper">
+                    {["Black", "White", "Blue", "Red", "Grey"].map((color) => {
+                      const isChecked = selectedColors.includes(color);
+                      return (
+                        <label key={color} className="brand-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              if (isChecked) {
+                                setSelectedColors(selectedColors.filter(c => c !== color));
+                              } else {
+                                setSelectedColors([...selectedColors, color]);
+                              }
+                            }}
+                          />
+                          <span className="checkbox-custom-box">
+                            {isChecked && <Check size={12} className="checkmark-icon" />}
+                          </span>
+                          <span className="brand-name-text">{color}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Rating Accordion */}
+              <div className="filter-section">
+                <button 
+                  type="button" 
+                  className="filter-accordion-header"
+                  onClick={() => setIsRatingExpanded(!isRatingExpanded)}
+                >
+                  <span className="filter-title">Rating</span>
+                  <span className="accordion-arrow">{isRatingExpanded ? "−" : "+"}</span>
+                </button>
+                {isRatingExpanded && (
+                  <div className="filter-accordion-content brand-list-wrapper">
+                    {[5, 4, 3, 2, 1].map((rating) => {
+                      const isChecked = selectedRatings.includes(rating);
+                      return (
+                        <label key={rating} className="brand-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              if (isChecked) {
+                                setSelectedRatings(selectedRatings.filter(r => r !== rating));
+                              } else {
+                                setSelectedRatings([...selectedRatings, rating]);
+                              }
+                            }}
+                          />
+                          <span className="checkbox-custom-box">
+                            {isChecked && <Check size={12} className="checkmark-icon" />}
+                          </span>
+                          <span className="brand-name-text">
+                            {rating} Star{rating > 1 ? "s" : ""} &amp; Up
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </aside>
 
-            {/* Products Container */}
+            {/* Column 2: Products Container */}
             <div className="products-layout-container">
               <div className="products-grid-header">
                 <div className="results-count">
-                  Showing 1-{visibleProducts.length} of {visibleProducts.length} Products
+                  Showing 1-{Math.min(12, visibleProducts.length)} of {visibleProducts.length} Products
                 </div>
                 <div className="header-controls-right">
                   <div className="sort-by-wrapper">
@@ -649,8 +816,8 @@ const Shop = () => {
               </div>
 
               {isLoading ? (
-                <div className="subcategory-product-grid skeleton-active">
-                  {Array.from({ length: 8 }).map((_, index) => (
+                <div className="subcategory-product-grid skeleton-active three-cols">
+                  {Array.from({ length: 9 }).map((_, index) => (
                     <ProductSkeleton key={`sub-skeleton-${index}`} />
                   ))}
                 </div>
@@ -662,13 +829,87 @@ const Shop = () => {
                   <button className="reset-filters-btn" onClick={handleClearAllFilters}>Reset Filters</button>
                 </div>
               ) : (
-                <div className={`subcategory-product-grid ${viewMode === 'list' ? 'list-view-active' : ''}`}>
-                  {visibleProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
+                <>
+                  <div className={`subcategory-product-grid three-cols ${viewMode === 'list' ? 'list-view-active' : ''}`}>
+                    {visibleProducts.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+
+                  {/* Mock Pagination matches mockup exactly */}
+                  <div className="pagination-container">
+                    <button className="pagination-btn arrow-btn">&lt;</button>
+                    <button className="pagination-btn is-active">1</button>
+                    <button className="pagination-btn">2</button>
+                    <button className="pagination-btn">3</button>
+                    <button className="pagination-btn">4</button>
+                    <span className="pagination-ellipsis">...</span>
+                    <button className="pagination-btn">30</button>
+                    <button className="pagination-btn arrow-btn">&gt;</button>
+                  </div>
+                </>
               )}
             </div>
+
+            {/* Column 3: Promo Sidebar */}
+            <aside className="promo-sidebar">
+              <div className="promo-banner-card">
+                <div className="promo-text-wrap">
+                  <span className="promo-kicker">New Season</span>
+                  <h3 className="promo-title">New Style</h3>
+                  <span className="promo-discount">Up to 50% Off</span>
+                  <button type="button" className="promo-cta-btn" onClick={() => toast.success("Shopping new arrivals now...", { icon: "🛍️" })}>
+                    SHOP NOW
+                  </button>
+                </div>
+                <div className="promo-img-wrap">
+                  <img src="/assets/fashion_promo_model.png" alt="Stylish model" className="promo-model-img" />
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="promo-trust-badges">
+                <div className="promo-trust-badge-item">
+                  <div className="trust-icon-box">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div className="trust-badge-text">
+                    <strong>100% Original</strong>
+                    <span>Products</span>
+                  </div>
+                </div>
+
+                <div className="promo-trust-badge-item">
+                  <div className="trust-icon-box">
+                    <Package size={18} />
+                  </div>
+                  <div className="trust-badge-text">
+                    <strong>Easy Returns</strong>
+                    <span>&amp; Refunds</span>
+                  </div>
+                </div>
+
+                <div className="promo-trust-badge-item">
+                  <div className="trust-icon-box">
+                    <Store size={18} />
+                  </div>
+                  <div className="trust-badge-text">
+                    <strong>Fast Delivery</strong>
+                    <span>Pan India</span>
+                  </div>
+                </div>
+
+                <div className="promo-trust-badge-item">
+                  <div className="trust-icon-box">
+                    <Award size={18} />
+                  </div>
+                  <div className="trust-badge-text">
+                    <strong>Secure Payment</strong>
+                    <span>100% Safe</span>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </main>
