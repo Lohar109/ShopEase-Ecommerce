@@ -4076,7 +4076,7 @@ button:hover {
 }
 
 .banner-right-image-wrap {
-    width: 320px;
+    width: 450px;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -4085,7 +4085,9 @@ button:hover {
 .banner-model-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: right center;
+    padding: 10px;
 }
 
 /* Shop by Type Section */
@@ -4164,9 +4166,9 @@ button:hover {
 }
 
 .type-card-left-img-wrap img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .type-card-right-text {
