@@ -742,47 +742,7 @@ const Shop = () => {
                 )}
               </div>
 
-              {/* Rating Accordion */}
-              <div className="filter-section">
-                <button 
-                  type="button" 
-                  className="filter-accordion-header"
-                  onClick={() => setIsRatingExpanded(!isRatingExpanded)}
-                >
-                  <span className="filter-title">Rating</span>
-                  <span className="accordion-arrow">
-                    {isRatingExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </span>
-                </button>
-                {isRatingExpanded && (
-                  <div className="filter-accordion-content brand-list-wrapper">
-                    {[5, 4, 3, 2, 1].map((rating) => {
-                      const isChecked = selectedRatings.includes(rating);
-                      return (
-                        <label key={rating} className="brand-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedRatings(selectedRatings.filter(r => r !== rating));
-                              } else {
-                                setSelectedRatings([...selectedRatings, rating]);
-                              }
-                            }}
-                          />
-                          <span className="checkbox-custom-box">
-                            {isChecked && <Check size={12} className="checkmark-icon" />}
-                          </span>
-                          <span className="brand-name-text">
-                            {rating} Star{rating > 1 ? "s" : ""} &amp; Up
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+
             </aside>
 
             {/* Column 2: Products Container */}
