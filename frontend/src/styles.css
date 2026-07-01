@@ -3304,6 +3304,40 @@ button:hover {
     background: #9ca3af;
 }
 
+.brand-list-wrapper.no-scrollbar-filter {
+    max-height: none !important;
+    overflow-y: visible !important;
+}
+
+.brand-list-wrapper.no-scrollbar-filter::-webkit-scrollbar {
+    display: none !important;
+}
+
+.more-less-toggle-btn {
+    background: none !important;
+    background-color: transparent !important;
+    border: none;
+    padding: 0;
+    color: #e33170;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.more-less-toggle-btn:hover {
+    color: #c8507a;
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 .brand-checkbox-label {
     display: flex;
     align-items: center;

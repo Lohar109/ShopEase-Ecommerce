@@ -137,7 +137,8 @@ const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedRatings, setSelectedRatings] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllBrands, setShowAllBrands] = useState(false);
   const navType = useNavigationType();
 
   // 1. Scroll event listener to track and save current scroll position
@@ -592,8 +593,8 @@ const Shop = () => {
               {childList.length > 0 && (
                 <div className="filter-section">
                   <h4 className="filter-title">Category</h4>
-                  <div className="brand-list-wrapper">
-                    {childList.map((sub) => {
+                  <div className="brand-list-wrapper no-scrollbar-filter">
+                    {(showAllCategories ? childList : childList.slice(0, 5)).map((sub) => {
                       const isChecked = selectedSubcategory 
                         ? String(selectedSubSubcategory) === String(sub.id)
                         : false;
@@ -628,14 +629,23 @@ const Shop = () => {
                       );
                     })}
                   </div>
+                  {childList.length > 5 && (
+                    <button 
+                      type="button" 
+                      className="more-less-toggle-btn"
+                      onClick={() => setShowAllCategories(!showAllCategories)}
+                    >
+                      {showAllCategories ? "Less" : "More"}
+                    </button>
+                  )}
                 </div>
               )}
 
               {Object.keys(brandCounts).length > 0 && (
                 <div className="filter-section">
                   <h4 className="filter-title">Brand</h4>
-                  <div className="brand-list-wrapper">
-                    {Object.entries(brandCounts).map(([brandName, count]) => {
+                  <div className="brand-list-wrapper no-scrollbar-filter">
+                    {(showAllBrands ? Object.entries(brandCounts) : Object.entries(brandCounts).slice(0, 5)).map(([brandName, count]) => {
                       const isChecked = selectedBrands.includes(brandName);
                       return (
                         <label key={brandName} className="brand-checkbox-label">
@@ -659,6 +669,15 @@ const Shop = () => {
                       );
                     })}
                   </div>
+                  {Object.keys(brandCounts).length > 5 && (
+                    <button 
+                      type="button" 
+                      className="more-less-toggle-btn"
+                      onClick={() => setShowAllBrands(!showAllBrands)}
+                    >
+                      {showAllBrands ? "Less" : "More"}
+                    </button>
+                  )}
                 </div>
               )}
 
