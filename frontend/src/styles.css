@@ -4080,6 +4080,7 @@ button:hover {
     height: 100%;
     position: relative;
     overflow: hidden;
+    padding-right: 2rem;
 }
 
 .banner-model-img {
