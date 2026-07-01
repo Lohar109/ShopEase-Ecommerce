@@ -3205,14 +3205,22 @@ button:hover {
     font-size: 0.8rem;
     font-weight: 600;
     color: #e33170;
-    background: none;
+    background: none !important;
+    background-color: transparent !important;
     border: none;
     cursor: pointer;
     padding: 0;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
 .clear-all-btn:hover {
     text-decoration: underline;
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: pointer !important;
 }
 
 .filter-section {
