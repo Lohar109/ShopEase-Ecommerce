@@ -498,40 +498,48 @@ const Shop = () => {
 
             {childList.length > 0 && (
               <div className="category-circles-carousel-wrapper">
-                <div className="category-circles-carousel">
-                  {childList.map((sub) => {
-                    const isSelected = selectedSubcategory 
-                      ? String(selectedSubSubcategory) === String(sub.id)
-                      : false;
-                    const displayName = sub.name.replace(/_/g, " ");
-                    
-                    return (
-                      <button
-                        key={sub.id}
-                        type="button"
-                        onClick={() => {
-                          const nextParams = new URLSearchParams(searchParams);
-                          if (selectedSubcategory) {
-                            if (isSelected) {
-                              nextParams.delete("subsubcategory");
-                            } else {
-                              nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
-                            }
-                          } else {
-                            nextParams.set("subcategory", normalizeCategoryKey(sub.name));
-                          }
-                          setSearchParams(nextParams);
-                        }}
-                        className={`circle-carousel-item ${isSelected ? 'is-selected' : ''}`}
-                      >
-                        <div className="circle-img-wrap">
-                          <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
-                        </div>
-                        <span className="circle-label">{displayName}</span>
-                        {isSelected && <div className="circle-active-line" />}
-                      </button>
-                    );
-                  })}
+                <div className="category-circles-carousel animate-marquee hover:[animation-play-state:paused]">
+                  {Array.from({ length: 2 }).map((_, loopIndex) => (
+                    <div
+                      key={`sub-loop-${loopIndex}`}
+                      className="category-circles-marquee-group"
+                      aria-hidden={loopIndex === 1}
+                    >
+                      {childList.map((sub) => {
+                        const isSelected = selectedSubcategory 
+                          ? String(selectedSubSubcategory) === String(sub.id)
+                          : false;
+                        const displayName = sub.name.replace(/_/g, " ");
+                        
+                        return (
+                          <button
+                            key={`${loopIndex}-${sub.id}`}
+                            type="button"
+                            onClick={() => {
+                              const nextParams = new URLSearchParams(searchParams);
+                              if (selectedSubcategory) {
+                                if (isSelected) {
+                                  nextParams.delete("subsubcategory");
+                                } else {
+                                  nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
+                                }
+                              } else {
+                                nextParams.set("subcategory", normalizeCategoryKey(sub.name));
+                              }
+                              setSearchParams(nextParams);
+                            }}
+                            className={`circle-carousel-item ${isSelected ? 'is-selected' : ''}`}
+                          >
+                            <div className="circle-img-wrap">
+                              <img src={sub.image || `/category-icons/${sub.name}.png`} alt={displayName} />
+                            </div>
+                            <span className="circle-label">{displayName}</span>
+                            {isSelected && <div className="circle-active-line" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

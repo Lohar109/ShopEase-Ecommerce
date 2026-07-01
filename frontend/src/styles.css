@@ -3593,15 +3593,21 @@ button:hover {
 
 .category-circles-carousel {
     display: flex;
-    gap: 1.5rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 0.25rem;
-    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: max-content;
 }
 
 .category-circles-carousel::-webkit-scrollbar {
     display: none;
+}
+
+.category-circles-marquee-group {
+    display: flex;
+    gap: 1.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    padding-right: 1.5rem;
 }
 
 .circle-carousel-item {
@@ -3614,13 +3620,9 @@ button:hover {
     border: none;
     padding: 0;
     flex-shrink: 0;
-    width: 96px;
+    width: 115px;
     position: relative;
-    transition: transform 0.2s ease;
-}
-
-.circle-carousel-item:hover {
-    transform: translateY(-2px);
+    transition: transform 0.3s ease-in-out;
 }
 
 .circle-img-wrap {
@@ -3633,7 +3635,7 @@ button:hover {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .circle-carousel-item.is-selected .circle-img-wrap {
@@ -3646,6 +3648,11 @@ button:hover {
     width: 75%;
     height: 75%;
     object-fit: contain;
+    transition: transform 0.3s ease-in-out;
+}
+
+.circle-carousel-item:hover .circle-img-wrap img {
+    transform: translateY(-0.25rem) scale(1.05);
 }
 
 .circle-label {
@@ -3657,6 +3664,11 @@ button:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    transition: color 0.3s ease-in-out;
+}
+
+.circle-carousel-item:hover .circle-label {
+    color: #e33170;
 }
 
 .circle-carousel-item.is-selected .circle-label {
