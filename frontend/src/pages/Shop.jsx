@@ -590,56 +590,7 @@ const Shop = () => {
                 </div>
               </div>
 
-              {childList.length > 0 && (
-                <div className="filter-section">
-                  <h4 className="filter-title">Category</h4>
-                  <div className="brand-list-wrapper no-scrollbar-filter">
-                    {(showAllCategories ? childList : childList.slice(0, 5)).map((sub) => {
-                      const isChecked = selectedSubcategory 
-                        ? String(selectedSubSubcategory) === String(sub.id)
-                        : false;
-                      const displayName = sub.name.replace(/_/g, " ");
-                      const count = getRecursiveProductCount(sub.id);
-                      
-                      return (
-                        <label key={sub.id} className="brand-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              const nextParams = new URLSearchParams(searchParams);
-                              if (selectedSubcategory) {
-                                if (isChecked) {
-                                  nextParams.delete("subsubcategory");
-                                } else {
-                                  nextParams.set("subsubcategory", normalizeCategoryKey(sub.name));
-                                }
-                              } else {
-                                nextParams.set("subcategory", normalizeCategoryKey(sub.name));
-                              }
-                              setSearchParams(nextParams);
-                            }}
-                          />
-                          <span className="checkbox-custom-box">
-                            {isChecked && <Check size={12} className="checkmark-icon" />}
-                          </span>
-                          <span className="brand-name-text">{displayName}</span>
-                          <span className="brand-count-badge">({count})</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                  {childList.length > 5 && (
-                    <button 
-                      type="button" 
-                      className="more-less-toggle-btn"
-                      onClick={() => setShowAllCategories(!showAllCategories)}
-                    >
-                      {showAllCategories ? "Less" : "More"}
-                    </button>
-                  )}
-                </div>
-              )}
+
 
               {Object.keys(brandCounts).length > 0 && (
                 <div className="filter-section">
