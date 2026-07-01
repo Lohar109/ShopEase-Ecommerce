@@ -789,17 +789,7 @@ const Shop = () => {
                     ))}
                   </div>
 
-                  {/* Mock Pagination matches mockup exactly */}
-                  <div className="pagination-container">
-                    <button className="pagination-btn arrow-btn">&lt;</button>
-                    <button className="pagination-btn is-active">1</button>
-                    <button className="pagination-btn">2</button>
-                    <button className="pagination-btn">3</button>
-                    <button className="pagination-btn">4</button>
-                    <span className="pagination-ellipsis">...</span>
-                    <button className="pagination-btn">30</button>
-                    <button className="pagination-btn arrow-btn">&gt;</button>
-                  </div>
+
                 </>
               )}
             </div>
