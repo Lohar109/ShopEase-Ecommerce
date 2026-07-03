@@ -185,8 +185,12 @@ const Profile = () => {
   // State to manage active orders, search query, and active filter tab
   const [orders, setOrders] = useState(() => {
     const saved = localStorage.getItem("shopease_orders_list");
-    if (saved) return JSON.parse(saved);
-    return INITIAL_ORDERS;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const isDefaultList = Array.isArray(parsed) && parsed.length > 0 && parsed.every(o => o.orderId && o.orderId.startsWith("#SE123"));
+      if (!isDefaultList) return parsed;
+    }
+    return [];
   });
   const [ordersSearchQuery, setOrdersSearchQuery] = useState("");
   const [ordersActiveTab, setOrdersActiveTab] = useState("All");
