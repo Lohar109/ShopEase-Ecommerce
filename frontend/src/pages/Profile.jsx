@@ -172,12 +172,12 @@ const Profile = () => {
     return {
       type: "Home",
       isDefault: true,
-      line1: "45, Shreem Avenue, Near Iscon Temple, Satellite",
-      city: "Ahmedabad",
-      state: "Gujarat",
-      pinCode: "380015",
-      country: "India",
-      phone: "+91 9876543210"
+      line1: "",
+      city: "",
+      state: "",
+      pinCode: "",
+      country: "",
+      phone: ""
     };
   });
   const [addressFormData, setAddressFormData] = useState({ ...addressData });
