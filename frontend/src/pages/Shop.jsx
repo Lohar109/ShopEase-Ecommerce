@@ -466,15 +466,21 @@ const Shop = () => {
           {/* Breadcrumbs */}
           <div className="subcategory-breadcrumbs">
             <span className="breadcrumb-item" onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({}); }}>Home</span>
-            <span className="breadcrumb-separator">&gt;</span>
-            {currentSubcategoryObj ? (
+            {currentCategoryObj && currentCategoryObj.name.toLowerCase() !== "home" && (
               <>
-                <span className="breadcrumb-item" onClick={() => { setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({ category: normalizeCategoryKey(currentCategoryObj?.name) }); }}>{currentCategoryObj?.name}</span>
+                <span className="breadcrumb-separator">&gt;</span>
+                {currentSubcategoryObj ? (
+                  <span className="breadcrumb-item" onClick={() => { setSelectedSubcategory(null); setSelectedSubSubcategory(null); setSearchParams({ category: normalizeCategoryKey(currentCategoryObj?.name) }); }}>{currentCategoryObj?.name}</span>
+                ) : (
+                  <span className="breadcrumb-current">{currentCategoryObj?.name}</span>
+                )}
+              </>
+            )}
+            {currentSubcategoryObj && (
+              <>
                 <span className="breadcrumb-separator">&gt;</span>
                 <span className="breadcrumb-current">{currentSubcategoryObj?.name}</span>
               </>
-            ) : (
-              <span className="breadcrumb-current">{currentCategoryObj?.name}</span>
             )}
           </div>
 

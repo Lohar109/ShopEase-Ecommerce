@@ -217,7 +217,7 @@ const ProductDetail = () => {
         to: `/shop${query}`,
         isLast,
       };
-    });
+    }).filter(item => item.label.toLowerCase() !== "home");
   }, [allCategories, product?.category_id]);
 
   function parseVariantSize(variant) {
