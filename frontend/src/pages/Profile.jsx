@@ -514,6 +514,29 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  const getFormattedAddress = () => {
+    const parts = [];
+    if (addressData.line1) parts.push(addressData.line1);
+    if (addressData.city) parts.push(addressData.city);
+    if (addressData.state) {
+      if (addressData.pinCode) {
+        parts.push(`${addressData.state} - ${addressData.pinCode}`);
+      } else {
+        parts.push(addressData.state);
+      }
+    } else if (addressData.pinCode) {
+      parts.push(addressData.pinCode);
+    }
+    if (addressData.country) parts.push(addressData.country);
+    
+    let baseAddress = parts.join(", ");
+    if (addressData.phone) {
+      baseAddress = baseAddress ? `${baseAddress} | ${addressData.phone}` : addressData.phone;
+    }
+    
+    return baseAddress || "No address added yet. Click 'Edit Addresses' to add one.";
+  };
+
   const handleEditAddressToggle = () => {
     setAddressFormData({ ...addressData });
     setIsEditingAddress(!isEditingAddress);
@@ -684,7 +707,7 @@ const Profile = () => {
                         {addressData.isDefault && <span className="default-address-pill">Default</span>}
                       </div>
                       <p className="address-text-paragraph">
-                        {addressData.line1}, {addressData.city}, {addressData.state} - {addressData.pinCode}, {addressData.country} | {addressData.phone}
+                        {getFormattedAddress()}
                       </p>
                     </div>
                     <ChevronRight size={18} className="address-row-chevron" />
