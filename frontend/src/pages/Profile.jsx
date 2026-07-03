@@ -124,23 +124,39 @@ const Profile = () => {
   const currentTab = searchParams.get("tab") || "profile";
   const navigate = useNavigate();
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("shopease_token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   // Load user data from localStorage or default values
   const [profileData, setProfileData] = useState(() => {
     const saved = localStorage.getItem("shopease_profile_data");
-    const defaultEmail = localStorage.getItem("shopease_user_email") || "pooja@gmail.com";
+    const defaultEmail = localStorage.getItem("shopease_user_email") || "";
+    const defaultFirstName = localStorage.getItem("shopease_user_first_name") || "";
     
     if (saved) {
       const parsed = JSON.parse(saved);
-      return { ...parsed, email: defaultEmail };
+      return { 
+        firstName: defaultFirstName || parsed.firstName || "", 
+        lastName: parsed.lastName || "", 
+        email: defaultEmail, 
+        mobile: parsed.mobile || "", 
+        dob: parsed.dob || "", 
+        gender: parsed.gender || "" 
+      };
     }
     
     return {
-      firstName: "Pooja",
-      lastName: "Gilada",
+      firstName: defaultFirstName,
+      lastName: "",
       email: defaultEmail,
-      mobile: "+91 9876543210",
-      dob: "1998-03-12",
-      gender: "Female"
+      mobile: "",
+      dob: "",
+      gender: ""
     };
   });
 
@@ -492,6 +508,9 @@ const Profile = () => {
     e.preventDefault();
     setProfileData(editFormData);
     localStorage.setItem("shopease_profile_data", JSON.stringify(editFormData));
+    if (editFormData.firstName) {
+      localStorage.setItem("shopease_user_first_name", editFormData.firstName);
+    }
     setIsEditing(false);
   };
 
