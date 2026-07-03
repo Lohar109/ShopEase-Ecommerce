@@ -1653,7 +1653,11 @@ const Profile = () => {
                   ))
                 ) : (
                   <div className="orders-empty-state">
-                    <p>No orders found matching your criteria.</p>
+                    <p>
+                      {orders.length === 0
+                        ? "You haven't placed any orders yet."
+                        : "No orders found matching your criteria."}
+                    </p>
                   </div>
                 )}
               </div>
