@@ -121,25 +121,46 @@ const Header = () => {
             </Link>
           </li>
           <li className="nav-login-dropdown-wrapper">
-            <Link to="/login" className="nav-text-badge-link nav-login-trigger" aria-label="Login">
+            <Link to={localStorage.getItem('shopease_token') ? "/profile" : "/login"} className="nav-text-badge-link nav-login-trigger" aria-label="Login">
               <User size={16} />
-              <span>Login</span>
+              <span>{localStorage.getItem('shopease_token') ? (localStorage.getItem('shopease_user_first_name') || "Account") : "Login"}</span>
               <ChevronDown size={12} className="nav-chevron-icon" />
             </Link>
             
             {/* High-Fidelity Hover Dropdown Card */}
             <div className="nav-login-dropdown-card">
               <div className="dropdown-signup-row">
-                <span className="signup-prompt-text">New customer?</span>
-                <Link 
-                  to="/login" 
-                  className="signup-action-link" 
-                  onClick={() => {
-                    localStorage.setItem('shopease_auth_mode', 'register');
-                  }}
-                >
-                  Sign Up
-                </Link>
+                {localStorage.getItem('shopease_token') ? (
+                  <>
+                    <span className="signup-prompt-text">Hello, {localStorage.getItem('shopease_user_first_name') || "User"}</span>
+                    <button 
+                      type="button" 
+                      className="signup-action-link" 
+                      onClick={() => {
+                        localStorage.removeItem('shopease_token');
+                        localStorage.removeItem('shopease_user_email');
+                        localStorage.removeItem('shopease_user_first_name');
+                        window.location.reload();
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
+                      Log Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="signup-prompt-text">New customer?</span>
+                    <Link 
+                      to="/login" 
+                      className="signup-action-link" 
+                      onClick={() => {
+                        localStorage.setItem('shopease_auth_mode', 'register');
+                      }}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
               <div className="dropdown-divider" />
               <ul className="dropdown-menu-list">

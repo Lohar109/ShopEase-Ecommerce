@@ -12,6 +12,8 @@ const Login = () => {
   const [inputVal, setInputVal] = useState('');
   const [otpArray, setOtpArray] = useState(['', '', '', '', '', '']);
   const [registerOtp, setRegisterOtp] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [viewMode, setViewMode] = useState(() => {
     const saved = localStorage.getItem('shopease_auth_mode');
@@ -108,6 +110,11 @@ const Login = () => {
       return;
     }
 
+    if (viewMode === 'register' && !firstName.trim()) {
+      setError('Please enter your First Name.');
+      return;
+    }
+
     setError('');
     setLoading(true);
 
@@ -176,7 +183,9 @@ const Login = () => {
         body: JSON.stringify({
           email: inputVal.trim(),
           otp: fullOtp,
-          mode: viewMode
+          mode: viewMode,
+          firstName: viewMode === 'register' ? firstName.trim() : undefined,
+          lastName: viewMode === 'register' ? lastName.trim() : undefined
         })
       });
 
@@ -188,6 +197,9 @@ const Login = () => {
       if (data.token) {
         localStorage.setItem('shopease_token', data.token);
         localStorage.setItem('shopease_user_email', inputVal.trim());
+        if (data.firstName) {
+          localStorage.setItem('shopease_user_first_name', data.firstName);
+        }
       }
 
       alert(viewMode === 'register' ? 'Registration successful! Welcome to ShopEase.' : 'Login successful! Welcome back to ShopEase.');
@@ -311,6 +323,44 @@ const Login = () => {
             {step === 1 ? (
               /* Form Step 1: Input Credential */
               <form onSubmit={handleRequestOtp} className="split-login-form">
+                {viewMode === 'register' && (
+                  <>
+                    <div className="floating-underline-input-group">
+                      <input
+                        type="text"
+                        id="first-name-input"
+                        className="underline-text-input"
+                        placeholder=" "
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        disabled={loading}
+                        required
+                        autoFocus
+                      />
+                      <label htmlFor="first-name-input" className="underline-floating-label">
+                        Enter First Name
+                      </label>
+                      <span className="underline-focus-bar" />
+                    </div>
+
+                    <div className="floating-underline-input-group">
+                      <input
+                        type="text"
+                        id="last-name-input"
+                        className="underline-text-input"
+                        placeholder=" "
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        disabled={loading}
+                      />
+                      <label htmlFor="last-name-input" className="underline-floating-label">
+                        Enter Last Name (Optional)
+                      </label>
+                      <span className="underline-focus-bar" />
+                    </div>
+                  </>
+                )}
+
                 <div className="floating-underline-input-group">
                   <input
                     type="text"
@@ -321,7 +371,7 @@ const Login = () => {
                     onChange={handleInputChange}
                     disabled={loading}
                     required
-                    autoFocus
+                    autoFocus={viewMode !== 'register'}
                   />
                   <label htmlFor="email-mobile-input" className="underline-floating-label">
                     Enter Email address
@@ -341,7 +391,7 @@ const Login = () => {
                   <button
                     type="button"
                     className="split-login-action-btn secondary-white"
-                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); setFirstName(''); setLastName(''); }}
                     disabled={loading}
                   >
                     Existing User? Log in
@@ -408,7 +458,7 @@ const Login = () => {
                   <button
                     type="button"
                     className="split-login-action-btn secondary-white"
-                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); }}
+                    onClick={() => { setViewMode('login'); setStep(1); setError(''); setInputVal(''); setFirstName(''); setLastName(''); }}
                     disabled={loading}
                   >
                     Existing User? Log in
@@ -470,7 +520,7 @@ const Login = () => {
           {/* Bottom Card Sign-up Link */}
           {step === 1 && viewMode === 'login' && (
             <div className="split-login-footer">
-              <span className="footer-register-link" onClick={() => { setViewMode('register'); setStep(1); setError(''); setInputVal(''); }}>
+              <span className="footer-register-link" onClick={() => { setViewMode('register'); setStep(1); setError(''); setInputVal(''); setFirstName(''); setLastName(''); }}>
                 New to ShopEase? Create an account
               </span>
             </div>

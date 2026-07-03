@@ -179,7 +179,7 @@ exports.sendOtp = async (req, res) => {
 };
 
 exports.verifyOtp = async (req, res) => {
-  const { email, otp, mode } = req.body;
+  const { email, otp, mode, firstName, lastName } = req.body;
   if (!email || !otp) {
     return res.status(400).json({ error: 'Email and OTP are required.' });
   }
@@ -213,6 +213,9 @@ exports.verifyOtp = async (req, res) => {
     await pool.query('DELETE FROM user_otps WHERE email = $1', [email]);
 
     let userId;
+    let firstNameVal = '';
+    let lastNameVal = '';
+
     if (mode === 'register') {
       // Create user
       // Generate a secure random password to satisfy column NOT NULL constraint
@@ -220,24 +223,37 @@ exports.verifyOtp = async (req, res) => {
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
       
       const insertResult = await pool.query(
-        'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id',
-        [email, hashedPassword]
+        'INSERT INTO users (email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING id, first_name, last_name',
+        [email, hashedPassword, firstName || null, lastName || null]
       );
       userId = insertResult.rows[0].id;
+      firstNameVal = insertResult.rows[0].first_name;
+      lastNameVal = insertResult.rows[0].last_name;
     } else {
-      // Get existing user ID
-      const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+      // Get existing user ID and names
+      const userResult = await pool.query('SELECT id, first_name, last_name FROM users WHERE email = $1', [email]);
       userId = userResult.rows[0].id;
+      firstNameVal = userResult.rows[0].first_name;
+      lastNameVal = userResult.rows[0].last_name;
     }
 
-    // Generate JWT token
+    // Generate JWT token including names
     const token = jwt.sign(
-      { userId, email },
+      { 
+        userId, 
+        email, 
+        firstName: firstNameVal || '', 
+        lastName: lastNameVal || '' 
+      },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '24h' }
     );
 
-    res.json({ token, message: mode === 'register' ? 'Registration successful!' : 'Login successful!' });
+    res.json({ 
+      token, 
+      firstName: firstNameVal || '',
+      message: mode === 'register' ? 'Registration successful!' : 'Login successful!' 
+    });
   } catch (err) {
     console.error('Error verifying OTP:', err);
     res.status(500).json({ error: err.message });
