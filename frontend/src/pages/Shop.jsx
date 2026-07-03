@@ -253,11 +253,7 @@ const Shop = () => {
       const nameKey = normalizeCategoryKey(category?.name);
       if (!nameKey || !requestedName) return false;
 
-      return (
-        nameKey === requestedName ||
-        nameKey.startsWith(requestedName) ||
-        requestedName.startsWith(nameKey)
-      );
+      return nameKey === requestedName;
     };
 
     const matchedCategory = requestedCategory
