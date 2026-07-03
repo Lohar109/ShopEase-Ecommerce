@@ -131,8 +131,8 @@ const Shop = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortBy, setSortBy] = useState("popularity");
   const [viewMode, setViewMode] = useState("grid");
-  const [isSizeExpanded, setIsSizeExpanded] = useState(false);
-  const [isColorExpanded, setIsColorExpanded] = useState(false);
+  const [isSizeExpanded, setIsSizeExpanded] = useState(true);
+  const [isColorExpanded, setIsColorExpanded] = useState(true);
   const [isRatingExpanded, setIsRatingExpanded] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -701,84 +701,66 @@ const Shop = () => {
                 </div>
               )}
 
-              {/* Size Accordion */}
+              {/* Size Section */}
               <div className="filter-section">
-                <button 
-                  type="button" 
-                  className="filter-accordion-header"
-                  onClick={() => setIsSizeExpanded(!isSizeExpanded)}
-                >
+                <div className="filter-accordion-header" style={{ cursor: 'default' }}>
                   <span className="filter-title">Size</span>
-                  <span className="accordion-arrow">
-                    {isSizeExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </span>
-                </button>
-                {isSizeExpanded && (
-                  <div className="filter-accordion-content brand-list-wrapper">
-                    {["S", "M", "L", "XL", "XXL"].map((size) => {
-                      const isChecked = selectedSizes.includes(size);
-                      return (
-                        <label key={size} className="brand-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedSizes(selectedSizes.filter(s => s !== size));
-                              } else {
-                                setSelectedSizes([...selectedSizes, size]);
-                              }
-                            }}
-                          />
-                          <span className="checkbox-custom-box">
-                            {isChecked && <Check size={12} className="checkmark-icon" />}
-                          </span>
-                          <span className="brand-name-text">{size}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
+                </div>
+                <div className="filter-accordion-content brand-list-wrapper">
+                  {["S", "M", "L", "XL", "XXL"].map((size) => {
+                    const isChecked = selectedSizes.includes(size);
+                    return (
+                      <label key={size} className="brand-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setSelectedSizes(selectedSizes.filter(s => s !== size));
+                            } else {
+                              setSelectedSizes([...selectedSizes, size]);
+                            }
+                          }}
+                        />
+                        <span className="checkbox-custom-box">
+                          {isChecked && <Check size={12} className="checkmark-icon" />}
+                        </span>
+                        <span className="brand-name-text">{size}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Color Accordion */}
+              {/* Color Section */}
               <div className="filter-section">
-                <button 
-                  type="button" 
-                  className="filter-accordion-header"
-                  onClick={() => setIsColorExpanded(!isColorExpanded)}
-                >
+                <div className="filter-accordion-header" style={{ cursor: 'default' }}>
                   <span className="filter-title">Color</span>
-                  <span className="accordion-arrow">
-                    {isColorExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </span>
-                </button>
-                {isColorExpanded && (
-                  <div className="filter-accordion-content brand-list-wrapper">
-                    {["Black", "White", "Blue", "Red", "Grey"].map((color) => {
-                      const isChecked = selectedColors.includes(color);
-                      return (
-                        <label key={color} className="brand-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedColors(selectedColors.filter(c => c !== color));
-                              } else {
-                                setSelectedColors([...selectedColors, color]);
-                              }
-                            }}
-                          />
-                          <span className="checkbox-custom-box">
-                            {isChecked && <Check size={12} className="checkmark-icon" />}
-                          </span>
-                          <span className="brand-name-text">{color}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
+                </div>
+                <div className="filter-accordion-content brand-list-wrapper">
+                  {["Black", "White", "Blue", "Red", "Grey"].map((color) => {
+                    const isChecked = selectedColors.includes(color);
+                    return (
+                      <label key={color} className="brand-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setSelectedColors(selectedColors.filter(c => c !== color));
+                            } else {
+                              setSelectedColors([...selectedColors, color]);
+                            }
+                          }}
+                        />
+                        <span className="checkbox-custom-box">
+                          {isChecked && <Check size={12} className="checkmark-icon" />}
+                        </span>
+                        <span className="brand-name-text">{color}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
 
