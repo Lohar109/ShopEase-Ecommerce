@@ -29,6 +29,7 @@ const CategoryPage = () => {
   const [editingId, setEditingId] = useState('');
   const [editingType, setEditingType] = useState(''); // 'main', 'sub', or 'subsub'
   const [editingName, setEditingName] = useState('');
+  const [editingImage, setEditingImage] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updatingCategory, setUpdatingCategory] = useState(false);
 
@@ -318,6 +319,7 @@ const CategoryPage = () => {
     setEditingId('');
     setEditingType('');
     setEditingName('');
+    setEditingImage('');
   };
 
   const startEditCategory = (category, type) => {
@@ -327,6 +329,7 @@ const CategoryPage = () => {
     setEditingId(categoryId);
     setEditingType(type);
     setEditingName(String(category?.name || ''));
+    setEditingImage(String(category?.image || ''));
     setIsEditModalOpen(true);
   };
 
@@ -356,7 +359,7 @@ const CategoryPage = () => {
     try {
       const updated = await updateCategory(editingId, {
         name: trimmedName,
-        image: current.image ?? null,
+        image: editingType === 'main' ? (current.image ?? null) : (editingImage.trim() || null),
         parent_id: current.parent_id ?? null,
       });
       syncUpdateCategory(updated);
@@ -1298,7 +1301,7 @@ const CategoryPage = () => {
               </p>
             )}
 
-            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
+             <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <input
                 type="text"
                 value={editingName}
@@ -1322,6 +1325,31 @@ const CategoryPage = () => {
                   boxSizing: 'border-box',
                 }}
               />
+
+              {editingType !== 'main' && (
+                <input
+                  type="text"
+                  value={editingImage}
+                  onChange={(e) => setEditingImage(e.target.value)}
+                  placeholder="Image URL"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleUpdateCategory();
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    height: 40,
+                    borderRadius: 8,
+                    border: '1px solid #e4e4e7',
+                    padding: '0 16px',
+                    fontSize: 14,
+                    color: '#111827',
+                    background: '#ffffff',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              )}
             </div>
 
             <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
