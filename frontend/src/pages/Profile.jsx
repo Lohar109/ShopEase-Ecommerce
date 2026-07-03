@@ -224,39 +224,31 @@ const Profile = () => {
   // Rewards tab states
   const [availablePoints, setAvailablePoints] = useState(() => {
     const saved = localStorage.getItem("shopease_available_points");
-    return saved ? parseInt(saved, 10) : 750;
+    if (saved === "750" || !saved) return 0;
+    return parseInt(saved, 10);
   });
   const [pointsEarned, setPointsEarned] = useState(() => {
     const saved = localStorage.getItem("shopease_points_earned");
-    return saved ? parseInt(saved, 10) : 1250;
+    if (saved === "1250" || !saved) return 0;
+    return parseInt(saved, 10);
   });
   const [pointsUsed, setPointsUsed] = useState(() => {
     const saved = localStorage.getItem("shopease_points_used");
-    return saved ? parseInt(saved, 10) : 500;
+    if (saved === "500" || !saved) return 0;
+    return parseInt(saved, 10);
+  });
+  const [walletBalance, setWalletBalance] = useState(() => {
+    const saved = localStorage.getItem("shopease_wallet_balance");
+    return saved ? parseFloat(saved) : 0;
   });
   const [rewardsActivities, setRewardsActivities] = useState(() => {
     const saved = localStorage.getItem("shopease_rewards_activities");
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.length >= 12) return parsed;
+      const isDefaultList = Array.isArray(parsed) && parsed.length > 0 && parsed.every(a => a.desc && (a.desc.includes("Amazon Pay") || a.desc.includes("#SE123") || a.desc.includes("Welcome Bonus")));
+      if (!isDefaultList) return parsed;
     }
-    return [
-      { date: "09 Jun 2024", desc: "Order #SE123456789", points: 120, status: "Credited" },
-      { date: "01 Jun 2024", desc: "Order #SE123456780", points: 80, status: "Credited" },
-      { date: "25 May 2024", desc: "Redeemed Amazon Pay Voucher (₹50)", points: -500, status: "Debited" },
-      { date: "18 May 2024", desc: "Order #SE123456770", points: 60, status: "Credited" },
-      { date: "12 May 2024", desc: "Order #SE123456750", points: 100, status: "Credited" },
-      { date: "05 May 2024", desc: "Welcome Bonus", points: 200, status: "Credited" },
-      { date: "28 Apr 2024", desc: "Order #SE123456740", points: 90, status: "Credited" },
-      { date: "20 Apr 2024", desc: "Redeemed BookMyShow Voucher (₹20)", points: -200, status: "Debited" },
-      { date: "15 Apr 2024", desc: "Order #SE123456720", points: 150, status: "Credited" },
-      { date: "10 Apr 2024", desc: "Redeemed Myntra Voucher (₹10)", points: -100, status: "Debited" },
-      { date: "02 Apr 2024", desc: "Order #SE123456710", points: 70, status: "Credited" },
-      { date: "25 Mar 2024", desc: "Profile Completion Bonus", points: 50, status: "Credited" },
-      { date: "15 Mar 2024", desc: "Order #SE123456690", points: 110, status: "Credited" },
-      { date: "08 Mar 2024", desc: "Redeemed Uber Voucher (₹15)", points: -150, status: "Debited" },
-      { date: "01 Mar 2024", desc: "First Purchase Bonus", points: 100, status: "Credited" }
-    ];
+    return [];
   });
   const [showAllRewardsActivity, setShowAllRewardsActivity] = useState(false);
 
@@ -271,6 +263,10 @@ const Profile = () => {
   useEffect(() => {
     localStorage.setItem("shopease_points_used", pointsUsed);
   }, [pointsUsed]);
+
+  useEffect(() => {
+    localStorage.setItem("shopease_wallet_balance", walletBalance);
+  }, [walletBalance]);
 
   useEffect(() => {
     localStorage.setItem("shopease_rewards_activities", JSON.stringify(rewardsActivities));
@@ -539,6 +535,40 @@ const Profile = () => {
     }
     
     return baseAddress || "No address added yet. Click 'Edit Addresses' to add one.";
+  };
+
+  const handleRedeemPoints = () => {
+    if (availablePoints <= 0) {
+      toast.error("You have no points to redeem.");
+      return;
+    }
+    
+    const rupeesValue = availablePoints * 0.10;
+    
+    // Add to wallet balance
+    setWalletBalance(prev => prev + rupeesValue);
+    
+    // Track points usage
+    setPointsUsed(prev => prev + availablePoints);
+    
+    // Create activity record
+    const now = new Date();
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const formattedDate = `${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    
+    const newActivity = {
+      date: formattedDate,
+      desc: "Converted Points to Rupees",
+      points: availablePoints,
+      status: "Debited"
+    };
+    
+    setRewardsActivities(prev => [newActivity, ...prev]);
+    
+    // Deduct available points
+    setAvailablePoints(0);
+    
+    toast.success(`Successfully converted ${availablePoints} Points to ₹${rupeesValue.toFixed(2)}!`);
   };
 
   const handleEditAddressToggle = () => {
@@ -1683,12 +1713,7 @@ const Profile = () => {
                   </div>
                   <button 
                     className="reward-card-action-btn-pink"
-                    onClick={() => {
-                      const element = document.getElementById("redeem-vouchers-section");
-                      if (element) {
-                        element.scrollIntoView({ behavior: "smooth" });
-                      }
-                    }}
+                    onClick={handleRedeemPoints}
                   >
                     Redeem Now
                   </button>
@@ -1723,12 +1748,12 @@ const Profile = () => {
                 <div className="reward-summary-card orange-theme">
                   <div className="reward-card-header">
                     <div className="reward-card-icon-circle">
-                      <Award size={20} className="reward-icon-orange" />
+                      <CreditCard size={20} className="reward-icon-orange" />
                     </div>
                     <div className="reward-card-label-group">
-                      <span className="reward-card-label">Expiring Soon</span>
-                      <h2 className="reward-card-value">120</h2>
-                      <span className="reward-card-subtext">Points expire on 30 Jun 2024</span>
+                      <span className="reward-card-label">Wallet Balance</span>
+                      <h2 className="reward-card-value">₹{walletBalance.toFixed(2)}</h2>
+                      <span className="reward-card-subtext">Ready to use</span>
                     </div>
                   </div>
                 </div>
@@ -1757,23 +1782,31 @@ const Profile = () => {
                     <div className="activity-table-scrollbar-wrapper">
                       <table className="activity-table body-only-table">
                         <tbody>
-                          {rewardsActivities.slice(0, 10).map((act, idx) => {
-                            const isCredit = act.status === "Credited";
-                            return (
-                              <tr key={idx}>
-                                <td className="col-date">{act.date}</td>
-                                <td className="col-desc">{act.desc}</td>
-                                <td className={`col-points ${isCredit ? "points-credited" : "points-debited"}`}>
-                                  {Math.abs(act.points)}
-                                </td>
-                                <td className="col-status">
-                                  <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
-                                    {act.status}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                          {rewardsActivities.length === 0 ? (
+                            <tr>
+                              <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                                No points activities yet. Start shopping to earn points!
+                              </td>
+                            </tr>
+                          ) : (
+                            rewardsActivities.slice(0, 10).map((act, idx) => {
+                              const isCredit = act.status === "Credited";
+                              return (
+                                <tr key={idx}>
+                                  <td className="col-date">{act.date}</td>
+                                  <td className="col-desc">{act.desc}</td>
+                                  <td className={`col-points ${isCredit ? "points-credited" : "points-debited"}`}>
+                                    {isCredit ? "+" : "-"}{Math.abs(act.points)}
+                                  </td>
+                                  <td className="col-status">
+                                    <span className={`status-pill ${isCredit ? "status-credited" : "status-debited"}`}>
+                                      {act.status}
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -1826,7 +1859,7 @@ const Profile = () => {
               {/* Alert Footer Bar */}
               <div className="rewards-footer-alert-bar">
                 <Info size={16} className="alert-bar-info-icon" />
-                <span><strong>1 Point = ₹0.10</strong> | Minimum 500 Points required to redeem.</span>
+                <span><strong>1 Point = ₹0.10</strong> | Convert your points into Rupees instantly at any time.</span>
               </div>
             </div>
           )}
