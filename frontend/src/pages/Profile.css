@@ -1066,6 +1066,9 @@
 }
 
 .form-step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
     animation: fadeIn 0.3s ease;
 }
 
