@@ -121,9 +121,12 @@ const Payment = () => {
     if (savedActivitiesStr) {
       try {
         const parsed = JSON.parse(savedActivitiesStr);
-        const isDefaultList = Array.isArray(parsed) && parsed.length > 0 && parsed.every(a => a.desc && (a.desc.includes("Amazon Pay") || a.desc.includes("#SE123") || a.desc.includes("Welcome Bonus")));
-        if (!isDefaultList) {
-          currentActivities = parsed;
+        if (Array.isArray(parsed)) {
+          currentActivities = parsed.filter(a => {
+            if (!a || !a.desc) return false;
+            const desc = String(a.desc);
+            return !(desc.includes("Amazon Pay") || desc.includes("#SE123") || desc.includes("Welcome Bonus"));
+          });
         }
       } catch (e) {
         console.error(e);

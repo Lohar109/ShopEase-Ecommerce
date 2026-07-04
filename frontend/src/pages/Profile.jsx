@@ -244,9 +244,18 @@ const Profile = () => {
   const [rewardsActivities, setRewardsActivities] = useState(() => {
     const saved = localStorage.getItem("shopease_rewards_activities");
     if (saved) {
-      const parsed = JSON.parse(saved);
-      const isDefaultList = Array.isArray(parsed) && parsed.length > 0 && parsed.every(a => a.desc && (a.desc.includes("Amazon Pay") || a.desc.includes("#SE123") || a.desc.includes("Welcome Bonus")));
-      if (!isDefaultList) return parsed;
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(a => {
+            if (!a || !a.desc) return false;
+            const desc = String(a.desc);
+            return !(desc.includes("Amazon Pay") || desc.includes("#SE123") || desc.includes("Welcome Bonus"));
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
     return [];
   });
