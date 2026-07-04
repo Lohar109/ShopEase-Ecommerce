@@ -501,9 +501,9 @@ const Shop = () => {
               {childList.length > 0 && (
                 <div className="shop-by-type-section">
                   <h3 className="shop-by-type-title">Shop by Type</h3>
-                  <div className="category-circles-carousel-wrapper">
-                    <div className="category-circles-carousel animate-marquee hover:[animation-play-state:paused]">
-                      {Array.from({ length: 2 }).map((_, loopIndex) => (
+                  <div className={`category-circles-carousel-wrapper ${childList.length > 9 ? '' : 'static-scroll'}`}>
+                    <div className={`category-circles-carousel ${childList.length > 9 ? 'animate-marquee hover:[animation-play-state:paused]' : ''}`}>
+                      {Array.from({ length: childList.length > 9 ? 2 : 1 }).map((_, loopIndex) => (
                         <div
                           key={`sub-loop-${loopIndex}`}
                           className="category-circles-marquee-group"

@@ -3651,6 +3651,16 @@ button:hover {
     overflow: hidden;
 }
 
+.category-circles-carousel-wrapper.static-scroll {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.category-circles-carousel-wrapper.static-scroll::-webkit-scrollbar {
+    display: none;
+}
+
 .category-circles-carousel {
     display: flex;
     flex-direction: row;
