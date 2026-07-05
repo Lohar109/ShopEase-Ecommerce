@@ -568,9 +568,9 @@ const Shop = () => {
               </div>
 
               {childList.length > 0 && (
-                <div className="category-circles-carousel-wrapper">
-                  <div className="category-circles-carousel animate-marquee hover:[animation-play-state:paused]">
-                    {Array.from({ length: 2 }).map((_, loopIndex) => (
+                <div className={`category-circles-carousel-wrapper ${childList.length > 9 ? '' : 'static-scroll'}`}>
+                  <div className={`category-circles-carousel ${childList.length > 9 ? 'animate-marquee hover:[animation-play-state:paused]' : ''}`}>
+                    {Array.from({ length: childList.length > 9 ? 2 : 1 }).map((_, loopIndex) => (
                       <div
                         key={`sub-loop-${loopIndex}`}
                         className="category-circles-marquee-group"
@@ -809,9 +809,9 @@ const Shop = () => {
       {!isLoading && selectedCategory && activeSubcategories.length > 0 && (
         <div className="shop-subcategory-nav-wrap">
           <div className="shop-subcategory-nav-shell">
-            <div className="shop-subcategory-marquee-viewport" role="navigation" aria-label="Subcategory navigation">
-              <div className="shop-subcategory-primary-row animate-marquee hover:[animation-play-state:paused]">
-                {Array.from({ length: 2 }).map((_, loopIndex) => (
+            <div className={`shop-subcategory-marquee-viewport ${activeSubcategories.length > 9 ? '' : 'static-scroll'}`} role="navigation" aria-label="Subcategory navigation">
+              <div className={`shop-subcategory-primary-row ${activeSubcategories.length > 9 ? 'animate-nav-marquee hover:[animation-play-state:paused]' : ''}`}>
+                {Array.from({ length: activeSubcategories.length > 9 ? 2 : 1 }).map((_, loopIndex) => (
                   <div
                     key={`subcategory-loop-${loopIndex}`}
                     className="shop-subcategory-marquee-group"
