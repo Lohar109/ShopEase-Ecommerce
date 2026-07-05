@@ -331,6 +331,22 @@ const Shop = () => {
     return basePrice;
   };
 
+  const absoluteMaxPrice = useMemo(() => {
+    if (!products.length) return 50000;
+    let max = 0;
+    products.forEach((product) => {
+      const price = getProductPrice(product);
+      if (price > max) max = price;
+    });
+    return Math.max(50000, Math.ceil(max / 1000) * 1000);
+  }, [products]);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      setMaxPrice(absoluteMaxPrice);
+    }
+  }, [products, absoluteMaxPrice]);
+
   const brandCounts = useMemo(() => {
     const counts = {};
     const activeLevelId = selectedSubcategory || selectedCategory;
@@ -414,7 +430,7 @@ const Shop = () => {
 
   const handleClearAllFilters = () => {
     setMinPrice(0);
-    setMaxPrice(50000);
+    setMaxPrice(absoluteMaxPrice);
     setSelectedBrands([]);
     setSelectedSubSubcategory(null);
     setSelectedSizes([]);
@@ -650,7 +666,7 @@ const Shop = () => {
                   <input
                     type="range"
                     min="0"
-                    max="50000"
+                    max={absoluteMaxPrice}
                     step="100"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
