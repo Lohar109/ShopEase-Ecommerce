@@ -25,6 +25,20 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Bypass login on localhost
+  useEffect(() => {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      localStorage.setItem('shopease_token', 'localhost-bypass-token');
+      if (!localStorage.getItem('shopease_user_email')) {
+        localStorage.setItem('shopease_user_email', '');
+      }
+      if (!localStorage.getItem('shopease_user_first_name')) {
+        localStorage.setItem('shopease_user_first_name', '');
+      }
+      navigate('/');
+    }
+  }, [navigate]);
+
   // Timer logic for OTP resend
   useEffect(() => {
     let interval = null;
