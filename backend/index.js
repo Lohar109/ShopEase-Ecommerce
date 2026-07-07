@@ -23,13 +23,54 @@ const sanitizedDbUrl = dbUrl
 const useManagedSsl = dbUrl.includes('supabase.com') || dbUrl.includes('pooler.supabase.com');
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // PostgreSQL connection pool
 const pool = new Pool({
   connectionString: sanitizedDbUrl,
   ssl: useManagedSsl ? { rejectUnauthorized: false } : undefined,
 });
+
+// Ensure user and address profile columns exist
+const initDbSchema = async () => {
+  try {
+    await pool.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS first_name VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS last_name VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS mobile VARCHAR(50),
+      ADD COLUMN IF NOT EXISTS dob VARCHAR(50),
+      ADD COLUMN IF NOT EXISTS gender VARCHAR(50),
+      ADD COLUMN IF NOT EXISTS avatar TEXT,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS addresses (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        type VARCHAR(50) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        line1 TEXT NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        state VARCHAR(100) NOT NULL,
+        pin_code VARCHAR(20) NOT NULL,
+        country VARCHAR(100) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        is_default BOOLEAN DEFAULT false,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_addresses_user_id ON addresses(user_id);
+    `);
+    console.log('Database profile schema checked & updated successfully.');
+  } catch (err) {
+    console.error('Error initializing database profile schema:', err);
+  }
+};
+initDbSchema();
 
 // Test route
 app.get('/', (req, res) => {

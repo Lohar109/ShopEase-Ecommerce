@@ -260,3 +260,148 @@ exports.verifyOtp = async (req, res) => {
   }
 };
 
+// 1. Get User Profile by email
+exports.getUserProfile = async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+  try {
+    const result = await pool.query(
+      'SELECT id, email, first_name, last_name, mobile, dob, gender, avatar, created_at FROM users WHERE email = $1',
+      [email]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    const user = result.rows[0];
+    res.json({
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      email: user.email,
+      mobile: user.mobile || '',
+      dob: user.dob || '',
+      gender: user.gender || '',
+      avatar: user.avatar || '',
+      createdAt: user.created_at || null
+    });
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 2. Update User Profile by email
+exports.updateUserProfile = async (req, res) => {
+  const { email, firstName, lastName, mobile, dob, gender, avatar } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+  try {
+    const checkUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (checkUser.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const result = await pool.query(
+      `UPDATE users 
+       SET first_name = $1, last_name = $2, mobile = $3, dob = $4, gender = $5, avatar = $6 
+       WHERE email = $7 
+       RETURNING first_name, last_name, email, mobile, dob, gender, avatar, created_at`,
+      [firstName, lastName, mobile, dob, gender, avatar, email]
+    );
+    
+    const user = result.rows[0];
+    res.json({
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      email: user.email,
+      mobile: user.mobile || '',
+      dob: user.dob || '',
+      gender: user.gender || '',
+      avatar: user.avatar || '',
+      createdAt: user.created_at || null,
+      message: 'Profile updated successfully!'
+    });
+  } catch (err) {
+    console.error('Error updating user profile:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 3. Get User Address by email
+exports.getUserAddress = async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+  try {
+    const userRes = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (userRes.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    const userId = userRes.rows[0].id;
+
+    // Fetch default address or the first address
+    const result = await pool.query(
+      `SELECT type, name, line1, city, state, pin_code AS "pinCode", country, phone, is_default AS "isDefault" 
+       FROM addresses 
+       WHERE user_id = $1 
+       ORDER BY is_default DESC, created_at DESC 
+       LIMIT 1`,
+      [userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.json(null);
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching user address:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 4. Update User Address by email
+exports.updateUserAddress = async (req, res) => {
+  const { email, type, name, line1, city, state, pinCode, country, phone, isDefault } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+  try {
+    const userRes = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (userRes.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    const userId = userRes.rows[0].id;
+
+    // Check if the user already has any address record
+    const addrCheck = await pool.query('SELECT id FROM addresses WHERE user_id = $1 LIMIT 1', [userId]);
+    
+    let result;
+    if (addrCheck.rows.length === 0) {
+      // Insert new address
+      result = await pool.query(
+        `INSERT INTO addresses (user_id, type, name, line1, city, state, pin_code, country, phone, is_default)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         RETURNING type, name, line1, city, state, pin_code AS "pinCode", country, phone, is_default AS "isDefault"`,
+        [userId, type || 'Home', name || '', line1 || '', city || '', state || '', pinCode || '', country || '', phone || '', isDefault !== false]
+      );
+    } else {
+      // Update existing address (take the first one found)
+      const addressId = addrCheck.rows[0].id;
+      result = await pool.query(
+        `UPDATE addresses 
+         SET type = $1, name = $2, line1 = $3, city = $4, state = $5, pin_code = $6, country = $7, phone = $8, is_default = $9, updated_at = now() 
+         WHERE id = $10
+         RETURNING type, name, line1, city, state, pin_code AS "pinCode", country, phone, is_default AS "isDefault"`,
+        [type || 'Home', name || '', line1 || '', city || '', state || '', pinCode || '', country || '', phone || '', isDefault !== false, addressId]
+      );
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating user address:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+

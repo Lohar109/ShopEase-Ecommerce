@@ -167,7 +167,14 @@ const Profile = () => {
   const displayName = (profileData.firstName || profileData.lastName) ? `${profileData.firstName} ${profileData.lastName}`.trim() : "Vaibhav Lohar";
   const displayEmail = profileData.email || "vaibhavlohar010@gmail.com";
   const displayMobile = profileData.mobile || "+91 98765 43210";
-  const displayJoined = "May 20, 2024";
+  const displayJoined = (() => {
+    const savedCreatedAt = localStorage.getItem("shopease_profile_created_at");
+    if (!savedCreatedAt) return "May 20, 2024";
+    const date = new Date(savedCreatedAt);
+    if (isNaN(date.getTime())) return "May 20, 2024";
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  })();
 
   const fileInputRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState(() => {
@@ -182,10 +189,32 @@ const Profile = () => {
         return;
       }
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const base64Url = event.target.result;
         setAvatarUrl(base64Url);
         localStorage.setItem("shopease_profile_avatar", base64Url);
+        
+        // Save avatar directly to database
+        const email = localStorage.getItem("shopease_user_email");
+        if (email) {
+          try {
+            await fetch(`${API_ORIGIN}/api/users/profile`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email,
+                firstName: profileData.firstName,
+                lastName: profileData.lastName,
+                mobile: profileData.mobile,
+                dob: profileData.dob,
+                gender: profileData.gender,
+                avatar: base64Url
+              })
+            });
+          } catch (err) {
+            console.error("Error saving avatar to database:", err);
+          }
+        }
         toast.success("Profile picture updated successfully!");
       };
       reader.readAsDataURL(file);
@@ -531,6 +560,69 @@ const Profile = () => {
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
+  // Fetch user profile and address from backend on mount
+  useEffect(() => {
+    const email = localStorage.getItem("shopease_user_email");
+    if (!email) return;
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${API_ORIGIN}/api/users/profile?email=${encodeURIComponent(email)}`);
+        if (response.ok) {
+          const data = await response.json();
+          const pData = {
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            email: data.email || email,
+            mobile: data.mobile || "",
+            dob: data.dob || "",
+            gender: data.gender || ""
+          };
+          setProfileData(pData);
+          setEditFormData(pData);
+          if (data.avatar) {
+            setAvatarUrl(data.avatar);
+            localStorage.setItem("shopease_profile_avatar", data.avatar);
+          }
+          if (data.createdAt) {
+            localStorage.setItem("shopease_profile_created_at", data.createdAt);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching profile from database:", err);
+      }
+    };
+
+    const fetchAddress = async () => {
+      try {
+        const response = await fetch(`${API_ORIGIN}/api/users/address?email=${encodeURIComponent(email)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            const addr = {
+              type: data.type || "Home",
+              isDefault: data.isDefault !== false,
+              line1: data.line1 || "",
+              city: data.city || "",
+              state: data.state || "",
+              pinCode: data.pinCode || "",
+              country: data.country || "",
+              phone: data.phone || ""
+            };
+            setAddressData(addr);
+            setAddressFormData(addr);
+            localStorage.setItem("shopease_address_data", JSON.stringify(addr));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching address from database:", err);
+      }
+    };
+
+    fetchProfile();
+    fetchAddress();
+  }, []);
+
   const handleEditProfileToggle = () => {
     setEditFormData({ ...profileData });
     setIsEditing(!isEditing);
@@ -541,14 +633,57 @@ const Profile = () => {
     setEditFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveProfile = (e) => {
-    e.preventDefault();
-    setProfileData(editFormData);
-    localStorage.setItem("shopease_profile_data", JSON.stringify(editFormData));
-    if (editFormData.firstName) {
-      localStorage.setItem("shopease_user_first_name", editFormData.firstName);
+  const handleSaveProfile = async (e) => {
+    if (e) e.preventDefault();
+    const email = localStorage.getItem("shopease_user_email");
+    if (!email) return;
+
+    try {
+      const response = await fetch(`${API_ORIGIN}/api/users/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          firstName: editFormData.firstName,
+          lastName: editFormData.lastName,
+          mobile: editFormData.mobile,
+          dob: editFormData.dob,
+          gender: editFormData.gender,
+          avatar: avatarUrl
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const pData = {
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || email,
+          mobile: data.mobile || "",
+          dob: data.dob || "",
+          gender: data.gender || ""
+        };
+        setProfileData(pData);
+        localStorage.setItem("shopease_profile_data", JSON.stringify(pData));
+        if (data.firstName) {
+          localStorage.setItem("shopease_user_first_name", data.firstName);
+        }
+        if (data.avatar) {
+          setAvatarUrl(data.avatar);
+          localStorage.setItem("shopease_profile_avatar", data.avatar);
+        }
+        if (data.createdAt) {
+          localStorage.setItem("shopease_profile_created_at", data.createdAt);
+        }
+        setIsEditing(false);
+        toast.success("Profile details updated successfully!");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Error updating profile in database:", err);
+      toast.error("Network error while updating profile.");
     }
-    setIsEditing(false);
   };
 
   const getFormattedAddress = () => {
@@ -618,11 +753,53 @@ const Profile = () => {
     setAddressFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveAddress = (e) => {
+  const handleSaveAddress = async (e) => {
     e.preventDefault();
-    setAddressData(addressFormData);
-    localStorage.setItem("shopease_address_data", JSON.stringify(addressFormData));
-    setIsEditingAddress(false);
+    const email = localStorage.getItem("shopease_user_email");
+    if (!email) return;
+
+    try {
+      const response = await fetch(`${API_ORIGIN}/api/users/address`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          type: addressFormData.type,
+          name: displayName,
+          line1: addressFormData.line1,
+          city: addressFormData.city,
+          state: addressFormData.state,
+          pinCode: addressFormData.pinCode,
+          country: addressFormData.country,
+          phone: addressFormData.phone,
+          isDefault: true
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const addr = {
+          type: data.type || "Home",
+          isDefault: data.isDefault !== false,
+          line1: data.line1 || "",
+          city: data.city || "",
+          state: data.state || "",
+          pinCode: data.pinCode || "",
+          country: data.country || "",
+          phone: data.phone || ""
+        };
+        setAddressData(addr);
+        localStorage.setItem("shopease_address_data", JSON.stringify(addr));
+        setIsEditingAddress(false);
+        toast.success("Address updated successfully!");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to update address.");
+      }
+    } catch (err) {
+      console.error("Error updating address in database:", err);
+      toast.error("Network error while updating address.");
+    }
   };
 
   return (
