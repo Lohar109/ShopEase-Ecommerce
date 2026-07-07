@@ -5,7 +5,7 @@ import {
   MapPin, Home, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud,
-  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle, Target, Trophy, ShoppingBag, Zap
+  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle, Target, Trophy, ShoppingBag, Zap, Calendar
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
@@ -163,6 +163,11 @@ const Profile = () => {
   // State to manage editing profile details
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({ ...profileData });
+
+  const displayName = (profileData.firstName || profileData.lastName) ? `${profileData.firstName} ${profileData.lastName}`.trim() : "Vaibhav Lohar";
+  const displayEmail = profileData.email || "vaibhavlohar010@gmail.com";
+  const displayMobile = profileData.mobile || "+91 98765 43210";
+  const displayJoined = "May 20, 2024";
 
   // State to manage editing address details
   const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -602,15 +607,57 @@ const Profile = () => {
       <div className="profile-tab-wrapper">
         {currentTab === "profile" && (
             <div className="profile-tab-content">
-              {/* Personal Information Section */}
-              <section className="profile-card-section">
-                <div className="section-header-row">
-                  <h2 className="section-title">Personal Information</h2>
-                  {!isEditing ? (
-                    <button onClick={handleEditProfileToggle} className="profile-action-btn">
-                      <span>Edit Profile</span>
+              {!isEditing ? (
+                <div className="profile-welcome-card">
+                  <div className="welcome-card-left">
+                    <div className="avatar-wrapper-circle">
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" 
+                        alt="Profile Avatar" 
+                        className="welcome-card-avatar"
+                      />
+                      <button className="avatar-edit-badge" onClick={handleEditProfileToggle}>
+                        <Edit2 size={12} className="pencil-icon-color" />
+                      </button>
+                    </div>
+                    
+                    <div className="welcome-user-details">
+                      <div className="user-name-row">
+                        <h2>{displayName}</h2>
+                        <span className="premium-member-badge">Premium Member</span>
+                      </div>
+                      
+                      <div className="user-info-text-list">
+                        <div className="info-text-item">
+                          <Mail size={14} className="info-icon-grey" />
+                          <span>{displayEmail}</span>
+                        </div>
+                        <div className="info-text-item">
+                          <Phone size={14} className="info-icon-grey" />
+                          <span>{displayMobile}</span>
+                        </div>
+                        <div className="info-text-item">
+                          <Calendar size={14} className="info-icon-grey" />
+                          <span>Joined on {displayJoined}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="welcome-card-right">
+                    <div className="quote-block">
+                      <span className="quote-marks">“</span>
+                      <p>Shop Smart, Live Better.</p>
+                    </div>
+                    <button className="edit-profile-btn" onClick={handleEditProfileToggle}>
+                      Edit Profile
                     </button>
-                  ) : (
+                  </div>
+                </div>
+              ) : (
+                <section className="profile-card-section">
+                  <div className="section-header-row">
+                    <h2 className="section-title">Edit Profile Information</h2>
                     <div className="edit-actions-group">
                       <button onClick={handleSaveProfile} className="profile-save-btn">
                         <span>Save</span>
@@ -619,37 +666,7 @@ const Profile = () => {
                         <span>Cancel</span>
                       </button>
                     </div>
-                  )}
-                </div>
-
-                {!isEditing ? (
-                  <div className="details-info-grid">
-                    <div className="info-card-field">
-                      <label className="info-field-label">First Name</label>
-                      <div className="info-field-value">{profileData.firstName}</div>
-                    </div>
-                    <div className="info-card-field">
-                      <label className="info-field-label">Last Name</label>
-                      <div className="info-field-value">{profileData.lastName}</div>
-                    </div>
-                    <div className="info-card-field">
-                      <label className="info-field-label">Email Address</label>
-                      <div className="info-field-value">{profileData.email}</div>
-                    </div>
-                    <div className="info-card-field">
-                      <label className="info-field-label">Mobile Number</label>
-                      <div className="info-field-value">{profileData.mobile}</div>
-                    </div>
-                    <div className="info-card-field">
-                      <label className="info-field-label">Date of Birth</label>
-                      <div className="info-field-value">{formatDateForDisplay(profileData.dob)}</div>
-                    </div>
-                    <div className="info-card-field">
-                      <label className="info-field-label">Gender</label>
-                      <div className="info-field-value">{profileData.gender}</div>
-                    </div>
                   </div>
-                ) : (
                   <form onSubmit={handleSaveProfile} className="details-edit-form">
                     <div className="edit-form-grid">
                       <div className="form-input-field">
@@ -716,8 +733,8 @@ const Profile = () => {
                       </div>
                     </div>
                   </form>
-                )}
-              </section>
+                </section>
+              )}
 
               {/* Address Information Section */}
               <section className="profile-card-section address-section">
