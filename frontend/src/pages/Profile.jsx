@@ -5,7 +5,7 @@ import {
   MapPin, Home, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Check, X, Shield, Lock,
   Percent, Users, UserPlus, FileText, CheckCircle, TrendingUp, Clock,
   Search, Truck, XCircle, RotateCcw, Star, Award, Info, Landmark, UploadCloud,
-  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle, Target, Trophy, ShoppingBag, Zap, Calendar
+  BellOff, Tag, MessageSquare, Mail, Phone, MessageCircle, Target, Trophy, ShoppingBag, Zap, Calendar, Edit2
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "./Profile.css";
