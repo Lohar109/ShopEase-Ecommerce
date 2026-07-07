@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   User, Package, Store, Gift, CreditCard, Bell, Headphones, Megaphone, Download,
@@ -168,6 +168,29 @@ const Profile = () => {
   const displayEmail = profileData.email || "vaibhavlohar010@gmail.com";
   const displayMobile = profileData.mobile || "+91 98765 43210";
   const displayJoined = "May 20, 2024";
+
+  const fileInputRef = useRef(null);
+  const [avatarUrl, setAvatarUrl] = useState(() => {
+    return localStorage.getItem("shopease_profile_avatar") || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop";
+  });
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image size should be less than 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Url = event.target.result;
+        setAvatarUrl(base64Url);
+        localStorage.setItem("shopease_profile_avatar", base64Url);
+        toast.success("Profile picture updated successfully!");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // State to manage editing address details
   const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -612,13 +635,20 @@ const Profile = () => {
                   <div className="welcome-card-left">
                     <div className="avatar-wrapper-circle">
                       <img 
-                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" 
+                        src={avatarUrl} 
                         alt="Profile Avatar" 
                         className="welcome-card-avatar"
                       />
-                      <button className="avatar-edit-badge" onClick={handleEditProfileToggle}>
+                      <button className="avatar-edit-badge" onClick={() => fileInputRef.current.click()}>
                         <Edit2 size={12} className="pencil-icon-color" />
                       </button>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        style={{ display: "none" }} 
+                        accept="image/*" 
+                        onChange={handleAvatarChange}
+                      />
                     </div>
                     
                     <div className="welcome-user-details">
