@@ -9,6 +9,10 @@ import './Shipping.css';
 import './Payment.css';
 import Stepper from '../components/Stepper';
 
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '');
+
 const Payment = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -21,6 +25,7 @@ const Payment = () => {
   const [selectedMethod, setSelectedMethod] = useState('card'); // upi, card, netbanking, wallets, bnpl, gpay
   const [isSuccess, setIsSuccess] = useState(false);
   const [successData, setSuccessData] = useState(null);
+  const [paymentError, setPaymentError] = useState(null);
 
 
 
@@ -61,7 +66,7 @@ const Payment = () => {
   const deliveryFee = deliveryMethod === 'sameday' ? 249 : (deliveryMethod === 'express' ? 149 : 0);
   const grandTotal = totalMRP + platformFee + deliveryFee - totalDiscount;
 
-  const handlePay = () => {
+  const completeOrder = () => {
     const generatedOrderId = "#SE" + Math.floor(100000000 + Math.random() * 900000000);
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const now = new Date();
@@ -154,6 +159,66 @@ const Payment = () => {
       pointsEarned: pointsEarnedThisPurchase
     });
     setIsSuccess(true);
+  };
+
+  const handlePay = async () => {
+    setPaymentError(null);
+
+    try {
+      const orderRes = await fetch(`${API_ORIGIN}/api/payment/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: grandTotal }),
+      });
+
+      if (!orderRes.ok) {
+        throw new Error('Failed to create payment order');
+      }
+
+      const order = await orderRes.json();
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: 'ShopEase',
+        theme: { color: '#db2777' },
+        handler: async (response) => {
+          try {
+            const verifyRes = await fetch(`${API_ORIGIN}/api/payment/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyRes.ok && verifyData.verified) {
+              completeOrder();
+            } else {
+              setPaymentError('Payment verification failed. Please contact support if the amount was deducted.');
+            }
+          } catch {
+            setPaymentError('Could not verify payment. Please contact support if the amount was deducted.');
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentError(null);
+          },
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } catch {
+      setPaymentError('Could not start payment. Please try again.');
+    }
   };
 
   if (isSuccess && successData) {
@@ -565,7 +630,12 @@ const Payment = () => {
 
               {/* Pay Button & Policies footer */}
               <div className="payment-page-pay-action-block">
-                <button 
+                {paymentError && (
+                  <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '0.75rem', textAlign: 'center' }}>
+                    {paymentError}
+                  </p>
+                )}
+                <button
                   type="button" 
                   className="cart-checkout-btn payment-cta-pay-btn"
                   onClick={handlePay}
