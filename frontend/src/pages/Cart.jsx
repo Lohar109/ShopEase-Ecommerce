@@ -81,7 +81,7 @@ const Cart = () => {
 
   const totalSellingPrice = Math.max(0, totalMRP - totalDiscount);
   const cartTotal = totalSellingPrice;
-  const platformFee = totalMRP > 0 ? 250 : 0;
+  const platformFee = totalMRP > 0 ? 0 : 0;
   const [availableCoupons, setAvailableCoupons] = React.useState([]);
   const [isLoadingCoupons, setIsLoadingCoupons] = React.useState(true);
 

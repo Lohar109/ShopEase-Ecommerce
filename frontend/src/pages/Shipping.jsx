@@ -124,7 +124,7 @@ const Shipping = () => {
     return { totalMRP: mrpAccum, totalDiscount: discAccum, totalQty: qtyAccum };
   }, [cartItems]);
 
-  const platformFee = 250;
+  const platformFee = 0;
   const deliveryFee = deliveryMethod === 'sameday' ? 249 : (deliveryMethod === 'express' ? 149 : 0);
   const grandTotal = totalMRP + platformFee + deliveryFee - totalDiscount;
 
