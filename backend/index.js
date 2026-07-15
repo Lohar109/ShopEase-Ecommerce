@@ -121,6 +121,10 @@ app.use('/api/design-gallery', designGalleryRoute);
 const couponsRoute = require('./routes/coupons');
 app.use('/api/coupons', couponsRoute);
 
+// Payment routes
+const paymentRoute = require('./routes/payment');
+app.use('/api/payment', paymentRoute);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
