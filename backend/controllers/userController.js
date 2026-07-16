@@ -42,12 +42,6 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  // Debug log to verify process.env configuration
-  console.log('[DEBUG] Incoming userController login. Current ENV admin credentials:', {
-    envEmail: process.env.ADMIN_EMAIL,
-    envPassword: process.env.ADMIN_PASSWORD
-  });
-
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
