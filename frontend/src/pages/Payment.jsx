@@ -168,7 +168,14 @@ const Payment = () => {
       const orderRes = await fetch(`${API_ORIGIN}/api/payment/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: grandTotal }),
+        body: JSON.stringify({
+          items: cartItems.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity || 1,
+          })),
+          deliveryMethod,
+        }),
       });
 
       if (!orderRes.ok) {
@@ -193,6 +200,11 @@ const Payment = () => {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                items: cartItems.map((item) => ({
+                  productId: item.productId,
+                  variantId: item.variantId,
+                  quantity: item.quantity || 1,
+                })),
               }),
             });
 
