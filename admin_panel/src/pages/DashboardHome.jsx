@@ -192,13 +192,6 @@ const DashboardHome = () => {
         }
       `}</style>
 
-      <div>
-        <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, letterSpacing: '0.3px', margin: 0, color: '#111827' }}>
-          Dashboard
-        </h2>
-        <p style={{ margin: '4px 0 0', fontSize: 13, color: '#71717a' }}>Overview of your store's performance</p>
-      </div>
-
       {error ? (
         <div style={{ ...cardStyle }}>
           <p style={{ margin: 0, color: '#111827', fontSize: 14, fontWeight: 600 }}>Failed to load dashboard</p>
