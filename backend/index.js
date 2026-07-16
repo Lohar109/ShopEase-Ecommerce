@@ -22,7 +22,21 @@ const sanitizedDbUrl = dbUrl
   .replace(/[?&]$/, '');
 const useManagedSsl = dbUrl.includes('supabase.com') || dbUrl.includes('pooler.supabase.com');
 
-app.use(cors());
+// TODO: In production, set ALLOWED_ORIGINS to the actual deployed frontend and
+// admin panel domains (e.g. https://www.shopease.sbs and the admin panel's domain).
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:5174')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
