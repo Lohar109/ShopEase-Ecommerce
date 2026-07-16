@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './authService';
+
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
@@ -14,7 +16,7 @@ export async function fetchAudiences() {
 export async function addAudience({ name }) {
   const response = await fetch(`${API_BASE_URL}/audiences`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ name }),
   });
 
@@ -34,7 +36,7 @@ export async function addAudience({ name }) {
 export async function updateAudience(id, { name }) {
   const response = await fetch(`${API_BASE_URL}/audiences/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ name }),
   });
 
@@ -54,6 +56,7 @@ export async function updateAudience(id, { name }) {
 export async function deleteAudience(id) {
   const response = await fetch(`${API_BASE_URL}/audiences/${id}`, {
     method: 'DELETE',
+    headers: { ...getAuthHeaders() },
   });
 
   if (!response.ok) {

@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './authService';
+
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
@@ -20,7 +22,7 @@ export async function fetchCoupons() {
 export async function createCoupon(payload) {
   const response = await fetch(`${API_BASE_URL}/coupons`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(payload)
   });
   const data = await parseJson(response);
@@ -42,7 +44,7 @@ export async function fetchCouponById(id) {
 export async function updateCoupon(id, payload) {
   const response = await fetch(`${API_BASE_URL}/coupons/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(payload)
   });
   const data = await parseJson(response);
@@ -55,7 +57,7 @@ export async function updateCoupon(id, payload) {
 export async function updateCouponStatus(id, isActive) {
   const response = await fetch(`${API_BASE_URL}/coupons/${id}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ is_active: isActive })
   });
   const data = await parseJson(response);
@@ -67,7 +69,8 @@ export async function updateCouponStatus(id, isActive) {
 
 export async function deleteCoupon(id) {
   const response = await fetch(`${API_BASE_URL}/coupons/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    headers: { ...getAuthHeaders() }
   });
   const data = await parseJson(response);
   if (!response.ok) {

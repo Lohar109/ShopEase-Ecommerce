@@ -1,6 +1,8 @@
 // src/services/productService.js
 // Handles product API calls for admin panel
 
+import { getAuthHeaders } from './authService';
+
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
@@ -35,7 +37,7 @@ export async function saveProduct(productData) {
   try {
     const response = await fetch(`${API_BASE_URL}/products`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(productData)
     });
     if (!response.ok) {
@@ -55,7 +57,7 @@ export async function updateProduct(id, productData) {
   try {
     const response = await fetch(`${API_BASE_URL}/products/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(productData)
     });
     if (!response.ok) {
@@ -75,7 +77,7 @@ export async function updateProductStatus(id, statusData) {
   try {
     const response = await fetch(`${API_BASE_URL}/products/${id}/status`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(statusData)
     });
 
@@ -100,7 +102,8 @@ export async function updateProductStatus(id, statusData) {
 export async function deleteProduct(id) {
   try {
     const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: { ...getAuthHeaders() }
     });
     if (!response.ok) {
       const error = await response.json();
@@ -128,7 +131,7 @@ export async function saveDesignGallery(payload) {
   try {
     const response = await fetch(`${API_BASE_URL}/design-gallery`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(payload)
     });
 
@@ -146,7 +149,8 @@ export async function saveDesignGallery(payload) {
 export async function deleteDesignGallery(galleryId) {
   try {
     const response = await fetch(`${API_BASE_URL}/design-gallery/${galleryId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: { ...getAuthHeaders() }
     });
 
     if (!response.ok) {
@@ -163,7 +167,7 @@ export async function updateVariantDiscount(variantId, discountData) {
   try {
     const response = await fetch(`${API_BASE_URL}/products/variants/${variantId}/discount`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(discountData)
     });
     if (!response.ok) {

@@ -32,6 +32,7 @@ import {
   updateProduct,
   updateVariantDiscount
 } from '../services/productService';
+import { getAuthHeaders } from '../services/authService';
 
 const STEPS = [
   { key: 'magic', label: 'Magic Fill', icon: Sparkles },
@@ -3276,6 +3277,7 @@ const ProductForm = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ name: nameValue }),
       });
@@ -3327,6 +3329,7 @@ const ProductForm = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ name: trimmedName }),
       });
@@ -3361,6 +3364,7 @@ const ProductForm = () => {
       const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/api$/, '');
       const response = await fetch(`${apiOrigin}/api/audiences/${audienceToDelete.id}`, {
         method: 'DELETE',
+        headers: { ...getAuthHeaders() },
       });
 
       const result = await response.json().catch(() => ({}));

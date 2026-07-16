@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
+const adminAuth = require('../middleware/adminAuth');
 
 const dbUrl = process.env.DATABASE_URL || '';
 const sanitizedDbUrl = dbUrl
@@ -26,7 +27,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/categories - add a new category
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
   const { name, image, parent_id } = req.body;
   const normalizedName = typeof name === 'string' ? name.trim() : '';
   if (!normalizedName) {
@@ -62,7 +63,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/categories/:id - update a category
-router.put('/:id', async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { name, image, parent_id } = req.body;
   const normalizedId = typeof id === 'string' ? id.trim() : '';
@@ -133,7 +134,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/categories/:id - delete category and all its descendant subcategories
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const normalizedId = typeof id === 'string' ? id.trim() : '';
   const forceDelete = String(req.query.force || '').toLowerCase() === 'true';

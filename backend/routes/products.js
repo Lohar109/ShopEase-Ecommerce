@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+const adminAuth = require('../middleware/adminAuth');
 
 
 
 router.get('/', productController.getAllProducts);
-router.patch('/variants/:id/discount', productController.updateVariantDiscount);
+router.patch('/variants/:id/discount', adminAuth, productController.updateVariantDiscount);
 router.get('/:id', productController.getProductById);
-router.post('/', productController.createProduct);
-router.patch('/:id', productController.updateProductStatus);
-router.put('/:id', productController.updateProduct);
-router.patch('/:id/status', productController.updateProductStatus);
-router.delete('/:id', productController.deleteProduct);
+router.post('/', adminAuth, productController.createProduct);
+router.patch('/:id', adminAuth, productController.updateProductStatus);
+router.put('/:id', adminAuth, productController.updateProduct);
+router.patch('/:id/status', adminAuth, productController.updateProductStatus);
+router.delete('/:id', adminAuth, productController.deleteProduct);
 
 module.exports = router;

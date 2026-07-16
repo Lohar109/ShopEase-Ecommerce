@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin } from '../services/authService';
+import { loginAdmin, setToken } from '../services/authService';
 import './Login.css';
 
 const Login = () => {
@@ -20,7 +20,7 @@ const Login = () => {
     setLoading(true);
     try {
       const data = await loginAdmin(email, password);
-      // Save token or admin info as needed (e.g., localStorage)
+      setToken(data.token);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');

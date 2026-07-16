@@ -1,6 +1,8 @@
 // src/services/categoryService.js
 // Fetches categories for the admin panel
 
+import { getAuthHeaders } from './authService';
+
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000')
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
@@ -24,7 +26,7 @@ export async function addCategory({ name, image = null, parent_id = null }) {
   try {
     const response = await fetch(`${API_BASE_URL}/categories`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ name, image, parent_id })
     });
     if (!response.ok) {
@@ -45,7 +47,8 @@ export async function addCategory({ name, image = null, parent_id = null }) {
 export async function deleteCategory(id) {
   try {
     const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: { ...getAuthHeaders() }
     });
     if (!response.ok) {
       const error = await response.json();
@@ -62,7 +65,7 @@ export async function updateCategory(id, { name, image = null, parent_id = null 
   try {
     const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ name, image, parent_id })
     });
     if (!response.ok) {

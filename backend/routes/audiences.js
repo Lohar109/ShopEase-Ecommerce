@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
+const adminAuth = require('../middleware/adminAuth');
 
 const dbUrl = process.env.DATABASE_URL || '';
 const sanitizedDbUrl = dbUrl
@@ -37,7 +38,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/audiences - add a new audience
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
   const { name } = req.body;
   const normalizedName = typeof name === 'string' ? name.trim() : '';
 
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/audiences/:id - update an audience name
-router.put('/:id', async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
   const normalizedName = typeof name === 'string' ? name.trim() : '';
@@ -91,7 +92,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/audiences/:id - delete an audience (only if not in use)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
