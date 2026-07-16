@@ -142,6 +142,10 @@ app.use('/api/audiences', audiencesRoute);
 const adminRoute = require('./routes/admin');
 app.use('/api/admin', adminRoute);
 
+// Admin dashboard stats route
+const adminDashboardRoute = require('./routes/adminDashboard');
+app.use('/api/admin', adminDashboardRoute);
+
 // Wishlist route
 const wishlistRoute = require('./routes/wishlistRoutes');
 app.use('/api/wishlist', wishlistRoute);
