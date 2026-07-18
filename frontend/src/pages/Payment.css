@@ -249,6 +249,43 @@
   }
 }
 
+@media (max-width: 640px) {
+  .recommended-card-option {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "logo details"
+      "holder holder";
+    gap: 0.75rem 1rem;
+    padding: 1.1rem;
+  }
+
+  .recommended-brand-logo-wrap {
+    grid-area: logo;
+  }
+
+  .recommended-card-details {
+    grid-area: details;
+  }
+
+  .recommended-holder-dropdown {
+    grid-area: holder;
+    justify-content: flex-end;
+  }
+
+  .payment-security-alert-box,
+  .save-card-secure-switch-box,
+  .payment-sidebar-help-card {
+    padding: 0.85rem;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .security-alert-right {
+    align-items: flex-start;
+    margin-left: 44px;
+  }
+}
+
 .payment-method-grid-cell {
   position: relative;
   display: flex;
