@@ -240,6 +240,16 @@
   padding: 0;
   transition: background-color 0.2s;
   box-shadow: none;
+  position: relative;
+}
+
+/* Expand the tappable area to 44x44 on touch screens without growing the visible control */
+@media (hover: none) and (pointer: coarse) {
+  .cart-qty-spinner button::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
 }
 
 .cart-qty-spinner button:hover {
@@ -1101,6 +1111,12 @@
   
   .cart-summary-column {
     position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .rec-fbt-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
