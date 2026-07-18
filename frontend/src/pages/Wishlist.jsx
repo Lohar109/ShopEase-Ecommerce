@@ -134,12 +134,16 @@ const Wishlist = () => {
       ) : !hasWishlistItems ? (
         <>
           <style>{`
+            .wishlist-empty-content {
+              max-width: min(400px, 100%);
+            }
             @media (max-width: 768px) {
               .wishlist-empty-state {
                 flex-direction: column !important;
               }
               .wishlist-empty-content {
                 text-align: center !important;
+                width: 100%;
               }
             }
           `}</style>
@@ -157,9 +161,9 @@ const Wishlist = () => {
             }}
           >
             <div className="wishlist-empty-lottie" aria-hidden="true">
-              <WishlistLottie animationData={emptyWishlistData} autoPlay={true} loop={true} style={{ width: 350 }} />
+              <WishlistLottie animationData={emptyWishlistData} autoPlay={true} loop={true} style={{ width: 'min(350px, 70vw)' }} />
             </div>
-            <div className="wishlist-empty-content" style={{ textAlign: 'left', minWidth: '400px' }}>
+            <div className="wishlist-empty-content" style={{ textAlign: 'left' }}>
               <h1
                 className="cart-title"
                 style={{

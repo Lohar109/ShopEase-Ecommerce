@@ -42,6 +42,7 @@ const run = async () => {
   await seedPage.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
   await seedPage.evaluate((items) => {
     localStorage.setItem('cartItems', JSON.stringify(items));
+    localStorage.setItem('wishlistProductIds', JSON.stringify(['bdbd7dec-4a0e-45e0-b187-2b4d31c87586']));
   }, SEED_CART);
   await seedPage.close();
 
