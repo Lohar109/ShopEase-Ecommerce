@@ -4,6 +4,9 @@
   gap: 10px;
   justify-content: center;
   padding: 12px 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .step {
@@ -11,6 +14,7 @@
   align-items: center;
   gap: 8px;
   color: #9ca3af;
+  flex-shrink: 0;
 }
 
 .step-circle {
@@ -63,6 +67,7 @@
   height: 4px;
   border-radius: 4px;
   background: #f3f4f6;
+  flex-shrink: 0;
   transition: background-color 220ms ease, box-shadow 220ms ease;
 }
 
@@ -85,4 +90,12 @@
   .step-number { font-size: 11px; }
   .step-label { font-size: 12px; }
   .step-connector { width: 30px; height: 3px; }
+}
+
+/* iPhone SE and smaller: labels dropped so all steps fit without scrolling */
+@media (max-width: 400px) {
+  .stepper { gap: 6px; }
+  .step { gap: 0; }
+  .step-label { display: none; }
+  .step-connector { width: 20px; }
 }
