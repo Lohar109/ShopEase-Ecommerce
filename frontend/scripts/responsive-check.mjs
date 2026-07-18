@@ -55,6 +55,23 @@ const run = async () => {
 
   for (const route of routes) {
     const page = await context.newPage();
+    if (route.startsWith('/login')) {
+      // Login.jsx auto-redirects away from /login on localhost (dev convenience
+      // "skip login" bypass). Block the redirect's history call so the real
+      // Login UI can actually be rendered and checked.
+      await page.addInitScript(() => {
+        const origPush = window.history.pushState.bind(window.history);
+        const origReplace = window.history.replaceState.bind(window.history);
+        window.history.pushState = function (state, title, url) {
+          if (url === '/' || url === '') return;
+          return origPush(state, title, url);
+        };
+        window.history.replaceState = function (state, title, url) {
+          if (url === '/' || url === '') return;
+          return origReplace(state, title, url);
+        };
+      });
+    }
     const routeResult = { route, widths: {} };
 
     for (const width of WIDTHS) {
