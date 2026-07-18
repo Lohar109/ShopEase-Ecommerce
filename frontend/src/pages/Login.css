@@ -784,3 +784,27 @@
     margin-top: 1.5rem;
   }
 }
+
+/* iPhone SE / small phones: tighten padding further and shrink OTP boxes
+   so nothing overflows a 320-375px viewport */
+@media (max-width: 400px) {
+  .login-page-container {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .login-right-form-panel {
+    padding: 2rem 1.25rem;
+  }
+
+  .otp-inputs-row {
+    max-width: 100%;
+    gap: 6px;
+  }
+
+  .otp-digit-input {
+    width: 100%;
+    max-width: 38px;
+    height: 46px;
+    font-size: 1.35rem;
+  }
+}
